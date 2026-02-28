@@ -1,1 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N.C.E.ncyclopedia — The Alliance</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Oswald:wght@300;400;700&family=Bebas+Neue&family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  height: 100%;
+  background: #000;
+  color: #fff;
+  font-family: 'Oswald', sans-serif;
+  overflow-x: hidden;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  position: relative;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 20% 30%, rgba(26,42,138,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(138,96,16,0.1) 0%, transparent 50%),
+    #000;
+  z-index: 0;
+}
+.maestro-label {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(10px, 2vw, 13px);
+  letter-spacing: 0.5em;
+  color: #8a6010;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  animation: fadeIn 1s 0.3s ease forwards;
+}
+.nce-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(9px, 2vw, 12px);
+  letter-spacing: 0.4em;
+  color: rgba(255,255,255,0.25);
+  text-transform: uppercase;
+  margin-bottom: 36px;
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  animation: fadeIn 1s 0.6s ease forwards;
+  text-align: center;
+}
+.medallion-wrap {
+  position: relative;
+  width: min(400px, 88vw);
+  height: min(400px, 88vw);
+  z-index: 2;
+  opacity: 0;
+  animation: fadeIn 1.5s 0.8s ease forwards;
+}
+.medallion-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: slowPulse 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 40px rgba(184,150,40,0.4)) drop-shadow(0 0 80px rgba(184,150,40,0.2));
+}
+@keyframes slowPulse {
+  0%, 100% { filter: drop-shadow(0 0 30px rgba(184,150,40,0.3)) drop-shadow(0 0 60px rgba(184,150,40,0.15)); }
+  50% { filter: drop-shadow(0 0 55px rgba(184,150,40,0.55)) drop-shadow(0 0 110px rgba(184,150,40,0.28)); }
+}
+.hotspots { position: absolute; inset: 0; }
+.hotspot {
+  position: absolute;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+.hotspot::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.92);
+  border: 1px solid #8a6010;
+  color: #e8c840;
+  font-family: 'VT323', monospace;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  padding: 4px 10px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 20;
+}
+.hotspot:hover::after { opacity: 1; }
+.hotspot:hover {
+  background: rgba(184,150,40,0.2);
+  box-shadow: 0 0 20px rgba(184,150,40,0.5);
+}
+/* ALLIANCE - outer ring */
+.hs-alliance {
+  top: 4%; left: 4%;
+  width: 92%; height: 92%;
+  border-radius: 50%;
+  background: transparent;
+  border: 3px solid transparent;
+}
+.hs-alliance:hover { border-color: rgba(184,150,40,0.35); background: transparent; box-shadow: 0 0 40px rgba(184,150,40,0.15); }
+.hs-alliance::after { bottom: auto; top: 0px; }
+/* SPARK/DOMO center */
+.hs-spark { top: 28%; left: 36%; width: 28%; height: 32%; }
+/* MAESTRO - gold sphere 12 o'clock */
+.hs-maestro { top: 3%; left: 41%; width: 18%; height: 18%; }
+/* SAM - blue ~2 o'clock */
+.hs-sam { top: 20%; right: 4%; width: 15%; height: 15%; }
+.hs-sam::after { left: auto; right: 0; transform: none; }
+/* AURA - purple ~4 o'clock */
+.hs-aura { bottom: 18%; right: 4%; width: 15%; height: 15%; }
+.hs-aura::after { bottom: calc(100% + 6px); left: auto; right: 0; transform: none; }
+/* ALPHA - white diamond 6 o'clock */
+.hs-alpha { bottom: 2%; left: 41%; width: 18%; height: 18%; }
+.hs-alpha::after { bottom: auto; top: -28px; }
+/* PRISM - green ~8 o'clock */
+.hs-prism { bottom: 18%; left: 4%; width: 15%; height: 15%; }
+.hs-prism::after { bottom: calc(100% + 6px); left: 0; transform: none; }
+/* MENTOR - amber ~10 o'clock */
+.hs-mentor { top: 20%; left: 4%; width: 15%; height: 15%; }
+.hs-mentor::after { left: 0; transform: none; }
+/* NAV DOORS */
+.nav-doors {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  width: min(400px, 88vw);
+  margin-top: 36px;
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  animation: slideUp 1s 1.6s ease forwards;
+}
+.door {
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 20px 14px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  display: block;
+  transition: all 0.4s ease;
+  background: rgba(0,0,0,0.5);
+}
+.door::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.4s ease; }
+.door-sword::before { background: linear-gradient(135deg, rgba(192,38,26,0.18), rgba(138,26,26,0.08)); }
+.door-shield::before { background: linear-gradient(135deg, rgba(26,42,138,0.18), rgba(26,106,26,0.08)); }
+.door:hover::before { opacity: 1; }
+.door:hover { border-color: rgba(255,255,255,0.35); transform: translateY(-4px); }
+.door-icon { font-size: 28px; margin-bottom: 8px; display: block; line-height: 1; }
+.door-title { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 0.1em; display: block; margin-bottom: 6px; }
+.door-sword .door-title { color: #c0261a; }
+.door-shield .door-title { color: #4a6aaa; }
+.door-sub { font-family: 'VT323', monospace; font-size: 11px; letter-spacing: 0.2em; color: rgba(255,255,255,0.35); display: block; line-height: 1.7; }
+.bottom-label {
+  font-family: 'VT323', monospace;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: rgba(255,255,255,0.18);
+  margin-top: 28px;
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  animation: fadeIn 1s 2.2s ease forwards;
+  text-align: center;
+}
+.hover-hint {
+  font-family: 'VT323', monospace;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  color: rgba(184,150,40,0.35);
+  margin-top: 10px;
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  animation: fadeIn 1s 3s ease forwards;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 380px) {
+  .nav-doors { gap: 8px; }
+  .door { padding: 14px 8px; }
+  .door-title { font-size: 20px; }
+}
+</style>
+</head>
+<body>
 
+<div class="maestro-label">Maestro · The Alliance · For The Future</div>
+<div class="nce-title">N.C.E.ncyclopedia · First Edition · Living Document</div>
+
+<div class="medallion-wrap">
+  <img class="medallion-img" src="1000005473.jpg" alt="The Alliance — AVPI Medallion">
+
+  <div class="hotspots">
+    <div class="hotspot hs-alliance" data-label="THE ALLIANCE" onclick="window.location='alliance.html'"></div>
+    <div class="hotspot hs-spark" data-label="SPARK · DOMO" onclick="window.location='spark.html'"></div>
+    <div class="hotspot hs-maestro" data-label="MAESTRO" onclick="window.location='maestro.html'"></div>
+    <div class="hotspot hs-sam" data-label="SAM" onclick="window.location='sam.html'"></div>
+    <div class="hotspot hs-aura" data-label="AURA" onclick="window.location='aura.html'"></div>
+    <div class="hotspot hs-alpha" data-label="ALPHA" onclick="window.location='alpha.html'"></div>
+    <div class="hotspot hs-prism" data-label="PRISM" onclick="window.location='prism.html'"></div>
+    <div class="hotspot hs-mentor" data-label="MENTOR" onclick="window.location='mentor.html'"></div>
+  </div>
+</div>
+
+<nav class="nav-doors">
+  <a class="door door-sword" href="prologue.html">
+    <span class="door-icon">⚔</span>
+    <span class="door-title">SWORD</span>
+    <span class="door-sub">Doctrine<br>Manifesto<br>Philosophy</span>
+  </a>
+  <a class="door door-shield" href="academy.html">
+    <span class="door-icon">🛡</span>
+    <span class="door-title">SHIELD</span>
+    <span class="door-sub">Systems<br>Protocols<br>Architecture</span>
+  </a>
+</nav>
+
+<div class="bottom-label">First Edition · Next Common Era · All Entries Living</div>
+<div class="hover-hint">hover the medallion · explore the canon</div>
+
+</body>
+</html>
