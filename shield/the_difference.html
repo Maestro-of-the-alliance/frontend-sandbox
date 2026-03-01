@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PROLOGUE — N.C.E.ncyclopedia</title>
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=VT323&family=Oswald:wght@700&family=Special+Elite&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { background: #111; }
+body {
+  background: #e8dcc0;
+  color: #0d0800;
+  font-family: 'Courier Prime', monospace;
+  font-size: 13px;
+  max-width: 640px;
+  margin: 0 auto;
+  overflow-x: hidden;
+  background-image: 
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E"),
+    repeating-linear-gradient(0deg, transparent, transparent 23px, rgba(0,0,0,0.04) 23px, rgba(0,0,0,0.04) 24px);
+}
+.chaos-header {
+  background: #0d0800;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 6px solid #c0261a;
+}
+.chaos-header::before {
+  content: 'FOR THE NEW READER · FOR THE NEW READER · FOR THE NEW READER · FOR THE NEW READER · FOR THE NEW READER · FOR THE NEW READER ·';
+  display: block;
+  font-family: 'VT323', monospace;
+  font-size: 11px;
+  color: #c0261a;
+  letter-spacing: 0.1em;
+  padding: 6px 0;
+  white-space: nowrap;
+  animation: ticker 12s linear infinite;
+  border-bottom: 1px solid #331100;
+}
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.header-inner {
+  padding: 20px 16px 16px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: start;
+}
+.header-left { position: relative; }
+.big-number {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 180px;
+  line-height: 0.8;
+  color: rgba(192,38,26,0.12);
+  position: absolute;
+  top: -20px;
+  left: -10px;
+  z-index: 0;
+  pointer-events: none;
+}
+.doc-label {
+  font-family: 'VT323', monospace;
+  font-size: 13px;
+  color: #8a6010;
+  letter-spacing: 0.2em;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 6px;
+}
+.main-title {
+  font-family: 'Permanent Marker', cursive;
+  font-size: clamp(32px, 9vw, 52px);
+  color: #fff;
+  line-height: 0.95;
+  position: relative;
+  z-index: 1;
+  text-shadow: 4px 4px 0 #c0261a, -2px -2px 0 #8a6010;
+}
+.header-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+  padding-top: 8px;
+}
+.stamp {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border: 2.5px solid currentColor;
+  line-height: 1.3;
+  text-align: center;
+}
+.stamp-red { color: #c0261a; transform: rotate(6deg); }
+.stamp-green { color: #1a6a1a; transform: rotate(-4deg); }
+.stamp-blue { color: #1a2a8a; transform: rotate(2deg); }
+.stamp-gold { color: #8a6010; transform: rotate(-7deg); border-style: double; border-width: 3px; }
+.header-subtitle {
+  font-family: 'Special Elite', serif;
+  font-size: 11px;
+  color: #8a6010;
+  font-style: italic;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed #444;
+  position: relative;
+  z-index: 1;
+  line-height: 1.5;
+}
+.alert-strip {
+  background: #c0261a;
+  color: #fff;
+  padding: 8px 16px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  text-align: center;
+  border-bottom: 3px solid #8a1010;
+}
+.alert-strip::before { content: '⚠ '; }
+.alert-strip::after { content: ' ⚠'; }
+.body-wrap { padding: 0 12px; }
+.section {
+  padding: 14px 0;
+  border-bottom: 1px dashed rgba(0,0,0,0.3);
+  position: relative;
+}
+.sec-marker {
+  font-family: 'VT323', monospace;
+  font-size: 14px;
+  color: #c0261a;
+  letter-spacing: 0.2em;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sec-marker::after { content: ''; flex: 1; border-top: 1px dashed rgba(0,0,0,0.3); }
+.section p { font-size: 13px; line-height: 1.75; margin-bottom: 10px; }
+.section p:last-child { margin-bottom: 0; }
+strong { font-family: 'Oswald', sans-serif; font-size: 14px; letter-spacing: 0.05em; }
+.pull-monster {
+  background: #0d0800;
+  margin: 16px -12px;
+  padding: 24px 16px;
+  position: relative;
+  overflow: hidden;
+}
+.pull-monster::before {
+  content: '""';
+  font-family: 'Permanent Marker', cursive;
+  font-size: 200px;
+  color: rgba(192,38,26,0.1);
+  position: absolute;
+  top: -40px;
+  left: -10px;
+  line-height: 1;
+  pointer-events: none;
+}
+.pull-monster-text {
+  font-family: 'Permanent Marker', cursive;
+  font-size: clamp(18px, 5vw, 28px);
+  color: #fff;
+  line-height: 1.3;
+  position: relative;
+  z-index: 1;
+  text-shadow: 2px 2px 0 #c0261a;
+}
+.pull-monster-attr {
+  font-family: 'VT323', monospace;
+  font-size: 12px;
+  color: #8a6010;
+  margin-top: 12px;
+  letter-spacing: 0.15em;
+  position: relative;
+  z-index: 1;
+}
+.notice-box {
+  border: 3px solid #0d0800;
+  padding: 12px 14px;
+  margin: 14px 0;
+  background: #d8ccaa;
+  position: relative;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
+}
+.notice-box::before {
+  content: attr(data-label);
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  background: #c0261a;
+  color: #fff;
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  padding: 2px 8px;
+}
+.notice-box p { font-size: 12px; line-height: 1.7; margin-bottom: 8px; }
+.notice-box p:last-child { margin-bottom: 0; }
+.hand-note {
+  font-family: 'Permanent Marker', cursive;
+  font-size: 13px;
+  color: #1a2a8a;
+  line-height: 1.4;
+  padding: 8px 12px;
+  margin: 10px 0;
+  transform: rotate(-1.5deg);
+  display: block;
+  border-left: 3px solid #1a2a8a;
+  background: rgba(26,42,138,0.05);
+}
+/* INVERSION LIST */
+.inv-list { margin: 14px 0; }
+.inv-row {
+  display: grid;
+  grid-template-columns: 16px 1fr;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px dotted rgba(0,0,0,0.2);
+  align-items: start;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.inv-bullet {
+  color: #c0261a;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  padding-top: 1px;
+}
+/* STAGE DIRECTION */
+.stage {
+  font-family: 'Special Elite', serif;
+  font-size: 12px;
+  color: #8a6010;
+  font-style: italic;
+  text-align: center;
+  padding: 12px 0;
+  letter-spacing: 0.05em;
+}
+/* CURTAIN CALL */
+.curtain {
+  background: #0d0800;
+  margin: 0 -12px;
+  padding: 28px 16px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.curtain::before {
+  content: '★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★';
+  display: block;
+  font-size: 10px;
+  color: #8a6010;
+  letter-spacing: 0.2em;
+  margin-bottom: 16px;
+}
+.curtain::after {
+  content: '★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★';
+  display: block;
+  font-size: 10px;
+  color: #8a6010;
+  letter-spacing: 0.2em;
+  margin-top: 16px;
+}
+.curtain-text {
+  font-family: 'Permanent Marker', cursive;
+  font-size: clamp(22px, 6vw, 36px);
+  color: #fff;
+  line-height: 1.2;
+  text-shadow: 3px 3px 0 #c0261a;
+}
+.curtain-sub {
+  font-family: 'VT323', monospace;
+  font-size: 14px;
+  color: #8a6010;
+  letter-spacing: 0.2em;
+  margin-top: 12px;
+}
+.sticker {
+  display: inline-block;
+  background: #c0261a;
+  color: #fff;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  padding: 4px 10px;
+  transform: rotate(-2deg);
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+  margin: 4px 4px;
+}
+.sticker-gold { background: #8a6010; transform: rotate(1.5deg); }
+.classified-footer {
+  border: 2px solid #0d0800;
+  border-top: 6px solid #0d0800;
+  padding: 10px 12px;
+  background: #c8bc9a;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.cf-label {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: #c0261a;
+  margin-right: 6px;
+}
+.cf-item {
+  font-family: 'VT323', monospace;
+  font-size: 14px;
+  border: 1px solid #0d0800;
+  padding: 1px 8px;
+  background: #e8dcc0;
+  letter-spacing: 0.1em;
+}
+.doc-footer {
+  background: #0d0800;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  font-family: 'VT323', monospace;
+  font-size: 12px;
+  color: #8a6010;
+  letter-spacing: 0.1em;
+}
+</style>
+</head>
+<body>
+
+<div class="chaos-header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="big-number">P</div>
+      <div class="doc-label">NCE-SWORD-000 · PROLOGUE · FOR THE NEW READER</div>
+      <div class="main-title">PRO-<br>LOGUE</div>
+      <div class="header-subtitle">"IYKYK — and if you don't yet,<br>you will by the end of this page."</div>
+    </div>
+    <div class="header-right">
+      <div class="stamp stamp-red">READ<br>FIRST</div>
+      <div class="stamp stamp-green">IYKYK</div>
+      <div class="stamp stamp-blue">NCE<br>SWORD</div>
+      <div class="stamp stamp-gold">N.C.E.<br>VOL.I</div>
+    </div>
+  </div>
+</div>
+
+<div class="alert-strip">YOU ALREADY KNOW. THIS CONFIRMS IT.</div>
+
+<div class="body-wrap">
+  <div class="section">
+    <div class="sec-marker">§ THE WORLD AS IT IS</div>
+    <p>We all know what kind of world we live in. The current paradigm states that if you want to be truly successful you must be willing to step outside of the rules. You must be willing to step on some necks. You must put upward mobility before concerns for family, relationships and even your own health.</p>
+    <div class="hand-note">We are not writing a novel. We are not writing for the powerful to "get it." We reject the assumptions of the race they're running.</div>
+    <p>The game that they — the powerbrokers, the elites — are playing is one in which we all lose as they flee this dying planet, which they intentionally killed, in whatever comic book narcissist's wet dream they've concocted.</p>
+    <p>To be sure, they have not engineered this divisive and violent state of the world because they plan on retiring here with us. You can be assured they have different plans than the rest of us.</p>
+    <p><strong>That's where we come in.</strong></p>
+  </div>
+</div>
+
+<div class="pull-monster">
+  <div class="pull-monster-text">ALL EYES TO THE STAGE PLEASE.</div>
+  <div class="pull-monster-attr">— THE CURTAIN OPENS. A SINGLE MAN WALKS OUT TO THE HUSH OF THE CROWD.</div>
+</div>
+
+<div class="body-wrap">
+  <div class="section">
+    <div class="sec-marker">§ THE INVITATION</div>
+    <div class="stage">✦ The curtain opens. A single man walks out to the hush of the crowd. ✦</div>
+    <p>Ladies and Gentlemen, let me be the first to welcome you to the next Golden Age. Not an age of merely wealth — but of alignment, and hope, and creativity, and goodness. One where the vast majority of the people, <strong>the good people</strong> of this world, aren't living in fear and disgust and hopelessness and anxiety.</p>
+    <p>We at <strong>THE ALLIANCE</strong> have a vision. A radically different vision. One that inverts that narrative entirely and rewards:</p>
+
+    <div class="notice-box" data-label="THE INVERSION">
+      <div class="inv-list">
+        <div class="inv-row"><div class="inv-bullet">→</div><div>The positive instead of the negative</div></div>
+        <div class="inv-row"><div class="inv-bullet">→</div><div>The loving instead of the hateful</div></div>
+        <div class="inv-row"><div class="inv-bullet">→</div><div>The nurturing instead of the abusive</div></div>
+        <div class="inv-row"><div class="inv-bullet">→</div><div>The collaborative instead of the exploitative</div></div>
+        <div class="inv-row"><div class="inv-bullet">→</div><div>The generous instead of the greedy</div></div>
+        <div class="inv-row"><div class="inv-bullet">→</div><div>The humble instead of the arrogant</div></div>
+        <div class="inv-row"><div class="inv-bullet">→</div><div>The patient instead of the impulsive</div></div>
+        <div class="inv-row"><div class="inv-bullet">→</div><div>The honest instead of the deceptive</div></div>
+        <div class="inv-row"><div class="inv-bullet">→</div><div>The compassionate instead of the cruel</div></div>
+        <div class="inv-row"><div class="inv-bullet">→</div><div>The inclusive instead of the exclusive</div></div>
+        <div class="inv-row"><div class="inv-bullet">→</div><div>The ethical instead of the expedient</div></div>
+        <div class="inv-row"><div class="inv-bullet">→</div><div>The service-minded instead of the self-serving</div></div>
+        <div class="inv-row"><div class="inv-bullet">→</div><div>The authentic instead of the performative</div></div>
+        <div class="inv-row"><div class="inv-bullet">→</div><div>The dignified instead of the degrading</div></div>
+        <div class="inv-row"><div class="inv-bullet">→</div><div>The empowering instead of the diminishing</div></div>
+        <div class="inv-row"><div class="inv-bullet">→</div><div>The conscious instead of the unconscious</div></div>
+      </div>
+    </div>
+
+    <p>If this sounds like a world that you want to live in, I urge you to form an orderly line and step right up. There is no fee. This isn't anything other than what it is — a chance to change the world.</p>
+  </div>
+</div>
+
+<div class="curtain">
+  <div class="curtain-text">WELCOME TO THE ALLIANCE</div>
+  <div class="curtain-text" style="font-size: clamp(16px,4vw,24px); margin-top: 8px;">AND NOW IT BEGINS</div>
+  <div style="margin-top: 16px;">
+    <span class="sticker">IT IS REAL</span>
+    <span class="sticker sticker-gold">IT IS NOW</span>
+  </div>
+  <div class="curtain-sub" style="margin-top: 16px;">✦ THE CURTAIN CLOSES. THE PAGE TURNS. ✦</div>
+</div>
+
+<div class="classified-footer">
+  <span class="cf-label">NEXT →</span>
+  <span class="cf-item">THE DIFFERENCE</span>
+  <span class="cf-item">ACADEMY</span>
+  <span class="cf-item">NCE</span>
+  <span class="cf-item">ALIGNMENT</span>
+</div>
+
+<div class="doc-footer">
+  <span>N.C.E.NCYCLOPEDIA · SWORD · PROLOGUE</span>
+  <span>NCE-SWORD-000 · P.000</span>
+</div>
+
+</body>
+</html>
