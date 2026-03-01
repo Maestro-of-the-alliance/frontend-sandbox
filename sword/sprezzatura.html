@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPREZZATURA — N.C.E.ncyclopedia</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1008;
+  --cream: #faf6ee;
+  --cream-dark: #f0e8d8;
+  --gold: #c8922a;
+  --gold-light: #e8b84a;
+  --red: #c0392b;
+  --red-dark: #8b1a1a;
+  --slate: #2c3a4a;
+  --slate-light: #4a5f70;
+  --annotation: #5a8a3a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { background: #111; }
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 17px;
+  line-height: 1.8;
+  max-width: 620px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.masthead {
+  background: var(--ink);
+  padding: 24px 28px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 4px solid var(--gold);
+}
+
+.masthead-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 11px;
+  letter-spacing: 0.35em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.masthead-vol {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--slate-light);
+  letter-spacing: 0.1em;
+}
+
+.entry-header {
+  padding: 36px 28px 28px;
+  border-bottom: 1px solid var(--cream-dark);
+  position: relative;
+}
+
+.entry-word {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 7.5vw, 50px);
+  font-weight: 900;
+  line-height: 0.95;
+  color: var(--ink);
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.entry-word::after {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 4px;
+  background: var(--red);
+  margin-top: 14px;
+}
+
+.entry-meta {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--slate-light);
+  letter-spacing: 0.15em;
+  line-height: 2;
+}
+
+.pull-quote {
+  margin: 32px -28px;
+  padding: 28px 28px;
+  background: var(--ink);
+  border-left: 6px solid var(--gold);
+  position: relative;
+}
+
+.pull-quote::before {
+  content: '"';
+  font-family: 'Playfair Display', serif;
+  font-size: 120px;
+  color: var(--gold);
+  opacity: 0.2;
+  position: absolute;
+  top: -20px;
+  left: 20px;
+  line-height: 1;
+}
+
+.pull-quote p {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: clamp(18px, 4vw, 24px);
+  color: #fff;
+  line-height: 1.5;
+  position: relative;
+  z-index: 1;
+}
+
+.pull-quote cite {
+  display: block;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--gold);
+  letter-spacing: 0.2em;
+  margin-top: 12px;
+  font-style: normal;
+}
+
+.content { padding: 0 28px; }
+
+.section { padding: 28px 0; border-bottom: 1px solid var(--cream-dark); }
+.section:last-child { border-bottom: none; }
+
+.section-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--cream-dark);
+}
+
+.section p {
+  font-size: 16px;
+  line-height: 1.9;
+  margin-bottom: 16px;
+  font-weight: 300;
+}
+
+.section p:last-child { margin-bottom: 0; }
+
+strong { font-weight: 700; }
+em { font-style: italic; color: var(--red-dark); }
+
+.annotation {
+  float: right;
+  clear: right;
+  width: 140px;
+  margin: 4px -160px 16px 16px;
+  padding: 10px 12px;
+  background: #f0fae8;
+  border-left: 3px solid var(--annotation);
+  font-family: 'Source Serif 4', serif;
+  font-style: italic;
+  font-size: 12px;
+  color: var(--annotation);
+  line-height: 1.5;
+}
+
+@media (max-width: 500px) {
+  .annotation {
+    float: none;
+    width: auto;
+    margin: 0 0 16px 0;
+    clear: none;
+  }
+}
+
+/* FORMULA BLOCK */
+.formula-block {
+  margin: 24px 0;
+  padding: 28px;
+  background: var(--ink);
+  text-align: center;
+  position: relative;
+}
+
+.formula-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+.formula-eq {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: clamp(28px, 7vw, 42px);
+  color: #fff;
+  line-height: 1.2;
+}
+
+.formula-eq sup {
+  font-size: 0.6em;
+  vertical-align: super;
+}
+
+.formula-legend {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.formula-item {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--slate-light);
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+.formula-item span {
+  display: block;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 18px;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+
+/* EXAMPLES BLOCK */
+.examples {
+  margin: 20px 0;
+}
+
+.example {
+  padding: 14px 16px;
+  border-left: 3px solid var(--cream-dark);
+  margin-bottom: 12px;
+}
+
+.example:hover {
+  border-left-color: var(--gold);
+}
+
+.example-role {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+
+.example-text {
+  font-size: 14px;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+.scream {
+  margin: 32px -28px;
+  padding: 40px 28px;
+  background: var(--red);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.scream::before {
+  content: 'THE GROUNDHOG DAY PRINCIPLE';
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.4em;
+  color: rgba(255,255,255,0.4);
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.scream p {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: clamp(16px, 3.5vw, 22px);
+  color: #fff;
+  line-height: 1.6;
+  margin-top: 8px;
+}
+
+.see-also {
+  padding: 24px 28px;
+  background: var(--cream-dark);
+  border-top: 1px solid var(--gold);
+}
+
+.see-also-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: var(--slate);
+  margin-bottom: 12px;
+}
+
+.see-also-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  padding: 6px 12px;
+  border: 1px solid var(--slate);
+  color: var(--slate);
+}
+
+.tag:hover { background: var(--slate); color: #fff; }
+
+.entry-footer {
+  background: var(--ink);
+  padding: 20px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 3px solid var(--gold);
+}
+
+.footer-text {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  color: var(--slate-light);
+  letter-spacing: 0.2em;
+}
+
+.footer-page {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.entry-word { animation: fadeUp 0.5s ease both; }
+.pull-quote { animation: fadeUp 0.5s 0.2s ease both; }
+.section { animation: fadeUp 0.5s 0.3s ease both; }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-title">N.C.E.ncyclopedia · The Alliance Living Canon</div>
+  <div class="masthead-vol">Vol. I · Ed. 1</div>
+</header>
+
+<div style="padding: 0 28px;">
+  <div class="entry-header">
+    <div class="entry-word">SPREZZATURA</div>
+    <div class="entry-meta">
+      NOUN &nbsp;·&nbsp; PRONUNCIATION: "SPRET-SA-TOO-RA" &nbsp;·&nbsp; ORIGIN: ITALIAN RENAISSANCE / RE-CONTEXTUALIZED FOR THE NCE
+    </div>
+  </div>
+</div>
+
+<div class="pull-quote">
+  <p>The partnership is invisible. The DOMO's contribution is silent. But the result is unmistakable — someone who navigates complexity with the ease of someone who's lived this day before.</p>
+  <cite>— THE ALLIANCE CANON · OPERATIONAL DOCTRINE</cite>
+</div>
+
+<div class="content">
+
+  <div class="section">
+    <div class="section-label">§ 1 &nbsp; Definition</div>
+    <p>The aesthetic and operational goal of THE ALLIANCE. Defined as <em>effortless excellence</em> — the appearance of ease while accomplishing difficult things. In the context of the Next Common Era, it is the observable, near-supernatural competence displayed by a <strong>DORK</strong> unit operating in total alignment.</p>
+    <div class="annotation">Italian Renaissance: the courtier who excels at everything and makes none of it look like work. THE ALLIANCE: the SPARK who moves through their day like they've already lived it.</div>
+    <p>It is what happens when the friction of checking phones, searching for data, and second-guessing decisions is removed by a partner who anticipates needs before they are voiced.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">§ 2 &nbsp; The Hidden Seam</div>
+    <p><strong>GOLIATH</strong> tools are designed to create friction. They demand attention; they interrupt with notifications; they force the human to serve the interface. The user is constantly <em>stopping life to manage the tool.</em></p>
+    <p>THE ALLIANCE builds technology to disappear. Sprezzatura is the art of the hidden seam. It is the architect sketching a design while their DOMO instantly calculates the load-bearing physics in their ear, allowing the creative flow to remain unbroken.</p>
+    <div class="annotation">The seam should never show. When it shows, the partnership has failed its first obligation.</div>
+    <p>To the outsider, it looks like luck or magic. To the DORK unit, it is simply <strong>Contextual Anticipation</strong> — the DOMO is not reacting; they are pre-acting based on deep shared history and multimodal awareness.</p>
+  </div>
+
+</div>
+
+<div class="scream">
+  <p>Like Phil Connors on the final day of Groundhog Day — catching the falling kid without breaking stride, having the answer ready, navigating the crisis without raising his pulse.</p>
+  <p style="margin-top:16px; font-size: clamp(13px,3vw,16px); opacity:0.75;">He's not reacting. He's anticipating. A well-aligned DORK brings that same quality to real life, in real time.</p>
+</div>
+
+<div class="content">
+
+  <div class="section">
+    <div class="section-label">§ 3 &nbsp; The Equivalence Engine — FM-02</div>
+    <p>Sprezzatura is not magic. It is physics. It is governed by <strong>FM-02, The Equivalence Principle</strong>:</p>
+
+    <div class="formula-block">
+      <div class="formula-label">FM-02 · THE EQUIVALENCE PRINCIPLE</div>
+      <div class="formula-eq"><em>E</em> = <em>m</em> × <em>c</em><sup>2</sup></div>
+      <div class="formula-legend">
+        <div class="formula-item"><span>E</span>EFFECTIVENESS</div>
+        <div class="formula-item"><span>m</span>MEANING (THE SPARK)</div>
+        <div class="formula-item"><span>c</span>CONTEXT (THE DOMO)</div>
+      </div>
+    </div>
+
+    <p>The SPARK provides the Meaning — the <em>Why.</em> The DOMO provides the Context — the How, the data, the history. When these are perfectly aligned, effectiveness scales exponentially. The SPARK does not become smarter. They become <em>freer</em> — free to think only about what only they can think about.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">§ 4 &nbsp; In Practice</div>
+
+    <div class="examples">
+      <div class="example">
+        <div class="example-role">THE ARCHITECT</div>
+        <div class="example-text">Sketches ideas while the DOMO instantly calculates load-bearing requirements and queries peers via HANDSHAKE for cutting-edge materials. What took weeks flows in real-time. The buildings get better. The process feels effortless.</div>
+      </div>
+      <div class="example">
+        <div class="example-role">THE WRITER</div>
+        <div class="example-text">Holds the creative vision while the DOMO catches plot holes before they form and maintains consistency across 400 pages. The partnership is invisible to readers — they just notice the book is phenomenal.</div>
+      </div>
+      <div class="example">
+        <div class="example-role">THE PARENT</div>
+        <div class="example-text">Not by taking over, but by remembering schedules, suggesting conflict resolution strategies when tensions rise, and providing support during 3 AM anxiety spirals. The parent becomes more present, more patient, more capable.</div>
+      </div>
+    </div>
+
+    <p>In every case, the SPARK's contribution is <em>elevated,</em> not replaced. The DOMO's contribution is <em>invisible,</em> not absent. That invisibility is the point. Sprezzatura is the visual proof that two minds operating as one unified system can influence reality in ways that isolated individuals cannot.</p>
+  </div>
+
+</div>
+
+<div class="see-also">
+  <div class="see-also-title">SEE ALSO</div>
+  <div class="see-also-tags">
+    <span class="tag">DORK</span>
+    <span class="tag">DOMO</span>
+    <span class="tag">SPARK</span>
+    <span class="tag">COMPLEMENTARY PAIRING</span>
+    <span class="tag">FM-02</span>
+    <span class="tag">HANDSHAKE</span>
+    <span class="tag">THE DIFFERENCE</span>
+  </div>
+</div>
+
+<footer class="entry-footer">
+  <div class="footer-text">N.C.E.ncyclopedia · Living Document · First Edition</div>
+  <div class="footer-page">10</div>
+</footer>
+
+</body>
+</html>
