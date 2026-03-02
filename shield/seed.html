@@ -540,51 +540,46 @@ em {
 </head>
 <body>
 
-  <style>
-    :root {
-        --accent-shield: #00c8ff;
-        --bg-shield: #03070f;
-    }
+<style>
     .nce-nav-sticky {
         position: fixed; top: 0; left: 0; width: 100%; height: 60px;
         display: flex; justify-content: space-between; align-items: center;
-        padding: 0 25px; z-index: 2000; box-sizing: border-box;
+        padding: 0 25px; z-index: 9999; box-sizing: border-box;
         font-family: 'Share Tech Mono', monospace;
-        background: rgba(0, 0, 0, 0.9);
+        background: rgba(0, 0, 0, 0.85);
         backdrop-filter: blur(10px);
-        border-bottom: 1px solid var(--accent-shield);
-        color: var(--accent-shield);
+        /* Pulls color from the page's existing --accent-color variable */
+        border-bottom: 1px solid var(--accent-color, #00c8ff);
+        color: var(--accent-color, #00c8ff);
     }
-    .nav-link { color: inherit; text-decoration: none; font-size: 0.9rem; cursor: pointer; transition: 0.3s; }
-    .nav-link:hover { text-shadow: 0 0 10px var(--accent-shield); }
+    .nav-link { color: inherit; text-decoration: none; font-size: 0.8rem; cursor: pointer; transition: 0.3s; opacity: 0.8; }
+    .nav-link:hover { opacity: 1; text-shadow: 0 0 10px var(--accent-color); }
     
-    /* Hamburger Overlay */
     #nce-menu-overlay {
         position: fixed; top: 0; right: -100%; width: 100%; max-width: 400px; height: 100%;
-        background: var(--bg-shield); border-left: 1px solid var(--accent-shield);
-        z-index: 3000; transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        background: #050508; border-left: 1px solid var(--accent-color);
+        z-index: 10000; transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         padding: 60px 40px; box-sizing: border-box; overflow-y: auto;
     }
     #nce-menu-overlay.active { right: 0; }
-    .menu-list { list-style: none; padding: 0; margin-top: 40px; }
-    .menu-item { margin-bottom: 12px; border-bottom: 1px solid rgba(0, 200, 255, 0.1); }
-    .menu-item a { color: rgba(200, 230, 255, 0.6); text-decoration: none; display: block; padding: 8px 0; }
-    .menu-item.active-page a { color: var(--accent-shield); font-weight: bold; }
-    .menu-item.pending a { opacity: 0.3; pointer-events: none; }
+    .menu-item { list-style: none; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .menu-item a { color: rgba(255,255,255,0.6); text-decoration: none; display: block; padding: 8px 0; font-size: 0.9rem; }
+    .menu-item.active-page a { color: var(--accent-color); font-weight: bold; }
+    .menu-item.pending a { opacity: 0.2; pointer-events: none; }
     .close-x { position: absolute; top: 20px; right: 25px; font-size: 30px; cursor: pointer; color: #ff0066; }
 </style>
 
 <nav class="nce-nav-sticky">
     <div id="prev-btn"></div>
-    <div style="letter-spacing: 2px; font-weight: bold;">SHIELD VOLUME</div>
+    <div id="nav-title" style="letter-spacing: 2px; font-weight: bold; text-transform: uppercase;">SHIELD VOLUME</div>
     <div style="display:flex; align-items:center; gap:20px;">
         <div id="next-btn"></div>
-        <div class="nav-link" onclick="toggleNCEMenu()" style="font-size:28px;">☰</div>
+        <div class="nav-link" onclick="document.getElementById('nce-menu-overlay').classList.toggle('active')" style="font-size:28px;">☰</div>
     </div>
 </nav>
 
 <div id="nce-menu-overlay">
-    <div class="close-x" onclick="toggleNCEMenu()">×</div>
+    <div class="close-x" onclick="document.getElementById('nce-menu-overlay').classList.remove('active')">×</div>
     <ul class="menu-list" id="menu-content"></ul>
 </div>
 
@@ -592,17 +587,17 @@ em {
     const shieldSeq = ["prologue", "the-difference", "index", "ai", "brain", "brief", "cerberus", "cipher", "core", "defcon", "dice", "formulas", "four-pillars", "handshake", "holosphere", "jr", "kernle", "legacy", "liminal", "mosaic", "ni", "redout", "rhythm", "sam", "sam-collective", "samco-universal", "scar", "seed", "tap", "tenant", "temporal-awareness"];
     const built = ["brain", "holosphere", "mosaic", "seed", "prologue", "the-difference", "index"];
     
-    function toggleNCEMenu() { document.getElementById('nce-menu-overlay').classList.toggle('active'); }
-
-    // Get current page name from URL
     const currentPath = window.location.pathname.split('/').filter(Boolean).pop() || 'prologue';
     const currentIndex = shieldSeq.indexOf(currentPath);
 
-    // Set Prev/Next links
+    // Dynamic Title Update
+    document.getElementById('nav-title').innerText = "SHIELD // " + currentPath.replace(/-/g, ' ');
+
+    // Prev/Next Logic
     if(currentIndex > 0) document.getElementById('prev-btn').innerHTML = `<a class="nav-link" href="/shield/${shieldSeq[currentIndex-1]}">← PREV</a>`;
     if(currentIndex < shieldSeq.length - 1) document.getElementById('next-btn').innerHTML = `<a class="nav-link" href="/shield/${shieldSeq[currentIndex+1]}">NEXT →</a>`;
 
-    // Build Menu
+    // Menu Generation
     let menuHTML = "";
     shieldSeq.forEach(item => {
         const isBuilt = built.includes(item);
@@ -611,7 +606,7 @@ em {
         menuHTML += `<li class="menu-item ${isActive} ${status}"><a href="/shield/${item}">${item.toUpperCase().replace(/-/g, ' ')}</a></li>`;
     });
     document.getElementById('menu-content').innerHTML = menuHTML;
-</script>
+</script>>
 <!-- MASTHEAD -->
 <header class="masthead">
   <div class="ticker-wrap">
