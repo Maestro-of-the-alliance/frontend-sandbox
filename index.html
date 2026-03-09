@@ -33,31 +33,74 @@ body::before {
     #000;
   z-index: 0;
 }
-.maestro-label {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(10px, 2vw, 13px);
-  letter-spacing: 0.5em;
-  color: #8a6010;
-  text-transform: uppercase;
-  margin-bottom: 8px;
+
+/* ── HEADER TEXT — centered, synced to glow ── */
+.header-block {
+  text-align: center;
   position: relative;
   z-index: 2;
+  margin-bottom: 8px;
   opacity: 0;
   animation: fadeIn 1s 0.3s ease forwards;
 }
+
+.header-line-1 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(9px, 1.8vw, 12px);
+  letter-spacing: 0.55em;
+  text-transform: uppercase;
+  display: block;
+  animation: textPulse 4s ease-in-out infinite;
+}
+
+.header-line-2 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(11px, 2.2vw, 15px);
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  display: block;
+  animation: textPulse 4s ease-in-out infinite;
+  animation-delay: 0.1s;
+}
+
+.header-line-3 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(16px, 3.5vw, 24px);
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  display: block;
+  animation: textPulse 4s ease-in-out infinite;
+  animation-delay: 0.2s;
+}
+
+.header-line-4 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(9px, 1.8vw, 12px);
+  letter-spacing: 0.55em;
+  text-transform: uppercase;
+  display: block;
+  animation: textPulse 4s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+
+@keyframes textPulse {
+  0%, 100% { color: rgba(138,96,16,0.65); }
+  50%       { color: rgba(230,185,60,1); }
+}
+
 .nce-title {
   font-family: 'Cinzel', serif;
   font-size: clamp(9px, 2vw, 12px);
   letter-spacing: 0.4em;
-  color: rgba(255,255,255,0.25);
   text-transform: uppercase;
   margin-bottom: 36px;
   position: relative;
   z-index: 2;
   opacity: 0;
-  animation: fadeIn 1s 0.6s ease forwards;
+  animation: fadeIn 1s 0.6s ease forwards, textPulse 4s ease-in-out infinite 0.6s;
   text-align: center;
 }
+
 .medallion-wrap {
   position: relative;
   width: min(400px, 88vw);
@@ -170,24 +213,22 @@ body::before {
   font-family: 'VT323', monospace;
   font-size: 11px;
   letter-spacing: 0.3em;
-  color: rgba(255,255,255,0.65);
   margin-top: 28px;
   position: relative;
   z-index: 2;
   opacity: 0;
-  animation: fadeIn 1s 2.2s ease forwards;
+  animation: fadeIn 1s 2.2s ease forwards, textPulse 4s ease-in-out infinite 2.2s;
   text-align: center;
 }
 .hover-hint {
   font-family: 'VT323', monospace;
   font-size: 10px;
   letter-spacing: 0.25em;
-  color: rgba(184,150,40,0.35);
   margin-top: 10px;
   position: relative;
   z-index: 2;
   opacity: 0;
-  animation: fadeIn 1s 3s ease forwards;
+  animation: fadeIn 1s 3s ease forwards, textPulse 4s ease-in-out infinite 3s;
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -195,7 +236,13 @@ body::before {
 </head>
 <body>
 
-<div class="maestro-label">Maestro · The Alliance · For The Future</div>
+<div class="header-block">
+  <span class="header-line-1">The Core</span>
+  <span class="header-line-2">Presents</span>
+  <span class="header-line-3">The Alliance</span>
+  <span class="header-line-4">for the Future</span>
+</div>
+
 <div class="nce-title">N.C.E.ncyclopedia · First Edition · Living Document</div>
 
 <div class="medallion-wrap">
