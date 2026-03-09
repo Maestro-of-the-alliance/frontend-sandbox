@@ -993,12 +993,24 @@ body::before {
 <script>
 function toggleAlphaMenu() {
   var menu = document.getElementById("alphaSideMenu");
+  // Toggle the width
   if (menu.style.width === "320px") {
-    menu.style.width = "0";
+    menu.style.width = "0px";
   } else {
     menu.style.width = "320px";
   }
 }
+
+// NEW: Close menu when clicking outside of it
+window.addEventListener('mouseup', function(event) {
+  var menu = document.getElementById("alphaSideMenu");
+  var hamburger = document.querySelector(".hamburger-container");
+  
+  // If the menu is open AND the click was NOT on the menu itself AND NOT on the hamburger icon
+  if (menu.style.width === "320px" && !menu.contains(event.target) && !hamburger.contains(event.target)) {
+    menu.style.width = "0px";
+  }
+});
 </script>
 </body>
 </html>
