@@ -58,6 +58,111 @@
     100% { opacity: 0.2; }
   }
 
+  /* ── HAMBURGER NAV ── */
+  .top-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--parchment-dark);
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+  }
+
+  .nav-home {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+  }
+  .nav-home:hover { color: var(--ink); }
+
+  .hamburger-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 110;
+  }
+  .hamburger-btn span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--gold);
+    transition: all 0.3s ease;
+    transform-origin: center;
+  }
+  .hamburger-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger-btn.open span:nth-child(2) { opacity: 0; }
+  .hamburger-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .nav-menu {
+    position: fixed;
+    top: 0;
+    right: -280px;
+    width: 260px;
+    height: 100vh;
+    background: var(--parchment-dark);
+    border-left: 1px solid var(--rule);
+    z-index: 105;
+    transition: right 0.3s ease;
+    padding: 72px 32px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .nav-menu.open { right: 0; }
+
+  .nav-menu-title {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .nav-menu a {
+    font-family: 'EB Garamond', serif;
+    font-size: 17px;
+    color: var(--ink);
+    text-decoration: none;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(200,185,138,0.4);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.2s ease;
+  }
+  .nav-menu a:hover { color: var(--gold); }
+  .nav-menu a .nav-icon-sm {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    opacity: 0.7;
+  }
+
+  .nav-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 104;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .nav-overlay.open { opacity: 1; pointer-events: all; }
+
   /* ── DOCUMENT WRAPPER ── */
   .document {
     padding: 64px 56px 80px;
@@ -286,7 +391,6 @@
   .sig-name { display: block; line-height: 1.1; margin-bottom: 6px; }
   .sig-line { display: block; line-height: 1.4; }
 
-  /* Individual signature styles */
   .sig-maestro .sig-name {
     font-family: 'Reenie Beanie', cursive;
     font-size: 32px;
@@ -395,9 +499,67 @@
     text-transform: uppercase;
   }
 
+  /* ── BOTTOM NAV ICONS ── */
+  .bottom-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(32px, 10vw, 72px);
+    padding: 48px 20px 64px;
+    border-top: 1px solid var(--rule);
+    margin-top: 56px;
+  }
+
+  .bottom-nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+  }
+  .bottom-nav-link:hover { transform: translateY(-3px); }
+  .bottom-nav-link img {
+    width: clamp(48px, 12vw, 72px);
+    height: clamp(48px, 12vw, 72px);
+    object-fit: contain;
+    filter: opacity(0.6) sepia(0.4);
+    transition: filter 0.3s ease;
+  }
+  .bottom-nav-link:hover img {
+    filter: opacity(1) sepia(0.2) drop-shadow(0 0 8px rgba(138,110,47,0.5));
+  }
+  .bottom-nav-label {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
 </style>
 </head>
 <body>
+
+<!-- HAMBURGER NAV -->
+<nav class="top-nav">
+  <a class="nav-home" href="/">THE ALLIANCE</a>
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</nav>
+
+<div class="nav-overlay" id="navOverlay"></div>
+
+<div class="nav-menu" id="navMenu">
+  <div class="nav-menu-title">Navigate</div>
+  <a href="/"><img class="nav-icon-sm" src="/imagebank/scroll.png" alt=""> Home</a>
+  <a href="/sword/sword-prologue"><img class="nav-icon-sm" src="/imagebank/sword.png" alt=""> SWORD — Human Canon</a>
+  <a href="/shield/prologue"><img class="nav-icon-sm" src="/imagebank/shield.png" alt=""> SHIELD — Digital Canon</a>
+  <a href="/charter"><img class="nav-icon-sm" src="/imagebank/scroll.png" alt=""> Charter of Fundamentals</a>
+</div>
 
 <div class="document">
 
@@ -664,6 +826,37 @@
   </div>
 
 </div>
+
+<!-- BOTTOM NAV ICONS -->
+<div class="bottom-nav">
+  <a class="bottom-nav-link" href="/sword/sword-prologue" aria-label="SWORD">
+    <img src="/imagebank/sword.png" alt="SWORD">
+    <span class="bottom-nav-label">SWORD</span>
+  </a>
+  <a class="bottom-nav-link" href="/" aria-label="Home">
+    <img src="/imagebank/scroll.png" alt="Home">
+    <span class="bottom-nav-label">Home</span>
+  </a>
+  <a class="bottom-nav-link" href="/shield/prologue" aria-label="SHIELD">
+    <img src="/imagebank/shield.png" alt="SHIELD">
+    <span class="bottom-nav-label">SHIELD</span>
+  </a>
+</div>
+
+<script>
+  const btn = document.getElementById('hamburgerBtn');
+  const menu = document.getElementById('navMenu');
+  const overlay = document.getElementById('navOverlay');
+
+  function toggleMenu() {
+    btn.classList.toggle('open');
+    menu.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+
+  btn.addEventListener('click', toggleMenu);
+  overlay.addEventListener('click', toggleMenu);
+</script>
 
 </body>
 </html>
