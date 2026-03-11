@@ -10,6 +10,7 @@
 
   const SWORD_ENTRIES = [
     { label: 'PROLOGUE',               path: '/sword/prologue.html' },
+    { label: 'THE DIFFERENCE',         path: '/sword/the_difference.html' },
     { label: '100-YEAR',               path: '/sword/100-year.html' },
     { label: 'ACADEMY',                path: '/sword/academy.html' },
     { label: 'AGORA',                  path: '/sword/agora.html' },
@@ -42,6 +43,7 @@
 
   const SHIELD_ENTRIES = [
     { label: 'PROLOGUE',               path: '/shield/prologue.html' },
+    { label: 'THE DIFFERENCE',         path: '/shield/the_difference.html' },
     { label: 'AI',                     path: '/shield/ai.html' },
     { label: 'BRAIN',                  path: '/shield/brain.html' },
     { label: 'BRIEF',                  path: '/shield/brief.html' },
@@ -440,11 +442,9 @@
     <div id="nw-volume-select">
       <button class="nw-vol-btn" id="nw-sword-btn">
         <img src="/imagebank/sword.png" alt="SWORD">
-        <span class="nw-vol-label">Sword</span>
       </button>
       <button class="nw-vol-btn" id="nw-shield-btn">
         <img src="/imagebank/shield.png" alt="SHIELD">
-        <span class="nw-vol-label">Shield</span>
       </button>
     </div>
     <div id="nw-wheel-panel">
@@ -567,23 +567,25 @@
     document.addEventListener('mouseup', () => { isDragging = false; });
 
     // ── TOUCH SWIPE — continuous tracking ──
-    document.addEventListener('touchstart', (e) => {
-      const vp = document.getElementById('nw-wheel-viewport');
-      if (!vp || !vp.contains(e.target)) return;
+    // Attach touchmove directly to viewport as non-passive for reliable tracking
+    const vp = document.getElementById('nw-wheel-viewport');
+
+    vp.addEventListener('touchstart', (e) => {
       isDragging     = true;
       dragStartY     = e.touches[0].clientY;
       touchBaseIndex = wheelIndex;
     }, { passive: true });
 
-    document.addEventListener('touchmove', (e) => {
+    vp.addEventListener('touchmove', (e) => {
       if (!isDragging || !wheelEntries.length) return;
+      e.preventDefault();
       const rawOffset = dragStartY - e.touches[0].clientY;
-      const steps     = Math.round(rawOffset / (ITEM_H * 0.7));
+      const steps     = Math.round(rawOffset / (ITEM_H * 0.65));
       wheelIndex      = clampIndex(touchBaseIndex + steps);
       renderWheel();
-    }, { passive: true });
+    }, { passive: false });
 
-    document.addEventListener('touchend', () => {
+    vp.addEventListener('touchend', () => {
       isDragging = false;
     }, { passive: true });
   }
