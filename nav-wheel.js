@@ -566,15 +566,15 @@
     });
     document.addEventListener('mouseup', () => { isDragging = false; });
 
-    // ── TOUCH SWIPE — continuous tracking ──
-    // Attach touchmove directly to viewport as non-passive for reliable tracking
+    // ── TOUCH SWIPE — both listeners non-passive so page scroll is blocked ──
     const vp = document.getElementById('nw-wheel-viewport');
 
     vp.addEventListener('touchstart', (e) => {
+      e.preventDefault();
       isDragging     = true;
       dragStartY     = e.touches[0].clientY;
       touchBaseIndex = wheelIndex;
-    }, { passive: true });
+    }, { passive: false });
 
     vp.addEventListener('touchmove', (e) => {
       if (!isDragging || !wheelEntries.length) return;
@@ -585,9 +585,10 @@
       renderWheel();
     }, { passive: false });
 
-    vp.addEventListener('touchend', () => {
+    vp.addEventListener('touchend', (e) => {
+      e.preventDefault();
       isDragging = false;
-    }, { passive: true });
+    }, { passive: false });
   }
 
   // ── OPEN / CLOSE ──────────────────────────────────────────────────────────
