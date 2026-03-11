@@ -160,6 +160,8 @@
     #nw-overlay.open {
       opacity: 1;
       pointer-events: all;
+      overflow: hidden;
+      touch-action: none;
     }
 
     /* ── VOLUME SELECT ── */
@@ -239,6 +241,7 @@
       position: relative;
       overflow: hidden;
       cursor: grab;
+      touch-action: none;
     }
     #nw-wheel-viewport:active { cursor: grabbing; }
 
@@ -596,7 +599,8 @@
   function openNav() {
     burger.classList.add('open');
     overlay.classList.add('open');
-    // Reset to volume select
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
     document.getElementById('nw-volume-select').style.display = 'flex';
     document.getElementById('nw-wheel-panel').classList.remove('active');
   }
@@ -604,6 +608,8 @@
   function closeNav() {
     burger.classList.remove('open');
     overlay.classList.remove('open');
+    document.body.style.overflow = '';
+    document.body.style.touchAction = '';
   }
 
   burger.addEventListener('click', () => {
