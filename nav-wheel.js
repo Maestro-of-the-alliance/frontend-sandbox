@@ -93,7 +93,10 @@
 
   function getCurrentIndex(entries) {
     const current = window.location.pathname;
-    const idx = entries.findIndex(e => e.path === current);
+    // Handle clean URLs (Cloudflare strips .html)
+    const normalize = p => p.replace(/\.html$/, '').replace(/\/$/, '');
+    const normalCurrent = normalize(current);
+    const idx = entries.findIndex(e => normalize(e.path) === normalCurrent);
     return idx >= 0 ? idx : 0;
   }
 
@@ -520,41 +523,50 @@
   })();
 
   function attachWheelEvents() {
-    const vp = document.getElementById('nw-wheel-viewport');
-
-    // Mouse wheel
-    vp.addEventListener('wheel', (e) => {
+    // Defer until overlay is open and wheel is visible
+    document.addEventListener('wheel', (e) => {
+      const vp = document.getElementById('nw-wheel-viewport');
+      if (!vp || !wheelEntries.length) return;
+      if (!document.getElementById('nw-wheel-panel').classList.contains('active')) return;
       e.preventDefault();
       const delta = e.deltaY > 0 ? 1 : -1;
       wheelIndex = ((wheelIndex + delta) % wheelEntries.length + wheelEntries.length) % wheelEntries.length;
       renderWheel();
     }, { passive: false });
 
-    // Touch / drag
-    vp.addEventListener('mousedown', (e) => {
+    // Mouse drag
+    document.addEventListener('mousedown', (e) => {
+      const vp = document.getElementById('nw-wheel-viewport');
+      if (!vp || !vp.contains(e.target)) return;
       isDragging   = true;
       dragStartY   = e.clientY;
       dragStartIdx = wheelIndex;
     });
-    window.addEventListener('mousemove', (e) => {
-      if (!isDragging) return;
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging || !wheelEntries.length) return;
       const diff  = Math.round((dragStartY - e.clientY) / ITEM_H);
       const total = wheelEntries.length;
       wheelIndex  = ((dragStartIdx + diff) % total + total) % total;
       renderWheel();
     });
-    window.addEventListener('mouseup', () => { isDragging = false; });
+    document.addEventListener('mouseup', () => { isDragging = false; });
 
-    vp.addEventListener('touchstart', (e) => {
+    // Touch
+    document.addEventListener('touchstart', (e) => {
+      const vp = document.getElementById('nw-wheel-viewport');
+      if (!vp || !vp.contains(e.target)) return;
       dragStartY   = e.touches[0].clientY;
       dragStartIdx = wheelIndex;
+      isDragging   = true;
     }, { passive: true });
-    vp.addEventListener('touchmove', (e) => {
+    document.addEventListener('touchmove', (e) => {
+      if (!isDragging || !wheelEntries.length) return;
       const diff  = Math.round((dragStartY - e.touches[0].clientY) / ITEM_H);
       const total = wheelEntries.length;
       wheelIndex  = ((dragStartIdx + diff) % total + total) % total;
       renderWheel();
     }, { passive: true });
+    document.addEventListener('touchend', () => { isDragging = false; }, { passive: true });
   }
 
   // ── OPEN / CLOSE ──────────────────────────────────────────────────────────
