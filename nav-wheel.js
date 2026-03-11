@@ -1,12 +1,12 @@
 /*!
- * NAV WHEEL — THE ALLIANCE
+ * NAV WHEEL â€” THE ALLIANCE
  * Universal navigation component
  * Drop one script tag into any page: <script src="/nav-wheel.js"></script>
  */
 
 (function() {
 
-  // ── ENTRY LISTS ──────────────────────────────────────────────────────────
+  // â”€â”€ ENTRY LISTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   const SWORD_ENTRIES = [
     { label: 'PROLOGUE',               path: '/sword/prologue.html' },
@@ -84,7 +84,7 @@
     { label: 'VOLUNTEER ECONOMICS',    path: '/shield/volunteer-economics.html' },
   ];
 
-  // ── DETECT CURRENT VOLUME + ENTRY ────────────────────────────────────────
+  // â”€â”€ DETECT CURRENT VOLUME + ENTRY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   function getCurrentVolume() {
     const p = window.location.pathname;
@@ -102,11 +102,11 @@
     return idx >= 0 ? idx : 0;
   }
 
-  // ── INJECT STYLES ─────────────────────────────────────────────────────────
+  // â”€â”€ INJECT STYLES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   const style = document.createElement('style');
   style.textContent = `
-    /* ── HAMBURGER BUTTON ── */
+    /* â”€â”€ HAMBURGER BUTTON â”€â”€ */
     #nw-burger {
       position: fixed;
       top: 14px;
@@ -140,7 +140,7 @@
     #nw-burger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
     #nw-burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-    /* ── FROSTED GLASS OVERLAY ── */
+    /* â”€â”€ FROSTED GLASS OVERLAY â”€â”€ */
     #nw-overlay {
       position: fixed;
       inset: 0;
@@ -160,11 +160,9 @@
     #nw-overlay.open {
       opacity: 1;
       pointer-events: all;
-      overflow: hidden;
-      touch-action: none;
     }
 
-    /* ── VOLUME SELECT ── */
+    /* â”€â”€ VOLUME SELECT â”€â”€ */
     #nw-volume-select {
       display: flex;
       gap: clamp(40px, 12vw, 100px);
@@ -201,7 +199,7 @@
       text-transform: uppercase;
     }
 
-    /* ── WHEEL PANEL ── */
+    /* â”€â”€ WHEEL PANEL â”€â”€ */
     #nw-wheel-panel {
       display: none;
       flex-direction: column;
@@ -233,7 +231,7 @@
       opacity: 0.7;
     }
 
-    /* ── THE WHEEL ITSELF ── */
+    /* â”€â”€ THE WHEEL ITSELF â”€â”€ */
     #nw-wheel-viewport {
       width: 100%;
       max-width: 400px;
@@ -241,7 +239,6 @@
       position: relative;
       overflow: hidden;
       cursor: grab;
-      touch-action: none;
     }
     #nw-wheel-viewport:active { cursor: grabbing; }
 
@@ -309,7 +306,7 @@
     .nw-wheel-item:hover { color: rgba(255,255,255,0.7); }
     .nw-wheel-item.center:hover { color: #fff; }
 
-    /* ── LINEAR ARROWS ── */
+    /* â”€â”€ LINEAR ARROWS â”€â”€ */
     #nw-linear-arrows {
       display: none;
       justify-content: space-between;
@@ -344,7 +341,7 @@
     }
     .nw-arrow-sym { font-size: 20px; }
 
-    /* ── SEE ALSO TOGGLE ── */
+    /* â”€â”€ SEE ALSO TOGGLE â”€â”€ */
     .nw-see-also-wrap {
       margin-top: 32px;
       padding-top: 20px;
@@ -394,7 +391,7 @@
       border-color: rgba(184,150,40,0.6);
     }
 
-    /* ── BOTTOM PAGE ARROWS ── */
+    /* â”€â”€ BOTTOM PAGE ARROWS â”€â”€ */
     .nw-bottom-nav {
       display: flex;
       justify-content: space-between;
@@ -426,7 +423,7 @@
   `;
   document.head.appendChild(style);
 
-  // ── BUILD HTML ────────────────────────────────────────────────────────────
+  // â”€â”€ BUILD HTML â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   const currentVolume = getCurrentVolume();
   const currentPath   = window.location.pathname;
@@ -451,7 +448,7 @@
       </button>
     </div>
     <div id="nw-wheel-panel">
-      <button class="nw-wheel-back" id="nw-wheel-back">← back</button>
+      <button class="nw-wheel-back" id="nw-wheel-back">â† back</button>
       <div id="nw-wheel-viewport">
         <div class="nw-center-bar"></div>
         <div id="nw-wheel-track"></div>
@@ -460,7 +457,7 @@
   `;
   document.body.appendChild(overlay);
 
-  // ── WHEEL STATE ───────────────────────────────────────────────────────────
+  // â”€â”€ WHEEL STATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   let wheelEntries  = [];
   let wheelIndex    = 0;
@@ -519,13 +516,13 @@
     window.location.href = path;
   }
 
-  // ── WHEEL SCROLL ──────────────────────────────────────────────────────────
+  // â”€â”€ WHEEL SCROLL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   document.getElementById('nw-wheel-viewport') && (() => {
     // We attach after overlay is in DOM below
   })();
 
-  // Scroll accumulator — slows desktop wheel down
+  // Scroll accumulator â€” slows desktop wheel down
   let scrollAccum    = 0;
   const SCROLL_THRESHOLD = 60;
 
@@ -539,7 +536,7 @@
 
   function attachWheelEvents() {
 
-    // ── DESKTOP MOUSE WHEEL — throttled ──
+    // â”€â”€ DESKTOP MOUSE WHEEL â€” throttled â”€â”€
     document.addEventListener('wheel', (e) => {
       const panel = document.getElementById('nw-wheel-panel');
       if (!panel || !panel.classList.contains('active') || !wheelEntries.length) return;
@@ -553,7 +550,7 @@
       }
     }, { passive: false });
 
-    // ── MOUSE DRAG ──
+    // â”€â”€ MOUSE DRAG â”€â”€
     document.addEventListener('mousedown', (e) => {
       const vp = document.getElementById('nw-wheel-viewport');
       if (!vp || !vp.contains(e.target)) return;
@@ -569,7 +566,7 @@
     });
     document.addEventListener('mouseup', () => { isDragging = false; });
 
-    // ── TOUCH SWIPE — both listeners non-passive so page scroll is blocked ──
+    // â”€â”€ TOUCH SWIPE â€” both listeners non-passive so page scroll is blocked â”€â”€
     const vp = document.getElementById('nw-wheel-viewport');
 
     vp.addEventListener('touchstart', (e) => {
@@ -594,13 +591,12 @@
     }, { passive: false });
   }
 
-  // ── OPEN / CLOSE ──────────────────────────────────────────────────────────
+  // â”€â”€ OPEN / CLOSE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   function openNav() {
     burger.classList.add('open');
     overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    document.body.style.touchAction = 'none';
+    // Reset to volume select
     document.getElementById('nw-volume-select').style.display = 'flex';
     document.getElementById('nw-wheel-panel').classList.remove('active');
   }
@@ -608,8 +604,6 @@
   function closeNav() {
     burger.classList.remove('open');
     overlay.classList.remove('open');
-    document.body.style.overflow = '';
-    document.body.style.touchAction = '';
   }
 
   burger.addEventListener('click', () => {
@@ -634,7 +628,7 @@
   // Attach wheel events after DOM is ready
   attachWheelEvents();
 
-  // ── INJECT BOTTOM NAV ─────────────────────────────────────────────────────
+  // â”€â”€ INJECT BOTTOM NAV â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   // Only inject bottom nav if we're inside a volume
   if (currentVolume) {
@@ -648,22 +642,22 @@
     bottomNav.className = 'nw-bottom-nav';
     bottomNav.innerHTML = `
       <a href="${prev.path}">
-        <span class="nw-arrow-sym">←</span>
+        <span class="nw-arrow-sym">â†</span>
         <span class="nw-arrow-label">${prev.label}</span>
       </a>
       <a href="/" class="nw-center-home">
-        <span class="nw-arrow-sym" style="font-size:14px">⌂</span>
+        <span class="nw-arrow-sym" style="font-size:14px">âŒ‚</span>
         <span class="nw-arrow-label">Home</span>
       </a>
       <a href="${next.path}">
         <span class="nw-arrow-label">${next.label}</span>
-        <span class="nw-arrow-sym">→</span>
+        <span class="nw-arrow-sym">â†’</span>
       </a>
     `;
     document.body.appendChild(bottomNav);
   }
 
-  // ── SEE ALSO HELPER ───────────────────────────────────────────────────────
+  // â”€â”€ SEE ALSO HELPER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Call window.initSeeAlso(['Entry', '/path/to/entry.html'], ...) in page
   window.initSeeAlso = function(links) {
     const wrap = document.querySelector('.nw-see-also-wrap');
