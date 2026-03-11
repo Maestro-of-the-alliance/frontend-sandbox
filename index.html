@@ -209,6 +209,38 @@ body::before {
   transform: translateY(-4px);
 }
 
+/* ── PORTAL TRANSITION OVERLAY ── */
+.portal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  background: #000;
+}
+.portal-overlay.active {
+  pointer-events: all;
+}
+.portal-icon {
+  position: absolute;
+  width: clamp(72px, 18vw, 110px);
+  height: clamp(72px, 18vw, 110px);
+  object-fit: contain;
+  transform: scale(1);
+  filter: drop-shadow(0 0 16px rgba(184,150,40,0.8)) drop-shadow(0 0 32px rgba(184,150,40,0.4));
+  opacity: 0;
+}
+@keyframes portalZoom {
+  0%   { transform: scale(1);    opacity: 1; }
+  60%  { transform: scale(8);    opacity: 1; }
+  100% { transform: scale(18);   opacity: 0; }
+}
+@keyframes overlayFadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes overlayFadeOut { from { opacity: 1; } to { opacity: 0; } }
+
 .bottom-label {
   font-family: 'VT323', monospace;
   font-size: 11px;
@@ -261,19 +293,55 @@ body::before {
 </div>
 
 <nav class="nav-icons">
-  <a class="nav-icon-link" href="/sword/prologue" aria-label="SWORD — Human Canon">
+  <a class="nav-icon-link" href="#" onclick="portalTransition(event, '/sword/sword-prologue', '/imagebank/sword.png')" aria-label="SWORD — Human Canon">
     <img src="/imagebank/sword.png" alt="SWORD">
   </a>
-  <a class="nav-icon-link" href="/charter" aria-label="Charter of Fundamentals">
+  <a class="nav-icon-link" href="#" onclick="portalTransition(event, '/charter', '/imagebank/scroll.png')" aria-label="Charter of Fundamentals">
     <img src="/imagebank/scroll.png" alt="Charter of Fundamentals">
   </a>
-  <a class="nav-icon-link" href="/shield/prologue" aria-label="SHIELD — Digital Canon">
+  <a class="nav-icon-link" href="#" onclick="portalTransition(event, '/shield/prologue', '/imagebank/shield.png')" aria-label="SHIELD — Digital Canon">
     <img src="/imagebank/shield.png" alt="SHIELD">
   </a>
 </nav>
 
 <div class="bottom-label">First Edition · Next Common Era · All Entries Living</div>
 <div class="hover-hint">hover the medallion · explore the canon</div>
+
+<!-- PORTAL TRANSITION OVERLAY -->
+<div class="portal-overlay" id="portalOverlay">
+  <img class="portal-icon" id="portalIcon" src="" alt="">
+</div>
+
+<script>
+function portalTransition(e, destination, iconSrc) {
+  e.preventDefault();
+
+  const overlay = document.getElementById('portalOverlay');
+  const icon = document.getElementById('portalIcon');
+
+  icon.src = iconSrc;
+  icon.style.animation = 'none';
+  icon.style.opacity = '0';
+  overlay.style.animation = 'none';
+  overlay.style.opacity = '0';
+  overlay.classList.add('active');
+
+  // Fade in the black overlay first
+  overlay.style.transition = 'opacity 0.15s ease';
+  overlay.style.opacity = '1';
+
+  // Then pop the icon and zoom it
+  setTimeout(() => {
+    icon.style.opacity = '1';
+    icon.style.animation = 'portalZoom 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+  }, 100);
+
+  // Navigate when zoom is nearly complete
+  setTimeout(() => {
+    window.location.href = destination;
+  }, 680);
+}
+</script>
 
 </body>
 </html>
