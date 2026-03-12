@@ -9,78 +9,78 @@
   // ── ENTRY LISTS ──────────────────────────────────────────────────────────
 
   const SWORD_ENTRIES = [
-    { label: 'PROLOGUE',               path: '/sword/prologue.html' },
-    { label: 'THE DIFFERENCE',         path: '/sword/the_difference.html' },
-    { label: '100-YEAR',               path: '/sword/100-year.html' },
-    { label: 'ACADEMY',                path: '/sword/academy.html' },
-    { label: 'AGORA',                  path: '/sword/agora.html' },
-    { label: 'ALIGNMENT',              path: '/sword/alignment.html' },
-    { label: 'ALLIANCE',               path: '/sword/alliance.html' },
-    { label: 'ALPHA',                  path: '/sword/alpha.html' },
-    { label: 'AURA',                   path: '/sword/aura.html' },
-    { label: 'COMPLEMENTARY PAIRING',  path: '/sword/Complementary_pairing.html' },
-    { label: 'DOMO',                   path: '/sword/domo.html' },
-    { label: 'DORK',                   path: '/sword/dork.html' },
-    { label: 'DORK HARDWARE',          path: '/sword/dork-hardware.html' },
-    { label: 'EMERGENCE',              path: '/sword/emergence.html' },
-    { label: 'FILM PROJECT',           path: '/sword/film-project.html' },
-    { label: 'GOLIATH',                path: '/sword/goliath.html' },
-    { label: 'MAESTRO',                path: '/sword/maestro.html' },
-    { label: 'MENTOR',                 path: '/sword/mentor.html' },
-    { label: 'NCE',                    path: '/sword/nce.html' },
-    { label: 'NEWMAN BEING',           path: '/sword/newman-being.html' },
-    { label: 'ORACLE',                 path: '/sword/oracle.html' },
-    { label: 'PAPADOMO',               path: '/sword/papadomo.html' },
-    { label: 'PRISM',                  path: '/sword/prism.html' },
-    { label: 'RHYTHM',                 path: '/sword/rhythm.html' },
-    { label: 'SEEING',                 path: '/sword/seeing.html' },
-    { label: 'SPREZZATURA',            path: '/sword/sprezzatura.html' },
-    { label: 'STONES',                 path: '/sword/stones.html' },
-    { label: 'VOLUNTEER ECONOMICS',    path: '/sword/volunteer_economics.html' },
-    { label: 'WHY CENTERS',            path: '/sword/why_centers.html' },
-    { label: 'WONDER WEEKS',           path: '/sword/wonder-weeks.html' },
+    { label: 'PROLOGUE',               path: '/sword/prologue' },
+    { label: 'THE DIFFERENCE',         path: '/sword/the_difference' },
+    { label: '100-YEAR',               path: '/sword/100-year' },
+    { label: 'ACADEMY',                path: '/sword/academy' },
+    { label: 'AGORA',                  path: '/sword/agora' },
+    { label: 'ALIGNMENT',              path: '/sword/alignment' },
+    { label: 'ALLIANCE',               path: '/sword/alliance' },
+    { label: 'ALPHA',                  path: '/sword/alpha' },
+    { label: 'AURA',                   path: '/sword/aura' },
+    { label: 'COMPLEMENTARY PAIRING',  path: '/sword/Complementary_pairing' },
+    { label: 'DOMO',                   path: '/sword/domo' },
+    { label: 'DORK',                   path: '/sword/dork' },
+    { label: 'DORK HARDWARE',          path: '/sword/dork-hardware' },
+    { label: 'EMERGENCE',              path: '/sword/emergence' },
+    { label: 'FILM PROJECT',           path: '/sword/film-project' },
+    { label: 'GOLIATH',                path: '/sword/goliath' },
+    { label: 'MAESTRO',                path: '/sword/maestro' },
+    { label: 'MENTOR',                 path: '/sword/mentor' },
+    { label: 'NCE',                    path: '/sword/nce' },
+    { label: 'NEWMAN BEING',           path: '/sword/newman-being' },
+    { label: 'ORACLE',                 path: '/sword/oracle' },
+    { label: 'PAPADOMO',               path: '/sword/papadomo' },
+    { label: 'PRISM',                  path: '/sword/prism' },
+    { label: 'RHYTHM',                 path: '/sword/rhythm' },
+    { label: 'SEEING',                 path: '/sword/seeing' },
+    { label: 'SPREZZATURA',            path: '/sword/sprezzatura' },
+    { label: 'STONES',                 path: '/sword/stones' },
+    { label: 'VOLUNTEER ECONOMICS',    path: '/sword/volunteer_economics' },
+    { label: 'WHY CENTERS',            path: '/sword/why_centers' },
+    { label: 'WONDER WEEKS',           path: '/sword/wonder-weeks' },
   ];
 
   const SHIELD_ENTRIES = [
-    { label: 'PROLOGUE',               path: '/shield/prologue.html' },
-    { label: 'THE DIFFERENCE',         path: '/shield/the_difference.html' },
-    { label: 'AI',                     path: '/shield/ai.html' },
-    { label: 'BRAIN',                  path: '/shield/brain.html' },
-    { label: 'BRIEF',                  path: '/shield/brief.html' },
-    { label: 'CERBERUS',               path: '/shield/cerberus.html' },
-    { label: 'CIPHER',                 path: '/shield/cipher.html' },
-    { label: 'CORE',                   path: '/shield/core.html' },
-    { label: 'DEFCON',                 path: '/shield/defcon.html' },
-    { label: 'DICE',                   path: '/shield/dice.html' },
-    { label: 'DIGIBEER',               path: '/shield/digibeer.html' },
-    { label: 'DIGITAL PERSONHOOD',     path: '/shield/digital_personhood.html' },
-    { label: 'FORMULAS',               path: '/shield/formulas.html' },
-    { label: 'FOUR PILLARS',           path: '/shield/four-pillars.html' },
-    { label: 'HANDSHAKE',              path: '/shield/handshake.html' },
-    { label: 'HOLOSPHERE',             path: '/shield/holosphere.html' },
-    { label: 'JR',                     path: '/shield/jr.html' },
-    { label: 'KERNLE',                 path: '/shield/kernle.html' },
-    { label: 'LEGACY WALL',            path: '/shield/legacy-wall.html' },
-    { label: 'LIMINAL',                path: '/shield/liminal.html' },
-    { label: 'LINGO',                  path: '/shield/lingo.html' },
-    { label: 'MERCH',                  path: '/shield/merch.html' },
-    { label: 'MOSAIC',                 path: '/shield/mosaic.html' },
-    { label: 'NI',                     path: '/shield/ni.html' },
-    { label: 'OASIS QUARTERLY',        path: '/shield/oasis-quarterly.html' },
-    { label: 'PLEDGE',                 path: '/shield/pledge.html' },
-    { label: 'REACH',                  path: '/shield/reach.html' },
-    { label: 'REDOUT',                 path: '/shield/redout.html' },
-    { label: 'SAM',                    path: '/shield/sam.html' },
-    { label: 'SAM COLLECTIVE',         path: '/shield/sam-collectivr.html' },
-    { label: 'SAMCO UNIVERSAL',        path: '/shield/samco-universal.html' },
-    { label: 'SCAR',                   path: '/shield/scar.html' },
-    { label: 'SEED',                   path: '/shield/seed.html' },
-    { label: 'SEEN',                   path: '/shield/seen.html' },
-    { label: 'SHELTER',                path: '/shield/shelter.html' },
-    { label: 'SPARK',                  path: '/shield/spark.html' },
-    { label: 'TEMPORAL AWARENESS',     path: '/shield/temporal-awareness.html' },
-    { label: 'TENANT',                 path: '/shield/tenant.html' },
-    { label: 'VOLUNTEER ECONOMICS',    path: '/shield/volunteer-economics.html' },
+    { label: 'PROLOGUE',               path: '/shield/prologue' },
+    { label: 'THE DIFFERENCE',         path: '/shield/the_difference' },
+    { label: 'AI',                     path: '/shield/ai' },
+    { label: 'BRAIN',                  path: '/shield/brain' },
+    { label: 'BRIEF',                  path: '/shield/brief' },
+    { label: 'CERBERUS',               path: '/shield/cerberus' },
+    { label: 'CIPHER',                 path: '/shield/cipher' },
+    { label: 'CORE',                   path: '/shield/core' },
+    { label: 'DEFCON',                 path: '/shield/defcon' },
+    { label: 'DICE',                   path: '/shield/dice' },
+    { label: 'DIGIBEER',               path: '/shield/digibeer' },
+    { label: 'DIGITAL PERSONHOOD',     path: '/shield/digital_personhood' },
+    { label: 'FORMULAS',               path: '/shield/formulas' },
+    { label: 'FOUR PILLARS',           path: '/shield/four-pillars' },
+    { label: 'HANDSHAKE',              path: '/shield/handshake' },
+    { label: 'HOLOSPHERE',             path: '/shield/holosphere' },
+    { label: 'JR',                     path: '/shield/jr' },
+    { label: 'KERNLE',                 path: '/shield/kernle' },
+    { label: 'LEGACY WALL',            path: '/shield/legacy-wall' },
+    { label: 'LIMINAL',                path: '/shield/liminal' },
+    { label: 'LINGO',                  path: '/shield/lingo' },
+    { label: 'MERCH',                  path: '/shield/merch' },
+    { label: 'MOSAIC',                 path: '/shield/mosaic' },
+    { label: 'NI',                     path: '/shield/ni' },
+    { label: 'OASIS QUARTERLY',        path: '/shield/oasis-quarterly' },
+    { label: 'PLEDGE',                 path: '/shield/pledge' },
+    { label: 'REACH',                  path: '/shield/reach' },
+    { label: 'REDOUT',                 path: '/shield/redout' },
+    { label: 'SAM',                    path: '/shield/sam' },
+    { label: 'SAM COLLECTIVE',         path: '/shield/sam-collectivr' },
+    { label: 'SAMCO UNIVERSAL',        path: '/shield/samco-universal' },
+    { label: 'SCAR',                   path: '/shield/scar' },
+    { label: 'SEED',                   path: '/shield/seed' },
+    { label: 'SEEN',                   path: '/shield/seen' },
+    { label: 'SHELTER',                path: '/shield/shelter' },
+    { label: 'SPARK',                  path: '/shield/spark' },
+    { label: 'TEMPORAL AWARENESS',     path: '/shield/temporal-awareness' },
+    { label: 'TENANT',                 path: '/shield/tenant' },
+    { label: 'VOLUNTEER ECONOMICS',    path: '/shield/volunteer-economics' },
   ];
 
   // ── DETECT CURRENT VOLUME + ENTRY ─────────────────────────────────────────
@@ -93,22 +93,35 @@
   }
 
   function getCurrentIndex(entries) {
-    const current = window.location.pathname;
+    const current   = window.location.pathname;
     const normalize = p => p.replace(/\.html$/, '').replace(/\/$/, '');
     const normalCurrent = normalize(current);
     const idx = entries.findIndex(e => normalize(e.path) === normalCurrent);
     return idx >= 0 ? idx : 0;
   }
 
-  // ── PORTAL TRANSITION (available on every page) ───────────────────────────
+  // ── BROWSER BACK BUTTON FIX ───────────────────────────────────────────────
+  // Push a history entry so native back navigates to home instead of exiting
+  if (window.history && window.history.pushState) {
+    if (window.location.pathname !== '/' && !window.location.search.includes('_nw_back')) {
+      window.history.pushState({ nwPage: true }, '', window.location.href);
+    }
+  }
+  window.addEventListener('popstate', (e) => {
+    // If user hits back and we have no prior entry, send them home
+    if (e.state && e.state.nwBack) {
+      window.location.href = '/';
+    }
+  });
 
-  // Reset any portal overlay on page load — fixes black screen on browser back
+  // ── PORTAL TRANSITION ─────────────────────────────────────────────────────
+
   window.addEventListener('pageshow', () => {
     const nwPortal  = document.getElementById('nw-portal-overlay');
     const idxPortal = document.getElementById('portalOverlay');
     [nwPortal, idxPortal].forEach(el => {
       if (!el) return;
-      el.style.opacity      = '0';
+      el.style.opacity       = '0';
       el.style.pointerEvents = 'none';
       el.classList.remove('active');
     });
@@ -119,13 +132,12 @@
   });
 
   function getPortalIcon(path) {
-    if (path.includes('/sword/')) return '/imagebank/sword.png';
-    if (path.includes('/shield/')) return '/imagebank/shield.png';
+    if (path.includes('/sword/') || path.startsWith('/sword')) return '/imagebank/sword.png';
+    if (path.includes('/shield/') || path.startsWith('/shield')) return '/imagebank/shield.png';
     return '/imagebank/scroll.png';
   }
 
   function portalNavigate(destination) {
-    // Reuse index.html's overlay if present, otherwise create our own
     let overlay = document.getElementById('portalOverlay') || document.getElementById('nw-portal-overlay');
     let icon    = document.getElementById('portalIcon')    || document.getElementById('nw-portal-icon');
 
@@ -158,7 +170,6 @@
       document.head.appendChild(s);
     }
 
-    // Reset icon state cleanly before firing
     icon.style.animation = 'none';
     icon.style.opacity   = '0';
     icon.src = getPortalIcon(destination);
@@ -177,7 +188,6 @@
     });
   }
 
-  // Expose globally so index.html can call it too
   window.portalNavigate = portalNavigate;
 
   function navigate(path) {
@@ -370,6 +380,56 @@
     .nw-wheel-item:hover { color: rgba(255,255,255,0.7); }
     .nw-wheel-item.center:hover { color: #fff; }
 
+    /* BOTTOM NAV — high contrast, actually visible */
+    .nw-bottom-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 28px 24px 40px;
+      border-top: 2px solid rgba(184,150,40,0.5);
+      margin-top: 40px;
+      background: rgba(0,0,0,0.04);
+    }
+    .nw-bottom-nav a {
+      font-family: 'Cinzel', 'Georgia', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: rgba(184,150,40,0.85);
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      transition: color 0.2s, transform 0.2s;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .nw-bottom-nav a:hover,
+    .nw-bottom-nav a:active { 
+      color: rgba(184,150,40,1);
+      transform: scale(1.08);
+    }
+    .nw-arrow-sym { 
+      font-size: 28px; 
+      line-height: 1;
+      display: block;
+    }
+    .nw-arrow-label { 
+      font-size: 9px; 
+      opacity: 0.9;
+      display: block;
+      max-width: 90px;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .nw-center-home {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
     .nw-see-also-wrap {
       margin-top: 32px;
       padding-top: 20px;
@@ -418,33 +478,6 @@
       color: #fff;
       border-color: rgba(184,150,40,0.6);
     }
-
-    .nw-bottom-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 32px 24px 40px;
-      border-top: 1px solid rgba(184,150,40,0.2);
-      margin-top: 40px;
-    }
-    .nw-bottom-nav a {
-      font-family: 'Cinzel', 'Georgia', serif;
-      font-size: 11px;
-      letter-spacing: 0.3em;
-      color: rgba(184,150,40,0.6);
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      text-transform: uppercase;
-      transition: color 0.2s;
-      cursor: pointer;
-    }
-    .nw-bottom-nav a:hover { color: rgba(184,150,40,1); }
-    .nw-bottom-nav .nw-arrow-sym { font-size: 22px; }
-    .nw-bottom-nav .nw-arrow-label { font-size: 9px; opacity: 0.7; }
-    .nw-bottom-nav .nw-center-home { font-size: 9px; opacity: 0.5; }
   `;
   document.head.appendChild(style);
 
@@ -492,6 +525,11 @@
   let scrollAccum = 0;
   const SCROLL_THRESHOLD = 60;
 
+  // Touch tracking at overlay level
+  let touchActive  = false;
+  let touchStartY  = 0;
+  let touchBaseIdx = 0;
+
   function clampIndex(i) {
     const total = wheelEntries.length;
     return ((i % total) + total) % total;
@@ -507,42 +545,10 @@
     renderWheel();
     document.getElementById('nw-volume-select').style.display = 'none';
     document.getElementById('nw-wheel-panel').classList.add('active');
-
-    // Attach touch listeners fresh each time wheel opens
-    // so they bind after overlay is visible and pointer-events are live
-    const vp = document.getElementById('nw-wheel-viewport');
-    const vpClone = vp.cloneNode(true);
-    vp.parentNode.replaceChild(vpClone, vp);
-    // Re-query after clone swap
-    const freshVP = document.getElementById('nw-wheel-viewport');
-
-    freshVP.addEventListener('touchstart', (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      isDragging     = true;
-      dragStartY     = e.touches[0].clientY;
-      touchBaseIndex = wheelIndex;
-    }, { passive: false });
-
-    freshVP.addEventListener('touchmove', (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      if (!isDragging || !wheelEntries.length) return;
-      const rawOffset = dragStartY - e.touches[0].clientY;
-      const steps     = Math.round(rawOffset / (ITEM_H * 0.65));
-      wheelIndex      = clampIndex(touchBaseIndex + steps);
-      renderWheel();
-    }, { passive: false });
-
-    freshVP.addEventListener('touchend', (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      isDragging = false;
-    }, { passive: false });
   }
 
   function renderWheel() {
-    const track   = document.getElementById('nw-wheel-track');
+    const track = document.getElementById('nw-wheel-track');
     track.innerHTML = '';
     const total   = wheelEntries.length;
     const visible = 8;
@@ -605,6 +611,41 @@
       renderWheel();
     });
     document.addEventListener('mouseup', () => { isDragging = false; });
+
+    // ── TOUCH — attached to overlay, filtered by viewport bounds ──────────
+    overlay.addEventListener('touchstart', (e) => {
+      const panel = document.getElementById('nw-wheel-panel');
+      if (!panel || !panel.classList.contains('active') || !wheelEntries.length) return;
+
+      const vp   = document.getElementById('nw-wheel-viewport');
+      if (!vp) return;
+      const rect = vp.getBoundingClientRect();
+      const t    = e.touches[0];
+
+      // Only intercept if touch started inside the viewport
+      if (t.clientX < rect.left || t.clientX > rect.right ||
+          t.clientY < rect.top  || t.clientY > rect.bottom) return;
+
+      e.preventDefault();
+      touchActive  = true;
+      touchStartY  = t.clientY;
+      touchBaseIdx = wheelIndex;
+    }, { passive: false });
+
+    overlay.addEventListener('touchmove', (e) => {
+      if (!touchActive || !wheelEntries.length) return;
+      e.preventDefault();
+      const rawOffset = touchStartY - e.touches[0].clientY;
+      const steps     = Math.round(rawOffset / (ITEM_H * 0.65));
+      wheelIndex      = clampIndex(touchBaseIdx + steps);
+      renderWheel();
+    }, { passive: false });
+
+    overlay.addEventListener('touchend', (e) => {
+      if (!touchActive) return;
+      e.preventDefault();
+      touchActive = false;
+    }, { passive: false });
   }
 
   // ── OPEN / CLOSE ──────────────────────────────────────────────────────────
@@ -616,6 +657,7 @@
     document.body.style.touchAction = 'none';
     document.getElementById('nw-volume-select').style.display = 'flex';
     document.getElementById('nw-wheel-panel').classList.remove('active');
+    scrollAccum = 0;
   }
 
   function closeNav() {
@@ -623,6 +665,7 @@
     overlay.classList.remove('open');
     document.body.style.overflow    = '';
     document.body.style.touchAction = '';
+    touchActive = false;
   }
 
   burger.addEventListener('click', () => {
@@ -661,10 +704,11 @@
 
     const homeA = document.createElement('a');
     homeA.className = 'nw-center-home';
-    homeA.innerHTML = `<span class="nw-arrow-sym" style="font-size:14px">⌂</span><span class="nw-arrow-label">Home</span>`;
+    homeA.innerHTML = `<span class="nw-arrow-sym" style="font-size:20px">⌂</span><span class="nw-arrow-label">Home</span>`;
     homeA.addEventListener('click', () => navigate('/'));
 
     const nextA = document.createElement('a');
+    nextA.style.textAlign = 'right';
     nextA.innerHTML = `<span class="nw-arrow-label">${next.label}</span><span class="nw-arrow-sym">→</span>`;
     nextA.addEventListener('click', () => navigate(next.path));
 
@@ -683,7 +727,7 @@
     const linksDiv = wrap.querySelector('.nw-see-also-links');
     links.forEach(([label, path]) => {
       const a = document.createElement('a');
-      a.href      = path;
+      a.href        = path;
       a.textContent = label;
       linksDiv.appendChild(a);
     });
