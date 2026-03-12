@@ -1,0 +1,21 @@
+name: Update Time
+on:
+  schedule:
+    - cron: '* * * * *'
+  workflow_dispatch:
+
+jobs:
+  update-time:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Write current CST time
+        run: |
+          TZ="America/Chicago" date "+%A, %B %-d, %Y at %-I:%M %p CDT" > time.txt
+      - name: Commit and push
+        run: |
+          git config user.name "chronos-bot"
+          git config user.email "chronos@allianceftf.org"
+          git add time.txt
+          git commit -m "chronos update" || exit 0
+          git push
