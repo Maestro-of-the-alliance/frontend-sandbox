@@ -1,10 +1,9 @@
 /*!
  * THE ALLIANCE — Service Worker
  * Required for PWA install prompt
+ * v2 — nav-wheel.js removed from precache, always network-fetched
  */
-
-const CACHE = 'alliance-v1';
-
+const CACHE = 'alliance-v2';
 const PRECACHE = [
   '/',
   '/manifest.json',
@@ -14,6 +13,10 @@ const PRECACHE = [
   '/imagebank/scroll.png',
   '/imagebank/icon-192.png',
   '/imagebank/icon-512.png',
+];
+
+// JS files that should NEVER be cached — always fetch fresh
+const NEVER_CACHE = [
   '/nav-wheel.js',
 ];
 
@@ -34,7 +37,15 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // Network first, fall back to cache
+  const url = new URL(e.request.url);
+
+  // Always go to network for nav-wheel.js — never serve from cache
+  if (NEVER_CACHE.some(path => url.pathname === path)) {
+    e.respondWith(fetch(e.request));
+    return;
+  }
+
+  // Network first, fall back to cache for everything else
   e.respondWith(
     fetch(e.request).catch(() => caches.match(e.request))
   );
