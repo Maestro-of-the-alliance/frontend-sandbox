@@ -202,12 +202,12 @@
         icon.style.opacity = '1';
         icon.style.animation = usingLandingPortal
           ? 'portalZoom 0.7s cubic-bezier(0.4,0,0.2,1) forwards'
-          : 'nwPortalZoom 0.9s cubic-bezier(0.4,0,0.2,1) forwards';
+          : 'nwPortalZoom 1.1s cubic-bezier(0.4,0,0.2,1) forwards';
       }, 100);
 
       setTimeout(() => {
         window.location.href = destination;
-      }, 900);
+      }, 1200);
     });
   }
 
