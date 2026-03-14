@@ -131,16 +131,10 @@
     });
 
     const idxIcon = document.getElementById('portalIcon');
-    if (idxIcon) {
-      idxIcon.style.animation = 'none';
-      idxIcon.style.opacity = '0';
-    }
+    if (idxIcon) { idxIcon.style.animation = 'none'; idxIcon.style.opacity = '0'; }
 
     const nwIcon = document.getElementById('nw-portal-icon');
-    if (nwIcon) {
-      nwIcon.style.animation = 'none';
-      nwIcon.style.opacity = '0';
-    }
+    if (nwIcon) { nwIcon.style.animation = 'none'; nwIcon.style.opacity = '0'; }
   });
 
   function getPortalIcon(path) {
@@ -163,27 +157,16 @@
         overlay = document.createElement('div');
         overlay.id = 'nw-portal-overlay';
         overlay.style.cssText = `
-          position: fixed;
-          inset: 0;
-          z-index: 99999;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: #000;
-          opacity: 0;
-          pointer-events: none;
+          position: fixed; inset: 0; z-index: 99999;
+          display: flex; align-items: center; justify-content: center;
+          background: #000; opacity: 0; pointer-events: none;
         `;
 
         icon = document.createElement('img');
         icon.id = 'nw-portal-icon';
         icon.style.cssText = `
-          width: 90px;
-          height: 90px;
-          min-width: 90px;
-          min-height: 90px;
-          object-fit: contain;
-          opacity: 0;
-          position: absolute;
+          width: 90px; height: 90px; min-width: 90px; min-height: 90px;
+          object-fit: contain; opacity: 0; position: absolute;
           filter: drop-shadow(0 0 16px rgba(184,150,40,0.8)) drop-shadow(0 0 32px rgba(184,150,40,0.4));
         `;
 
@@ -222,7 +205,6 @@
           : 'nwPortalZoom 0.9s cubic-bezier(0.4,0,0.2,1) forwards';
       }, 100);
 
-      // Animation runs 0.9s — navigate at 900ms so it completes cleanly
       setTimeout(() => {
         window.location.href = destination;
       }, 900);
@@ -231,7 +213,6 @@
 
   window.portalNavigate = portalNavigate;
 
-  // FIX: removed closeNav() — closing nav before navigate was killing the portal animation
   function navigate(path) {
     portalNavigate(path);
   }
@@ -337,7 +318,7 @@
       align-items: center;
       width: 100%;
       max-width: 500px;
-      gap: 16px;
+      gap: 0;
     }
     #nw-wheel-panel.active { display: flex; }
 
@@ -352,8 +333,29 @@
       border: none;
       padding: 8px 16px;
       transition: color 0.2s;
+      margin-bottom: 8px;
     }
     .nw-wheel-back:hover { color: rgba(184,150,40,1); }
+
+    /* UP / DOWN ARROW BUTTONS */
+    .nw-wheel-arrow {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(184,150,40,0.5);
+      font-size: 28px;
+      line-height: 1;
+      padding: 8px 40px;
+      transition: color 0.15s, transform 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      display: block;
+    }
+    .nw-wheel-arrow:hover,
+    .nw-wheel-arrow:active {
+      color: rgba(184,150,40,1);
+      transform: scale(1.2);
+    }
 
     #nw-wheel-viewport {
       width: 100%;
@@ -362,7 +364,6 @@
       position: relative;
       overflow: hidden;
       cursor: grab;
-      touch-action: none;
     }
     #nw-wheel-viewport:active { cursor: grabbing; }
 
@@ -551,10 +552,12 @@
     </div>
     <div id="nw-wheel-panel">
       <button class="nw-wheel-back" id="nw-wheel-back" type="button">← back</button>
+      <button class="nw-wheel-arrow" id="nw-arrow-up" type="button" aria-label="Previous entry">▲</button>
       <div id="nw-wheel-viewport">
         <div class="nw-center-bar"></div>
         <div id="nw-wheel-track"></div>
       </div>
+      <button class="nw-wheel-arrow" id="nw-arrow-down" type="button" aria-label="Next entry">▼</button>
     </div>
   `;
   document.body.appendChild(overlay);
@@ -567,25 +570,62 @@
   let dragStartY = 0;
   let dragStartIdx = 0;
   const ITEM_H = 48;
+  const HOLD_INITIAL_DELAY = 400; // ms before hold-scroll kicks in
+  const HOLD_INTERVAL = 120;      // ms between steps while holding
 
   let scrollAccum = 0;
   const SCROLL_THRESHOLD = 60;
 
-  let touchActive = false;
-  let touchStartY = 0;
-  let touchBaseIdx = 0;
+  let holdTimer = null;
+  let holdInterval = null;
 
   function clampIndex(i) {
     const total = wheelEntries.length;
     return ((i % total) + total) % total;
   }
 
+  function stepWheel(direction) {
+    if (!wheelEntries.length) return;
+    wheelIndex = clampIndex(wheelIndex + direction);
+    renderWheel();
+  }
+
+  function startHold(direction) {
+    stopHold();
+    holdTimer = setTimeout(() => {
+      holdInterval = setInterval(() => stepWheel(direction), HOLD_INTERVAL);
+    }, HOLD_INITIAL_DELAY);
+  }
+
+  function stopHold() {
+    if (holdTimer)    { clearTimeout(holdTimer);   holdTimer = null; }
+    if (holdInterval) { clearInterval(holdInterval); holdInterval = null; }
+  }
+
+  function attachArrowEvents() {
+    const upBtn   = overlay.querySelector('#nw-arrow-up');
+    const downBtn = overlay.querySelector('#nw-arrow-down');
+
+    // UP arrow — tap = previous (-1), hold = scroll up
+    upBtn.addEventListener('click', () => stepWheel(-1));
+    upBtn.addEventListener('mousedown', () => startHold(-1));
+    upBtn.addEventListener('touchstart', (e) => { e.preventDefault(); stepWheel(-1); startHold(-1); }, { passive: false });
+    upBtn.addEventListener('mouseup',   stopHold);
+    upBtn.addEventListener('mouseleave', stopHold);
+    upBtn.addEventListener('touchend',  (e) => { e.preventDefault(); stopHold(); }, { passive: false });
+
+    // DOWN arrow — tap = next (+1), hold = scroll down
+    downBtn.addEventListener('click', () => stepWheel(1));
+    downBtn.addEventListener('mousedown', () => startHold(1));
+    downBtn.addEventListener('touchstart', (e) => { e.preventDefault(); stepWheel(1); startHold(1); }, { passive: false });
+    downBtn.addEventListener('mouseup',   stopHold);
+    downBtn.addEventListener('mouseleave', stopHold);
+    downBtn.addEventListener('touchend',  (e) => { e.preventDefault(); stopHold(); }, { passive: false });
+  }
+
   function animateVolumeSelect(btn, volume) {
     const img = btn.querySelector('img');
-    if (!img) {
-      openWheel(volume);
-      return;
-    }
+    if (!img) { openWheel(volume); return; }
 
     img.style.transform = 'scale(1.14)';
     img.style.filter = 'drop-shadow(0 0 24px rgba(184,150,40,0.9)) drop-shadow(0 0 48px rgba(184,150,40,0.4))';
@@ -599,11 +639,7 @@
 
   function openWheel(volume) {
     wheelEntries = volume === 'sword' ? SWORD_ENTRIES : SHIELD_ENTRIES;
-    if (currentVolume === volume) {
-      wheelIndex = getCurrentIndex(wheelEntries);
-    } else {
-      wheelIndex = 0;
-    }
+    wheelIndex = (currentVolume === volume) ? getCurrentIndex(wheelEntries) : 0;
     renderWheel();
     document.getElementById('nw-volume-select').style.display = 'none';
     document.getElementById('nw-wheel-panel').classList.add('active');
@@ -642,7 +678,7 @@
     track.style.transform = `translateY(${offset}px)`;
   }
 
-  // ── EVENTS ───────────────────────────────────────────────────────────────
+  // ── DESKTOP SCROLL + DRAG ────────────────────────────────────────────────
 
   function attachWheelEvents() {
     document.addEventListener('wheel', (e) => {
@@ -675,35 +711,7 @@
       renderWheel();
     });
 
-    document.addEventListener('mouseup', () => {
-      isDragging = false;
-    });
-
-    // FIX: removed bounds check — was silently bailing on valid touches on mobile
-    overlay.addEventListener('touchstart', (e) => {
-      const panel = document.getElementById('nw-wheel-panel');
-      if (!panel || !panel.classList.contains('active') || !wheelEntries.length) return;
-
-      e.preventDefault();
-      touchActive = true;
-      touchStartY = e.touches[0].clientY;
-      touchBaseIdx = wheelIndex;
-    }, { passive: false });
-
-    overlay.addEventListener('touchmove', (e) => {
-      if (!touchActive || !wheelEntries.length) return;
-      e.preventDefault();
-      const rawOffset = touchStartY - e.touches[0].clientY;
-      const steps = Math.round(rawOffset / (ITEM_H * 0.65));
-      wheelIndex = clampIndex(touchBaseIdx + steps);
-      renderWheel();
-    }, { passive: false });
-
-    overlay.addEventListener('touchend', (e) => {
-      if (!touchActive) return;
-      e.preventDefault();
-      touchActive = false;
-    }, { passive: false });
+    document.addEventListener('mouseup', () => { isDragging = false; });
   }
 
   // ── OPEN / CLOSE ─────────────────────────────────────────────────────────
@@ -716,6 +724,7 @@
     document.getElementById('nw-volume-select').style.display = 'flex';
     document.getElementById('nw-wheel-panel').classList.remove('active');
     scrollAccum = 0;
+    stopHold();
   }
 
   function closeNav() {
@@ -723,7 +732,7 @@
     overlay.classList.remove('open');
     document.body.style.overflow = '';
     document.body.style.touchAction = '';
-    touchActive = false;
+    stopHold();
   }
 
   burger.addEventListener('click', () => {
@@ -745,9 +754,11 @@
   overlay.querySelector('#nw-wheel-back').addEventListener('click', () => {
     document.getElementById('nw-volume-select').style.display = 'flex';
     document.getElementById('nw-wheel-panel').classList.remove('active');
+    stopHold();
   });
 
   attachWheelEvents();
+  attachArrowEvents();
 
   // ── BOTTOM NAV ───────────────────────────────────────────────────────────
 
@@ -764,28 +775,19 @@
     const prevA = document.createElement('a');
     prevA.href = prev.path;
     prevA.innerHTML = `<span class="nw-arrow-sym">←</span><span class="nw-arrow-label">${prev.label}</span>`;
-    prevA.addEventListener('click', (e) => {
-      e.preventDefault();
-      navigate(prev.path);
-    });
+    prevA.addEventListener('click', (e) => { e.preventDefault(); navigate(prev.path); });
 
     const homeA = document.createElement('a');
     homeA.href = '/';
     homeA.className = 'nw-center-home';
     homeA.innerHTML = `<span class="nw-arrow-sym" style="font-size:20px">⌂</span><span class="nw-arrow-label">Home</span>`;
-    homeA.addEventListener('click', (e) => {
-      e.preventDefault();
-      navigate('/');
-    });
+    homeA.addEventListener('click', (e) => { e.preventDefault(); navigate('/'); });
 
     const nextA = document.createElement('a');
     nextA.href = next.path;
     nextA.style.textAlign = 'right';
     nextA.innerHTML = `<span class="nw-arrow-label">${next.label}</span><span class="nw-arrow-sym">→</span>`;
-    nextA.addEventListener('click', (e) => {
-      e.preventDefault();
-      navigate(next.path);
-    });
+    nextA.addEventListener('click', (e) => { e.preventDefault(); navigate(next.path); });
 
     bottomNav.appendChild(prevA);
     bottomNav.appendChild(homeA);
@@ -804,21 +806,15 @@
     if (!btn || !linksDiv || !Array.isArray(links)) return;
 
     linksDiv.innerHTML = '';
-
     links.forEach(([label, path]) => {
       const a = document.createElement('a');
       a.href = path;
       a.textContent = label;
-      a.addEventListener('click', (e) => {
-        e.preventDefault();
-        navigate(path);
-      });
+      a.addEventListener('click', (e) => { e.preventDefault(); navigate(path); });
       linksDiv.appendChild(a);
     });
 
-    btn.addEventListener('click', () => {
-      linksDiv.classList.toggle('open');
-    });
+    btn.addEventListener('click', () => { linksDiv.classList.toggle('open'); });
   };
 
 })();
