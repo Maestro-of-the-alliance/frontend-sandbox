@@ -223,7 +223,7 @@
 
       setTimeout(() => {
         window.location.href = destination;
-      }, 680);
+      }, 1000);
     });
   }
 
