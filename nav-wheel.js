@@ -230,8 +230,7 @@
   window.portalNavigate = portalNavigate;
 
   function navigate(path) {
-    closeNav();
-    portalNavigate(path);
+       portalNavigate(path);
   }
 
   // ── INJECT STYLES ────────────────────────────────────────────────────────
