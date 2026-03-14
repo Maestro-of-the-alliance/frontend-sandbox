@@ -112,6 +112,8 @@
   window.addEventListener('popstate', (e) => {
     if (e.state && e.state.nwBack) {
       window.location.href = '/';
+    } else {
+      window.location.reload();
     }
   });
 
@@ -151,7 +153,6 @@
     let overlay = document.getElementById('portalOverlay') || document.getElementById('nw-portal-overlay');
     let icon    = document.getElementById('portalIcon') || document.getElementById('nw-portal-icon');
 
-    // If we're reusing the landing page portal, do not overwrite its sizing/styles.
     const usingLandingPortal = overlay && overlay.id === 'portalOverlay';
 
     if (!overlay || !icon || !usingLandingPortal) {
@@ -218,19 +219,21 @@
         icon.style.opacity = '1';
         icon.style.animation = usingLandingPortal
           ? 'portalZoom 0.7s cubic-bezier(0.4,0,0.2,1) forwards'
-          : 'nwPortalZoom 0.7s cubic-bezier(0.4,0,0.2,1) forwards';
+          : 'nwPortalZoom 0.9s cubic-bezier(0.4,0,0.2,1) forwards';
       }, 100);
 
+      // Animation runs 0.9s — navigate at 900ms so it completes cleanly
       setTimeout(() => {
         window.location.href = destination;
-      }, 1000);
+      }, 900);
     });
   }
 
   window.portalNavigate = portalNavigate;
 
+  // FIX: removed closeNav() — closing nav before navigate was killing the portal animation
   function navigate(path) {
-       portalNavigate(path);
+    portalNavigate(path);
   }
 
   // ── INJECT STYLES ────────────────────────────────────────────────────────
@@ -676,23 +679,14 @@
       isDragging = false;
     });
 
+    // FIX: removed bounds check — was silently bailing on valid touches on mobile
     overlay.addEventListener('touchstart', (e) => {
       const panel = document.getElementById('nw-wheel-panel');
       if (!panel || !panel.classList.contains('active') || !wheelEntries.length) return;
 
-      const vp = document.getElementById('nw-wheel-viewport');
-      if (!vp) return;
-      const rect = vp.getBoundingClientRect();
-      const t = e.touches[0];
-
-      if (
-        t.clientX < rect.left || t.clientX > rect.right ||
-        t.clientY < rect.top  || t.clientY > rect.bottom
-      ) return;
-
       e.preventDefault();
       touchActive = true;
-      touchStartY = t.clientY;
+      touchStartY = e.touches[0].clientY;
       touchBaseIdx = wheelIndex;
     }, { passive: false });
 
