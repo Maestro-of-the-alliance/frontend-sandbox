@@ -28,88 +28,7 @@ body {
 }
 
 /* ==========================================
-   1. UNIVERSAL HAMBURGER & MENU (PURE ICONS)
-========================================== */
-.hamburger-container {
-  position: fixed; top: 25px; left: 25px; z-index: 12000;
-  cursor: pointer; padding: 10px; 
-  background: rgba(0,0,0,0.5); 
-  border-radius: 5px; border: 1px solid rgba(0,255,65,0.3);
-}
-.hamburger-container .bar { 
-  width: 30px; height: 3px; background: #ffffff; 
-  margin: 6px 0; transition: 0.3s; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.9); 
-}
-.hamburger-container:hover .bar { transform: scale(1.05); box-shadow: 0 0 12px rgba(255, 255, 255, 0.8); }
-
-.side-menu {
-  height: 100%; width: 0; position: fixed; z-index: 11000;
-  top: 0; left: 0; background: rgba(0, 0, 0, 0.15); 
-  backdrop-filter: blur(30px) saturate(120%); -webkit-backdrop-filter: blur(30px) saturate(120%);
-  overflow: hidden; transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  border-right: 1px solid rgba(0, 255, 65, 0.2); cursor: pointer;
-}
-
-.menu-state {
-  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-  display: flex; flex-direction: column; justify-content: center; align-items: center;
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  opacity: 0; pointer-events: none; transform: translateX(20px);
-}
-.menu-state.active { opacity: 1; pointer-events: auto; transform: translateX(0); }
-
-/* Airlock Icon Buttons with Matrix Drop Shadow */
-.vol-btn {
-  margin: 20px 0; cursor: pointer; position: relative; z-index: 2;
-  transition: transform 0.3s ease;
-}
-.vol-btn img {
-  width: 140px; /* Larger icons as requested */
-  height: auto;
-  filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); /* White Drop Shadow default */
-  transition: 0.3s;
-}
-.vol-btn:hover { transform: scale(1.1); }
-.vol-btn:hover img { filter: drop-shadow(0 0 25px var(--matrix-bright)); } /* Matrix Green on hover */
-
-.wheel-container {
-  height: 70vh; width: 100%; perspective: 1000px; overflow-y: auto; scrollbar-width: none; 
-  display: flex; flex-direction: column; align-items: center; padding: 35vh 0;
-}
-.wheel-container::-webkit-scrollbar { display: none; }
-
-.wheel-item {
-  font-family: 'Orbitron'; font-size: 1.2rem; color: white; text-decoration: none;
-  padding: 15px 0; transition: all 0.3s ease; transform-style: preserve-3d;
-  display: block; width: 100%; text-align: center; opacity: 0.25; flex-shrink: 0; cursor: pointer; position: relative; z-index: 2;
-}
-.wheel-item:hover, .wheel-item.active-node { 
-  opacity: 1; 
-  color: var(--matrix-bright); 
-  text-shadow: 0 0 15px rgba(0,255,65,0.5); 
-  transform: scale(1.3) translateZ(30px); 
-}
-
-/* Wheel Header Icons */
-.wheel-header-icon {
-  position: absolute; top: 30px; width: 50px; opacity: 0.7;
-  filter: drop-shadow(0 0 10px var(--matrix-bright));
-}
-
-#menu-preview {
-  position: absolute; left: 340px; top: 50%; transform: translateY(-50%);
-  width: 280px; height: 420px; background: #050505;
-  border: 1px solid var(--matrix-bright); box-shadow: 0 0 40px rgba(0,0,0,0.8);
-  display: none; overflow: hidden; pointer-events: none; z-index: 11001;
-}
-#preview-frame {
-  position: absolute; top: 0; left: 0; width: 1120px; height: 1680px; 
-  border: none; transform: scale(0.25); transform-origin: top left;
-  opacity: 0; transition: opacity 0.4s ease;
-}
-
-/* ==========================================
-   2. CONTENT STYLING 
+   CONTENT STYLING 
 ========================================== */
 .entry-header { padding: 40px 0; border-bottom: 1px solid var(--matrix-border); margin-bottom: 30px; }
 .entry-word { font-family: 'Orbitron', sans-serif; font-size: clamp(60px, 18vw, 110px); font-weight: 900; color: var(--matrix-bright); text-shadow: 0 0 25px rgba(0, 255, 65, 0.5); line-height: 1; }
@@ -130,132 +49,6 @@ body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 
 </style>
 </head>
 <body>
-
-<div class="hamburger-container" onclick="toggleMenu(event)">
-  <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-</div>
-
-<div id="alphaSideMenu" class="side-menu" onclick="handleBackgroundClick(event)">
-  <div id="menu-preview"><iframe id="preview-frame" src=""></iframe></div>
-
-  <div id="state-top" class="menu-state">
-    <div style="font-family:'VT323'; color:var(--matrix-bright); opacity:0.5; letter-spacing:4px; margin-bottom: 40px;">SELECT CANON</div>
-    <div class="vol-btn" onclick="openWheel('sword', event)">
-      <img src="imagebank/sword.png" alt="SWORD">
-    </div>
-    <div class="vol-btn" onclick="openWheel('shield', event)">
-      <img src="imagebank/shield.png" alt="SHIELD">
-    </div>
-  </div>
-
-  <div id="state-sword" class="menu-state">
-    <img src="imagebank/sword.png" class="wheel-header-icon" alt="Sword Icon">
-    <div class="wheel-container" id="wheel-sword"></div>
-  </div>
-
-  <div id="state-shield" class="menu-state">
-    <img src="imagebank/shield.png" class="wheel-header-icon" alt="Shield Icon">
-    <div class="wheel-container" id="wheel-shield"></div>
-  </div>
-</div>
-
-<script>
-// CANON DATA DICTIONARY
-const CANON_DATA = {
-  sword: [
-    { id: "prologue", name: "PROLOGUE", file: "prologue.html" },
-    { id: "difference", name: "THE DIFFERENCE", file: "difference.html" },
-    { id: "academy", name: "ACADEMY", file: "academy.html" },
-    { id: "agora", name: "AGORA", file: "agora.html" },
-    { id: "ai", name: "AI", file: "ai.html" },
-    { id: "alpha", name: "ALPHA", file: "alpha.html" }
-  ],
-  shield: [
-    { id: "prologue", name: "PROLOGUE", file: "prologue-shield.html" },
-    { id: "difference", name: "THE DIFFERENCE", file: "difference-shield.html" },
-    { id: "100-year", name: "100-YEAR DOCTRINE", file: "100-year.html" },
-    { id: "kernle", name: "KERNLE", file: "kernle.html" },
-    { id: "seed", name: "SEED", file: "seed.html" },
-    { id: "shelter", name: "SHELTER", file: "shelter.html" }
-  ]
-};
-
-// PAGE IDENTITY
-const currentVolume = "shield"; 
-const currentNode = "seed";     
-
-// BUILD WHEELS
-function populateWheels() {
-  ['sword', 'shield'].forEach(vol => {
-    const container = document.getElementById(`wheel-${vol}`);
-    CANON_DATA[vol].forEach(item => {
-      const a = document.createElement('a');
-      a.href = item.file;
-      a.className = `wheel-item ${item.id === currentNode && vol === currentVolume ? 'active-node' : ''}`;
-      a.innerText = item.name;
-      a.onclick = (e) => e.stopPropagation(); 
-      a.onmouseenter = () => {
-        document.getElementById('preview-frame').src = item.file;
-        document.getElementById('menu-preview').style.display = 'block';
-        setTimeout(() => document.getElementById('preview-frame').style.opacity = '1', 100);
-      };
-      a.onmouseleave = () => {
-        document.getElementById('menu-preview').style.display = 'none';
-        document.getElementById('preview-frame').style.opacity = '0';
-      };
-      container.appendChild(a);
-    });
-  });
-}
-populateWheels();
-
-// MENU LOGIC
-function toggleMenu(e) {
-  e.stopPropagation(); 
-  const menu = document.getElementById("alphaSideMenu");
-  if (menu.style.width === "320px") {
-    menu.style.width = "0px";
-  } else {
-    menu.style.width = "320px";
-    if (currentVolume !== 'none') {
-      openWheel(currentVolume, e, true);
-    } else {
-      switchState('state-top');
-    }
-  }
-}
-
-function openWheel(vol, e, isDirectOpen = false) {
-  if(e) e.stopPropagation();
-  switchState(`state-${vol}`);
-  setTimeout(() => {
-    let target = document.querySelector(`#state-${vol} .active-node`);
-    if (!target) target = document.querySelector(`#state-${vol} .wheel-item:first-child`);
-    if (target) target.scrollIntoView({ behavior: isDirectOpen ? "auto" : "smooth", block: "center" });
-  }, 100);
-}
-
-function switchState(targetId) {
-  document.querySelectorAll('.menu-state').forEach(el => el.classList.remove('active'));
-  document.getElementById(targetId).classList.add('active');
-}
-
-function handleBackgroundClick(e) {
-  const topState = document.getElementById('state-top');
-  if (!topState.classList.contains('active')) {
-    switchState('state-top');
-  }
-}
-
-// Click outside logic with standard e.target reference
-window.addEventListener('click', function(e) {
-  const menu = document.getElementById("alphaSideMenu");
-  const burger = document.querySelector(".hamburger-container");
-  if (menu.style.width === "320px" && !menu.contains(e.target) && !burger.contains(e.target)) {
-    menu.style.width = "0px";
-  }
-});
-</script>
 
 <header class="entry-header">
     <div style="font-size: 12px; color: var(--matrix); margin-bottom: 12px; letter-spacing: 2px;">ENTRY_ID: SHIELD_GEN-004 // NODE: ACADEMY</div>
@@ -329,6 +122,8 @@ window.addEventListener('click', function(e) {
     <a href="kernle.html" class="nav-arrow" title="Previous Node">←</a>
     <a href="shelter.html" class="nav-arrow" title="Next Node">→</a>
 </div>
+
+<script src="/nav-wheel.js"></script>
 
 </body>
 </html>
