@@ -632,9 +632,7 @@
 
     setTimeout(() => {
       openWheel(volume);
-      img.style.transform = '';
-      img.style.filter = '';
-    }, 170);
+    }, 400);
   }
 
   function openWheel(volume) {
