@@ -214,7 +214,8 @@
   window.portalNavigate = portalNavigate;
 
   function navigate(path) {
-    portalNavigate(path);
+    closeNav();
+    setTimeout(() => portalNavigate(path), 50);
   }
 
   // ── INJECT STYLES ────────────────────────────────────────────────────────
