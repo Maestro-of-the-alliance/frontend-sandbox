@@ -202,12 +202,12 @@
         icon.style.opacity = '1';
         icon.style.animation = usingLandingPortal
           ? 'portalZoom 0.7s cubic-bezier(0.4,0,0.2,1) forwards'
-          : 'nwPortalZoom 1.1s cubic-bezier(0.4,0,0.2,1) forwards';
+          : 'nwPortalZoom 0.9s cubic-bezier(0.4,0,0.2,1) forwards';
       }, 100);
 
       setTimeout(() => {
         window.location.href = destination;
-      }, 1200);
+      }, 900);
     });
   }
 
@@ -639,8 +639,27 @@
     wheelEntries = volume === 'sword' ? SWORD_ENTRIES : SHIELD_ENTRIES;
     wheelIndex = (currentVolume === volume) ? getCurrentIndex(wheelEntries) : 0;
     renderWheel();
-    document.getElementById('nw-volume-select').style.display = 'none';
-    document.getElementById('nw-wheel-panel').classList.add('active');
+
+    const volSelect = document.getElementById('nw-volume-select');
+    const wheelPanel = document.getElementById('nw-wheel-panel');
+
+    volSelect.style.transition = 'opacity 0.25s ease';
+    volSelect.style.opacity = '0';
+
+    setTimeout(() => {
+      volSelect.style.display = 'none';
+      volSelect.style.opacity = '';
+      volSelect.style.transition = '';
+      wheelPanel.style.opacity = '0';
+      wheelPanel.classList.add('active');
+      requestAnimationFrame(() => {
+        wheelPanel.style.transition = 'opacity 0.25s ease';
+        wheelPanel.style.opacity = '1';
+        setTimeout(() => {
+          wheelPanel.style.transition = '';
+        }, 260);
+      });
+    }, 250);
   }
 
   function renderWheel() {
