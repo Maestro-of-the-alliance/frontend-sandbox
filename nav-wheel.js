@@ -625,14 +625,68 @@
 
   function animateVolumeSelect(btn, volume) {
     const img = btn.querySelector('img');
-    if (!img) { openWheel(volume); return; }
+    const iconSrc = volume === 'sword' ? '/imagebank/sword.png' : '/imagebank/shield.png';
 
-    img.style.transform = 'scale(1.14)';
-    img.style.filter = 'drop-shadow(0 0 24px rgba(184,150,40,0.9)) drop-shadow(0 0 48px rgba(184,150,40,0.4))';
+    // Fire full portal zoom, then open wheel when animation completes
+    let overlay = document.getElementById('nw-portal-overlay');
+    let icon = document.getElementById('nw-portal-icon');
 
-    setTimeout(() => {
-      openWheel(volume);
-    }, 400);
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'nw-portal-overlay';
+      overlay.style.cssText = `
+        position: fixed; inset: 0; z-index: 99999;
+        display: flex; align-items: center; justify-content: center;
+        background: #000; opacity: 0; pointer-events: none;
+      `;
+      icon = document.createElement('img');
+      icon.id = 'nw-portal-icon';
+      icon.style.cssText = `
+        width: 90px; height: 90px; min-width: 90px; min-height: 90px;
+        object-fit: contain; opacity: 0; position: absolute;
+        filter: drop-shadow(0 0 16px rgba(184,150,40,0.8)) drop-shadow(0 0 32px rgba(184,150,40,0.4));
+      `;
+      overlay.appendChild(icon);
+      document.body.appendChild(overlay);
+    }
+
+    if (!document.getElementById('nw-portal-style')) {
+      const s = document.createElement('style');
+      s.id = 'nw-portal-style';
+      s.textContent = `
+        @keyframes nwPortalZoom {
+          0%   { transform: scale(1);  opacity: 1; }
+          60%  { transform: scale(8);  opacity: 1; }
+          100% { transform: scale(18); opacity: 0; }
+        }
+      `;
+      document.head.appendChild(s);
+    }
+
+    icon.style.animation = 'none';
+    icon.style.opacity = '0';
+    icon.src = iconSrc;
+
+    overlay.style.pointerEvents = 'all';
+    overlay.style.transition = 'opacity 0.15s ease';
+    overlay.style.opacity = '1';
+
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        icon.style.opacity = '1';
+        icon.style.animation = 'nwPortalZoom 0.9s cubic-bezier(0.4,0,0.2,1) forwards';
+      }, 100);
+
+      setTimeout(() => {
+        // Animation done — hide portal, open wheel
+        overlay.style.transition = 'opacity 0.2s ease';
+        overlay.style.opacity = '0';
+        overlay.style.pointerEvents = 'none';
+        icon.style.animation = 'none';
+        icon.style.opacity = '0';
+        openWheel(volume);
+      }, 900);
+    });
   }
 
   function openWheel(volume) {
