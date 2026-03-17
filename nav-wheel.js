@@ -48,6 +48,7 @@
     { label: 'AI',                     path: '/shield/ai' },
     { label: 'BRAIN',                  path: '/shield/brain' },
     { label: 'BRIEF',                  path: '/shield/brief' },
+    { label: 'CCM',                    path: '/shield/ccm' },
     { label: 'CERBERUS',               path: '/shield/cerberus' },
     { label: 'CIPHER',                 path: '/shield/cipher' },
     { label: 'CORE',                   path: '/shield/core' },
