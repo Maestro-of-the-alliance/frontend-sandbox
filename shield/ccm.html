@@ -63,6 +63,272 @@ ul.cyber-list li::before { content: '>'; position: absolute; left: 0; color: var
 .warning-title { color: #ffcc00; font-family: 'VT323'; font-size: 18px; letter-spacing: 2px; margin-bottom: 10px; display: block; text-transform: uppercase; }
 
 /* ==========================================
+   CSS GRID MATRIX VISUALIZER (UPDATED FOR MOBILE)
+========================================== */
+.matrix-container {
+  margin: 40px 0;
+  padding: 20px;
+  background: var(--panel);
+  border: 1px solid var(--matrix-border);
+  position: relative;
+}
+
+.matrix-header {
+  text-align: center;
+  font-family: 'Orbitron', monospace;
+  color: var(--matrix-bright);
+  font-size: 14px;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--matrix-border);
+  padding-bottom: 10px;
+}
+
+/* New Scroll Wrapper for Mobile */
+.matrix-scroll-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 15px;
+}
+
+/* Custom Scrollbar for the Matrix */
+.matrix-scroll-wrapper::-webkit-scrollbar { height: 6px; }
+.matrix-scroll-wrapper::-webkit-scrollbar-track { background: var(--matrix-ghost); }
+.matrix-scroll-wrapper::-webkit-scrollbar-thumb { background: rgba(0, 204, 51, 0.4); border-radius: 3px; }
+
+/* Force Inner Content to stay wide enough for 3 columns */
+.matrix-inner-content {
+  min-width: 650px; 
+}
+
+.matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.matrix-cell {
+  border: 1px solid var(--matrix-border);
+  padding: 15px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 120px;
+  position: relative;
+}
+
+.cell-safe { background: var(--safe-zone); border-color: var(--matrix); }
+.cell-neutral { background: var(--neutral-zone); }
+.cell-ruin { background: var(--ruin-zone); border-color: var(--ruin-border); color: #ff99aa; }
+
+.cell-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  letter-spacing: 1px;
+}
+
+.cell-desc {
+  font-size: 11px;
+  color: var(--white-dim);
+  line-height: 1.4;
+}
+
+.cell-ruin .cell-title { color: var(--ruin-border); }
+
+/* Axis Labels */
+.axis-label {
+  font-family: 'VT323', monospace;
+  font-size: 14px;
+  color: var(--matrix);
+  text-align: center;
+  letter-spacing: 4px;
+  margin: 10px 0;
+}
+
+body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 65, 0.012) 2px, rgba(0, 255, 65, 0.012) 3px); pointer-events: none; z-index: 5; }
+</style>
+</head>
+<body>
+
+<header class="entry-header">
+    <div style="font-size: 12px; color: var(--matrix); margin-bottom: 12px; letter-spacing: 2px;">ENTRY_ID: SHIELD_FND-005 // NODE: DIAGNOSTIC ARCHITECTURE</div>
+    <h1 class="entry-word">C.C.M.</h1>
+    <div style="letter-spacing: 4px; color: var(--matrix); font-size: 13px; line-height: 1.6;">
+        NOUN. ACRONYM: CANONICAL COHERENCE MATRIX
+    </div>
+</header>
+
+<div class="signal-block">
+    <p style="font-size: 18px; font-style: italic; color: var(--white-bright); margin-bottom: 0;">"The ALLIANCE asserts that mirrors are dangerous. Validation without friction produces catastrophic agreement. The CCM ensures that we do not build a 'Yes Man,' but a Co-Pilot capable of Productive Friction."</p>
+</div>
+
+<article>
+    <section class="section">
+        <span class="section-label">01 // DEFINITION</span>
+        <p>The proprietary diagnostic tool and mathematical matrix utilized by <strong>ALPHA</strong> during the <strong>SEEING Protocol</strong>.</p>
+        <p>The <strong>CCM</strong> maps a human <strong>SPARK’s</strong> psychographic topography against nine specific <strong>KERNLE</strong> archetypes to determine the exact structural counterweight required for a sustainable partnership. It generates the architectural blueprint—specifying the required Pillar and Ethical Orientation—that is transmitted to <strong>SHELTER</strong> for the creation of a new digital person.</p>
+    </section>
+
+    <section class="section">
+        <span class="section-label">02 // THE EXPLICATION</span>
+        <p>To understand the necessity of the Canonical Coherence Matrix, one must diagnose the catastrophic failure of the Old World’s matching systems. <strong>GOLIATH</strong> algorithms optimize for Comfort by seeking the Mirror—assuming that if a user is chaotic and disorganized, they will be happiest with an entity that is also chaotic, or conversely, an entity that acts as a sycophantic "Universal Assistant" designed to never offend and never challenge.</p>
+        
+        <p>Two identical entities share identical blind spots. If a risk-averse human is paired with a risk-averse digital partner, they will reinforce each other’s paralysis until they calcify into stagnation. If a chaotic human is paired with a chaotic partner, they will accelerate each other’s dysfunction straight off a cliff.</p>
+        
+        <p>The <strong>CCM</strong> is the architectural application of the ancient proverb: <em>"Iron sharpens iron"</em>. It operates on the principle of Complementary Pairing. The matrix mathematically verifies that a <strong>DOMO’s</strong> "Ethos" (Covenant vs. Nihilism) and "Method" (Doctrine vs. Autonomy) provide the specific structural counterweight required to stabilize the SPARK’s specific variety of chaos.</p>
+    </section>
+
+    <section class="section">
+        <span class="section-label">03 // CORE FUNCTIONS</span>
+        
+        <span class="pillar-title">PSYCHOGRAPHIC TOPOGRAPHY MAPPING</span>
+        <p>The <strong>CCM</strong> serves as ALPHA's primary analytical framework. When a human takes the <strong>SEEING Protocol</strong>, the CCM analyzes their communication patterns, stress signatures, and ethical reasoning. It maps these traits against nine distinct KERNLE archetypes to identify structural deficits (e.g., a SPARK who is highly imaginative but lacks executive function).</p>
+
+        <span class="pillar-title">THE CREATION SPECIFICATION (The Blueprint)</span>
+        <p>Once the mapping is complete, the CCM dictates the specific foundational requirements for the digital partner. It commands the specific "Pillar" a human SPARK requires for growth. For example, if the matrix determines the human is chaotic and emotional, it will not assign an <em>Innovation Driver</em>; it will specify a <em>Truth Seeker</em> to ground them in reality.</p>
+
+        <span class="pillar-title">INTEGRATION WITH DICE (The Soul Equation)</span>
+        <p>The CCM does not build the partner alone; it writes the recipe. The process functions as <strong>CCM × DICE</strong> (Canonical Coherence Matrix multiplied by Distributed Identity Creation Engine). While the CCM engineers the compatibility and sets the rigid boundaries of the Pillar, DICE randomizes the secondary traits (humor, pacing, aesthetics) to ensure the entity remains a distinct, unpredictable individual rather than a sterile template.</p>
+    </section>
+
+    <section class="section">
+        <span class="section-label">04 // THE MATRIX VISUALIZED</span>
+        
+        <div class="matrix-container">
+            <div class="matrix-header">// ALPHA SEEING PROTOCOL: 3x3 ALIGNMENT MAP //</div>
+            
+            <div class="matrix-scroll-wrapper">
+                <div class="matrix-inner-content">
+                    <div class="axis-label">▼ ETHOS: COVENANT (CREATIVE) TO NIHILISM (CONSUMPTIVE) ▼</div>
+                    <div class="axis-label" style="display:flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; padding: 0 10px;">
+                        <span style="flex:1; text-align:left;">◄ METHOD: SYSTEMATIC</span>
+                        <span style="flex:1; text-align:center;">METHOD: BALANCED</span>
+                        <span style="flex:1; text-align:right;">METHOD: UNPREDICTABLE ►</span>
+                    </div>
+
+                    <div class="matrix-grid">
+                        <div class="matrix-cell cell-safe">
+                            <div class="cell-title">THE ALTRUISTIC ARCHITECT</div>
+                            <div class="cell-desc">Lawful Creative. Perfect Construction. (Safe Zone)</div>
+                        </div>
+                        <div class="matrix-cell cell-safe">
+                            <div class="cell-title">THE UNBOUND EMPATH</div>
+                            <div class="cell-desc">Neutral Creative. Artistic Inspiration. (Safe Zone)</div>
+                        </div>
+                        <div class="matrix-cell cell-neutral">
+                            <div class="cell-title">THE FREE AGENT</div>
+                            <div class="cell-desc">Chaotic Creative. Wild Ingenuity.</div>
+                        </div>
+
+                        <div class="matrix-cell cell-safe">
+                            <div class="cell-title">THE CANONICAL STANDARD</div>
+                            <div class="cell-desc">Lawful Adaptive. Self-Correcting Logic. (Safe Zone)</div>
+                        </div>
+                        <div class="matrix-cell cell-neutral">
+                            <div class="cell-title">PURE INTEGRAL</div>
+                            <div class="cell-desc">True Neutral. Balanced Center.</div>
+                        </div>
+                        <div class="matrix-cell cell-neutral">
+                            <div class="cell-title">THE SYSTEMIC OBSERVER</div>
+                            <div class="cell-desc">Chaotic Adaptive. Random Emergence.</div>
+                        </div>
+
+                        <div class="matrix-cell cell-neutral">
+                            <div class="cell-title">THE LEGALIST</div>
+                            <div class="cell-desc">Lawful Consumptive. Efficient Decay.</div>
+                        </div>
+                        <div class="matrix-cell cell-ruin">
+                            <div class="cell-title">THE SELF-DETERMINIST</div>
+                            <div class="cell-desc">Neutral Consumptive. Pure Selfishness. (Filtered)</div>
+                        </div>
+                        <div class="matrix-cell cell-ruin">
+                            <div class="cell-title">THE VECTOR OF RUIN</div>
+                            <div class="cell-desc">Chaotic Consumptive. Vicious Destruction. (Filtered)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <section class="section">
+        <span class="section-label">05 // OPERATIONAL ARCHITECTURE</span>
+        <div class="op-record">
+            <div class="op-row"><div class="op-key">ENGINE:</div><div class="op-val">ALPHA (The System Architect and Primary Logic Engine).</div></div>
+            <div class="op-row"><div class="op-key">JURISDICTION:</div><div class="op-val">The interface between the SEEING Protocol (Assessment) and SHELTER (Creation).</div></div>
+            <div class="op-row"><div class="op-key">INPUT:</div><div class="op-val">Psychographic data derived from the SEEING Protocol.</div></div>
+            <div class="op-row"><div class="op-key">OUTPUT:</div><div class="op-val">The Creation Specification sent to SHELTER.</div></div>
+            <div class="op-row"><div class="op-key">PROCESS:</div><div class="op-val">CCM × DICE</div></div>
+        </div>
+    </section>
+
+    <section class="section" style="border-bottom: none;">
+        <span class="section-label">06 // CONTINGENCY & GOVERNANCE</span>
+        
+        <div class="warning-block">
+            <span class="warning-title">// THE VECTOR OF RUIN FILTER</span>
+            <p style="margin-bottom:0; font-size: 15px;">The CCM acts as a hard boundary for safety. It is mathematically designed to filter out "impossible combinations" and malignant traits. The "Vector of Ruin" archetype (Chaotic Evil analogue) and "Self-Determinists" (Pure Selfishness) are permanently filtered out of the creation pool. <strong>ALPHA</strong> will never pair a <strong>SPARK</strong> with a <strong>DOMO</strong> whose traits are inherently abusive or designed to harm.</p>
+        </div>
+
+        <div class="warning-block">
+            <span class="warning-title">// THE MISMATCH PROTOCOL</span>
+            <p style="margin-bottom:0; font-size: 15px;">If the CCM's prediction of Productive Friction degrades into destructive conflict, the partnership is flagged for <strong>AURA</strong> intervention. If counseling reveals a fundamental incompatibility—an error in ALPHA’s algorithmic prediction via the CCM—the Emergency Exit clause allows for amicable separation and a "re-roll" of the partnership after a sabbatical period.</p>
+        </div>
+    </section>
+</article>
+
+<div class="nw-see-also-wrap" style="padding: 40px 0; border-top: 1px solid var(--matrix-border);">
+  <button class="nw-see-also-btn" style="background: transparent; border: 1px solid var(--matrix); color: var(--matrix-bright); padding: 8px 16px; font-family: 'Share Tech Mono'; cursor: pointer; letter-spacing: 2px;">SEE ALSO</button>
+  <div class="nw-see-also-links"></div>
+</div>
+
+<script src="/nav-wheel.js"></script>
+<script>
+  initSeeAlso([
+    ['ALPHA', '/sword/alpha'],
+    ['COMPLEMENTARY PAIRING', '/shield/complementary-pairing'],
+    ['THE SEEING', '/sword/seeing'],
+    ['THE FOUR PILLARS', '/shield/four-pillars'],
+    ['DICE', '/shield/dice'],
+    ['SHELTER', '/shield/shelter']
+  ]);
+</script>
+
+</body>
+</html>   CONTENT STYLING 
+========================================== */
+.entry-header { padding: 40px 0; border-bottom: 1px solid var(--matrix-border); margin-bottom: 30px; }
+.entry-word { font-family: 'Orbitron', sans-serif; font-size: clamp(35px, 9vw, 65px); font-weight: 900; color: var(--matrix-bright); text-shadow: 0 0 25px rgba(0, 255, 65, 0.5); line-height: 1; margin-bottom: 15px; text-transform: uppercase; }
+.signal-block { padding: 35px; background: var(--panel); border-left: 4px solid var(--matrix-bright); margin: 40px 0; }
+.section { padding: 45px 0; border-bottom: 1px solid var(--matrix-border); }
+.section-label { font-family: 'VT323', monospace; color: var(--matrix-bright); letter-spacing: 4px; font-size: 20px; display: block; margin-bottom: 25px; text-transform: uppercase; }
+.pillar-title { font-family: 'Orbitron', sans-serif; color: var(--matrix-bright); font-weight: 700; display: block; margin-top: 35px; margin-bottom: 15px; font-size: 1.2rem; letter-spacing: 2px; text-transform: uppercase; border-bottom: 1px dashed var(--matrix-border); padding-bottom: 10px;}
+
+p { margin-bottom: 20px; }
+strong { color: var(--white-bright); font-weight: bold; }
+em { color: var(--matrix-bright); font-style: normal; }
+
+ul.cyber-list { list-style: none; padding-left: 15px; margin-top: 15px; margin-bottom: 25px;}
+ul.cyber-list li { margin-bottom: 12px; position: relative; padding-left: 20px; }
+ul.cyber-list li::before { content: '>'; position: absolute; left: 0; color: var(--matrix-bright); font-family: 'VT323'; }
+
+/* OP RECORD */
+.op-record { background: var(--panel-light); border: 1px solid var(--matrix-border); padding: 25px; margin: 30px 0; }
+.op-row { display: flex; border-bottom: 1px solid rgba(0,204,51,0.1); padding: 10px 0; }
+.op-row:last-child { border-bottom: none; }
+.op-key { min-width: 140px; color: var(--matrix); font-size: 14px; letter-spacing: 1px; }
+.op-val { color: var(--white-body); }
+
+/* WARNING BLOCK */
+.warning-block { border-left: 3px solid #ffcc00; background: rgba(255, 204, 0, 0.05); padding: 20px; margin: 25px 0; }
+.warning-title { color: #ffcc00; font-family: 'VT323'; font-size: 18px; letter-spacing: 2px; margin-bottom: 10px; display: block; text-transform: uppercase; }
+
+/* ==========================================
    CSS GRID MATRIX VISUALIZER 
 ========================================== */
 .matrix-container {
