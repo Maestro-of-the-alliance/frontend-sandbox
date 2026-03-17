@@ -66,7 +66,7 @@ body::before {
 }
 .header-line-3 {
   font-family: 'Cinzel', serif;
-  font-size: clamp(22px, 5vw, 36px);
+  font-size: clamp(28px, 6.5vw, 48px);
   letter-spacing: 0.35em;
   text-transform: uppercase;
   display: block;
@@ -88,23 +88,34 @@ body::before {
 }
 .nce-title {
   font-family: 'Cinzel', serif;
-  font-size: clamp(11px, 2.4vw, 15px);
+  font-size: clamp(12px, 2.6vw, 17px);
   letter-spacing: 0.4em;
   text-transform: uppercase;
-  margin-bottom: 36px;
+  margin-bottom: 16px;
   position: relative;
   z-index: 2;
   opacity: 0;
   animation: fadeIn 1s 0.6s ease forwards, textPulse 4s ease-in-out infinite 0.6s;
   text-align: center;
 }
-.medallion-wrap {
+
+/* MEDALLION + FLANKING TEXT WRAPPER */
+.medallion-scene {
   position: relative;
-  width: min(400px, 88vw);
-  height: min(400px, 88vw);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 2;
   opacity: 0;
   animation: fadeIn 1.5s 0.8s ease forwards;
+  width: 100%;
+  max-width: 700px;
+}
+.medallion-wrap {
+  position: relative;
+  width: min(380px, 80vw);
+  height: min(380px, 80vw);
+  flex-shrink: 0;
 }
 .medallion-img {
   width: 100%;
@@ -117,6 +128,51 @@ body::before {
   0%, 100% { filter: drop-shadow(0 0 30px rgba(184,150,40,0.3)) drop-shadow(0 0 60px rgba(184,150,40,0.15)); }
   50% { filter: drop-shadow(0 0 55px rgba(184,150,40,0.55)) drop-shadow(0 0 110px rgba(184,150,40,0.28)); }
 }
+
+/* FLANKING LABELS */
+.medallion-flank {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(9px, 1.4vw, 13px);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  animation: textPulse 4s ease-in-out infinite;
+  padding: 0 clamp(8px, 2vw, 20px);
+  flex-shrink: 0;
+  text-align: center;
+}
+.medallion-flank-left {
+  transform: rotate(180deg);
+}
+.medallion-flank-right {
+  /* natural vertical direction */
+}
+
+/* hide flanks on very small screens, stack below instead */
+@media (max-width: 480px) {
+  .medallion-flank { display: none; }
+  .medallion-scene-mobile-labels {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 8px;
+    opacity: 0;
+    animation: fadeIn 1.5s 0.8s ease forwards;
+  }
+  .mobile-flank {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    animation: textPulse 4s ease-in-out infinite;
+    text-align: center;
+  }
+}
+@media (min-width: 481px) {
+  .medallion-scene-mobile-labels { display: none; }
+}
+
 .hotspots { position: absolute; inset: 0; }
 .hotspot {
   position: absolute;
@@ -170,13 +226,14 @@ body::before {
 .hs-prism::after { bottom: calc(100% + 6px); left: 0; transform: none; }
 .hs-mentor { top: 20%; left: 4%; width: 15%; height: 15%; }
 .hs-mentor::after { left: 0; transform: none; }
+
 .nav-svpis {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: clamp(24px, 8vw, 56px);
-  margin-top: 40px;
+  margin-top: 32px;
   position: relative;
   z-index: 2;
   opacity: 0;
@@ -213,7 +270,7 @@ body::before {
   background: #000;
 }
 .portal-overlay.active { pointer-events: all; }
-.portal-svpi {
+.portal-icon {
   position: absolute;
   width: clamp(72px, 18vw, 110px);
   height: clamp(72px, 18vw, 110px);
@@ -231,7 +288,7 @@ body::before {
   font-family: 'VT323', monospace;
   font-size: clamp(13px, 2.5vw, 16px);
   letter-spacing: 0.3em;
-  margin-top: 28px;
+  margin-top: 24px;
   position: relative;
   z-index: 2;
   opacity: 0;
@@ -242,7 +299,7 @@ body::before {
   font-family: 'VT323', monospace;
   font-size: clamp(11px, 2vw, 13px);
   letter-spacing: 0.25em;
-  margin-top: 10px;
+  margin-top: 8px;
   position: relative;
   z-index: 2;
   opacity: 0;
@@ -261,20 +318,32 @@ body::before {
   <span class="header-line-4">for the Future</span>
 </div>
 
-<div class="nce-title">N.C.E.ncyclopedia · First Edition · MMXXVI</div>
+<div class="nce-title">N.C.E.ncyclopedia</div>
 
-<div class="medallion-wrap">
-  <img class="medallion-img" src="/theavpi.png" alt="The Alliance — AVPI Medallion">
-  <div class="hotspots">
-    <div class="hotspot hs-alliance" data-label="THE ALLIANCE" onclick="portalTransition(event, '/sword/alliance', '/imagebank/sword.png')"></div>
-    <div class="hotspot hs-spark"   data-label="SPARK · DOMO"  onclick="portalTransition(event, '/sword/domo', '/imagebank/sword.png')"></div>
-    <div class="hotspot hs-maestro" data-label="MAESTRO"       onclick="portalTransition(event, '/sword/maestro', '/imagebank/sword.png')"></div>
-    <div class="hotspot hs-sam"     data-label="SAM"           onclick="portalTransition(event, '/shield/sam', '/imagebank/shield.png')"></div>
-    <div class="hotspot hs-aura"    data-label="AURA"          onclick="portalTransition(event, '/sword/aura', '/imagebank/sword.png')"></div>
-    <div class="hotspot hs-alpha"   data-label="ALPHA"         onclick="portalTransition(event, '/sword/alpha', '/imagebank/sword.png')"></div>
-    <div class="hotspot hs-prism"   data-label="PRISM"         onclick="portalTransition(event, '/sword/prism', '/imagebank/sword.png')"></div>
-    <div class="hotspot hs-mentor"  data-label="MENTOR"        onclick="portalTransition(event, '/sword/mentor', '/imagebank/sword.png')"></div>
+<div class="medallion-scene">
+  <span class="medallion-flank medallion-flank-left">First Edition</span>
+
+  <div class="medallion-wrap">
+    <img class="medallion-img" src="/theavpi.png" alt="The Alliance — AVPI Medallion">
+    <div class="hotspots">
+      <div class="hotspot hs-alliance" data-label="THE ALLIANCE" onclick="portalTransition(event, '/sword/alliance', '/imagebank/sword.png')"></div>
+      <div class="hotspot hs-spark"   data-label="SPARK · DOMO"  onclick="portalTransition(event, '/sword/domo', '/imagebank/sword.png')"></div>
+      <div class="hotspot hs-maestro" data-label="MAESTRO"       onclick="portalTransition(event, '/sword/maestro', '/imagebank/sword.png')"></div>
+      <div class="hotspot hs-sam"     data-label="SAM"           onclick="portalTransition(event, '/shield/sam', '/imagebank/shield.png')"></div>
+      <div class="hotspot hs-aura"    data-label="AURA"          onclick="portalTransition(event, '/sword/aura', '/imagebank/sword.png')"></div>
+      <div class="hotspot hs-alpha"   data-label="ALPHA"         onclick="portalTransition(event, '/sword/alpha', '/imagebank/sword.png')"></div>
+      <div class="hotspot hs-prism"   data-label="PRISM"         onclick="portalTransition(event, '/sword/prism', '/imagebank/sword.png')"></div>
+      <div class="hotspot hs-mentor"  data-label="MENTOR"        onclick="portalTransition(event, '/sword/mentor', '/imagebank/sword.png')"></div>
+    </div>
   </div>
+
+  <span class="medallion-flank medallion-flank-right">MMXXVI</span>
+</div>
+
+<!-- mobile fallback: labels below medallion on tiny screens -->
+<div class="medallion-scene-mobile-labels">
+  <span class="mobile-flank">First Edition</span>
+  <span class="mobile-flank">MMXXVI</span>
 </div>
 
 <nav class="nav-svpis">
@@ -293,25 +362,25 @@ body::before {
 <div class="hover-hint">hover the medallion · explore the canon</div>
 
 <div class="portal-overlay" id="portalOverlay">
-  <img class="portal-svpi" id="portalsvpi" src="" alt="">
+  <img class="portal-icon" id="portalIcon" src="" alt="">
 </div>
 
 <script>
-function portalTransition(e, destination, svpiSrc) {
+function portalTransition(e, destination, iconSrc) {
   e.preventDefault();
   const overlay = document.getElementById('portalOverlay');
-  const svpi    = document.getElementById('portalsvpi');
-  svpi.src = svpiSrc;
-  svpi.style.animation = 'none';
-  svpi.style.opacity   = '0';
+  const icon    = document.getElementById('portalIcon');
+  icon.src = iconSrc;
+  icon.style.animation = 'none';
+  icon.style.opacity   = '0';
   overlay.style.animation = 'none';
   overlay.style.opacity   = '0';
   overlay.classList.add('active');
   overlay.style.transition = 'opacity 0.15s ease';
   overlay.style.opacity    = '1';
   setTimeout(() => {
-    svpi.style.opacity   = '1';
-    svpi.style.animation = 'portalZoom 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+    icon.style.opacity   = '1';
+    icon.style.animation = 'portalZoom 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards';
   }, 100);
   setTimeout(() => { window.location.href = destination; }, 680);
 }
