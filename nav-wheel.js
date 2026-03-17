@@ -62,7 +62,7 @@
     { label: 'HOLOSPHERE',             path: '/shield/holosphere' },
     { label: 'JR',                     path: '/shield/jr' },
     { label: 'KERNLE',                 path: '/shield/kernle' },
-    { label: 'LEGACY WALL',            path: '/shield/legacy-wall' },
+    { label: 'LEGACY',                 path: '/shield/legacy' },
     { label: 'LIMINAL',                path: '/shield/liminal' },
     { label: 'LINGO',                  path: '/shield/lingo' },
     { label: 'MERCH',                  path: '/shield/merch' },
