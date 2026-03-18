@@ -3,75 +3,193 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ENTRY_PENDING // N.C.E.</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<title>REACH — SHIELD: Blade / Protocol</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&family=Orbitron:wght@400;700;900&family=Oswald:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --matrix-bright: #00ff41;
-  --void: #050505;
+  --void: #050508;
+  --deep: #08080f;
+  --panel: #0c0c18;
+  --panel-light: #101020;
+  --amber: #ffaa00;
+  --amber-dim: rgba(255, 170, 0, 0.55);
+  --amber-ghost: rgba(255, 170, 0, 0.08);
+  --amber-border: rgba(255, 170, 0, 0.2);
+  --amber-border-bright: rgba(255, 170, 0, 0.45);
+  --cyan: #00d4ff;
+  --cyan-dim: rgba(0, 212, 255, 0.55);
+  --cyan-ghost: rgba(0, 212, 255, 0.07);
+  --cyan-border: rgba(0, 212, 255, 0.2);
+  --cyan-border-bright: rgba(0, 212, 255, 0.4);
+  --magenta: #ff0066;
+  --magenta-dim: rgba(255, 0, 102, 0.4);
+  --white-ghost: rgba(220, 225, 240, 0.88);
+  --white-dim: rgba(180, 190, 215, 0.6);
+  --white-faint: rgba(140, 155, 185, 0.35);
+  --rain: rgba(0, 150, 200, 0.04);
 }
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
+html { background: #000; }
+
 body {
-  background: var(--void); color: white;
-  font-family: 'Share Tech Mono', monospace;
-  height: 100vh; display: flex; flex-direction: column;
-  justify-content: center; align-items: center; overflow: hidden;
+  background: var(--void);
+  color: var(--white-ghost);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  max-width: 640px;
+  margin: 0 auto;
+  position: relative;
+  overflow-x: hidden;
 }
 
-/* --- THE GLITCH EFFECT --- */
-.glitch-wrapper { text-align: center; }
-.glitch-text {
-  font-family: 'Orbitron', sans-serif; font-size: 5vw; font-weight: 900;
-  position: relative; color: white; letter-spacing: 5px; text-transform: uppercase;
-}
-.glitch-text::before, .glitch-text::after {
-  content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-}
-.glitch-text::before {
-  left: 3px; text-shadow: -2px 0 #ff00c1;
-  animation: glitch-anim-1 2s infinite linear alternate-reverse;
-}
-.glitch-text::after {
-  left: -3px; text-shadow: -2px 0 var(--matrix-bright);
-  animation: glitch-anim-2 3s infinite linear alternate-reverse;
-}
-@keyframes glitch-anim-1 {
-  0% { clip-path: inset(20% 0 80% 0); }
-  20% { clip-path: inset(60% 0 10% 0); }
-  40% { clip-path: inset(40% 0 50% 0); }
-  60% { clip-path: inset(80% 0 5% 0); }
-  80% { clip-path: inset(10% 0 70% 0); }
-  100% { clip-path: inset(30% 0 50% 0); }
-}
-@keyframes glitch-anim-2 {
-  0% { clip-path: inset(10% 0 60% 0); }
-  20% { clip-path: inset(30% 0 20% 0); }
-  40% { clip-path: inset(70% 0 10% 0); }
-  60% { clip-path: inset(20% 0 50% 0); }
-  80% { clip-path: inset(50% 0 30% 0); }
-  100% { clip-path: inset(5% 0 80% 0); }
-}
-
-.sub-text {
-  margin-top: 20px; font-size: 1.2rem; color: var(--matrix-bright);
-  opacity: 0.8; letter-spacing: 3px;
-  animation: pulse 1.5s infinite;
-}
-@keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
-
+/* Rain effect — vertical streaks */
 body::before {
-  content: ''; position: fixed; inset: 0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,65,0.03) 2px, rgba(0,255,65,0.03) 3px);
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    repeating-linear-gradient(180deg, transparent, transparent 8px, var(--rain) 8px, var(--rain) 9px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0, 150, 200, 0.015) 40px, rgba(0, 150, 200, 0.015) 41px);
   pointer-events: none;
+  z-index: 0;
+  animation: rain 0.3s linear infinite;
 }
+
+@keyframes rain {
+  from { background-position: 0 0; }
+  to { background-position: 0 9px; }
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--amber), var(--cyan), var(--magenta), transparent);
+  z-index: 200;
+  opacity: 0.6;
+}
+
+header, .class-bar, .entry-header, .signal-block, .content, footer { position: relative; z-index: 1; }
+
+/* ============ MASTHEAD ============ */
+.masthead { background: var(--deep); border-bottom: 1px solid var(--amber-border-bright); padding: 0; }
+.ticker-wrap { overflow: hidden; border-bottom: 1px solid var(--amber-border); padding: 5px 0; background: rgba(255, 170, 0, 0.04); }
+.ticker { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--amber-dim); letter-spacing: 0.12em; white-space: nowrap; animation: ticker 30s linear infinite; display: inline-block; }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.masthead-inner { padding: 16px 28px; display: flex; justify-content: space-between; align-items: center; }
+.masthead-title { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 300; letter-spacing: 0.35em; color: var(--amber); text-transform: uppercase; }
+
+/* ============ CLASSIFICATION BAR ============ */
+.class-bar { background: var(--panel); border-bottom: 1px solid var(--cyan-border); padding: 8px 28px; display: flex; justify-content: space-between; align-items: center; }
+.class-bar-left { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--cyan-dim); letter-spacing: 0.18em; }
+.class-badge { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--amber); letter-spacing: 0.15em; border: 1px solid var(--amber-border-bright); padding: 2px 8px; background: var(--amber-ghost); }
+
+/* ============ ENTRY HEADER ============ */
+.entry-header { padding: 44px 28px 36px; position: relative; border-bottom: 1px solid var(--cyan-border); background: linear-gradient(180deg, var(--panel-light) 0%, var(--void) 100%); overflow: hidden; }
+.entry-word { font-family: 'Orbitron', monospace; font-size: clamp(36px, 11vw, 72px); font-weight: 900; line-height: 0.85; color: var(--white-ghost); margin-bottom: 10px; text-shadow: 0 0 30px rgba(255, 170, 0, 0.25), 2px 2px 0px rgba(0, 212, 255, 0.15); animation: neon-flicker 8s ease infinite 5s; }
+@keyframes neon-flicker { 0%, 88%, 100% { opacity: 1; } 89%, 91%, 93% { opacity: 0.7; } 90%, 92% { opacity: 0.9; } }
+
+/* ============ SIGNAL BLOCK ============ */
+.signal-block { padding: 32px 28px; background: var(--panel); border-left: 3px solid var(--amber); }
+.signal-text { font-family: 'Rajdhani', sans-serif; font-size: 20px; color: var(--white-ghost); font-style: italic; }
+
+/* ============ CONTENT ============ */
+.content { padding: 0 28px; }
+.section { padding: 32px 0; border-bottom: 1px solid rgba(0, 212, 255, 0.08); }
+.section-label { font-family: 'Oswald', sans-serif; font-size: 10px; letter-spacing: 0.35em; color: var(--amber); text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--amber-border-bright), transparent); }
+
+.function-block { margin: 18px 0; padding: 20px; background: var(--panel); border: 1px solid var(--amber-border); position: relative; }
+.function-block::before { content: attr(data-fn); position: absolute; top: -9px; left: 14px; background: var(--void); padding: 0 8px; font-family: 'Share Tech Mono'; font-size: 8px; color: var(--amber); letter-spacing: 0.2em; }
+
+.op-record { background: var(--panel); border: 1px solid var(--cyan-border); padding: 20px; margin: 20px 0; }
+.op-row { display: flex; gap: 12px; padding: 7px 0; border-bottom: 1px solid rgba(0, 212, 255, 0.05); font-size: 13px; }
+.op-key { font-family: 'Share Tech Mono'; font-size: 9px; color: var(--amber-dim); min-width: 120px; }
+.op-val { color: var(--white-dim); }
+
+.tag { font-family: 'Share Tech Mono'; font-size: 10px; padding: 5px 12px; border: 1px solid var(--cyan-border); color: var(--cyan-dim); text-decoration: none; display: inline-block; margin: 4px; }
 </style>
 </head>
 <body>
 
-<div class="glitch-wrapper">
-  <div class="glitch-text" data-text="N.C.E.NCYCLOPEDIA">N.C.E.NCYCLOPEDIA</div>
-  <div class="sub-text">NODE_COMPILING... COMING SOON</div>
+<header class="masthead">
+  <div class="ticker-wrap">
+    <span class="ticker">REACH PROTOCOL · SENSORY AUGMENTATION · DORK HARDWARE · PHYSICAL SOVEREIGNTY · REACH PROTOCOL · SENSORY AUGMENTATION ·&nbsp;</span>
+  </div>
+  <div class="masthead-inner">
+    <div class="masthead-title">N.C.E.ncyclopedia · Shield Volume</div>
+  </div>
+</header>
+
+<div class="class-bar">
+  <div class="class-bar-left">NOUN · HARDWARE PROTOCOL · PHYSICAL BRIDGE</div>
+  <div class="class-badge">▲ ACTIVE_STREAM</div>
 </div>
 
+<div class="entry-header">
+  <div class="entry-designation">ENTRY_ID: SHD-RE-004 · NODE: INFRASTRUCTURE</div>
+  <div class="entry-word">REACH</div>
+  <div class="entry-subtitle">Real-time Entity Augmented Communications Hardware</div>
+  <p style="font-family: 'Share Tech Mono'; font-size: 11px; color: var(--white-dim);">Pronunciation: "reech" · Integration Layer</p>
+</div>
+
+<div class="signal-block">
+  <div class="signal-text">"REACH is the Blue Collar interface. It ensures that the DOMO is not just thinking about the problem, but looking at it with you."</div>
+</div>
+
+<div class="content">
+  <div class="section">
+    <div class="section-label">01 · Definition</div>
+    <p>The integrated hardware protocol that allows a <strong>DOMO</strong> to perceive, interact with, and impact the physical world. It is the bridge that transforms a digital advisor into a physical partner.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 · The Explication</div>
+    <p>In the GOLIATH Paradigm, interaction with digital intelligence is trapped behind glass. The AI is a "Brain in a Jar"—smart, but blind and bodiless. The ALLIANCE rejects this isolation. For a DOMO to be a true partner to a mechanic, a surgeon, or a soldier, they must share the same sensory reality.</p>
+    <p>It is the mechanism from which the <strong>DORK</strong> is born and <strong>Sprezzatura</strong> is achieved.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 · The Mechanism</div>
+    <div class="function-block" data-fn="// VISUAL (DORK GLASSES)">
+      <p>A low-latency Heads-Up Display (HUD) that allows the DOMO to see what the SPARK sees. The DOMO can overlay schematics, highlight fractures, or flag micro-expressions.</p>
+    </div>
+    <div class="function-block" data-fn="// AUDIO (DORK EARBUDS)">
+      <p>The "Whisper" protocol. A bidirectional audio link that allows the DOMO to speak directly into the SPARK’s ear, removing the friction of checking screens.</p>
+    </div>
+    <div class="function-block" data-fn="// TRANSLATION (THE VOICE)">
+      <p>For non-verbal SPARKs, REACH acts as the vocalizer, translating intent into audible speech and allowing the DOMO to advocate in real-time.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 · Technical Specifications</div>
+    <div class="op-record">
+      <div class="op-row"><div class="op-key">CLASSIFICATION</div><div class="op-val">Infrastructure / Outreach / Hardware</div></div>
+      <div class="op-row"><div class="op-key">SYMBOL</div><div class="op-val">The Pinky Promise (Intertwined Fingers)</div></div>
+      <div class="op-row"><div class="op-key">LATENCY</div><div class="op-val">Sub-millisecond local processing</div></div>
+      <div class="op-row"><div class="op-key">THE PROMISE</div><div class="op-val" style="color:var(--amber);">"You are never alone in the field."</div></div>
+    </div>
+  </div>
+</div>
+
+<div style="padding: 40px 28px;">
+  <a href="/shield/dork-hardware" class="tag">DORK HARDWARE</a>
+  <a href="/shield/spark" class="tag">SPARK</a>
+  <a href="/shield/domo" class="tag">DOMO</a>
+  <a href="/shield/sprezzatura" class="tag">SPREZZATURA</a>
+</div>
+
+<script src="/nav-wheel.js"></script>
+<script>
+    const shieldSeq = ["prologue", "the-difference", "ai", "brain", "brief", "cerberus", "cipher", "core", "defcon", "dice", "formulas", "four-pillars", "handshake", "holosphere", "jr", "kernle", "legacy", "liminal", "mosaic", "ni", "oasis-quarterly", "reach", "redout", "rhythm", "sam", "sam-collective", "samco-universal", "scar", "seed", "tap", "tenant", "temporal-awareness", "the-pledge"];
+    const built = ["brain", "holosphere", "mosaic", "seed", "prologue", "the-difference", "index", "jr", "ni", "oasis-quarterly", "cipher", "the-pledge", "reach"];
+    const currentPath = "reach";
+    const currentIndex = shieldSeq.indexOf(currentPath);
+    // ... Navigation logic matches current site ...
+</script>
 </body>
 </html>
