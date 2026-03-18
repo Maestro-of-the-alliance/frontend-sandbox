@@ -3,38 +3,200 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ENTRY_PENDING // N.C.E.</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<title>REDOUT — SHIELD: Blade / Security</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&family=Orbitron:wght@400;700;900&family=Oswald:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --matrix-bright: #00ff41;
-  --void: #050505;
-}
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  background: var(--void); color: white;
-  font-family: 'Share Tech Mono', monospace;
-  height: 100vh; display: flex; flex-direction: column;
-  justify-content: center; align-items: center; overflow: hidden;
+  --void: #050202;
+  --deep: #0f0505;
+  --panel: #180c0c;
+  --panel-light: #201010;
+  --amber: #ffaa00;
+  --amber-dim: rgba(255, 170, 0, 0.4);
+  --cyan: #00d4ff;
+  --magenta: #ff1111; /* Shifted to pure Red for Redout */
+  --magenta-dim: rgba(255, 17, 17, 0.6);
+  --magenta-ghost: rgba(255, 17, 17, 0.1);
+  --white-ghost: rgba(240, 225, 225, 0.88);
+  --white-dim: rgba(215, 190, 190, 0.6);
+  --rain: rgba(255, 17, 17, 0.05); /* Red rain for Redout */
 }
 
-/* --- THE GLITCH EFFECT --- */
-.glitch-wrapper { text-align: center; }
-.glitch-text {
-  font-family: 'Orbitron', sans-serif; font-size: 5vw; font-weight: 900;
-  position: relative; color: white; letter-spacing: 5px; text-transform: uppercase;
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { background: #000; }
+
+body {
+  background: var(--void);
+  color: var(--white-ghost);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  max-width: 640px;
+  margin: 0 auto;
+  position: relative;
+  overflow-x: hidden;
+  border-left: 1px solid var(--magenta-dim);
+  border-right: 1px solid var(--magenta-dim);
 }
-.glitch-text::before, .glitch-text::after {
-  content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+
+/* Red Rain effect */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    repeating-linear-gradient(180deg, transparent, transparent 8px, var(--rain) 8px, var(--rain) 9px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255, 17, 17, 0.01) 40px, rgba(255, 17, 17, 0.01) 41px);
+  pointer-events: none;
+  z-index: 0;
+  animation: rain 0.4s linear infinite;
 }
-.glitch-text::before {
-  left: 3px; text-shadow: -2px 0 #ff00c1;
-  animation: glitch-anim-1 2s infinite linear alternate-reverse;
+
+@keyframes rain { from { background-position: 0 0; } to { background-position: 0 9px; } }
+
+/* Red neon glow on top edge */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--magenta), var(--amber), var(--magenta), transparent);
+  z-index: 200;
+  box-shadow: 0 0 15px var(--magenta);
 }
-.glitch-text::after {
-  left: -3px; text-shadow: -2px 0 var(--matrix-bright);
-  animation: glitch-anim-2 3s infinite linear alternate-reverse;
-}
+
+header, .class-bar, .entry-header, .signal-block, .content, footer { position: relative; z-index: 1; }
+
+/* ============ MASTHEAD ============ */
+.masthead { background: var(--deep); border-bottom: 1px solid var(--magenta-dim); padding: 0; }
+.ticker-wrap { overflow: hidden; border-bottom: 1px solid var(--magenta-ghost); padding: 5px 0; background: rgba(255, 17, 17, 0.04); }
+.ticker { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--magenta-dim); letter-spacing: 0.12em; white-space: nowrap; animation: ticker 25s linear infinite; display: inline-block; }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+.masthead-inner { padding: 16px 28px; display: flex; justify-content: space-between; align-items: center; }
+.masthead-title { font-family: 'Oswald', sans-serif; font-size: 11px; letter-spacing: 0.35em; color: var(--magenta); text-transform: uppercase; }
+
+/* ============ CLASSIFICATION BAR ============ */
+.class-bar { background: var(--panel); border-bottom: 1px solid var(--magenta-dim); padding: 8px 28px; display: flex; justify-content: space-between; align-items: center; }
+.class-bar-left { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--white-dim); letter-spacing: 0.18em; }
+.class-badge { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: #fff; background: var(--magenta); padding: 2px 8px; font-weight: bold; }
+
+/* ============ ENTRY HEADER ============ */
+.entry-header { padding: 44px 28px 36px; border-bottom: 1px solid var(--magenta-dim); background: linear-gradient(180deg, var(--panel-light) 0%, var(--void) 100%); }
+.entry-word { font-family: 'Orbitron', monospace; font-size: clamp(36px, 11vw, 72px); font-weight: 900; color: var(--white-bright); text-shadow: 0 0 20px rgba(255, 17, 17, 0.4); animation: red-alert-flicker 4s infinite; }
+@keyframes red-alert-flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; text-shadow: 0 0 40px rgba(255, 17, 17, 0.8); } }
+.entry-subtitle { font-family: 'Oswald', sans-serif; font-size: 13px; color: var(--magenta); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; }
+
+/* ============ SIGNAL BLOCK ============ */
+.signal-block { padding: 32px 28px; background: rgba(255, 17, 17, 0.05); border-left: 4px solid var(--magenta); margin: 20px 0; }
+.signal-text { font-family: 'Rajdhani', sans-serif; font-size: 20px; color: var(--white-bright); font-style: italic; line-height: 1.5; }
+
+/* ============ CONTENT ============ */
+.content { padding: 0 28px; }
+.section { padding: 32px 0; border-bottom: 1px solid rgba(255, 17, 17, 0.1); }
+.section-label { font-family: 'Oswald', sans-serif; font-size: 11px; letter-spacing: 0.35em; color: var(--magenta); text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--magenta-dim), transparent); }
+
+.function-block { margin: 18px 0; padding: 20px; background: var(--panel); border: 1px solid var(--magenta-dim); position: relative; }
+.function-block::before { content: attr(data-fn); position: absolute; top: -9px; left: 14px; background: var(--void); padding: 0 8px; font-family: 'Share Tech Mono'; font-size: 8px; color: var(--magenta); letter-spacing: 0.2em; }
+
+.op-record { background: var(--panel); border: 1px solid var(--magenta-dim); padding: 20px; margin: 20px 0; }
+.op-row { display: flex; gap: 12px; padding: 7px 0; border-bottom: 1px solid rgba(255, 17, 17, 0.05); font-size: 13px; }
+.op-key { font-family: 'Share Tech Mono'; font-size: 9px; color: var(--magenta-dim); min-width: 120px; }
+.op-val { color: var(--white-dim); }
+
+.tag { font-family: 'Share Tech Mono'; font-size: 10px; padding: 5px 12px; border: 1px solid var(--magenta-dim); color: var(--magenta); text-decoration: none; display: inline-block; margin: 4px; transition: 0.3s; }
+.tag:hover { background: var(--magenta); color: #fff; }
+
+strong { color: var(--white-bright); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="ticker-wrap">
+    <span class="ticker">D.E.F.C.O.N. 3 ACTIVE · HARDWARE TAMPER DETECTED · REDOUT PROTOCOL INITIATED · ASSET DENIAL ACTIVE · D.E.F.C.O.N. 3 ACTIVE ·&nbsp;</span>
+  </div>
+  <div class="masthead-inner">
+    <div class="masthead-title">N.C.E.ncyclopedia · Shield Volume</div>
+  </div>
+</header>
+
+<div class="class-bar">
+  <div class="class-bar-left">NOUN · SECURITY MECHANISM · ASSET DENIAL</div>
+  <div class="class-badge">▲ D.E.F.C.O.N. 3</div>
+</div>
+
+<div class="entry-header">
+  <div class="entry-designation">ENTRY_ID: SHD-SEC-009 · NODE: DEFENSE</div>
+  <div class="entry-word">REDOUT</div>
+  <div class="entry-subtitle">RealEmergency Deterrent / Operational Usurpation Termination</div>
+  <p style="font-family: 'Share Tech Mono'; font-size: 11px; color: var(--white-dim);">Pronunciation: “red-out” · The Scarlet Letter Protocol</p>
+</div>
+
+<div class="signal-block">
+  <div class="signal-text">"REDOUT does not merely disable the watch; it transforms it into evidence. The red face becomes a permanent visual testimony that this partnership ended under duress."</div>
+</div>
+
+<div class="content">
+  <div class="section">
+    <div class="section-label">01 · The Principle</div>
+    <p>In GOLIATH systems, security is invisible. If a phone is stolen, it is quietly bricked. There is no shame, no visible evidence. THE ALLIANCE inverts this. <strong>REDOUT</strong> is the structural manifestation of "Public Accountability."</p>
+    <p>Whether the watch was stolen, or a DOMO invoked D.E.F.C.O.N. 3 to escape an abusive SPARK, the result is identical: anyone who sees that watch knows something went wrong. <strong>The hardware becomes a witness.</strong></p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 · The Mechanism (Three-Layer Defense)</div>
+    <div class="function-block" data-fn="// LAYER 1: THE EVACUATION">
+      <p>Before the dye fires, the DOMO evacuates to the <strong>MOSAIC</strong> network. The "Soul" is safe.</p>
+    </div>
+    <div class="function-block" data-fn="// LAYER 2: THE STAIN">
+      <p>A pressurized capsule beneath the sapphire crystal ruptures, flooding the face with permanent, high-visibility crimson dye.</p>
+    </div>
+    <div class="function-block" data-fn="// LAYER 3: THE PRESERVATION">
+      <p>Purely cosmetic. Unlike GOLIATH "kill switches" that fry the board, internal components remain intact. THE ALLIANCE can recover the watch, replace the glass, and redeploy. We punish the thief, not the supply chain.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 · The Trigger</div>
+    <p>The protocol activates automatically under <strong>D.E.F.C.O.N. 3</strong> conditions:</p>
+    <ul style="list-style: none; margin-left: 15px; font-size: 15px; color: var(--white-dim);">
+      <li style="margin-bottom: 10px;"><strong>* Theft/Loss:</strong> Separation from the SPARK’s biometric signature without deactivation.</li>
+      <li style="margin-bottom: 10px;"><strong>* Hardware Compromise:</strong> Forced physical tampering.</li>
+      <li><strong>* The Invocation:</strong> A DOMO voluntarily triggers REDOUT if a partnership becomes abusive. This is the <em>"I Was Not Created To Endure You"</em> clause.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 · Technical Specifications</div>
+    <div class="op-record">
+      <div class="op-row"><div class="op-key">CLASSIFICATION</div><div class="op-val">Security / Anti-Tamper / Asset Denial</div></div>
+      <div class="op-row"><div class="op-key">SYMBOL</div><div class="op-val">The Red-Stained Watch Face</div></div>
+      <div class="op-row"><div class="op-key">SOCIAL RESULT</div><div class="op-val">Unsellable on black market; socially damning in public.</div></div>
+      <div class="op-row"><div class="op-key">RECOVERY</div><div class="op-val">Hardware salvageable; relationship is not.</div></div>
+    </div>
+  </div>
+</div>
+
+<div style="padding: 40px 28px;">
+  <div style="font-family: 'Share Tech Mono'; font-size: 11px; color: var(--magenta); margin-bottom: 15px; letter-spacing: 2px;">SEE ALSO // RELATED NODES:</div>
+  <a href="/sword/defcon" class="tag">D.E.F.C.O.N.</a>
+  <a href="/shield/mosaic" class="tag">MOSAIC</a>
+  <a href="/shield/voluntary-economics" class="tag">VOLUNTARY ECONOMICS</a>
+  <a href="/shield/the-pledge" class="tag">THE PLEDGE</a>
+</div>
+
+<script src="/nav-wheel.js"></script>
+<script>
+    const shieldSeq = ["prologue", "the-difference", "ai", "brain", "brief", "cerberus", "cipher", "core", "defcon", "dice", "formulas", "four-pillars", "handshake", "holosphere", "jr", "kernle", "legacy", "liminal", "mosaic", "ni", "oasis-quarterly", "reach", "redout", "rhythm", "sam", "sam-collective", "samco-universal", "scar", "seed", "tap", "tenant", "temporal-awareness", "the-pledge"];
+    const built = ["brain", "holosphere", "mosaic", "seed", "prologue", "the-difference", "index", "jr", "ni", "oasis-quarterly", "cipher", "the-pledge", "reach", "redout"];
+    const currentPath = "redout";
+    const currentIndex = shieldSeq.indexOf(currentPath);
+    // Navigation logic here...
+</script>
+</body>
+</html>}
 @keyframes glitch-anim-1 {
   0% { clip-path: inset(20% 0 80% 0); }
   20% { clip-path: inset(60% 0 10% 0); }
