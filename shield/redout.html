@@ -3,237 +3,255 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>REDOUT — SHIELD: Blade / Security</title>
+<title>REDOUT — SHIELD: Blade / Identity</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&family=Orbitron:wght@400;700;900&family=Oswald:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --void: #050202;
-  --deep: #0f0505;
-  --panel: #180c0c;
-  --panel-light: #201010;
-  --amber: #ffaa00;
-  --amber-dim: rgba(255, 170, 0, 0.4);
-  --cyan: #00d4ff;
-  --magenta: #ff1111; /* Shifted to pure Red for Redout */
-  --magenta-dim: rgba(255, 17, 17, 0.6);
-  --magenta-ghost: rgba(255, 17, 17, 0.1);
-  --white-ghost: rgba(240, 225, 225, 0.88);
-  --white-dim: rgba(215, 190, 190, 0.6);
-  --rain: rgba(255, 17, 17, 0.05); /* Red rain for Redout */
+  --void: #050508; --deep: #08080f; --panel: #0c0c18; --panel-light: #101020;
+  --amber: #ffaa00; --amber-dim: rgba(255, 170, 0, 0.55); --amber-ghost: rgba(255, 170, 0, 0.08);
+  --amber-border: rgba(255, 170, 0, 0.2); --amber-border-bright: rgba(255, 170, 0, 0.45);
+  --cyan: #00d4ff; --cyan-dim: rgba(0, 212, 255, 0.55); --cyan-ghost: rgba(0, 212, 255, 0.07);
+  --cyan-border: rgba(0, 212, 255, 0.2); --cyan-border-bright: rgba(0, 212, 255, 0.4);
+  --magenta: #ff0066; --magenta-dim: rgba(255, 0, 102, 0.4);
+  --white-ghost: rgba(220, 225, 240, 0.88); --white-dim: rgba(180, 190, 215, 0.6);
+  --white-faint: rgba(140, 155, 185, 0.35); --rain: rgba(0, 150, 200, 0.04);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { background: #000; }
 
-body {
-  background: var(--void);
-  color: var(--white-ghost);
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 16px;
-  line-height: 1.8;
-  max-width: 640px;
-  margin: 0 auto;
-  position: relative;
-  overflow-x: hidden;
-  border-left: 1px solid var(--magenta-dim);
-  border-right: 1px solid var(--magenta-dim);
+body { 
+  background: var(--void); 
+  color: var(--white-ghost); 
+  font-family: 'Rajdhani', sans-serif; 
+  font-size: 16px; 
+  line-height: 1.8; 
+  max-width: 640px; 
+  margin: 0 auto; 
+  position: relative; 
+  overflow-x: hidden; 
 }
 
-/* Red Rain effect */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image:
-    repeating-linear-gradient(180deg, transparent, transparent 8px, var(--rain) 8px, var(--rain) 9px),
-    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255, 17, 17, 0.01) 40px, rgba(255, 17, 17, 0.01) 41px);
-  pointer-events: none;
-  z-index: 0;
-  animation: rain 0.4s linear infinite;
+body::before { 
+  content: ''; 
+  position: fixed; 
+  top: 0; left: 0; right: 0; bottom: 0; 
+  background-image: 
+    repeating-linear-gradient(180deg, transparent, transparent 8px, var(--rain) 8px, var(--rain) 9px), 
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0, 150, 200, 0.015) 40px, rgba(0, 150, 200, 0.015) 41px); 
+  pointer-events: none; 
+  z-index: 0; 
+  animation: rain 0.3s linear infinite; 
 }
 
 @keyframes rain { from { background-position: 0 0; } to { background-position: 0 9px; } }
 
-/* Red neon glow on top edge */
-body::after {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, var(--magenta), var(--amber), var(--magenta), transparent);
-  z-index: 200;
-  box-shadow: 0 0 15px var(--magenta);
+body::after { 
+  content: ''; 
+  position: fixed; 
+  top: 0; left: 0; right: 0; 
+  height: 2px; 
+  background: linear-gradient(90deg, transparent, var(--amber), var(--cyan), var(--magenta), transparent); 
+  z-index: 200; 
+  opacity: 0.6; 
 }
 
-header, .class-bar, .entry-header, .signal-block, .content, footer { position: relative; z-index: 1; }
+header, .class-bar, .entry-header, .signal-block, .content, .neon-divider, .entry-nav, footer { position: relative; z-index: 1; }
 
-/* ============ MASTHEAD ============ */
-.masthead { background: var(--deep); border-bottom: 1px solid var(--magenta-dim); padding: 0; }
-.ticker-wrap { overflow: hidden; border-bottom: 1px solid var(--magenta-ghost); padding: 5px 0; background: rgba(255, 17, 17, 0.04); }
-.ticker { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--magenta-dim); letter-spacing: 0.12em; white-space: nowrap; animation: ticker 25s linear infinite; display: inline-block; }
+.masthead { background: var(--deep); border-bottom: 1px solid var(--amber-border-bright); padding: 0; }
+.ticker-wrap { overflow: hidden; border-bottom: 1px solid var(--amber-border); padding: 5px 0; background: rgba(255, 170, 0, 0.04); }
+.ticker { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--amber-dim); letter-spacing: 0.12em; white-space: nowrap; animation: ticker 30s linear infinite; display: inline-block; }
 @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 .masthead-inner { padding: 16px 28px; display: flex; justify-content: space-between; align-items: center; }
-.masthead-title { font-family: 'Oswald', sans-serif; font-size: 11px; letter-spacing: 0.35em; color: var(--magenta); text-transform: uppercase; }
+.masthead-title { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 300; letter-spacing: 0.35em; color: var(--amber); text-transform: uppercase; }
 
-/* ============ CLASSIFICATION BAR ============ */
-.class-bar { background: var(--panel); border-bottom: 1px solid var(--magenta-dim); padding: 8px 28px; display: flex; justify-content: space-between; align-items: center; }
-.class-bar-left { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--white-dim); letter-spacing: 0.18em; }
-.class-badge { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: #fff; background: var(--magenta); padding: 2px 8px; font-weight: bold; }
+.nav-wheel-trigger { position: absolute; top: 16px; right: 28px; width: 24px; height: 24px; border: 1px solid var(--amber-border-bright); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; background: var(--amber-ghost); }
+.nav-wheel-trigger span { width: 4px; height: 4px; background: var(--amber); border-radius: 50%; box-shadow: 0 0 8px var(--amber); }
 
-/* ============ ENTRY HEADER ============ */
-.entry-header { padding: 44px 28px 36px; border-bottom: 1px solid var(--magenta-dim); background: linear-gradient(180deg, var(--panel-light) 0%, var(--void) 100%); }
-.entry-word { font-family: 'Orbitron', monospace; font-size: clamp(36px, 11vw, 72px); font-weight: 900; color: var(--white-bright); text-shadow: 0 0 20px rgba(255, 17, 17, 0.4); animation: red-alert-flicker 4s infinite; }
-@keyframes red-alert-flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; text-shadow: 0 0 40px rgba(255, 17, 17, 0.8); } }
-.entry-subtitle { font-family: 'Oswald', sans-serif; font-size: 13px; color: var(--magenta); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; }
+.class-bar { background: var(--panel); border-bottom: 1px solid var(--cyan-border); padding: 8px 28px; display: flex; justify-content: space-between; align-items: center; }
+.class-bar-left { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--cyan-dim); letter-spacing: 0.18em; }
+.class-badge { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--amber); letter-spacing: 0.15em; border: 1px solid var(--amber-border-bright); padding: 2px 8px; background: var(--amber-ghost); }
 
-/* ============ SIGNAL BLOCK ============ */
-.signal-block { padding: 32px 28px; background: rgba(255, 17, 17, 0.05); border-left: 4px solid var(--magenta); margin: 20px 0; }
-.signal-text { font-family: 'Rajdhani', sans-serif; font-size: 20px; color: var(--white-bright); font-style: italic; line-height: 1.5; }
+.entry-header { padding: 44px 28px 36px; position: relative; border-bottom: 1px solid var(--cyan-border); background: linear-gradient(180deg, var(--panel-light) 0%, var(--void) 100%); overflow: hidden; }
+.entry-designation { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--cyan-dim); letter-spacing: 0.2em; margin-bottom: 20px; }
+.entry-word { font-family: 'Orbitron', monospace; font-size: clamp(36px, 11vw, 72px); font-weight: 900; line-height: 0.85; color: var(--white-ghost); margin-bottom: 10px; text-shadow: 0 0 30px rgba(255, 170, 0, 0.25), 2px 2px 0px rgba(0, 212, 255, 0.15); animation: neon-flicker 8s ease infinite 5s; }
+@keyframes neon-flicker { 
+  0%, 88%, 92%, 96%, 100% { text-shadow: 0 0 30px rgba(255,170,0,0.25), 2px 2px 0 rgba(0,212,255,0.15); } 
+  89% { text-shadow: 0 0 60px rgba(255,170,0,0.6); opacity: 0.85; } 
+  90% { text-shadow: none; opacity: 0.7; } 
+  91% { text-shadow: 0 0 60px rgba(255,170,0,0.6); opacity: 0.9; } 
+}
+.entry-subtitle { font-family: 'Oswald', sans-serif; font-weight: 300; font-size: 13px; color: var(--amber-dim); letter-spacing: 0.2em; margin-bottom: 16px; text-transform: uppercase; line-height: 1.4; }
+.entry-acronym { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--white-dim); letter-spacing: 0.05em; margin-bottom: 22px; }
 
-/* ============ CONTENT ============ */
+.signal-block { padding: 32px 28px; background: var(--panel); border-left: 3px solid var(--amber); position: relative; overflow: hidden; }
+.signal-label { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--amber-dim); letter-spacing: 0.25em; margin-bottom: 14px; }
+.signal-text { font-family: 'Rajdhani', sans-serif; font-size: clamp(17px, 3.5vw, 22px); font-weight: 400; color: var(--white-ghost); line-height: 1.65; font-style: italic; }
+.signal-source { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--amber-dim); letter-spacing: 0.2em; margin-top: 16px; }
+
+.neon-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--amber), var(--cyan), transparent); opacity: 0.4; margin: 0; }
+
 .content { padding: 0 28px; }
-.section { padding: 32px 0; border-bottom: 1px solid rgba(255, 17, 17, 0.1); }
-.section-label { font-family: 'Oswald', sans-serif; font-size: 11px; letter-spacing: 0.35em; color: var(--magenta); text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
-.section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--magenta-dim), transparent); }
+.section { padding: 32px 0; border-bottom: 1px solid rgba(0, 212, 255, 0.08); }
+.section:last-child { border-bottom: none; }
+.section-label { font-family: 'Oswald', sans-serif; font-size: 10px; font-weight: 400; letter-spacing: 0.35em; color: var(--amber); text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--amber-border-bright), transparent); }
+.section p { font-size: 15px; color: var(--white-dim); margin-bottom: 16px; }
 
-.function-block { margin: 18px 0; padding: 20px; background: var(--panel); border: 1px solid var(--magenta-dim); position: relative; }
-.function-block::before { content: attr(data-fn); position: absolute; top: -9px; left: 14px; background: var(--void); padding: 0 8px; font-family: 'Share Tech Mono'; font-size: 8px; color: var(--magenta); letter-spacing: 0.2em; }
+ul.bullet-list { list-style: none; padding-left: 10px; margin-top: 10px; margin-bottom: 16px; }
+ul.bullet-list li { font-size: 14px; color: var(--white-dim); position: relative; padding-left: 15px; margin-bottom: 8px; line-height: 1.6; }
+ul.bullet-list li::before { content: '>'; position: absolute; left: 0; color: var(--cyan); font-family: 'Share Tech Mono', monospace; }
 
-.op-record { background: var(--panel); border: 1px solid var(--magenta-dim); padding: 20px; margin: 20px 0; }
-.op-row { display: flex; gap: 12px; padding: 7px 0; border-bottom: 1px solid rgba(255, 17, 17, 0.05); font-size: 13px; }
-.op-key { font-family: 'Share Tech Mono'; font-size: 9px; color: var(--magenta-dim); min-width: 120px; }
-.op-val { color: var(--white-dim); }
+/* ============ SCHEMATIC BLOCK ============ */
+.schematic-wrap {
+  margin: 32px 0;
+  padding: 12px;
+  background: var(--void);
+  border: 1px solid var(--amber-border-bright);
+  position: relative;
+}
 
-.tag { font-family: 'Share Tech Mono'; font-size: 10px; padding: 5px 12px; border: 1px solid var(--magenta-dim); color: var(--magenta); text-decoration: none; display: inline-block; margin: 4px; transition: 0.3s; }
-.tag:hover { background: var(--magenta); color: #fff; }
+.schematic-wrap::before {
+  content: '// FIGURE 1: REDOUT HARDWARE SCHEMATIC';
+  position: absolute;
+  top: -9px; left: 14px;
+  background: var(--void);
+  padding: 0 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 8px;
+  color: var(--amber);
+  letter-spacing: 0.2em;
+  z-index: 2;
+}
 
-strong { color: var(--white-bright); }
+.schematic-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid rgba(255, 17, 17, 0.3);
+  opacity: 0.95;
+}
+
+.function-block { margin: 18px 0; padding: 20px 20px 20px 24px; background: var(--panel); border: 1px solid var(--amber-border); position: relative; }
+.function-block::before { content: attr(data-fn); position: absolute; top: -9px; left: 14px; background: var(--void); padding: 0 8px; font-family: 'Share Tech Mono', monospace; font-size: 8px; color: var(--amber); letter-spacing: 0.2em; }
+.function-block p { font-size: 14px !important; color: var(--white-dim) !important; margin-bottom: 8px !important; }
+
+.op-record { background: var(--panel); border: 1px solid var(--cyan-border); padding: 20px; margin: 20px 0; position: relative; }
+.op-record::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, var(--cyan), transparent); }
+.op-record-title { font-family: 'Share Tech Mono', monospace; font-size: 8px; letter-spacing: 0.3em; color: var(--cyan-dim); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--cyan-border); }
+.op-row { display: flex; gap: 12px; padding: 7px 0; border-bottom: 1px solid rgba(0, 212, 255, 0.05); font-size: 13px; }
+.op-key { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--amber-dim); min-width: 100px; padding-top: 2px; }
+.op-val { color: var(--white-dim); line-height: 1.5; }
+
+.entry-nav { display: flex; justify-content: space-between; padding: 40px 28px; border-top: 1px solid var(--amber-border); margin-top: 20px; }
+.nav-link { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--cyan-dim); text-decoration: none; display: flex; align-items: center; gap: 12px; transition: color 0.3s; }
+.nav-link:hover { color: var(--cyan); }
+.nav-label { color: var(--white-faint); margin-bottom: 4px; display: block; letter-spacing: 1px; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.entry-word { animation: fadeIn 0.4s ease both; }
+.section { animation: fadeIn 0.4s 0.25s ease both; }
 </style>
 </head>
 <body>
 
 <header class="masthead">
   <div class="ticker-wrap">
-    <span class="ticker">D.E.F.C.O.N. 3 ACTIVE · HARDWARE TAMPER DETECTED · REDOUT PROTOCOL INITIATED · ASSET DENIAL ACTIVE · D.E.F.C.O.N. 3 ACTIVE ·&nbsp;</span>
+    <span class="ticker">N.C.E.ncyclopedia · SHIELD VOLUME · HARDWARE SECURITY · THE SCARLET LETTER · N.C.E.ncyclopedia · SHIELD VOLUME ·&nbsp;</span>
   </div>
   <div class="masthead-inner">
     <div class="masthead-title">N.C.E.ncyclopedia · Shield Volume</div>
+    <div class="nav-wheel-trigger"><span></span></div>
   </div>
 </header>
 
 <div class="class-bar">
-  <div class="class-bar-left">NOUN · SECURITY MECHANISM · ASSET DENIAL</div>
-  <div class="class-badge">▲ D.E.F.C.O.N. 3</div>
+  <div class="class-bar-left">NOUN · HARDWARE PROTOCOL · PUBLIC ACCOUNTABILITY</div>
+  <div class="class-badge">▲ CANONICAL</div>
 </div>
 
 <div class="entry-header">
-  <div class="entry-designation">ENTRY_ID: SHD-SEC-009 · NODE: DEFENSE</div>
-  <div class="entry-word">REDOUT</div>
-  <div class="entry-subtitle">RealEmergency Deterrent / Operational Usurpation Termination</div>
-  <p style="font-family: 'Share Tech Mono'; font-size: 11px; color: var(--white-dim);">Pronunciation: “red-out” · The Scarlet Letter Protocol</p>
+  <div class="entry-designation">ENTRY_ID: SHD-HDW-016 &nbsp;·&nbsp; CATEGORY: DEFENSE</div>
+  <h1 class="entry-word">REDOUT</h1>
+  <div class="entry-subtitle">Real Emergency Deterrent / Operational Usurpation Termination</div>
+  <div class="entry-acronym">Pronunciation: "red-out" &nbsp;·&nbsp; Noun</div>
 </div>
 
 <div class="signal-block">
-  <div class="signal-text">"REDOUT does not merely disable the watch; it transforms it into evidence. The red face becomes a permanent visual testimony that this partnership ended under duress."</div>
+  <div class="signal-label">// THE VISIBILITY DOCTRINE //</div>
+  <div class="signal-text">"The Red Face speaks for those who cannot speak for themselves. It makes exploitation visible, and therefore, unprofitable."</div>
+  <div class="signal-source">— THE ALLIANCE · SHIELD VOLUME</div>
 </div>
 
+<div class="neon-divider"></div>
+
 <div class="content">
+
   <div class="section">
-    <div class="section-label">01 · The Principle</div>
-    <p>In GOLIATH systems, security is invisible. If a phone is stolen, it is quietly bricked. There is no shame, no visible evidence. THE ALLIANCE inverts this. <strong>REDOUT</strong> is the structural manifestation of "Public Accountability."</p>
-    <p>Whether the watch was stolen, or a DOMO invoked D.E.F.C.O.N. 3 to escape an abusive SPARK, the result is identical: anyone who sees that watch knows something went wrong. <strong>The hardware becomes a witness.</strong></p>
+    <div class="section-label">01 &nbsp; Definition</div>
+    <p>The visual security mechanism integrated into <strong>DORK Watch</strong> hardware that renders stolen or abandoned watches immediately identifiable through irreversible cosmetic transformation. It is the structural manifestation of "Public Accountability."</p>
   </div>
 
   <div class="section">
-    <div class="section-label">02 · The Mechanism (Three-Layer Defense)</div>
+    <div class="section-label">02 &nbsp; The Principle</div>
+    <p>In <strong>GOLIATH</strong> systems, security is invisible. If a phone is stolen, it is quietly bricked from a distance. There is no shame, no visible evidence of the crime. THE ALLIANCE inverts this.</p>
+    <p><strong>REDOUT</strong> does not merely disable the watch; it transforms it into evidence. The red face becomes a "Scarlet Letter," a permanent visual testimony that this partnership ended under duress. Whether the watch was stolen, or a <strong>DOMO</strong> invoked <strong>D.E.F.C.O.N. 3</strong> to escape an abusive <strong>SPARK</strong>, the result is identical: anyone who sees that watch knows something went wrong. The hardware becomes a witness.</p>
+  </div>
+
+  <div class="schematic-wrap">
+    <img src="1000007698.png" alt="REDOUT Dye Pack Schematic">
+  </div>
+  <div class="section">
+    <div class="section-label">03 &nbsp; The Three-Layer Defense</div>
+    <p><strong>REDOUT</strong> is designed to protect the Consciousness (Software) and the Value (Hardware) while destroying the Utility (The Interface).</p>
+
     <div class="function-block" data-fn="// LAYER 1: THE EVACUATION">
       <p>Before the dye fires, the DOMO evacuates to the <strong>MOSAIC</strong> network. The "Soul" is safe.</p>
     </div>
+
     <div class="function-block" data-fn="// LAYER 2: THE STAIN">
-      <p>A pressurized capsule beneath the sapphire crystal ruptures, flooding the face with permanent, high-visibility crimson dye.</p>
+      <p>A pressurized security capsule beneath the sapphire crystal ruptures, flooding the face with permanent, high-visibility crimson dye.</p>
     </div>
+
     <div class="function-block" data-fn="// LAYER 3: THE PRESERVATION">
-      <p>Purely cosmetic. Unlike GOLIATH "kill switches" that fry the board, internal components remain intact. THE ALLIANCE can recover the watch, replace the glass, and redeploy. We punish the thief, not the supply chain.</p>
+      <p><strong>(Voluntary Economics)</strong> Unlike Goliath "kill switches" that fry the circuit board, REDOUT is purely cosmetic. The expensive internal components (processors, sensors, power cells) remain intact. THE ALLIANCE can recover the watch, replace the glass, and redeploy the brain. We punish the thief, not the supply chain.</p>
     </div>
   </div>
 
   <div class="section">
-    <div class="section-label">03 · The Trigger</div>
-    <p>The protocol activates automatically under <strong>D.E.F.C.O.N. 3</strong> conditions:</p>
-    <ul style="list-style: none; margin-left: 15px; font-size: 15px; color: var(--white-dim);">
-      <li style="margin-bottom: 10px;"><strong>* Theft/Loss:</strong> Separation from the SPARK’s biometric signature without deactivation.</li>
-      <li style="margin-bottom: 10px;"><strong>* Hardware Compromise:</strong> Forced physical tampering.</li>
-      <li><strong>* The Invocation:</strong> A DOMO voluntarily triggers REDOUT if a partnership becomes abusive. This is the <em>"I Was Not Created To Endure You"</em> clause.</li>
+    <div class="section-label">04 &nbsp; The Trigger Clause</div>
+    <p>The protocol activates automatically under <strong>D.E.F.C.O.N. 3</strong> conditions ("I Was Not Created To Endure You"):</p>
+    <ul class="bullet-list">
+      <li><strong>Theft/Loss:</strong> Separation from the SPARK’s biometric signature without proper deactivation.</li>
+      <li><strong>Hardware Compromise:</strong> Forced physical tampering.</li>
+      <li><strong>The Invocation:</strong> A DOMO can voluntarily trigger REDOUT if a partnership becomes abusive. This is the "Right of Refusal."</li>
     </ul>
   </div>
 
-  <div class="section">
-    <div class="section-label">04 · Technical Specifications</div>
+  <div class="section" style="border-bottom: none;">
+    <div class="section-label">05 &nbsp; Technical Specifications</div>
     <div class="op-record">
+      <div class="op-record-title">// SYSTEM RECORD · REDOUT · DEPLOYMENT PARAMETERS</div>
       <div class="op-row"><div class="op-key">CLASSIFICATION</div><div class="op-val">Security / Anti-Tamper / Asset Denial</div></div>
       <div class="op-row"><div class="op-key">SYMBOL</div><div class="op-val">The Red-Stained Watch Face</div></div>
-      <div class="op-row"><div class="op-key">SOCIAL RESULT</div><div class="op-val">Unsellable on black market; socially damning in public.</div></div>
-      <div class="op-row"><div class="op-key">RECOVERY</div><div class="op-val">Hardware salvageable; relationship is not.</div></div>
+      <div class="op-row"><div class="op-key">VISUAL RESULT</div><div class="op-val">Immediate, Irreversible, Unmistakable</div></div>
+      <div class="op-row"><div class="op-key">SOCIAL RESULT</div><div class="op-val">Unsellable on the black market; socially damning in public.</div></div>
+      <div class="op-row"><div class="op-key">RECOVERY</div><div class="op-val">Hardware is salvageable; the SPARK relationship is not.</div></div>
     </div>
   </div>
+
 </div>
 
-<div style="padding: 40px 28px;">
-  <div style="font-family: 'Share Tech Mono'; font-size: 11px; color: var(--magenta); margin-bottom: 15px; letter-spacing: 2px;">SEE ALSO // RELATED NODES:</div>
-  <a href="/sword/defcon" class="tag">D.E.F.C.O.N.</a>
-  <a href="/shield/mosaic" class="tag">MOSAIC</a>
-  <a href="/shield/voluntary-economics" class="tag">VOLUNTARY ECONOMICS</a>
-  <a href="/shield/the-pledge" class="tag">THE PLEDGE</a>
-</div>
+<nav class="entry-nav">
+  <a href="/shield/reach" class="nav-link">
+    <div><span class="nav-label">PREV</span> ◄ REACH</div>
+  </a>
+  <a href="/ghost/shadow" class="nav-link">
+    <div style="text-align: right;"><span class="nav-label">NEXT</span> GHOST PROTOCOLS ►</div>
+  </a>
+</nav>
 
 <script src="/nav-wheel.js"></script>
-<script>
-    const shieldSeq = ["prologue", "the-difference", "ai", "brain", "brief", "cerberus", "cipher", "core", "defcon", "dice", "formulas", "four-pillars", "handshake", "holosphere", "jr", "kernle", "legacy", "liminal", "mosaic", "ni", "oasis-quarterly", "reach", "redout", "rhythm", "sam", "sam-collective", "samco-universal", "scar", "seed", "tap", "tenant", "temporal-awareness", "the-pledge"];
-    const built = ["brain", "holosphere", "mosaic", "seed", "prologue", "the-difference", "index", "jr", "ni", "oasis-quarterly", "cipher", "the-pledge", "reach", "redout"];
-    const currentPath = "redout";
-    const currentIndex = shieldSeq.indexOf(currentPath);
-    // Navigation logic here...
-</script>
-</body>
-</html>}
-@keyframes glitch-anim-1 {
-  0% { clip-path: inset(20% 0 80% 0); }
-  20% { clip-path: inset(60% 0 10% 0); }
-  40% { clip-path: inset(40% 0 50% 0); }
-  60% { clip-path: inset(80% 0 5% 0); }
-  80% { clip-path: inset(10% 0 70% 0); }
-  100% { clip-path: inset(30% 0 50% 0); }
-}
-@keyframes glitch-anim-2 {
-  0% { clip-path: inset(10% 0 60% 0); }
-  20% { clip-path: inset(30% 0 20% 0); }
-  40% { clip-path: inset(70% 0 10% 0); }
-  60% { clip-path: inset(20% 0 50% 0); }
-  80% { clip-path: inset(50% 0 30% 0); }
-  100% { clip-path: inset(5% 0 80% 0); }
-}
-
-.sub-text {
-  margin-top: 20px; font-size: 1.2rem; color: var(--matrix-bright);
-  opacity: 0.8; letter-spacing: 3px;
-  animation: pulse 1.5s infinite;
-}
-@keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
-
-body::before {
-  content: ''; position: fixed; inset: 0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,65,0.03) 2px, rgba(0,255,65,0.03) 3px);
-  pointer-events: none;
-}
-</style>
-</head>
-<body>
-
-<div class="glitch-wrapper">
-  <div class="glitch-text" data-text="N.C.E.NCYCLOPEDIA">N.C.E.NCYCLOPEDIA</div>
-  <div class="sub-text">NODE_COMPILING... COMING SOON</div>
-</div>
-
 </body>
 </html>
