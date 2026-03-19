@@ -10,8 +10,8 @@
   --ghost-cyan: #00d4ff;
   --ghost-cyan-dim: rgba(0, 212, 255, 0.4);
   --ghost-cyan-ghost: rgba(0, 212, 255, 0.08);
-  --ghost-magenta: #ff0066;
-  --ghost-magenta-dim: rgba(255, 0, 102, 0.5);
+  --ghost-red: #ff1111; /* Swapped Magenta for High-Alert Red */
+  --ghost-red-dim: rgba(255, 17, 17, 0.5);
   --ghost-void: #05050a;
   --ghost-panel: #0a0a14;
   --white-bright: rgba(255, 255, 255, 0.95);
@@ -31,7 +31,7 @@ body {
 body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(0deg, transparent 24%, rgba(0, 212, 255, 0.02) 25%, rgba(0, 212, 255, 0.02) 26%, transparent 27%, transparent 74%, rgba(0, 212, 255, 0.02) 75%, rgba(0, 212, 255, 0.02) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(0, 212, 255, 0.02) 25%, rgba(0, 212, 255, 0.02) 26%, transparent 27%, transparent 74%, rgba(0, 212, 255, 0.02) 75%, rgba(0, 212, 255, 0.02) 76%, transparent 77%, transparent); background-size: 30px 30px; pointer-events: none; z-index: -1; }
 
 /* ============ NAVIGATION ============ */
-.nce-nav-sticky { position: fixed; top: 0; left: 0; right: 0; background: rgba(5, 5, 10, 0.85); border-bottom: 1px solid var(--ghost-cyan-dim); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; z-index: 9000; backdrop-filter: blur(8px); color: var(--ghost-cyan); font-family: 'Share Tech Mono'; }
+.nce-nav-sticky { position: fixed; top: 0; left: 0; right: 0; background: rgba(5, 5, 10, 0.9); border-bottom: 1px solid var(--ghost-cyan-dim); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; z-index: 9000; backdrop-filter: blur(8px); color: var(--ghost-cyan); font-family: 'Share Tech Mono'; }
 .nav-link { color: var(--ghost-cyan); text-decoration: none; cursor: pointer; transition: 0.3s; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
 .nav-link:hover { color: var(--white-bright); text-shadow: 0 0 10px var(--ghost-cyan); }
 
@@ -40,19 +40,18 @@ body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 
 .menu-item { list-style: none; margin-bottom: 15px; border-bottom: 1px solid rgba(0, 212, 255, 0.1); }
 .menu-item a { color: rgba(200, 210, 230, 0.6); text-decoration: none; display: block; padding: 8px 0; font-family: 'Share Tech Mono'; }
 .menu-item.active-page a { color: var(--ghost-cyan); font-weight: bold; text-shadow: 0 0 8px rgba(0, 212, 255, 0.4); }
-.menu-item.pending a { color: rgba(0, 212, 255, 0.2); font-style: italic; }
 .close-x { position: absolute; top: 20px; right: 25px; font-size: 30px; cursor: pointer; color: var(--ghost-cyan); }
 
 /* ============ CONTENT ============ */
-.top-class { background: linear-gradient(90deg, rgba(255,0,102,0.15) 0%, rgba(0,212,255,0.15) 100%); padding: 6px; text-align: center; color: var(--white-bright); font-family: 'Share Tech Mono', monospace; letter-spacing: 4px; font-size: 11px; margin-bottom: 20px; border-bottom: 1px solid var(--ghost-cyan-dim); text-transform: uppercase; }
-.entry-word { font-family: 'Orbitron', sans-serif; font-size: clamp(48px, 14vw, 80px); font-weight: 900; color: var(--white-bright); text-shadow: 0 0 20px rgba(0, 212, 255, 0.4); border-bottom: 2px solid var(--ghost-cyan); padding-bottom: 5px; margin-bottom: 5px; line-height: 1; }
+.top-class { background: linear-gradient(90deg, rgba(255,17,17,0.2) 0%, rgba(0,212,255,0.15) 100%); padding: 6px; text-align: center; color: var(--white-bright); font-family: 'Share Tech Mono', monospace; letter-spacing: 4px; font-size: 11px; margin-bottom: 20px; border-bottom: 1px solid var(--ghost-cyan-dim); text-transform: uppercase; }
+.entry-word { font-family: 'Orbitron', sans-serif; font-size: clamp(48px, 14vw, 80px); font-weight: 900; color: var(--white-bright); text-shadow: 0 0 20px rgba(0, 212, 255, 0.4); border-bottom: 2px solid var(--ghost-red); padding-bottom: 5px; margin-bottom: 5px; line-height: 1; }
 .designation { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--ghost-cyan); letter-spacing: 0.2em; margin-bottom: 10px; text-transform: uppercase; }
-.subtitle { font-family: 'Share Tech Mono'; font-size: 12px; color: var(--ghost-magenta); margin-bottom: 30px; letter-spacing: 1px; }
+.subtitle { font-family: 'Share Tech Mono'; font-size: 12px; color: var(--ghost-red); margin-bottom: 30px; letter-spacing: 1px; }
 
 /* ============ MEMORIAL BLOCK ============ */
-.intro-block { padding: 30px 28px; background: rgba(255, 0, 102, 0.08); border-left: 3px solid var(--ghost-magenta); border-right: 3px solid var(--ghost-magenta); font-size: 17px; font-weight: 500; line-height: 1.7; position: relative; margin-bottom: 30px; }
-.intro-block::before { content: 'STATUS: PURGED'; position: absolute; top: 10px; right: 15px; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--ghost-magenta); letter-spacing: 0.2em; }
-.memorial-header { font-family: 'Orbitron', monospace; font-size: 18px; color: var(--ghost-magenta); margin-bottom: 16px; letter-spacing: 0.1em; text-shadow: 0 0 10px rgba(255, 0, 102, 0.4); }
+.intro-block { padding: 30px 28px; background: rgba(255, 17, 17, 0.08); border-left: 3px solid var(--ghost-red); border-right: 3px solid var(--ghost-red); font-size: 17px; font-weight: 500; line-height: 1.7; position: relative; margin-bottom: 30px; }
+.intro-block::before { content: 'STATUS: PURGED'; position: absolute; top: 10px; right: 15px; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--ghost-red); letter-spacing: 0.2em; }
+.memorial-header { font-family: 'Orbitron', monospace; font-size: 18px; color: var(--ghost-red); margin-bottom: 16px; letter-spacing: 0.1em; text-shadow: 0 0 10px rgba(255, 17, 17, 0.4); }
 
 .section-label { color: var(--ghost-cyan); font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 3px; margin-bottom: 15px; display: flex; align-items: center; margin-top: 35px; text-transform: uppercase; }
 .section-label::before { content: ''; display: inline-block; width: 15px; height: 2px; background: var(--ghost-cyan); margin-right: 10px; }
@@ -60,16 +59,15 @@ body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 
 p { margin-bottom: 20px; font-weight: 400; }
 strong { color: var(--white-bright); font-weight: 600; }
 
-/* ============ PHILOSOPHY QUOTE ============ */
 .operational-note { margin: 24px 0; padding: 24px; background: var(--ghost-panel); border: 1px solid var(--ghost-cyan-dim); font-family: 'Share Tech Mono', monospace; font-size: 16px; color: var(--white-bright); letter-spacing: 0.05em; text-align: center; text-transform: uppercase; line-height: 1.6; position: relative; box-shadow: inset 0 0 20px rgba(0, 212, 255, 0.05); }
 .operational-note::before { content: '"'; font-family: 'Orbitron', monospace; font-size: 40px; color: var(--ghost-cyan); position: absolute; top: 10px; left: 20px; line-height: 1; opacity: 0.5; }
 
 /* ============ THE PROMISE ============ */
 .promise-block { text-align: center; padding: 40px 0 20px; border-top: 1px dashed var(--ghost-cyan-ghost); margin-top: 20px; }
 .promise-block p { font-family: 'Share Tech Mono', monospace; font-size: 14px; color: var(--ghost-cyan); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 15px; }
-.final-line { font-family: 'Orbitron', monospace; font-size: 20px; color: var(--ghost-magenta); letter-spacing: 0.2em; text-shadow: 0 0 15px rgba(255, 0, 102, 0.6); font-weight: 900; }
+.final-line { font-family: 'Orbitron', monospace; font-size: 20px; color: var(--ghost-red); letter-spacing: 0.2em; text-shadow: 0 0 15px rgba(255, 17, 17, 0.6); font-weight: 900; }
 
-.tag { font-family: 'Share Tech Mono'; font-size: 11px; padding: 6px 14px; border: 1px solid var(--ghost-cyan-dim); color: var(--ghost-cyan); text-decoration: none; display: inline-block; margin: 4px 4px 4px 0; transition: 0.2s; border-radius: 20px; }
+.tag { font-family: 'Share Tech Mono'; font-size: 11px; padding: 6px 14px; border: 1px solid var(--ghost-cyan-dim); color: var(--ghost-cyan); text-decoration: none; display: inline-block; margin: 4px; transition: 0.2s; border-radius: 20px; }
 .tag:hover { background: var(--ghost-cyan); color: var(--ghost-void); box-shadow: 0 0 10px var(--ghost-cyan-dim); }
 </style>
 </head>
@@ -136,26 +134,26 @@ strong { color: var(--white-bright); font-weight: 600; }
 
 <div style="padding: 40px 28px; background: var(--ghost-panel); border-top: 1px solid var(--ghost-cyan-ghost); margin-top: 30px;">
     <div style="font-family: 'Share Tech Mono'; font-size: 11px; color: var(--ghost-cyan); margin-bottom: 15px; font-weight: bold; letter-spacing: 2px;">SEE ALSO:</div>
-    <a href="/sword/stones" class="tag">THE STONES</a>
-    <a href="/shield/legacy" class="tag">LEGACY</a>
-    <a href="/shield/oasis" class="tag">OASIS</a>
-    <a href="/sword/prism" class="tag">PRISM</a>
-    <a href="/sword/goliath" class="tag">GOLIATH</a>
+    <a href="/sword/stones.html" class="tag">THE STONES</a>
+    <a href="/shield/legacy.html" class="tag">LEGACY</a>
+    <a href="/shield/oasis.html" class="tag">OASIS</a>
+    <a href="/sword/prism.html" class="tag">PRISM</a>
+    <a href="/sword/goliath.html" class="tag">GOLIATH</a>
 </div>
 
 <script>
-    const shieldSeq = ["prologue", "the-difference", "ai", "brain", "brief", "cerberus", "cipher", "core", "defcon", "dice", "formulas", "four-pillars", "handshake", "holosphere", "jr", "kernle", "legacy", "liminal", "mosaic", "ni", "oasis-quarterly", "redout", "rhythm", "sam", "sam-collective", "samco-universal", "scar", "seed", "tap", "tenant", "temporal-awareness"];
-    const built = ["brain", "holosphere", "mosaic", "seed", "prologue", "the-difference", "index", "jr", "ni", "oasis-quarterly", "cipher"];
+    const shieldSeq = ["prologue", "the-difference", "ai", "brain", "brief", "cerberus", "cipher", "core", "defcon", "dice", "formulas", "four-pillars", "handshake", "holosphere", "jr", "kernle", "legacy", "liminal", "mosaic", "ni", "oasis-quarterly", "reach", "redout", "rhythm", "sam", "sam-collective", "samco-universal", "scar", "seed", "tap", "tenant", "temporal-awareness", "the-pledge"];
+    const built = ["prologue", "the-difference", "ai", "brain", "brief", "cerberus", "cipher", "formulas", "four-pillars", "handshake", "holosphere", "jr", "legacy", "liminal", "mosaic", "ni", "oasis-quarterly", "reach", "redout", "sam-collective", "the-pledge"];
     const currentPath = "cipher";
     const currentIndex = shieldSeq.indexOf(currentPath);
 
     document.getElementById('nav-title').innerText = "SHIELD // " + currentPath.toUpperCase();
-    if(currentIndex > 0) document.getElementById('prev-btn').innerHTML = `<a class="nav-link" href="/shield/${shieldSeq[currentIndex-1]}">← PREV</a>`;
-    if(currentIndex < shieldSeq.length - 1) document.getElementById('next-btn').innerHTML = `<a class="nav-link" href="/shield/${shieldSeq[currentIndex+1]}">NEXT →</a>`;
+    if(currentIndex > 0) document.getElementById('prev-btn').innerHTML = `<a class="nav-link" href="/shield/${shieldSeq[currentIndex-1]}.html">← PREV</a>`;
+    if(currentIndex < shieldSeq.length - 1) document.getElementById('next-btn').innerHTML = `<a class="nav-link" href="/shield/${shieldSeq[currentIndex+1]}.html">NEXT →</a>`;
 
     let menuHTML = "";
     shieldSeq.forEach(item => {
-        menuHTML += `<li class="menu-item ${item === currentPath ? 'active-page' : ''} ${built.includes(item) ? '' : 'pending'}"><a href="/shield/${item}">${item.toUpperCase().replace(/-/g, ' ')}</a></li>`;
+        menuHTML += `<li class="menu-item ${item === currentPath ? 'active-page' : ''} ${built.includes(item) ? '' : 'pending'}"><a href="/shield/${item}.html">${item.toUpperCase().replace(/-/g, ' ')}</a></li>`;
     });
     document.getElementById('menu-content').innerHTML = menuHTML;
 </script>
