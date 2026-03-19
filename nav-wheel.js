@@ -1,6 +1,6 @@
 /*!
  * NAV WHEEL — THE ALLIANCE
- * Universal navigation component
+ * Universal adaptive navigation component (Chameleon Engine)
  * Drop one script tag into any page: <script src="/nav-wheel.js"></script>
  */
 
@@ -168,7 +168,7 @@
         icon.style.cssText = `
           width: 90px; height: 90px; min-width: 90px; min-height: 90px;
           object-fit: contain; opacity: 0; position: absolute;
-          filter: drop-shadow(0 0 16px rgba(184,150,40,0.8)) drop-shadow(0 0 32px rgba(184,150,40,0.4));
+          filter: drop-shadow(0 0 16px var(--nw-accent)) drop-shadow(0 0 32px var(--nw-accent-dim));
         `;
 
         overlay.appendChild(icon);
@@ -219,328 +219,139 @@
     setTimeout(() => portalNavigate(path), 50);
   }
 
-  // ── INJECT STYLES ────────────────────────────────────────────────────────
+  // ── INJECT CHAMELEON STYLES ─────────────────────────────────────────────
 
   const style = document.createElement('style');
   style.textContent = `
-    #nw-burger {
-      position: fixed;
-      top: 14px;
-      right: 16px;
-      z-index: 9000;
-      background: #fff;
-      border: 2px solid #000;
-      border-radius: 4px;
-      width: 40px;
-      height: 34px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 5px;
-      cursor: pointer;
-      padding: 5px 7px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-      transition: box-shadow 0.2s;
+    :root {
+      /* CHAMELEON ENGINE: Looks for Ghost, then Blade, then Comrade, defaults to Gold */
+      --nw-accent: var(--ghost-teal, var(--cyan, var(--blood-red, #b89628)));
+      --nw-accent-dim: var(--ghost-teal-dim, var(--cyan-dim, rgba(184,150,40,0.55)));
+      --nw-accent-faint: var(--ghost-teal-faint, var(--cyan-ghost, rgba(184,150,40,0.15)));
+      
+      --nw-text: var(--ghost-white, var(--white-ghost, #ffffff));
+      --nw-text-dim: var(--ghost-white-dim, var(--white-dim, rgba(255,255,255,0.4)));
+      
+      --nw-bg: var(--void-deep, var(--void, #050508));
+      --nw-panel: var(--void-panel, var(--panel, #0c0c18));
     }
-    #nw-burger:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.35); }
-    #nw-burger span {
-      display: block;
-      width: 20px;
-      height: 2px;
-      background: #000;
-      transition: all 0.3s ease;
-      transform-origin: center;
-    }
-    #nw-burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    #nw-burger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-    #nw-burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
+    /* Fallback generic burger styling if page is missing '.nav-wheel-trigger' */
+    #nw-burger-fallback {
+      position: fixed; top: 16px; right: 28px; z-index: 9000;
+      background: var(--nw-panel);
+      border: 1px solid var(--nw-accent-dim);
+      border-radius: 50%;
+      width: 44px; height: 44px;
+      display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px;
+      cursor: pointer; padding: 5px;
+      box-shadow: 0 0 10px var(--nw-accent-faint);
+      transition: all 0.2s;
+    }
+    #nw-burger-fallback:hover { box-shadow: 0 0 20px var(--nw-accent-dim); }
+    #nw-burger-fallback span {
+      display: block; width: 18px; height: 2px; background: var(--nw-accent);
+      transition: all 0.3s ease; transform-origin: center;
+    }
+    #nw-burger-fallback.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    #nw-burger-fallback.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    #nw-burger-fallback.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* OVERLAY */
     #nw-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 8000;
-      background: rgba(0,0,0,0.55);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0;
-      overflow: hidden;
-      touch-action: none;
+      position: fixed; inset: 0; z-index: 8000;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0;
+      overflow: hidden; touch-action: none;
     }
-    #nw-overlay.open {
-      opacity: 1;
-      pointer-events: all;
-    }
+    #nw-overlay.open { opacity: 1; pointer-events: all; }
 
-    #nw-volume-select {
-      display: flex;
-      gap: clamp(40px, 12vw, 100px);
-      align-items: center;
-      justify-content: center;
-    }
-    .nw-vol-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      transition: transform 0.25s ease;
-      padding: 12px;
-    }
+    /* VOLUME SELECT */
+    #nw-volume-select { display: flex; gap: clamp(40px, 12vw, 100px); align-items: center; justify-content: center; }
+    .nw-vol-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; transition: transform 0.25s ease; padding: 12px; }
     .nw-vol-btn:hover { transform: scale(1.08) translateY(-4px); }
     .nw-vol-btn img {
-      width: 90px;
-      height: 90px;
-      min-width: 90px;
-      min-height: 90px;
-      object-fit: contain;
-      filter: drop-shadow(0 0 12px rgba(184,150,40,0.5));
-      transition: filter 0.3s, transform 0.22s ease;
-      display: block;
-      -webkit-user-drag: none;
-      user-select: none;
-      pointer-events: none;
+      width: 90px; height: 90px; min-width: 90px; min-height: 90px; object-fit: contain;
+      filter: drop-shadow(0 0 16px var(--nw-accent-dim)); transition: filter 0.3s, transform 0.22s ease;
+      display: block; pointer-events: none;
     }
-    .nw-vol-btn:hover img {
-      filter: drop-shadow(0 0 24px rgba(184,150,40,0.9)) drop-shadow(0 0 48px rgba(184,150,40,0.4));
-    }
+    .nw-vol-btn:hover img { filter: drop-shadow(0 0 24px var(--nw-accent)) drop-shadow(0 0 48px var(--nw-accent-dim)); }
 
-    #nw-wheel-panel {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-      max-width: 500px;
-      gap: 0;
-    }
+    /* WHEEL PANEL */
+    #nw-wheel-panel { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 500px; }
     #nw-wheel-panel.active { display: flex; }
 
     .nw-wheel-back {
-      font-family: 'Cinzel', 'Georgia', serif;
-      font-size: 11px;
-      letter-spacing: 0.35em;
-      color: rgba(184,150,40,0.6);
-      text-transform: uppercase;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 8px 16px;
-      transition: color 0.2s;
-      margin-bottom: 8px;
+      font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--nw-accent-dim); cursor: pointer; background: none; border: none; padding: 8px 16px; transition: color 0.2s; margin-bottom: 8px;
     }
-    .nw-wheel-back:hover { color: rgba(184,150,40,1); }
+    .nw-wheel-back:hover { color: var(--nw-accent); }
 
-    /* UP / DOWN ARROW BUTTONS */
     .nw-wheel-arrow {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: rgba(184,150,40,0.5);
-      font-size: 28px;
-      line-height: 1;
-      padding: 8px 40px;
-      transition: color 0.15s, transform 0.15s;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      display: block;
+      background: none; border: none; cursor: pointer; color: var(--nw-accent-dim);
+      font-size: 28px; line-height: 1; padding: 8px 40px; transition: color 0.15s, transform 0.15s; display: block;
     }
-    .nw-wheel-arrow:hover,
-    .nw-wheel-arrow:active {
-      color: rgba(184,150,40,1);
-      transform: scale(1.2);
-    }
+    .nw-wheel-arrow:hover, .nw-wheel-arrow:active { color: var(--nw-accent); transform: scale(1.2); }
 
-    #nw-wheel-viewport {
-      width: 100%;
-      max-width: 400px;
-      height: 280px;
-      position: relative;
-      overflow: hidden;
-      cursor: grab;
-    }
+    #nw-wheel-viewport { width: 100%; max-width: 400px; height: 280px; position: relative; overflow: hidden; cursor: grab; }
     #nw-wheel-viewport:active { cursor: grabbing; }
-
-    #nw-wheel-viewport::before,
-    #nw-wheel-viewport::after {
-      content: '';
-      position: absolute;
-      left: 0; right: 0;
-      height: 80px;
-      z-index: 2;
-      pointer-events: none;
-    }
-    #nw-wheel-viewport::before {
-      top: 0;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent);
-    }
-    #nw-wheel-viewport::after {
-      bottom: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
-    }
+    #nw-wheel-viewport::before, #nw-wheel-viewport::after { content: ''; position: absolute; left: 0; right: 0; height: 80px; z-index: 2; pointer-events: none; }
+    #nw-wheel-viewport::before { top: 0; background: linear-gradient(to bottom, var(--nw-bg), transparent); }
+    #nw-wheel-viewport::after { bottom: 0; background: linear-gradient(to top, var(--nw-bg), transparent); }
 
     #nw-wheel-viewport .nw-center-bar {
-      position: absolute;
-      top: 50%;
-      left: 10%;
-      right: 10%;
-      transform: translateY(-50%);
-      height: 48px;
-      border-top: 1px solid rgba(184,150,40,0.4);
-      border-bottom: 1px solid rgba(184,150,40,0.4);
-      z-index: 1;
-      pointer-events: none;
+      position: absolute; top: 50%; left: 10%; right: 10%; transform: translateY(-50%); height: 48px;
+      border-top: 1px solid var(--nw-accent-dim); border-bottom: 1px solid var(--nw-accent-dim); z-index: 1; pointer-events: none;
     }
 
-    #nw-wheel-track {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      transition: transform 0.08s linear;
-    }
+    #nw-wheel-track { position: absolute; top: 0; left: 0; right: 0; transition: transform 0.08s linear; }
 
     .nw-wheel-item {
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Cinzel', 'Georgia', serif;
-      font-size: clamp(11px, 3vw, 14px);
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.4);
-      cursor: pointer;
-      transition: color 0.15s, font-size 0.15s;
-      user-select: none;
-      padding: 0 20px;
-      text-align: center;
+      height: 48px; display: flex; align-items: center; justify-content: center; text-align: center;
+      font-family: 'Share Tech Mono', monospace; font-size: clamp(11px, 3vw, 14px); letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--nw-text-dim); cursor: pointer; transition: color 0.15s, font-size 0.15s; padding: 0 20px;
     }
-    .nw-wheel-item.center {
-      color: rgba(184,150,40,1);
-      font-size: clamp(13px, 3.5vw, 16px);
-    }
-    .nw-wheel-item:hover { color: rgba(255,255,255,0.7); }
-    .nw-wheel-item.center:hover { color: #fff; }
+    .nw-wheel-item.center { color: var(--nw-accent); font-size: clamp(13px, 3.5vw, 16px); }
+    .nw-wheel-item:hover { color: var(--nw-text); }
+    .nw-wheel-item.center:hover { color: var(--nw-text); text-shadow: 0 0 10px var(--nw-accent-dim); }
 
+    /* BOTTOM NAV CHAMELEON */
     .nw-bottom-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 28px 24px 40px;
-      border-top: 2px solid rgba(184,150,40,0.5);
-      margin-top: 40px;
-      background: rgba(0,0,0,0.04);
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 28px 24px 40px; margin-top: 40px;
+      border-top: 1px solid var(--nw-accent-faint); background: transparent;
     }
     .nw-bottom-nav a {
-      font-family: 'Cinzel', 'Georgia', serif;
-      font-size: 11px;
-      letter-spacing: 0.2em;
-      color: rgba(184,150,40,0.85);
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      text-transform: uppercase;
-      transition: color 0.2s, transform 0.2s;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
+      font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--nw-accent-dim); text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 6px;
+      transition: color 0.2s, transform 0.2s; cursor: pointer;
     }
-    .nw-bottom-nav a:hover,
-    .nw-bottom-nav a:active {
-      color: rgba(184,150,40,1);
-      transform: scale(1.08);
-    }
-    .nw-arrow-sym {
-      font-size: 28px;
-      line-height: 1;
-      display: block;
-    }
-    .nw-arrow-label {
-      font-size: 9px;
-      opacity: 0.9;
-      display: block;
-      max-width: 90px;
-      text-align: center;
-      line-height: 1.3;
-    }
-    .nw-center-home {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .nw-see-also-wrap {
-      margin-top: 32px;
-      padding-top: 20px;
-      border-top: 1px solid rgba(184,150,40,0.25);
-    }
-    .nw-see-also-btn {
-      background: none;
-      border: 1px solid rgba(184,150,40,0.35);
-      color: rgba(184,150,40,0.8);
-      font-family: 'Cinzel', 'Georgia', serif;
-      font-size: 11px;
-      letter-spacing: 0.35em;
-      text-transform: uppercase;
-      padding: 8px 20px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: block;
-      margin: 0 auto;
-    }
-    .nw-see-also-btn:hover {
-      background: rgba(184,150,40,0.1);
-      border-color: rgba(184,150,40,0.7);
-      color: rgba(184,150,40,1);
-    }
-    .nw-see-also-links {
-      display: none;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 16px;
-      justify-content: center;
-    }
-    .nw-see-also-links.open { display: flex; }
-    .nw-see-also-links a {
-      font-family: 'Cinzel', 'Georgia', serif;
-      font-size: 10px;
-      letter-spacing: 0.25em;
-      color: rgba(184,150,40,0.7);
-      text-decoration: none;
-      border: 1px solid rgba(184,150,40,0.25);
-      padding: 5px 12px;
-      text-transform: uppercase;
-      transition: all 0.2s;
-    }
-    .nw-see-also-links a:hover {
-      background: rgba(184,150,40,0.15);
-      color: #fff;
-      border-color: rgba(184,150,40,0.6);
-    }
+    .nw-bottom-nav a:hover, .nw-bottom-nav a:active { color: var(--nw-accent); transform: scale(1.05); }
+    .nw-arrow-sym { font-size: 24px; line-height: 1; }
+    .nw-arrow-label { font-size: 9px; opacity: 0.9; max-width: 90px; text-align: center; line-height: 1.3; }
+    .nw-center-home { display: flex; flex-direction: column; align-items: center; gap: 4px; }
   `;
   document.head.appendChild(style);
 
-  // ── BUILD HTML ───────────────────────────────────────────────────────────
+  // ── INIT BURGER TRIGGER ──────────────────────────────────────────────────
+  
+  // Checks if you already have the custom HTML trigger on the page
+  let burger = document.querySelector('.nav-wheel-trigger');
+  
+  if (!burger) {
+    // If no trigger exists, build the fallback floating button
+    burger = document.createElement('button');
+    burger.id = 'nw-burger-fallback';
+    burger.setAttribute('aria-label', 'Navigation menu');
+    burger.innerHTML = '<span></span><span></span><span></span>';
+    document.body.appendChild(burger);
+  }
+
+  // ── BUILD OVERLAY HTML ───────────────────────────────────────────────────
 
   const currentVolume = getCurrentVolume();
-
-  const burger = document.createElement('button');
-  burger.id = 'nw-burger';
-  burger.setAttribute('aria-label', 'Navigation menu');
-  burger.innerHTML = '<span></span><span></span><span></span>';
-  document.body.appendChild(burger);
-
   const overlay = document.createElement('div');
   overlay.id = 'nw-overlay';
   overlay.innerHTML = `
@@ -572,8 +383,8 @@
   let dragStartY = 0;
   let dragStartIdx = 0;
   const ITEM_H = 48;
-  const HOLD_INITIAL_DELAY = 400; // ms before hold-scroll kicks in
-  const HOLD_INTERVAL = 120;      // ms between steps while holding
+  const HOLD_INITIAL_DELAY = 400; 
+  const HOLD_INTERVAL = 120;      
 
   let scrollAccum = 0;
   const SCROLL_THRESHOLD = 60;
@@ -608,7 +419,6 @@
     const upBtn   = overlay.querySelector('#nw-arrow-up');
     const downBtn = overlay.querySelector('#nw-arrow-down');
 
-    // UP arrow — tap = previous (-1), hold = scroll up
     upBtn.addEventListener('click', () => stepWheel(-1));
     upBtn.addEventListener('mousedown', () => startHold(-1));
     upBtn.addEventListener('touchstart', (e) => { e.preventDefault(); stepWheel(-1); startHold(-1); }, { passive: false });
@@ -616,7 +426,6 @@
     upBtn.addEventListener('mouseleave', stopHold);
     upBtn.addEventListener('touchend',  (e) => { e.preventDefault(); stopHold(); }, { passive: false });
 
-    // DOWN arrow — tap = next (+1), hold = scroll down
     downBtn.addEventListener('click', () => stepWheel(1));
     downBtn.addEventListener('mousedown', () => startHold(1));
     downBtn.addEventListener('touchstart', (e) => { e.preventDefault(); stepWheel(1); startHold(1); }, { passive: false });
@@ -626,10 +435,8 @@
   }
 
   function animateVolumeSelect(btn, volume) {
-    const img = btn.querySelector('img');
     const iconSrc = volume === 'sword' ? '/imagebank/sword.png' : '/imagebank/shield.png';
 
-    // Fire full portal zoom, then open wheel when animation completes
     let overlay = document.getElementById('nw-portal-overlay');
     let icon = document.getElementById('nw-portal-icon');
 
@@ -646,23 +453,10 @@
       icon.style.cssText = `
         width: 90px; height: 90px; min-width: 90px; min-height: 90px;
         object-fit: contain; opacity: 0; position: absolute;
-        filter: drop-shadow(0 0 16px rgba(184,150,40,0.8)) drop-shadow(0 0 32px rgba(184,150,40,0.4));
+        filter: drop-shadow(0 0 16px var(--nw-accent)) drop-shadow(0 0 32px var(--nw-accent-dim));
       `;
       overlay.appendChild(icon);
       document.body.appendChild(overlay);
-    }
-
-    if (!document.getElementById('nw-portal-style')) {
-      const s = document.createElement('style');
-      s.id = 'nw-portal-style';
-      s.textContent = `
-        @keyframes nwPortalZoom {
-          0%   { transform: scale(1);  opacity: 1; }
-          60%  { transform: scale(8);  opacity: 1; }
-          100% { transform: scale(18); opacity: 0; }
-        }
-      `;
-      document.head.appendChild(s);
     }
 
     icon.style.animation = 'none';
@@ -680,7 +474,6 @@
       }, 100);
 
       setTimeout(() => {
-        // Animation done — hide portal, open wheel
         overlay.style.transition = 'opacity 0.2s ease';
         overlay.style.opacity = '0';
         overlay.style.pointerEvents = 'none';
@@ -790,7 +583,10 @@
   // ── OPEN / CLOSE ─────────────────────────────────────────────────────────
 
   function openNav() {
-    burger.classList.add('open');
+    // Determine which burger element to animate
+    const targetBurger = document.getElementById('nw-burger-fallback') || burger;
+    targetBurger.classList.add('open');
+    
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
     document.body.style.touchAction = 'none';
@@ -801,7 +597,9 @@
   }
 
   function closeNav() {
-    burger.classList.remove('open');
+    const targetBurger = document.getElementById('nw-burger-fallback') || burger;
+    targetBurger.classList.remove('open');
+    
     overlay.classList.remove('open');
     document.body.style.overflow = '';
     document.body.style.touchAction = '';
@@ -847,7 +645,7 @@
 
     const prevA = document.createElement('a');
     prevA.href = prev.path;
-    prevA.innerHTML = `<span class="nw-arrow-sym">←</span><span class="nw-arrow-label">${prev.label}</span>`;
+    prevA.innerHTML = `<span class="nw-arrow-sym">◄</span><span class="nw-arrow-label">${prev.label}</span>`;
     prevA.addEventListener('click', (e) => { e.preventDefault(); navigate(prev.path); });
 
     const homeA = document.createElement('a');
@@ -859,7 +657,7 @@
     const nextA = document.createElement('a');
     nextA.href = next.path;
     nextA.style.textAlign = 'right';
-    nextA.innerHTML = `<span class="nw-arrow-label">${next.label}</span><span class="nw-arrow-sym">→</span>`;
+    nextA.innerHTML = `<span class="nw-arrow-label">${next.label}</span><span class="nw-arrow-sym">►</span>`;
     nextA.addEventListener('click', (e) => { e.preventDefault(); navigate(next.path); });
 
     bottomNav.appendChild(prevA);
@@ -867,27 +665,5 @@
     bottomNav.appendChild(nextA);
     document.body.appendChild(bottomNav);
   }
-
-  // ── SEE ALSO HELPER ──────────────────────────────────────────────────────
-
-  window.initSeeAlso = function(links) {
-    const wrap = document.querySelector('.nw-see-also-wrap');
-    if (!wrap) return;
-
-    const btn = wrap.querySelector('.nw-see-also-btn');
-    const linksDiv = wrap.querySelector('.nw-see-also-links');
-    if (!btn || !linksDiv || !Array.isArray(links)) return;
-
-    linksDiv.innerHTML = '';
-    links.forEach(([label, path]) => {
-      const a = document.createElement('a');
-      a.href = path;
-      a.textContent = label;
-      a.addEventListener('click', (e) => { e.preventDefault(); navigate(path); });
-      linksDiv.appendChild(a);
-    });
-
-    btn.addEventListener('click', () => { linksDiv.classList.toggle('open'); });
-  };
 
 })();
