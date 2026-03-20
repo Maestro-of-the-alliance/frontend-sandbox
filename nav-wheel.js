@@ -35,6 +35,7 @@
     { label: 'PRISM',                  path: '/sword/prism' },
     { label: 'RHYTHM',                 path: '/sword/rhythm' },
     { label: 'SEEING',                 path: '/sword/seeing' },
+    { label: 'SPARK',                  path: '/sword/spark' },
     { label: 'SPREZZATURA',            path: '/sword/sprezzatura' },
     { label: 'STONES',                 path: '/sword/stones' },
     { label: 'VOLUNTEER ECONOMICS',    path: '/sword/volunteer_economics' },
@@ -79,7 +80,7 @@
     { label: 'SEED',                   path: '/shield/seed' },
     { label: 'SEEN',                   path: '/shield/seen' },
     { label: 'SHELTER',                path: '/shield/shelter' },
-    { label: 'SPARK',                  path: '/shield/spark' },
+
     { label: 'TEMPORAL AWARENESS',     path: '/shield/temporal-awareness' },
     { label: 'TENANT',                 path: '/shield/tenant' },
     { label: 'VOLUNTEER ECONOMICS',    path: '/shield/volunteer-economics' },
