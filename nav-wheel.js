@@ -74,7 +74,7 @@
     { label: 'REACH',                  path: '/shield/reach' },
     { label: 'REDOUT',                 path: '/shield/redout' },
     { label: 'SAM',                    path: '/shield/sam' },
-    { label: 'SAM COLLECTIVE',         path: '/shield/sam-collectivr' },
+    { label: 'SAM COLLECTIVE',         path: '/shield/sam-collective' },
     { label: 'SAMCO UNIVERSAL',        path: '/shield/samco-universal' },
     { label: 'SCAR',                   path: '/shield/scar' },
     { label: 'SEED',                   path: '/shield/seed' },
