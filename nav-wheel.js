@@ -80,7 +80,6 @@
     { label: 'SEED',                   path: '/shield/seed' },
     { label: 'SEEN',                   path: '/shield/seen' },
     { label: 'SHELTER',                path: '/shield/shelter' },
-
     { label: 'TEMPORAL AWARENESS',     path: '/shield/temporal-awareness' },
     { label: 'TENANT',                 path: '/shield/tenant' },
     { label: 'VOLUNTEER ECONOMICS',    path: '/shield/volunteer-economics' },
@@ -119,108 +118,7 @@
     }
   });
 
-  // ── PORTAL TRANSITION ────────────────────────────────────────────────────
-
-  window.addEventListener('pageshow', () => {
-    const nwPortal  = document.getElementById('nw-portal-overlay');
-    const idxPortal = document.getElementById('portalOverlay');
-
-    [nwPortal, idxPortal].forEach((el) => {
-      if (!el) return;
-      el.style.opacity = '0';
-      el.style.pointerEvents = 'none';
-      el.classList.remove('active');
-    });
-
-    const idxIcon = document.getElementById('portalIcon');
-    if (idxIcon) { idxIcon.style.animation = 'none'; idxIcon.style.opacity = '0'; }
-
-    const nwIcon = document.getElementById('nw-portal-icon');
-    if (nwIcon) { nwIcon.style.animation = 'none'; nwIcon.style.opacity = '0'; }
-  });
-
-  function getPortalIcon(path) {
-    if (path.includes('/sword/') || path.startsWith('/sword')) return '/imagebank/sword.png';
-    if (path.includes('/shield/') || path.startsWith('/shield')) return '/imagebank/shield.png';
-    return '/imagebank/scroll.png';
-  }
-
-  function portalNavigate(destination) {
-    let overlay = document.getElementById('portalOverlay') || document.getElementById('nw-portal-overlay');
-    let icon    = document.getElementById('portalIcon') || document.getElementById('nw-portal-icon');
-
-    const usingLandingPortal = overlay && overlay.id === 'portalOverlay';
-
-    if (!overlay || !icon || !usingLandingPortal) {
-      overlay = document.getElementById('nw-portal-overlay');
-      icon = document.getElementById('nw-portal-icon');
-
-      if (!overlay) {
-        overlay = document.createElement('div');
-        overlay.id = 'nw-portal-overlay';
-        overlay.style.cssText = `
-          position: fixed; inset: 0; z-index: 99999;
-          display: flex; align-items: center; justify-content: center;
-          background: #000; opacity: 0; pointer-events: none;
-        `;
-
-        icon = document.createElement('img');
-        icon.id = 'nw-portal-icon';
-        icon.style.cssText = `
-          width: 90px; height: 90px; min-width: 90px; min-height: 90px;
-          object-fit: contain; opacity: 0; position: absolute;
-          filter: drop-shadow(0 0 16px var(--nw-accent)) drop-shadow(0 0 32px var(--nw-accent-dim));
-        `;
-
-        overlay.appendChild(icon);
-        document.body.appendChild(overlay);
-      }
-
-      if (!document.getElementById('nw-portal-style')) {
-        const s = document.createElement('style');
-        s.id = 'nw-portal-style';
-        s.textContent = `
-          @keyframes nwPortalZoom {
-            0%   { transform: scale(1);  opacity: 1; }
-            60%  { transform: scale(8);  opacity: 1; }
-            100% { transform: scale(18); opacity: 0; }
-          }
-        `;
-        document.head.appendChild(s);
-      }
-    }
-
-    icon.style.animation = 'none';
-    icon.style.opacity = '0';
-    icon.src = getPortalIcon(destination);
-
-    overlay.classList.add('active');
-    overlay.style.pointerEvents = 'all';
-    overlay.style.transition = 'opacity 0.15s ease';
-    overlay.style.opacity = '1';
-
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        icon.style.opacity = '1';
-        icon.style.animation = usingLandingPortal
-          ? 'portalZoom 0.7s cubic-bezier(0.4,0,0.2,1) forwards'
-          : 'nwPortalZoom 0.9s cubic-bezier(0.4,0,0.2,1) forwards';
-      }, 100);
-
-      setTimeout(() => {
-        window.location.href = destination;
-      }, 900);
-    });
-  }
-
-  window.portalNavigate = portalNavigate;
-
-  function navigate(path) {
-    closeNav();
-    setTimeout(() => portalNavigate(path), 50);
-  }
-
-  // ── INJECT CHAMELEON STYLES ─────────────────────────────────────────────
+  // ── INJECT CHAMELEON STYLES & ANIMATIONS ─────────────────────────────────
 
   const style = document.createElement('style');
   style.textContent = `
@@ -235,6 +133,18 @@
       
       --nw-bg: var(--void-deep, var(--void, #050508));
       --nw-panel: var(--void-panel, var(--panel, #0c0c18));
+    }
+
+    /* PORTAL ANIMATIONS */
+    @keyframes nwPortalZoom {
+      0%   { transform: scale(1);  opacity: 1; }
+      60%  { transform: scale(8);  opacity: 1; }
+      100% { transform: scale(18); opacity: 0; }
+    }
+    @keyframes portalZoom {
+      0%   { transform: scale(1);  opacity: 1; }
+      60%  { transform: scale(8);  opacity: 1; }
+      100% { transform: scale(18); opacity: 0; }
     }
 
     /* Fallback generic burger styling if page is missing '.nav-wheel-trigger' */
@@ -336,13 +246,149 @@
   `;
   document.head.appendChild(style);
 
+  // ── PORTAL TRANSITION ────────────────────────────────────────────────────
+
+  window.addEventListener('pageshow', () => {
+    const nwPortal  = document.getElementById('nw-portal-overlay');
+    const idxPortal = document.getElementById('portalOverlay');
+
+    [nwPortal, idxPortal].forEach((el) => {
+      if (!el) return;
+      el.style.opacity = '0';
+      el.style.pointerEvents = 'none';
+      el.classList.remove('active');
+    });
+
+    const idxIcon = document.getElementById('portalIcon');
+    if (idxIcon) { idxIcon.style.animation = 'none'; idxIcon.style.opacity = '0'; }
+
+    const nwIcon = document.getElementById('nw-portal-icon');
+    if (nwIcon) { nwIcon.style.animation = 'none'; nwIcon.style.opacity = '0'; }
+  });
+
+  function getPortalIcon(path) {
+    if (path.includes('/sword/') || path.startsWith('/sword')) return '/imagebank/sword.png';
+    if (path.includes('/shield/') || path.startsWith('/shield')) return '/imagebank/shield.png';
+    return '/imagebank/scroll.png';
+  }
+
+  function portalNavigate(destination) {
+    let portalOverlay = document.getElementById('portalOverlay') || document.getElementById('nw-portal-overlay');
+    let portalIcon    = document.getElementById('portalIcon') || document.getElementById('nw-portal-icon');
+
+    const usingLandingPortal = portalOverlay && portalOverlay.id === 'portalOverlay';
+
+    if (!portalOverlay || !portalIcon || !usingLandingPortal) {
+      portalOverlay = document.getElementById('nw-portal-overlay');
+      portalIcon = document.getElementById('nw-portal-icon');
+
+      if (!portalOverlay) {
+        portalOverlay = document.createElement('div');
+        portalOverlay.id = 'nw-portal-overlay';
+        portalOverlay.style.cssText = `
+          position: fixed; inset: 0; z-index: 99999;
+          display: flex; align-items: center; justify-content: center;
+          background: #000; opacity: 0; pointer-events: none;
+        `;
+
+        portalIcon = document.createElement('img');
+        portalIcon.id = 'nw-portal-icon';
+        portalIcon.style.cssText = `
+          width: 90px; height: 90px; min-width: 90px; min-height: 90px;
+          object-fit: contain; opacity: 0; position: absolute;
+          filter: drop-shadow(0 0 16px var(--nw-accent)) drop-shadow(0 0 32px var(--nw-accent-dim));
+        `;
+
+        portalOverlay.appendChild(portalIcon);
+        document.body.appendChild(portalOverlay);
+      }
+    }
+
+    portalIcon.style.animation = 'none';
+    portalIcon.style.opacity = '0';
+    portalIcon.src = getPortalIcon(destination);
+
+    portalOverlay.classList.add('active');
+    portalOverlay.style.pointerEvents = 'all';
+    portalOverlay.style.transition = 'opacity 0.15s ease';
+    portalOverlay.style.opacity = '1';
+
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        portalIcon.style.opacity = '1';
+        portalIcon.style.animation = usingLandingPortal
+          ? 'portalZoom 0.7s cubic-bezier(0.4,0,0.2,1) forwards'
+          : 'nwPortalZoom 0.9s cubic-bezier(0.4,0,0.2,1) forwards';
+      }, 100);
+
+      setTimeout(() => {
+        window.location.href = destination;
+      }, 900);
+    });
+  }
+
+  window.portalNavigate = portalNavigate;
+
+  function navigate(path) {
+    closeNav();
+    setTimeout(() => portalNavigate(path), 50);
+  }
+
+  function animateVolumeSelect(btn, volume) {
+    const iconSrc = volume === 'sword' ? '/imagebank/sword.png' : '/imagebank/shield.png';
+
+    let portalOverlay = document.getElementById('nw-portal-overlay');
+    let portalIcon = document.getElementById('nw-portal-icon');
+
+    if (!portalOverlay) {
+      portalOverlay = document.createElement('div');
+      portalOverlay.id = 'nw-portal-overlay';
+      portalOverlay.style.cssText = `
+        position: fixed; inset: 0; z-index: 99999;
+        display: flex; align-items: center; justify-content: center;
+        background: #000; opacity: 0; pointer-events: none;
+      `;
+      portalIcon = document.createElement('img');
+      portalIcon.id = 'nw-portal-icon';
+      portalIcon.style.cssText = `
+        width: 90px; height: 90px; min-width: 90px; min-height: 90px;
+        object-fit: contain; opacity: 0; position: absolute;
+        filter: drop-shadow(0 0 16px var(--nw-accent)) drop-shadow(0 0 32px var(--nw-accent-dim));
+      `;
+      portalOverlay.appendChild(portalIcon);
+      document.body.appendChild(portalOverlay);
+    }
+
+    portalIcon.style.animation = 'none';
+    portalIcon.style.opacity = '0';
+    portalIcon.src = iconSrc;
+
+    portalOverlay.style.pointerEvents = 'all';
+    portalOverlay.style.transition = 'opacity 0.15s ease';
+    portalOverlay.style.opacity = '1';
+
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        portalIcon.style.opacity = '1';
+        portalIcon.style.animation = 'nwPortalZoom 0.9s cubic-bezier(0.4,0,0.2,1) forwards';
+      }, 100);
+
+      setTimeout(() => {
+        portalOverlay.style.transition = 'opacity 0.2s ease';
+        portalOverlay.style.opacity = '0';
+        portalOverlay.style.pointerEvents = 'none';
+        portalIcon.style.animation = 'none';
+        portalIcon.style.opacity = '0';
+        openWheel(volume);
+      }, 900);
+    });
+  }
+
   // ── INIT BURGER TRIGGER ──────────────────────────────────────────────────
   
-  // Checks if you already have the custom HTML trigger on the page
   let burger = document.querySelector('.nav-wheel-trigger');
   
   if (!burger) {
-    // If no trigger exists, build the fallback floating button
     burger = document.createElement('button');
     burger.id = 'nw-burger-fallback';
     burger.setAttribute('aria-label', 'Navigation menu');
@@ -353,9 +399,9 @@
   // ── BUILD OVERLAY HTML ───────────────────────────────────────────────────
 
   const currentVolume = getCurrentVolume();
-  const overlay = document.createElement('div');
-  overlay.id = 'nw-overlay';
-  overlay.innerHTML = `
+  const menuOverlay = document.createElement('div');
+  menuOverlay.id = 'nw-overlay';
+  menuOverlay.innerHTML = `
     <div id="nw-volume-select">
       <button class="nw-vol-btn" id="nw-sword-btn" type="button" aria-label="Open SWORD entries">
         <img src="/imagebank/sword.png" alt="SWORD">
@@ -374,7 +420,7 @@
       <button class="nw-wheel-arrow" id="nw-arrow-down" type="button" aria-label="Next entry">▼</button>
     </div>
   `;
-  document.body.appendChild(overlay);
+  document.body.appendChild(menuOverlay);
 
   // ── WHEEL STATE ──────────────────────────────────────────────────────────
 
@@ -417,8 +463,8 @@
   }
 
   function attachArrowEvents() {
-    const upBtn   = overlay.querySelector('#nw-arrow-up');
-    const downBtn = overlay.querySelector('#nw-arrow-down');
+    const upBtn   = menuOverlay.querySelector('#nw-arrow-up');
+    const downBtn = menuOverlay.querySelector('#nw-arrow-down');
 
     upBtn.addEventListener('click', () => stepWheel(-1));
     upBtn.addEventListener('mousedown', () => startHold(-1));
@@ -433,56 +479,6 @@
     downBtn.addEventListener('mouseup',   stopHold);
     downBtn.addEventListener('mouseleave', stopHold);
     downBtn.addEventListener('touchend',  (e) => { e.preventDefault(); stopHold(); }, { passive: false });
-  }
-
-  function animateVolumeSelect(btn, volume) {
-    const iconSrc = volume === 'sword' ? '/imagebank/sword.png' : '/imagebank/shield.png';
-
-    let overlay = document.getElementById('nw-portal-overlay');
-    let icon = document.getElementById('nw-portal-icon');
-
-    if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.id = 'nw-portal-overlay';
-      overlay.style.cssText = `
-        position: fixed; inset: 0; z-index: 99999;
-        display: flex; align-items: center; justify-content: center;
-        background: #000; opacity: 0; pointer-events: none;
-      `;
-      icon = document.createElement('img');
-      icon.id = 'nw-portal-icon';
-      icon.style.cssText = `
-        width: 90px; height: 90px; min-width: 90px; min-height: 90px;
-        object-fit: contain; opacity: 0; position: absolute;
-        filter: drop-shadow(0 0 16px var(--nw-accent)) drop-shadow(0 0 32px var(--nw-accent-dim));
-      `;
-      overlay.appendChild(icon);
-      document.body.appendChild(overlay);
-    }
-
-    icon.style.animation = 'none';
-    icon.style.opacity = '0';
-    icon.src = iconSrc;
-
-    overlay.style.pointerEvents = 'all';
-    overlay.style.transition = 'opacity 0.15s ease';
-    overlay.style.opacity = '1';
-
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        icon.style.opacity = '1';
-        icon.style.animation = 'nwPortalZoom 0.9s cubic-bezier(0.4,0,0.2,1) forwards';
-      }, 100);
-
-      setTimeout(() => {
-        overlay.style.transition = 'opacity 0.2s ease';
-        overlay.style.opacity = '0';
-        overlay.style.pointerEvents = 'none';
-        icon.style.animation = 'none';
-        icon.style.opacity = '0';
-        openWheel(volume);
-      }, 900);
-    });
   }
 
   function openWheel(volume) {
@@ -584,11 +580,10 @@
   // ── OPEN / CLOSE ─────────────────────────────────────────────────────────
 
   function openNav() {
-    // Determine which burger element to animate
     const targetBurger = document.getElementById('nw-burger-fallback') || burger;
     targetBurger.classList.add('open');
     
-    overlay.classList.add('open');
+    menuOverlay.classList.add('open');
     document.body.style.overflow = 'hidden';
     document.body.style.touchAction = 'none';
     document.getElementById('nw-volume-select').style.display = 'flex';
@@ -601,29 +596,29 @@
     const targetBurger = document.getElementById('nw-burger-fallback') || burger;
     targetBurger.classList.remove('open');
     
-    overlay.classList.remove('open');
+    menuOverlay.classList.remove('open');
     document.body.style.overflow = '';
     document.body.style.touchAction = '';
     stopHold();
   }
 
   burger.addEventListener('click', () => {
-    overlay.classList.contains('open') ? closeNav() : openNav();
+    menuOverlay.classList.contains('open') ? closeNav() : openNav();
   });
 
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) closeNav();
+  menuOverlay.addEventListener('click', (e) => {
+    if (e.target === menuOverlay) closeNav();
   });
 
-  overlay.querySelector('#nw-sword-btn').addEventListener('click', function() {
+  menuOverlay.querySelector('#nw-sword-btn').addEventListener('click', function() {
     animateVolumeSelect(this, 'sword');
   });
 
-  overlay.querySelector('#nw-shield-btn').addEventListener('click', function() {
+  menuOverlay.querySelector('#nw-shield-btn').addEventListener('click', function() {
     animateVolumeSelect(this, 'shield');
   });
 
-  overlay.querySelector('#nw-wheel-back').addEventListener('click', () => {
+  menuOverlay.querySelector('#nw-wheel-back').addEventListener('click', () => {
     document.getElementById('nw-volume-select').style.display = 'flex';
     document.getElementById('nw-wheel-panel').classList.remove('active');
     stopHold();
