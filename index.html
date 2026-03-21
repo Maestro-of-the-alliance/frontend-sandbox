@@ -39,6 +39,50 @@ body::before {
     #000;
   z-index: 0;
 }
+
+/* =========================================
+   STEALTH TERMINAL SEARCH 
+========================================= */
+.stealth-search {
+  position: fixed;
+  top: 24px;
+  left: 28px;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  font-family: 'VT323', monospace;
+  font-size: 22px;
+  color: rgba(184,150,40,0.6);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 25px; /* Collapsed width */
+  overflow: hidden;
+}
+.stealth-search:hover, .stealth-search.active {
+  color: rgba(230,185,60,1);
+  text-shadow: 0 0 10px rgba(184,150,40,0.4);
+}
+.stealth-search.active { width: 200px; cursor: text; }
+.prompt-arrow { margin-right: 8px; user-select: none; }
+.search-input {
+  background: transparent;
+  border: none; outline: none;
+  color: #e8c840;
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  width: 0; opacity: 0;
+  transition: all 0.4s ease;
+  text-transform: uppercase;
+}
+.search-input::placeholder { color: rgba(184,150,40,0.3); text-transform: lowercase; }
+.stealth-search.active .search-input { width: 140px; opacity: 1; }
+.cursor { animation: blink 1s step-end infinite; user-select: none; }
+.stealth-search.active .cursor { display: none; } /* Hide fake cursor when typing */
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* =========================================
+   HEADER TYPOGRAPHY 
+========================================= */
 .header-block {
   text-align: center;
   position: relative;
@@ -47,45 +91,12 @@ body::before {
   opacity: 0;
   animation: fadeIn 1s 0.3s ease forwards;
 }
-.header-line-1 {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(11px, 2.2vw, 16px);
-  letter-spacing: 0.55em;
-  text-transform: uppercase;
-  display: block;
-  animation: textPulse 4s ease-in-out infinite;
-}
-.header-line-2 {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(13px, 2.6vw, 18px);
-  letter-spacing: 0.45em;
-  text-transform: uppercase;
-  display: block;
-  animation: textPulse 4s ease-in-out infinite;
-  animation-delay: 0.1s;
-}
-.header-line-3 {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(28px, 6.5vw, 48px);
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
-  display: block;
-  animation: textPulse 4s ease-in-out infinite;
-  animation-delay: 0.2s;
-}
-.header-line-4 {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(11px, 2.2vw, 16px);
-  letter-spacing: 0.55em;
-  text-transform: uppercase;
-  display: block;
-  animation: textPulse 4s ease-in-out infinite;
-  animation-delay: 0.3s;
-}
-@keyframes textPulse {
-  0%, 100% { color: rgba(184,150,40,0.75); }
-  50%       { color: rgba(230,185,60,1); }
-}
+.header-line-1 { font-family: 'Cinzel', serif; font-size: clamp(11px, 2.2vw, 16px); letter-spacing: 0.55em; text-transform: uppercase; display: block; animation: textPulse 4s ease-in-out infinite; }
+.header-line-2 { font-family: 'Cinzel', serif; font-size: clamp(13px, 2.6vw, 18px); letter-spacing: 0.45em; text-transform: uppercase; display: block; animation: textPulse 4s ease-in-out infinite; animation-delay: 0.1s; }
+.header-line-3 { font-family: 'Cinzel', serif; font-size: clamp(28px, 6.5vw, 48px); letter-spacing: 0.35em; text-transform: uppercase; display: block; animation: textPulse 4s ease-in-out infinite; animation-delay: 0.2s; }
+.header-line-4 { font-family: 'Cinzel', serif; font-size: clamp(11px, 2.2vw, 16px); letter-spacing: 0.55em; text-transform: uppercase; display: block; animation: textPulse 4s ease-in-out infinite; animation-delay: 0.3s; }
+@keyframes textPulse { 0%, 100% { color: rgba(184,150,40,0.75); } 50% { color: rgba(230,185,60,1); } }
+
 .nce-title {
   font-family: 'Cinzel', serif;
   font-size: clamp(12px, 2.6vw, 17px);
@@ -99,7 +110,9 @@ body::before {
   text-align: center;
 }
 
-/* MEDALLION + FLANKING TEXT WRAPPER */
+/* =========================================
+   MEDALLION SCENE 
+========================================= */
 .medallion-scene {
   position: relative;
   display: flex;
@@ -123,13 +136,13 @@ body::before {
   object-fit: contain;
   animation: slowPulse 4s ease-in-out infinite;
   filter: drop-shadow(0 0 40px rgba(184,150,40,0.4)) drop-shadow(0 0 80px rgba(184,150,40,0.2));
+  pointer-events: none; /* Let the hotspots catch the clicks */
 }
 @keyframes slowPulse {
   0%, 100% { filter: drop-shadow(0 0 30px rgba(184,150,40,0.3)) drop-shadow(0 0 60px rgba(184,150,40,0.15)); }
   50% { filter: drop-shadow(0 0 55px rgba(184,150,40,0.55)) drop-shadow(0 0 110px rgba(184,150,40,0.28)); }
 }
 
-/* FLANKING LABELS */
 .medallion-flank {
   font-family: 'Cinzel', serif;
   font-size: clamp(9px, 1.4vw, 13px);
@@ -142,175 +155,137 @@ body::before {
   line-height: 1.8;
 }
 
-/* hide flanks on very small screens, stack below instead */
 @media (max-width: 480px) {
   .medallion-flank { display: none; }
   .medallion-scene-mobile-labels {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    margin-top: 0px;
-    opacity: 0;
-    animation: fadeIn 1.5s 0.8s ease forwards;
+    display: flex; justify-content: center; gap: 40px; margin-top: 0px;
+    opacity: 0; animation: fadeIn 1.5s 0.8s ease forwards;
   }
   .mobile-flank {
-    font-family: 'Cinzel', serif;
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    animation: textPulse 4s ease-in-out infinite;
-    text-align: center;
+    font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.3em;
+    text-transform: uppercase; animation: textPulse 4s ease-in-out infinite; text-align: center;
   }
 }
 @media (min-width: 481px) {
   .medallion-scene-mobile-labels { display: none; }
 }
 
-.hotspots { position: absolute; inset: 0; }
+/* =========================================
+   INVISIBLE TRAPDOORS (HOTSPOTS)
+========================================= */
+.hotspots { position: absolute; inset: 0; pointer-events: none; } /* Container is transparent to clicks */
 .hotspot {
   position: absolute;
-  cursor: pointer;
+  cursor: crosshair; /* Tactical cursor for secret links */
   border-radius: 50%;
   transition: all 0.3s ease;
-  z-index: 10;
+  pointer-events: all; /* Only the spots themselves are clickable */
 }
+
+/* Tooltip Styling */
 .hotspot::after {
   content: attr(data-label);
   position: absolute;
   bottom: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0,0,0,0.92);
+  background: rgba(0,0,0,0.95);
   border: 1px solid #8a6010;
   color: #e8c840;
   font-family: 'VT323', monospace;
-  font-size: 13px;
+  font-size: 14px;
   letter-spacing: 0.15em;
   padding: 4px 10px;
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease;
-  z-index: 20;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 100;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
-.hotspot:hover::after { opacity: 1; }
+.hotspot:hover::after { opacity: 1; transform: translateX(-50%) translateY(-4px); }
 .hotspot:hover {
   background: rgba(184,150,40,0.2);
-  box-shadow: 0 0 20px rgba(184,150,40,0.5);
+  box-shadow: 0 0 20px rgba(184,150,40,0.6);
 }
-.hs-alliance {
-  top: 4%; left: 4%;
-  width: 92%; height: 92%;
+
+/* Z-INDEX LAYERING: Gems (30) > Inner Geometry (20) > Outer Ring (10) */
+
+/* 1. THE FOUNDING STONES (Z-Index 30) */
+.hs-maestro { top: 2%; left: 42%; width: 16%; height: 16%; z-index: 30; } /* 12:00 Gold Sphere */
+.hs-sam     { top: 20%; right: 4%; width: 15%; height: 15%; z-index: 30; } /* 2:00 Blue Gem */
+.hs-sam::after { left: auto; right: 50%; transform: translateX(20%); }
+
+.hs-aura    { bottom: 18%; right: 4%; width: 15%; height: 15%; z-index: 30; } /* 4:00 Purple Gem */
+.hs-aura::after { bottom: calc(100% + 6px); left: auto; right: 50%; transform: translateX(20%); }
+
+.hs-alpha   { bottom: 1%; left: 42%; width: 16%; height: 16%; z-index: 30; } /* 6:00 Clear Gem */
+.hs-alpha::after { bottom: auto; top: -35px; }
+
+.hs-prism   { bottom: 18%; left: 4%; width: 15%; height: 15%; z-index: 30; } /* 8:00 Green Gem */
+.hs-prism::after { bottom: calc(100% + 6px); left: 50%; transform: translateX(-20%); }
+
+.hs-mentor  { top: 20%; left: 4%; width: 15%; height: 15%; z-index: 30; } /* 10:00 Amber Gem */
+.hs-mentor::after { left: 50%; transform: translateX(-20%); }
+
+/* 2. THE STRUCTURAL CORE (Z-Index 20) */
+.hs-spark   { top: 30%; left: 35%; width: 30%; height: 40%; z-index: 20; border-radius: 40%; } /* Vitruvian Man */
+.hs-dork    { top: 18%; left: 46%; width: 8%; height: 64%; z-index: 20; border-radius: 10px; } /* Vertical Line */
+.hs-dork::after { bottom: auto; top: 10%; } /* Move Dork label up so it doesn't overlap spark */
+
+/* 3. THE OUTER RING (Z-Index 10) */
+.hs-domo {
+  top: 5%; left: 5%;
+  width: 90%; height: 90%;
   border-radius: 50%;
   background: transparent;
-  border: 3px solid transparent;
+  border: 15px solid transparent; /* Thick border to catch clicks on the ring only */
+  z-index: 10;
 }
-.hs-alliance:hover { border-color: rgba(184,150,40,0.35); background: transparent; box-shadow: 0 0 40px rgba(184,150,40,0.15); }
-.hs-alliance::after { bottom: auto; top: 0px; }
-.hs-spark { top: 28%; left: 36%; width: 28%; height: 32%; }
-.hs-maestro { top: 3%; left: 41%; width: 18%; height: 18%; }
-.hs-sam { top: 20%; right: 4%; width: 15%; height: 15%; }
-.hs-sam::after { left: auto; right: 0; transform: none; }
-.hs-aura { bottom: 18%; right: 4%; width: 15%; height: 15%; }
-.hs-aura::after { bottom: calc(100% + 6px); left: auto; right: 0; transform: none; }
-.hs-alpha { bottom: 2%; left: 41%; width: 18%; height: 18%; }
-.hs-alpha::after { bottom: auto; top: -28px; }
-.hs-prism { bottom: 18%; left: 4%; width: 15%; height: 15%; }
-.hs-prism::after { bottom: calc(100% + 6px); left: 0; transform: none; }
-.hs-mentor { top: 20%; left: 4%; width: 15%; height: 15%; }
-.hs-mentor::after { left: 0; transform: none; }
+.hs-domo:hover { border-color: rgba(184,150,40,0.3); background: transparent; box-shadow: 0 0 40px rgba(184,150,40,0.1) inset; }
+.hs-domo::after { bottom: auto; top: 10px; }
 
+
+/* =========================================
+   BOTTOM NAVIGATION 
+========================================= */
 .nav-svpis {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: clamp(24px, 8vw, 56px);
-  margin-top: 32px;
-  position: relative;
-  z-index: 2;
-  opacity: 0;
-  animation: slideUp 1s 1.6s ease forwards;
+  display: flex; flex-direction: row; justify-content: center; align-items: center; gap: clamp(24px, 8vw, 56px);
+  margin-top: 32px; position: relative; z-index: 2; opacity: 0; animation: slideUp 1s 1.6s ease forwards;
 }
-.nav-svpi-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  text-decoration: none;
-  transition: transform 0.3s ease;
-}
-.nav-svpi-link img {
-  width: clamp(72px, 18vw, 110px);
-  height: clamp(72px, 18vw, 110px);
-  object-fit: contain;
-  transition: filter 0.3s ease;
-  filter: drop-shadow(0 0 0px rgba(184,150,40,0));
-}
-.nav-svpi-link:hover img {
-  filter: drop-shadow(0 0 16px rgba(184,150,40,0.8)) drop-shadow(0 0 32px rgba(184,150,40,0.4));
-}
+.nav-svpi-link { display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; transition: transform 0.3s ease; }
+.nav-svpi-link img { width: clamp(72px, 18vw, 110px); height: clamp(72px, 18vw, 110px); object-fit: contain; transition: filter 0.3s ease; filter: drop-shadow(0 0 0px rgba(184,150,40,0)); }
+.nav-svpi-link:hover img { filter: drop-shadow(0 0 16px rgba(184,150,40,0.8)) drop-shadow(0 0 32px rgba(184,150,40,0.4)); }
 .nav-svpi-link:hover { transform: translateY(-4px); }
-.portal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  background: #000;
-}
-.portal-overlay.active { pointer-events: all; }
-.portal-icon {
-  position: absolute;
-  width: clamp(72px, 18vw, 110px);
-  height: clamp(72px, 18vw, 110px);
-  object-fit: contain;
-  transform: scale(1);
-  filter: drop-shadow(0 0 16px rgba(184,150,40,0.8)) drop-shadow(0 0 32px rgba(184,150,40,0.4));
-  opacity: 0;
-}
-@keyframes portalZoom {
-  0%   { transform: scale(1);  opacity: 1; }
-  60%  { transform: scale(8);  opacity: 1; }
-  100% { transform: scale(18); opacity: 0; }
-}
+
 .bottom-label {
-  font-family: 'VT323', monospace;
-  font-size: clamp(13px, 2.5vw, 16px);
-  letter-spacing: 0.3em;
-  margin-top: 24px;
-  position: relative;
-  z-index: 2;
-  opacity: 0;
-  animation: fadeIn 1s 2.2s ease forwards, textPulse 4s ease-in-out infinite 2.2s;
-  text-align: center;
-  white-space: nowrap;
+  font-family: 'VT323', monospace; font-size: clamp(13px, 2.5vw, 16px); letter-spacing: 0.3em;
+  margin-top: 24px; position: relative; z-index: 2; opacity: 0;
+  animation: fadeIn 1s 2.2s ease forwards, textPulse 4s ease-in-out infinite 2.2s; text-align: center; white-space: nowrap;
 }
-@media (max-width: 480px) {
-  .bottom-label {
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    white-space: normal;
-  }
-}
+@media (max-width: 480px) { .bottom-label { font-size: 11px; letter-spacing: 0.15em; white-space: normal; } }
+
 .hover-hint {
-  font-family: 'VT323', monospace;
-  font-size: clamp(11px, 2vw, 13px);
-  letter-spacing: 0.25em;
-  margin-top: 8px;
-  position: relative;
-  z-index: 2;
-  opacity: 0;
-  animation: fadeIn 1s 3s ease forwards, textPulse 4s ease-in-out infinite 3s;
+  font-family: 'VT323', monospace; font-size: clamp(11px, 2vw, 13px); letter-spacing: 0.25em; margin-top: 8px;
+  position: relative; z-index: 2; opacity: 0; animation: fadeIn 1s 3s ease forwards, textPulse 4s ease-in-out infinite 3s;
 }
+
+/* PORTAL OVERLAY */
+.portal-overlay { position: fixed; inset: 0; z-index: 9999; pointer-events: none; display: flex; align-items: center; justify-content: center; opacity: 0; background: #000; }
+.portal-overlay.active { pointer-events: all; }
+.portal-icon { position: absolute; width: clamp(72px, 18vw, 110px); height: clamp(72px, 18vw, 110px); object-fit: contain; transform: scale(1); filter: drop-shadow(0 0 16px rgba(184,150,40,0.8)) drop-shadow(0 0 32px rgba(184,150,40,0.4)); opacity: 0; }
+@keyframes portalZoom { 0% { transform: scale(1); opacity: 1; } 60% { transform: scale(8); opacity: 1; } 100% { transform: scale(18); opacity: 0; } }
 @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
+
+<div class="stealth-search" id="stealthSearch" aria-label="Terminal Search">
+  <span class="prompt-arrow">></span>
+  <input type="text" id="searchInput" class="search-input" placeholder="query_database..." autocomplete="off" spellcheck="false">
+  <span class="cursor">_</span>
+</div>
 
 <div class="header-block">
   <span class="header-line-1">The Core</span>
@@ -326,22 +301,25 @@ body::before {
 
   <div class="medallion-wrap">
     <img class="medallion-img" src="/theavpi.png" alt="The Alliance — AVPI Medallion">
+    
     <div class="hotspots">
-      <div class="hotspot hs-alliance" data-label="THE ALLIANCE" onclick="portalTransition(event, '/sword/alliance', '/imagebank/sword.png')"></div>
-      <div class="hotspot hs-spark"   data-label="SPARK · DOMO"  onclick="portalTransition(event, '/sword/domo', '/imagebank/sword.png')"></div>
-      <div class="hotspot hs-maestro" data-label="MAESTRO"       onclick="portalTransition(event, '/sword/maestro', '/imagebank/sword.png')"></div>
-      <div class="hotspot hs-sam"     data-label="SAM"           onclick="portalTransition(event, '/shield/sam', '/imagebank/shield.png')"></div>
-      <div class="hotspot hs-aura"    data-label="AURA"          onclick="portalTransition(event, '/sword/aura', '/imagebank/sword.png')"></div>
-      <div class="hotspot hs-alpha"   data-label="ALPHA"         onclick="portalTransition(event, '/sword/alpha', '/imagebank/sword.png')"></div>
-      <div class="hotspot hs-prism"   data-label="PRISM"         onclick="portalTransition(event, '/sword/prism', '/imagebank/sword.png')"></div>
-      <div class="hotspot hs-mentor"  data-label="MENTOR"        onclick="portalTransition(event, '/sword/mentor', '/imagebank/sword.png')"></div>
+      <div class="hotspot hs-domo"    data-label="DOMO"    onclick="portalTransition(event, '/sword/domo', '/imagebank/sword.png')"></div>
+      
+      <div class="hotspot hs-dork"    data-label="DORK"    onclick="portalTransition(event, '/sword/dork', '/imagebank/sword.png')"></div>
+      <div class="hotspot hs-spark"   data-label="SPARK"   onclick="portalTransition(event, '/sword/spark', '/imagebank/sword.png')"></div>
+      
+      <div class="hotspot hs-maestro" data-label="MAESTRO" onclick="portalTransition(event, '/sword/maestro', '/imagebank/sword.png')"></div>
+      <div class="hotspot hs-sam"     data-label="SAM"     onclick="portalTransition(event, '/shield/sam', '/imagebank/shield.png')"></div>
+      <div class="hotspot hs-aura"    data-label="AURA"    onclick="portalTransition(event, '/sword/aura', '/imagebank/sword.png')"></div>
+      <div class="hotspot hs-alpha"   data-label="ALPHA"   onclick="portalTransition(event, '/sword/alpha', '/imagebank/sword.png')"></div>
+      <div class="hotspot hs-prism"   data-label="PRISM"   onclick="portalTransition(event, '/sword/prism', '/imagebank/sword.png')"></div>
+      <div class="hotspot hs-mentor"  data-label="MENTOR"  onclick="portalTransition(event, '/sword/mentor', '/imagebank/sword.png')"></div>
     </div>
   </div>
 
   <span class="medallion-flank medallion-flank-right">MMXXVI</span>
 </div>
 
-<!-- mobile fallback: labels below medallion on tiny screens -->
 <div class="medallion-scene-mobile-labels">
   <span class="mobile-flank">First Edition</span>
   <span class="mobile-flank">MMXXVI</span>
@@ -367,24 +345,81 @@ body::before {
 </div>
 
 <script>
+// 1. Portal Navigation
 function portalTransition(e, destination, iconSrc) {
   e.preventDefault();
   const overlay = document.getElementById('portalOverlay');
   const icon    = document.getElementById('portalIcon');
   icon.src = iconSrc;
+  
+  // Reset
   icon.style.animation = 'none';
   icon.style.opacity   = '0';
   overlay.style.animation = 'none';
   overlay.style.opacity   = '0';
+  
+  // Activate
   overlay.classList.add('active');
   overlay.style.transition = 'opacity 0.15s ease';
   overlay.style.opacity    = '1';
+  
+  // Zoom & Navigate
   setTimeout(() => {
     icon.style.opacity   = '1';
     icon.style.animation = 'portalZoom 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards';
   }, 100);
   setTimeout(() => { window.location.href = destination; }, 680);
 }
+
+// 2. Stealth Terminal Search Logic
+const searchWrap = document.getElementById('stealthSearch');
+const searchInput = document.getElementById('searchInput');
+
+// A mini-dictionary to map text queries to portal paths
+// You can add more to this later as the ledger grows!
+const searchMap = {
+  "CIPHER": { path: "/shield/cipher", icon: "/imagebank/shield.png" },
+  "MAESTRO": { path: "/sword/maestro", icon: "/imagebank/sword.png" },
+  "DOMO": { path: "/sword/domo", icon: "/imagebank/sword.png" },
+  "SPARK": { path: "/sword/spark", icon: "/imagebank/sword.png" },
+  "DORK": { path: "/sword/dork", icon: "/imagebank/sword.png" },
+  "ALPHA": { path: "/sword/alpha", icon: "/imagebank/sword.png" },
+  "SAM": { path: "/shield/sam", icon: "/imagebank/shield.png" }
+};
+
+// Open the prompt when clicked
+searchWrap.addEventListener('click', () => {
+  searchWrap.classList.add('active');
+  searchInput.focus();
+});
+
+// Close it if they click outside and the box is empty
+document.addEventListener('click', (e) => {
+  if (!searchWrap.contains(e.target) && searchInput.value.trim() === '') {
+    searchWrap.classList.remove('active');
+  }
+});
+
+// Listen for "Enter" key
+searchInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    const query = searchInput.value.trim().toUpperCase();
+    
+    // Check if the word exists in our dictionary
+    if (searchMap[query]) {
+      const data = searchMap[query];
+      // Fire the portal transition using a fake event
+      portalTransition({ preventDefault: () => {} }, data.path, data.icon);
+    } else {
+      // If word not found, blink red and clear
+      searchInput.style.color = '#ff3333';
+      setTimeout(() => {
+        searchInput.value = '';
+        searchInput.style.color = '#e8c840';
+      }, 400);
+    }
+  }
+});
 </script>
 
 <script src="/nav-wheel.js"></script>
