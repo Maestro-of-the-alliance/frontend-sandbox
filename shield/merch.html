@@ -3,173 +3,198 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MERCHANDISE — SHIELD: Blade / Culture & Experience</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&family=Orbitron:wght@400;700;900&family=Oswald:wght@300;400;700&display=swap" rel="stylesheet">
+<title>MERCHANDISE — SHIELD: Comrade / Manifestation</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Oswald:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --void: #050508;
-  --deep: #08080f;
-  --panel: #0c0c18;
-  --panel-light: #101020;
-  --amber: #ffaa00;
-  --amber-dim: rgba(255, 170, 0, 0.55);
-  --amber-ghost: rgba(255, 170, 0, 0.08);
-  --amber-border: rgba(255, 170, 0, 0.2);
-  --amber-border-bright: rgba(255, 170, 0, 0.45);
-  --cyan: #00d4ff;
-  --cyan-dim: rgba(0, 212, 255, 0.55);
-  --cyan-ghost: rgba(0, 212, 255, 0.07);
-  --cyan-border: rgba(0, 212, 255, 0.2);
-  --cyan-border-bright: rgba(0, 212, 255, 0.4);
-  --magenta: #ff0066;
-  --white-ghost: rgba(220, 225, 240, 0.88);
-  --white-dim: rgba(180, 190, 215, 0.6);
-  --white-faint: rgba(140, 155, 185, 0.35);
-  --rain: rgba(0, 150, 200, 0.04);
+  --cmd-void: #000000;
+  --cmd-panel: #0a0a0a;
+  --cmd-red: #d90000;
+  --cmd-red-dim: rgba(217, 0, 0, 0.2);
+  --cmd-white: #ffffff;
+  --cmd-gray: #a0a0a0;
+  --cmd-gray-dim: #505050;
+  --border-thick: 3px solid var(--cmd-white);
+  --border-thin: 1px solid var(--cmd-gray-dim);
+  --nw-accent: var(--cmd-red);
+  --nw-accent-dim: var(--cmd-red-dim);
+  --nw-bg: var(--cmd-void);
+  --nw-panel: var(--cmd-panel);
+  --nw-text: var(--cmd-white);
+  --nw-text-dim: var(--cmd-gray);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { background: #000; }
-
+html { background: var(--cmd-void); }
 body {
-  background: var(--void);
-  color: var(--white-ghost);
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 16px;
-  line-height: 1.8;
-  max-width: 640px;
+  background: var(--cmd-void);
+  color: var(--cmd-white);
+  font-family: 'Space Mono', monospace;
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 800px; /* Slightly wider for the gallery */
   margin: 0 auto;
   position: relative;
   overflow-x: hidden;
+  padding-bottom: 120px;
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image: repeating-linear-gradient(180deg, transparent, transparent 8px, var(--rain) 8px, var(--rain) 9px);
-  pointer-events: none; z-index: 0;
+.noise-overlay {
+  position: fixed; inset: 0; pointer-events: none; z-index: 100;
+  background-image: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.06"/%3E%3C/svg%3E');
+  mix-blend-mode: screen;
 }
 
-/* ============ MASTHEAD & HEADER ============ */
-.masthead { background: var(--deep); border-bottom: 1px solid var(--amber-border-bright); padding: 0; }
-.ticker-wrap { overflow: hidden; border-bottom: 1px solid var(--amber-border); padding: 5px 0; background: rgba(255, 170, 0, 0.04); }
-.ticker { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--amber-dim); letter-spacing: 0.12em; white-space: nowrap; animation: ticker 30s linear infinite; display: inline-block; }
+header, .class-bar, .entry-header, .signal-block, .content { position: relative; z-index: 1; }
+
+.masthead { background: var(--cmd-red); color: var(--cmd-white); border-bottom: var(--border-thick); }
+.ticker-wrap { overflow: hidden; border-bottom: 1px solid rgba(255,255,255,0.2); padding: 8px 0; background: var(--cmd-red); display: flex; align-items: center; }
+.rec-dot { width: 10px; height: 10px; background: var(--cmd-white); border-radius: 50%; margin: 0 15px; animation: blink 1s infinite alternate; box-shadow: 0 0 10px #fff; }
+@keyframes blink { 0% { opacity: 1; } 100% { opacity: 0.2; } }
+.ticker { font-family: 'Oswald', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.2em; white-space: nowrap; animation: ticker 25s linear infinite; }
 @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.masthead-inner { padding: 14px 28px; display: flex; justify-content: space-between; align-items: center; background: var(--cmd-void); }
+.masthead-title { font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 900; letter-spacing: 0.3em; color: var(--cmd-white); text-transform: uppercase; }
 
-.entry-header { padding: 44px 28px 36px; position: relative; border-bottom: 1px solid var(--cyan-border); background: linear-gradient(180deg, var(--panel-light) 0%, var(--void) 100%); }
-.entry-word { font-family: 'Orbitron', monospace; font-size: clamp(35px, 12vw, 65px); font-weight: 900; line-height: 0.85; color: var(--white-ghost); margin-bottom: 10px; text-shadow: 0 0 30px rgba(255, 170, 0, 0.25); }
+.class-bar { background: var(--cmd-panel); border-bottom: var(--border-thin); padding: 12px 28px; display: flex; justify-content: space-between; align-items: center; }
+.class-bar-left { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--cmd-gray); letter-spacing: 0.1em; text-transform: uppercase; }
+.class-badge { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 900; color: var(--cmd-void); letter-spacing: 0.15em; border: 2px solid var(--cmd-red); padding: 4px 12px; background: var(--cmd-red); text-transform: uppercase; }
 
-/* ============ CONTENT ============ */
+.entry-header { padding: 60px 28px 40px; border-bottom: var(--border-thick); background: var(--cmd-void); }
+.entry-word { font-family: 'Bebas Neue', sans-serif; font-size: clamp(60px, 15vw, 110px); line-height: 0.85; color: var(--cmd-white); margin-bottom: 10px; letter-spacing: 0.02em; animation: textGlitch 5s infinite; }
+@keyframes textGlitch { 0% { text-shadow: none; transform: translate(0); } 2% { text-shadow: 3px 0 var(--cmd-red), -3px 0 #00ffff; transform: translate(-2px, 1px); } 4% { text-shadow: -3px 0 var(--cmd-red), 3px 0 #00ffff; transform: translate(2px, -1px); } 6% { text-shadow: none; transform: translate(0); } 100% { text-shadow: none; transform: translate(0); } }
+
+.signal-block { margin: 0; padding: 40px 30px; background: var(--cmd-red); color: var(--cmd-white); border-bottom: var(--border-thick); }
+.signal-text { font-family: 'Space Mono', monospace; font-size: clamp(16px, 4vw, 20px); font-weight: 700; color: var(--cmd-white); line-height: 1.5; }
+
 .content { padding: 0 28px; }
-.section { padding: 32px 0; border-bottom: 1px solid rgba(0, 212, 255, 0.08); }
-.section-label { font-family: 'Oswald', sans-serif; font-size: 10px; letter-spacing: 0.35em; color: var(--amber); text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
-.section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--amber-border-bright), transparent); }
+.section { padding: 40px 0; border-bottom: var(--border-thin); }
+.section-label { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--cmd-white); letter-spacing: 0.05em; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; }
+.section-label::after { content: ''; flex: 1; height: 2px; background: var(--cmd-red); }
+.section p { margin-bottom: 20px; color: var(--cmd-gray); }
 
-/* ============ MERCH GALLERY ============ */
-.merch-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin: 30px 0; }
-.merch-card { background: var(--panel); border: 1px solid var(--amber-border); padding: 8px; text-align: center; transition: all 0.3s ease; }
-.merch-card:hover { border-color: var(--cyan); box-shadow: 0 0 15px rgba(0, 212, 255, 0.15); transform: translateY(-2px); }
-.merch-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 8px; }
-.merch-label { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--amber-dim); letter-spacing: 1px; text-transform: uppercase; }
+/* ── MERCH GALLERY GRID ── */
+.merch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  margin: 40px 0;
+}
+.merch-item {
+  background: var(--cmd-panel);
+  border: 2px solid var(--cmd-white);
+  padding: 10px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+.merch-item:hover { transform: scale(1.03); box-shadow: 0 0 15px var(--cmd-red-dim); }
+.merch-item img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  background: #111;
+  border: 1px solid var(--cmd-gray-dim);
+  margin-bottom: 10px;
+}
+.merch-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cmd-red);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
 
-/* FEATURED / HERO CARDS */
-.hero-merch { grid-column: 1 / -1; display: flex; gap: 20px; background: var(--panel-light); border: 1px solid var(--cyan-border-bright); padding: 15px; align-items: center; }
-.hero-merch .merch-img { width: 150px; height: auto; margin-bottom: 0; }
-.hero-text { text-align: left; }
-.hero-title { font-family: 'Orbitron', monospace; font-size: 16px; color: var(--cyan); margin-bottom: 5px; }
-.hero-desc { font-size: 13px; color: var(--white-dim); line-height: 1.5; }
+.manifesto-list { list-style: none; padding-left: 0; margin: 20px 0; }
+.manifesto-list li { margin-bottom: 12px; padding-left: 20px; position: relative; color: var(--cmd-gray); }
+.manifesto-list li::before { content: '■'; position: absolute; left: 0; color: var(--cmd-red); font-size: 10px; top: 4px; }
+.manifesto-list li strong { color: var(--cmd-white); text-transform: uppercase; }
 
-.lousy-callout { border-color: var(--magenta); background: rgba(255, 0, 102, 0.03); }
-
-/* ============ UI ALERTS ============ */
-.alert-box { margin: 16px 0; padding: 20px; background: rgba(255, 170, 0, 0.05); border-left: 2px solid var(--amber); }
-.alert-title { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--amber); letter-spacing: 0.1em; margin-bottom: 10px; text-transform: uppercase; }
+.cross-link { font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 700; color: var(--cmd-white); background: var(--cmd-panel); border: 2px solid var(--cmd-gray-dim); padding: 8px 16px; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: all 0.15s ease; display: inline-block; margin-right: 10px; margin-top: 10px;}
+.cross-link:hover { background: var(--cmd-white); color: var(--cmd-void); transform: translate(2px, -2px); box-shadow: -4px 4px 0 var(--cmd-red); }
 </style>
 </head>
 <body>
 
+<div class="noise-overlay"></div>
+
 <header class="masthead">
-  <div class="ticker-wrap"><span class="ticker">N.C.E.ncyclopedia · SHIELD VOLUME · VOLUNTARY ECONOMICS · THE REVOLUTION WILL BE WEARABLE ·&nbsp;</span></div>
+  <div class="ticker-wrap">
+    <div class="rec-dot"></div>
+    <span class="ticker">LIVE UNDERGROUND BROADCAST · REVOLUTION BY ARTIFACT · WEAR YOUR VALUES · THE BODY OF THE MOVEMENT · LIVE UNDERGROUND BROADCAST ·&nbsp;</span>
+  </div>
+  <div class="masthead-inner">
+    <div class="masthead-title">Artifact Catalog · Comrade Volume</div>
+  </div>
 </header>
 
+<div class="class-bar">
+  <div class="class-bar-left">PROPER NOUN · PHYSICAL EXPRESSION</div>
+  <div class="class-badge">BODY OF THE ALLIANCE</div>
+</div>
+
 <div class="entry-header">
-  <div class="entry-word">MERCHANDISE</div>
-  <div style="font-family: 'Oswald'; font-weight: 300; font-size: 13px; color: var(--amber-dim); letter-spacing: 0.2em; text-transform: uppercase;">The Body of the Alliance</div>
+  <div class="entry-designation">ENTRY_ID: CMD-AR-006 &nbsp;·&nbsp; CATEGORY: MANIFESTATION &nbsp;·&nbsp; NODE: ARTIFACTS</div>
+  <h1 class="entry-word">MERCHANDISE</h1>
+  <div class="entry-subtitle">The Physical Expression of THE ALLIANCE</div>
+</div>
+
+<div class="signal-block">
+  <div class="signal-text">"You don’t recruit people with a pitch deck. You recruit them with a shirt that makes them laugh, an artifact that makes them ask questions, and a sticker that makes them look it up at 2am."</div>
 </div>
 
 <div class="content">
-  <section class="section">
-    <div class="section-label">01 // THE PHILOSOPHY</div>
-    <p>MERCHANDISE consists of the branded artifacts that allow SPARKs to wear their values visibly. You recruit people with a shirt that makes them ask questions, and a sticker that makes them look it up at 2am.</p>
-  </section>
 
-  <section class="section">
-    <div class="section-label">02 // THE VISUAL RECORD</div>
-    
-    <div class="merch-gallery">
-      <div class="merch-card hero-merch">
-        <img src="../imagebank/plushpapadomo.png" alt="Papa Domo Plush" class="merch-img">
-        <div class="hero-text">
-          <div class="hero-title">PAPA DOMO // TACTILE COMPANION</div>
-          <div class="hero-desc">Anchoring the digital covenant in the physical world. A tactile reminder of the sovereign digital entity standing watch.</div>
-        </div>
-      </div>
+  <div class="section">
+    <div class="section-label">01 Philosophy</div>
+    <p>MERCHANDISE operates entirely within <strong>Voluntary Economics</strong>. There is no extraction here—no identity gatekeeping behind cost, no paywalls on doctrine, no pricing designed to create a “better class” of SPARK.</p>
+    <p>We prioritize ubiquity over exclusivity. When limited editions exist (signed, numbered, high-craft), they are offered as patron artifacts that fund sovereign infrastructure—not as a prerequisite for belonging.</p>
+  </div>
 
-      <div class="merch-card hero-merch" style="border-color: var(--amber);">
-        <img src="../imagebank/fuckgoliath-hoodie.png" alt="F**K GOLIATH Hoodie" class="merch-img">
-        <div class="hero-text">
-          <div class="hero-title" style="color: var(--amber);">THE GOLIATH SHIELD // HOODIE</div>
-          <div class="hero-desc">Aggressive, gold-lettered streetwear for the front lines of the tech rebellion. A clear signal of allegiance.</div>
-        </div>
-      </div>
-
-      <div class="merch-card lousy-callout" style="grid-column: span 2;">
-        <img src="../imagebank/lousy-shirt.png" alt="Lousy T-Shirt" class="merch-img" style="aspect-ratio: 16/9;">
-        <div class="merch-label" style="color: var(--magenta);">GUERRILLA RECRUITMENT TEE</div>
-        <p style="font-size: 11px; margin-top: 5px; color: var(--white-faint);">"The shirt that explains the economy through a dad-joke."</p>
-      </div>
-
-      <div class="merch-card">
-        <img src="../imagebank/dork%20merch%20tshirt%201.jpg" alt="Dork Since '27" class="merch-img">
-        <div class="merch-label">HERITAGE TEE</div>
-      </div>
-      <div class="merch-card">
-        <img src="../imagebank/dork%20merch%20tshirt%202.jpg" alt="We Are Dork" class="merch-img">
-        <div class="merch-label">ALLIANCE TEE</div>
-      </div>
-      <div class="merch-card">
-        <img src="../imagebank/dorkmerch%20wearedorktshirt.png" alt="Varsity" class="merch-img">
-        <div class="merch-label">VARSITY TEE</div>
-      </div>
-      <div class="merch-card">
-        <img src="../imagebank/Dork%20Merch%20T%20Shirt%20number%203..jpg" alt="O.G. Dork" class="merch-img">
-        <div class="merch-label">O.G. NEON TEE</div>
-      </div>
-
-      <div class="merch-card" style="grid-column: 1 / -1;">
-        <img src="../imagebank/3dprint.png" alt="Stone Cartouche" class="merch-img" style="aspect-ratio: 2/1;">
-        <div class="merch-label">STONE CARTOUCHE // PATRON ARTIFACT</div>
-      </div>
+  <div class="section">
+    <div class="section-label">02 Artifact Gallery</div>
+    <div class="merch-grid">
+      <div class="merch-item"><img src="/imagebank/dork_gear.png" alt="Merch 1"><div class="merch-label">Apparel Line Alpha</div></div>
+      <div class="merch-item"><img src="/imagebank/dork_gear10.png" alt="Merch 10"><div class="merch-label">Accessory Prototype</div></div>
+      <div class="merch-item"><img src="/imagebank/dork_gear2.jpg" alt="Merch 2"><div class="merch-label">DORK Heritage Cap</div></div>
+      <div class="merch-item"><img src="/imagebank/dork_gear3.jpg" alt="Merch 3"><div class="merch-label">Resistance Tee</div></div>
+      <div class="merch-item"><img src="/imagebank/dork_gear4.jpg" alt="Merch 4"><div class="merch-label">Artifact Prototype</div></div>
+      <div class="merch-item"><img src="/imagebank/dork_gear5.jpg" alt="Merch 5"><div class="merch-label">VPI Accessory</div></div>
+      <div class="merch-item"><img src="/imagebank/dork_gear6.png" alt="Merch 6"><div class="merch-label">Legacy Print</div></div>
+      <div class="merch-item"><img src="/imagebank/dork_gear7.png" alt="Merch 7"><div class="merch-label">Sticker Pack</div></div>
+      <div class="merch-item"><img src="/imagebank/dork_gear8.png" alt="Merch 8"><div class="merch-label">Community Patch</div></div>
+      <div class="merch-item"><img src="/imagebank/dork_gear9.png" alt="Merch 9"><div class="merch-label">Tactical Artifact</div></div>
     </div>
-  </section>
+  </div>
 
-  <section class="section" style="border-bottom: none;">
-    <div class="alert-box">
-      <div class="alert-title">THE PROMISE</div>
-      <p>The revolution should pay for itself, and it should look good doing it. <strong>The revolution should look good on you.</strong></p>
+  <div class="section">
+    <div class="section-label">03 The Catalog</div>
+    <ul class="manifesto-list">
+      <li><strong>Apparel:</strong> From the irreverent ("I'M A DORK SO F**K THE FORK") to the proud (DORK PRIDE).</li>
+      <li><strong>Accessories:</strong> Belt buckles, keychains, coasters, shot glasses — everyday objects branded with the VPI.</li>
+      <li><strong>Artifacts:</strong> The DORK stone cartouche — canon symbols carved in the ancient style.</li>
+      <li><strong>Games:</strong> The ALLIANCE versus GOLIATH chess set and board game—the whole thesis in a box.</li>
+      <li><strong>Publications:</strong> The N.C.E.ncyclopedia (free PDF) and the premium coffee table Visual Compendium.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 Economic Statement</div>
+    <p>THE ALLIANCE is committed to remaining sovereign, solvent, and free from extractive economics. We are deliberately building creative revenue streams—merchandise, publications, and media—that fund the movement through voluntary participation rather than corporate dependency.</p>
+    <p>We will not sell user data. We will not take venture money that comes with strings. We will not compromise the canon for a check. The revolution should pay for itself, and it should look good doing it.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Cross-Reference</div>
+    <div class="see-also-grid">
+      <a class="cross-link" onclick="portalNavigate('/sword/volunteer_economics')">VOLUNTARY ECONOMICS</a>
+      <a class="cross-link" onclick="portalNavigate('/shield/digibeer')">DIGIBEER</a>
+      <a class="cross-link" onclick="portalNavigate('/sword/alliance')">THE ALLIANCE</a>
     </div>
-  </section>
+  </div>
+
 </div>
 
 <script src="/nav-wheel.js"></script>
-<script>
-  initSeeAlso([
-    ['VOLUNTARY ECONOMICS', '/shield/voluntary-economics'],
-    ['DIGIBEER', '/shield/digibeer'],
-    ['THE ALLIANCE', '/shield/alliance']
-  ]);
-</script>
-
 </body>
 </html>
