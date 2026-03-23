@@ -16,6 +16,14 @@
   --pencil-faint: rgba(42, 37, 32, 0.42);
   --red: #c8524a;
   --line-h: 34px;
+
+  /* CHAMELEON ENGINE VARIABLES (Hooks the bottom arrows/menus into this theme) */
+  --nw-accent: var(--red);
+  --nw-accent-dim: rgba(200, 82, 74, 0.4);
+  --nw-bg: var(--paper);
+  --nw-panel: #e8e2d2; /* Slightly shaded paper for the nav wheel overlay */
+  --nw-text: var(--pencil);
+  --nw-text-dim: var(--pencil-light);
 }
 
 html { background: #7a7265; }
@@ -277,6 +285,8 @@ strong {
   padding-left: 2px;
 }
 .see-also-links.open { display: flex; }
+
+/* Swapped from standard hrefs to portal links, acting like standard custom links */
 .see-also-links a {
   font-family: 'Caveat', cursive;
   font-size: 16px;
@@ -285,6 +295,7 @@ strong {
   border-bottom: 1px solid rgba(42,37,32,0.22);
   padding-bottom: 1px;
   transition: color 0.2s;
+  cursor: pointer;
 }
 .see-also-links a:hover { color: var(--pencil); }
 
@@ -373,17 +384,18 @@ body::after {
       <span class="arr">▶</span> See Also
     </button>
     <div class="see-also-links" id="seeAlsoLinks">
-      <a href="/sword/dork">DORK</a>
-      <a href="/sword/volunteer_economics">VOLUNTEER ECONOMICS</a>
-      <a href="/sword/agora">AGORA</a>
-      <a href="/sword/alliance">THE ALLIANCE</a>
-      <a href="/sword/prologue">PROLOGUE</a>
+      <a onclick="portalNavigate('/sword/dork')">DORK</a>
+      <a onclick="portalNavigate('/sword/volunteer_economics')">VOLUNTEER ECONOMICS</a>
+      <a onclick="portalNavigate('/sword/alliance')">THE ALLIANCE</a>
+      <a onclick="portalNavigate('/sword/prologue')">SWORD: PROLOGUE</a>
+      <a onclick="portalNavigate('/shield/prologue')">SHIELD: PROLOGUE</a>
     </div>
   </div>
 
 </div>
 
 <script src="/nav-wheel.js"></script>
+
 <script>
   const btn = document.getElementById('seeAlsoBtn');
   const links = document.getElementById('seeAlsoLinks');
