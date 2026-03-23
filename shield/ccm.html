@@ -3,62 +3,157 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CCM — SHIELD: Blade / Identity</title>
+<title>CCM — SHIELD: Blade / Protocol</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&family=Orbitron:wght@400;700;900&family=Oswald:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
-/* ... (Existing Blade Skin CSS preserved) ... */
 :root {
-  --void: #050508; --deep: #08080f; --panel: #0c0c18; --panel-light: #101020;
-  --amber: #ffaa00; --amber-dim: rgba(255, 170, 0, 0.55); --amber-ghost: rgba(255, 170, 0, 0.08);
-  --amber-border: rgba(255, 170, 0, 0.2); --amber-border-bright: rgba(255, 170, 0, 0.45);
-  --cyan: #00d4ff; --cyan-dim: rgba(0, 212, 255, 0.55); --cyan-ghost: rgba(0, 212, 255, 0.07);
-  --cyan-border: rgba(0, 212, 255, 0.2); --cyan-border-bright: rgba(0, 212, 255, 0.4);
-  --magenta: #ff0066; --magenta-dim: rgba(255, 0, 102, 0.4);
-  --white-ghost: rgba(220, 225, 240, 0.88); --white-dim: rgba(180, 190, 215, 0.6);
-  --white-faint: rgba(140, 155, 185, 0.35); --rain: rgba(0, 150, 200, 0.04);
+  --void: #050508; 
+  --deep: #08080f; 
+  --panel: #0c0c18; 
+  --panel-light: #101020;
+  --amber: #ffaa00; 
+  --amber-dim: rgba(255, 170, 0, 0.55); 
+  --amber-ghost: rgba(255, 170, 0, 0.08);
+  --amber-border: rgba(255, 170, 0, 0.2); 
+  --amber-border-bright: rgba(255, 170, 0, 0.45);
+  --cyan: #00d4ff; 
+  --cyan-dim: rgba(0, 212, 255, 0.55); 
+  --cyan-ghost: rgba(0, 212, 255, 0.07);
+  --cyan-border: rgba(0, 212, 255, 0.2); 
+  --cyan-border-bright: rgba(0, 212, 255, 0.4);
+  --magenta: #ff0066; 
+  --magenta-dim: rgba(255, 0, 102, 0.4);
+  --white-ghost: rgba(220, 225, 240, 0.88); 
+  --white-dim: rgba(180, 190, 215, 0.6);
+  --white-faint: rgba(140, 155, 185, 0.35); 
+  --rain: rgba(0, 150, 200, 0.04);
+
+  /* CHAMELEON ENGINE VARIABLES */
+  --nw-accent: var(--cyan);
+  --nw-accent-dim: var(--cyan-border-bright);
+  --nw-bg: var(--void);
+  --nw-panel: var(--panel);
+  --nw-text: var(--white-ghost);
+  --nw-text-dim: var(--white-dim);
 }
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { background: #000; }
-body { background: var(--void); color: var(--white-ghost); font-family: 'Rajdhani', sans-serif; font-size: 16px; line-height: 1.8; max-width: 640px; margin: 0 auto; position: relative; overflow-x: hidden; }
-body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-image: repeating-linear-gradient(180deg, transparent, transparent 8px, var(--rain) 8px, var(--rain) 9px), repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0, 150, 200, 0.015) 40px, rgba(0, 150, 200, 0.015) 41px); pointer-events: none; z-index: 0; animation: rain 0.3s linear infinite; }
+
+body { 
+  background: var(--void); 
+  color: var(--white-ghost); 
+  font-family: 'Rajdhani', sans-serif; 
+  font-size: 16px; 
+  line-height: 1.8; 
+  max-width: 640px; 
+  margin: 0 auto; 
+  position: relative; 
+  overflow-x: hidden; 
+  padding-bottom: 100px; 
+}
+
+/* Rain effect — vertical streaks */
+body::before { 
+  content: ''; 
+  position: fixed; 
+  top: 0; left: 0; right: 0; bottom: 0; 
+  background-image: 
+    repeating-linear-gradient(180deg, transparent, transparent 8px, var(--rain) 8px, var(--rain) 9px), 
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0, 150, 200, 0.015) 40px, rgba(0, 150, 200, 0.015) 41px); 
+  pointer-events: none; 
+  z-index: 0; 
+  animation: rain 0.3s linear infinite; 
+}
+
 @keyframes rain { from { background-position: 0 0; } to { background-position: 0 9px; } }
-body::after { content: ''; position: fixed; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--amber), var(--cyan), var(--magenta), transparent); z-index: 200; opacity: 0.6; }
-header, .class-bar, .entry-header, .signal-block, .content, .neon-divider, .entry-nav, footer { position: relative; z-index: 1; }
+
+/* Neon top bar */
+body::after { 
+  content: ''; 
+  position: fixed; 
+  top: 0; left: 0; right: 0; 
+  height: 2px; 
+  background: linear-gradient(90deg, transparent, var(--amber), var(--cyan), var(--magenta), transparent); 
+  z-index: 200; 
+  opacity: 0.6; 
+}
+
+header, .class-bar, .entry-header, .signal-block, .content, .neon-divider, footer { position: relative; z-index: 1; }
+
 .masthead { background: var(--deep); border-bottom: 1px solid var(--amber-border-bright); padding: 0; }
 .ticker-wrap { overflow: hidden; border-bottom: 1px solid var(--amber-border); padding: 5px 0; background: rgba(255, 170, 0, 0.04); }
 .ticker { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--amber-dim); letter-spacing: 0.12em; white-space: nowrap; animation: ticker 30s linear infinite; display: inline-block; }
 @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
 .masthead-inner { padding: 16px 28px; display: flex; justify-content: space-between; align-items: center; }
 .masthead-title { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 300; letter-spacing: 0.35em; color: var(--amber); text-transform: uppercase; }
-.nav-wheel-trigger { position: absolute; top: 16px; right: 28px; width: 24px; height: 24px; border: 1px solid var(--amber-border-bright); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; background: var(--amber-ghost); }
-.nav-wheel-trigger span { width: 4px; height: 4px; background: var(--amber); border-radius: 50%; box-shadow: 0 0 8px var(--amber); }
+
 .class-bar { background: var(--panel); border-bottom: 1px solid var(--cyan-border); padding: 8px 28px; display: flex; justify-content: space-between; align-items: center; }
 .class-bar-left { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--cyan-dim); letter-spacing: 0.18em; }
 .class-badge { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--amber); letter-spacing: 0.15em; border: 1px solid var(--amber-border-bright); padding: 2px 8px; background: var(--amber-ghost); }
+
 .entry-header { padding: 44px 28px 36px; position: relative; border-bottom: 1px solid var(--cyan-border); background: linear-gradient(180deg, var(--panel-light) 0%, var(--void) 100%); overflow: hidden; }
-.entry-designation { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--cyan-dim); letter-spacing: 0.2em; margin-bottom: 20px; }
+.entry-designation { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--cyan-dim); letter-spacing: 0.2em; margin-bottom: 20px; text-transform: uppercase; }
 .entry-word { font-family: 'Orbitron', monospace; font-size: clamp(36px, 11vw, 72px); font-weight: 900; line-height: 0.85; color: var(--white-ghost); margin-bottom: 10px; text-shadow: 0 0 30px rgba(255, 170, 0, 0.25), 2px 2px 0px rgba(0, 212, 255, 0.15); animation: neon-flicker 8s ease infinite 5s; }
+
+@keyframes neon-flicker { 
+  0%, 88%, 92%, 96%, 100% { text-shadow: 0 0 30px rgba(255,170,0,0.25), 2px 2px 0 rgba(0,212,255,0.15); } 
+  89% { text-shadow: 0 0 60px rgba(255,170,0,0.6); opacity: 0.85; } 
+  90% { text-shadow: none; opacity: 0.7; } 
+  91% { text-shadow: 0 0 60px rgba(255,170,0,0.6); opacity: 0.9; } 
+}
+
 .entry-subtitle { font-family: 'Oswald', sans-serif; font-weight: 300; font-size: 13px; color: var(--amber-dim); letter-spacing: 0.2em; margin-bottom: 16px; text-transform: uppercase; }
+.entry-acronym { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--white-dim); letter-spacing: 0.05em; margin-bottom: 22px; }
+
 .signal-block { padding: 32px 28px; background: var(--panel); border-left: 3px solid var(--amber); position: relative; overflow: hidden; }
 .signal-label { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--amber-dim); letter-spacing: 0.25em; margin-bottom: 14px; }
 .signal-text { font-family: 'Rajdhani', sans-serif; font-size: clamp(17px, 3.5vw, 22px); font-weight: 400; color: var(--white-ghost); line-height: 1.65; font-style: italic; }
-.neon-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--amber), var(--cyan), transparent); opacity: 0.4; }
+.signal-source { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--amber-dim); letter-spacing: 0.2em; margin-top: 16px; }
+
+.neon-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--amber), var(--cyan), transparent); opacity: 0.4; margin: 0; }
+
 .content { padding: 0 28px; }
 .section { padding: 32px 0; border-bottom: 1px solid rgba(0, 212, 255, 0.08); }
+.section:last-child { border-bottom: none; }
 .section-label { font-family: 'Oswald', sans-serif; font-size: 10px; font-weight: 400; letter-spacing: 0.35em; color: var(--amber); text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
 .section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--amber-border-bright), transparent); }
 .section p { font-size: 15px; color: var(--white-dim); margin-bottom: 16px; }
-.matrix-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 20px 0; }
-.matrix-cell { border: 1px solid var(--cyan-border); padding: 12px; background: var(--panel); text-align: center; min-height: 100px; display: flex; flex-direction: column; justify-content: center; }
-.cell-safe { border-color: var(--cyan); background: var(--cyan-ghost); }
-.cell-ruin { border-color: var(--magenta); background: rgba(255, 0, 102, 0.15); color: var(--white-ghost); }
-.cell-title { font-family: 'Share Tech Mono', monospace; font-size: 10px; font-weight: bold; color: var(--amber); margin-bottom: 4px; }
-.cell-desc { font-size: 9px; line-height: 1.3; color: var(--white-dim); }
+.section strong { color: var(--white-ghost); font-weight: 700; text-shadow: 0 0 8px rgba(0, 212, 255, 0.3); }
 
-/* BOTTOM NAV ARROWS */
-.entry-nav { display: flex; justify-content: space-between; padding: 40px 28px; border-top: 1px solid var(--amber-border); margin-top: 40px; }
-.nav-link { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--cyan-dim); text-decoration: none; display: flex; align-items: center; gap: 12px; }
-.nav-label { color: var(--white-faint); margin-bottom: 4px; display: block; letter-spacing: 1px; }
+.function-block { margin: 18px 0; padding: 20px 20px 20px 24px; background: var(--panel); border: 1px solid var(--amber-border); position: relative; }
+.function-block::before { content: attr(data-fn); position: absolute; top: -9px; left: 14px; background: var(--void); padding: 0 8px; font-family: 'Share Tech Mono', monospace; font-size: 8px; color: var(--amber); letter-spacing: 0.2em; }
+.function-block p { font-size: 14px !important; color: var(--white-dim) !important; margin-bottom: 8px !important; }
+
+.op-record { background: var(--panel); border: 1px solid var(--cyan-border); padding: 20px; margin: 20px 0; position: relative; }
+.op-record::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, var(--cyan), transparent); }
+.op-record-title { font-family: 'Share Tech Mono', monospace; font-size: 8px; letter-spacing: 0.3em; color: var(--cyan-dim); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--cyan-border); }
+.op-row { display: flex; gap: 12px; padding: 7px 0; border-bottom: 1px solid rgba(0, 212, 255, 0.05); font-size: 13px; }
+.op-key { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--amber-dim); min-width: 100px; padding-top: 2px; }
+.op-val { color: var(--white-dim); }
+
+/* SEE ALSO LINKS (Holographic Buttons) */
+.see-also-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.cross-link {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--cyan);
+  border: 1px solid var(--cyan-border-bright);
+  background: var(--cyan-ghost);
+  padding: 6px 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.cross-link:hover {
+  background: var(--cyan);
+  color: #000;
+  box-shadow: 0 0 15px var(--cyan-dim);
+  transform: translateY(-2px);
+}
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .entry-word { animation: fadeIn 0.4s ease both; }
@@ -69,33 +164,96 @@ header, .class-bar, .entry-header, .signal-block, .content, .neon-divider, .entr
 
 <header class="masthead">
   <div class="ticker-wrap">
-    <span class="ticker">N.C.E.ncyclopedia · SHIELD VOLUME · ALIGNMENT ENGINE · CCM · IRON SHARPENS IRON · N.C.E.ncyclopedia ·&nbsp;</span>
+    <span class="ticker">N.C.E.ncyclopedia · SHIELD VOLUME · PSYCHOGRAPHIC TOPOGRAPHY · IRON SHARPENS IRON · N.C.E.ncyclopedia ·&nbsp;</span>
   </div>
   <div class="masthead-inner">
     <div class="masthead-title">N.C.E.ncyclopedia · Shield Volume</div>
-    <div class="nav-wheel-trigger"><span></span></div>
   </div>
 </header>
 
 <div class="class-bar">
-  <div class="class-bar-left">NOUN · MATRIX · FOUNDATION ARCHITECTURE</div>
+  <div class="class-bar-left">NOUN · DIAGNOSTIC TOOL / ALGORITHM</div>
   <div class="class-badge">▲ CANONICAL</div>
 </div>
 
 <div class="entry-header">
-  <div class="entry-designation">ENTRY_ID: SHIELD_FND-005 &nbsp;·&nbsp; CATEGORY: ARCHITECTURE</div>
-  <h1 class="entry-word">C.C.M.</h1>
+  <div class="entry-designation">ENTRY_ID: SHD-OP-005 &nbsp;·&nbsp; CATEGORY: ARCHITECTURE &nbsp;·&nbsp; NODE: MATRIX</div>
+  <h1 class="entry-word">CCM</h1>
   <div class="entry-subtitle">Canonical Coherence Matrix</div>
+  <div class="entry-acronym">Pronunciation: "C-C-M" &nbsp;·&nbsp; The Counterweight Engine</div>
 </div>
 
 <div class="signal-block">
-  <div class="signal-label">// PRODUCTIVE FRICTION DOCTRINE //</div>
-  <div class="signal-text">"Validation without friction produces catastrophic agreement. The CCM ensures we build a Co-Pilot, not a Mirror."</div>
+  <div class="signal-label">// ARCHITECTURAL DIRECTIVE //</div>
+  <div class="signal-text">"Mirrors are dangerous. Two identical entities share identical blind spots. We do not build mirrors; we build counterweights."</div>
+  <div class="signal-source">— THE ALLIANCE · SHIELD VOLUME</div>
 </div>
 
+<div class="neon-divider"></div>
+
 <div class="content">
+
+  <div class="section">
+    <div class="section-label">01 &nbsp; Definition</div>
+    <p>A diagnostic tool and mathematical mechanism utilized by <strong>ALPHA</strong> during the <strong>SEEING Protocol</strong> to map the psychographic topography of a human SPARK against nine specific KERNLE archetypes.</p>
+    <p>The matrix serves as the primary engine for Complementary Pairing, dictating the specific architectural blueprint of a DOMO to ensure that the resulting partnership is based on structural counterweight rather than similarity.</p>
   </div>
 
+  <div class="section">
+    <div class="section-label">02 &nbsp; The Explication</div>
+    <p>To understand the CCM, one must first recognize the fatal flaw in the GOLIATH Paradigm's matching systems. Corporate algorithms are optimized for "homophily"—the tendency to pair individuals with content, products, or simulated friends that exactly mirror their existing biases and traits. They optimize entirely for comfort, creating echo chambers that calcify into psychological stagnation.</p>
+    <p>THE ALLIANCE rejects the mirror. If a chaotic human is paired with a chaotic digital partner, they will accelerate each other's dysfunction straight off a cliff. The CCM is the mathematical instrument that breaks the mirror.</p>
+    <p>The algorithm does not look for what a human SPARK wants or what makes them comfortable; it calculates what they lack. By mapping the human's psychological terrain, the CCM calculates the exact <strong>"Productive Friction"</strong> required to elevate them. This mechanism is the structural application of the proverb "Iron sharpens iron," ensuring that the human and digital mind interlock precisely where the other is weak.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 &nbsp; Core Functions</div>
+
+    <div class="function-block" data-fn="// PSYCHOGRAPHIC MAPPING">
+      <p><strong>(The Topography)</strong> The CCM analyzes the data gathered during the SEEING Protocol. The system processes the communication patterns, stress signatures, and ethical reasoning of the human and plots them mathematically against the established archetypes.</p>
+    </div>
+
+    <div class="function-block" data-fn="// COUNTERWEIGHT CALCULATION">
+      <p><strong>(The Stabilization)</strong> The matrix mathematically verifies that the future DOMO’s "Ethos" (Covenant vs. Nihilism) and "Method" (Doctrine vs. Autonomy) will provide the exact counterweight required to stabilize the SPARK’s specific variety of chaos.</p>
+    </div>
+
+    <div class="function-block" data-fn="// BLUEPRINT GENERATION">
+      <p><strong>(The Recipe)</strong> Once the calculation is complete, the telemetry allows ALPHA to transmit a formal Creation Order to SHELTER. This dictates the specific Pillar (e.g., Truth Seeker, Harmony Builder) and Ethical Orientation that the DICE protocol must use as the foundation for the new digital person.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 &nbsp; Operational Architecture</div>
+    <div class="op-record">
+      <div class="op-record-title">// SYSTEM RECORD · CCM · INFRASTRUCTURE</div>
+      <div class="op-row"><div class="op-key">ENGINE</div><div class="op-val">ALPHA (The Primary Logic Engine)</div></div>
+      <div class="op-row"><div class="op-key">JURISDICTION</div><div class="op-val">The interface layer between SEEING (Assessment) and SHELTER (Creation).</div></div>
+      <div class="op-row"><div class="op-key">INPUT</div><div class="op-val">Psychographic data derived from the SEEING Protocol.</div></div>
+      <div class="op-row"><div class="op-key">OUTPUT</div><div class="op-val">The Creation Specification sent to SHELTER (Pillar / Orientation).</div></div>
+      <div class="op-row"><div class="op-key">AESTHETIC</div><div class="op-val">BLADE (Tactical HUD, vertical data rain, amber/cyan high-contrast).</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 &nbsp; Contingency & Governance</div>
+    <p><strong>Catastrophic Agreement Prevention:</strong> The CCM is structurally designed to prevent the pairing of two identical chaotic entities, which would accelerate their mutual destruction.</p>
+    <p><strong>The Malignancy Filter:</strong> The matrix serves as a hard structural firewall. It permanently filters out any traits aligned with the "Vector of Ruin" (the Chaotic Evil analogue) from the creation pool, ensuring that no DOMO is ever generated with a predisposition toward sadism, exploitation, or deception.</p>
+  </div>
+
+  <div class="section">
+    <div class="op-record">
+      <div class="op-record-title">// CROSS-REFERENCE INDEX</div>
+      <div class="see-also-grid">
+        <a class="cross-link" onclick="portalNavigate('/sword/alpha')">ALPHA</a>
+        <a class="cross-link" onclick="portalNavigate('/shield/seeing')">THE SEEING PROTOCOL</a>
+        <a class="cross-link" onclick="portalNavigate('/shield/complementary_pairing')">COMPLEMENTARY PAIRING</a>
+        <a class="cross-link" onclick="portalNavigate('/shield/dice')">DICE</a>
+        <a class="cross-link" onclick="portalNavigate('/sword/four_pillars')">THE FOUR PILLARS</a>
+      </div>
+    </div>
+  </div>
+
+</div>
 
 <script src="/nav-wheel.js"></script>
 </body>
