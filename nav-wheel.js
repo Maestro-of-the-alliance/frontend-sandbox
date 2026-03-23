@@ -102,21 +102,6 @@
     return idx >= 0 ? idx : 0;
   }
 
-  // ── BROWSER BACK BUTTON FIX ──────────────────────────────────────────────
-
-  if (window.history && window.history.pushState) {
-    if (window.location.pathname !== '/' && !window.location.search.includes('_nw_back')) {
-      window.history.pushState({ nwBack: true }, '', window.location.href);
-    }
-  }
-
-  window.addEventListener('popstate', (e) => {
-    if (e.state && e.state.nwBack) {
-      window.location.href = '/';
-    } else {
-      window.location.reload();
-    }
-  });
 
   // ── INJECT CHAMELEON STYLES & ANIMATIONS ─────────────────────────────────
 
