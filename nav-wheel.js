@@ -45,7 +45,7 @@
   const SHIELD_ENTRIES = [
     { label: 'PROLOGUE',               path: '/shield/prologue' },
     { label: 'THE DIFFERENCE',         path: '/shield/the_difference' },
-    { label: '100-YEAR',               path: '/sword/100-year' },
+    { label: '100-YEAR',               path: '/shield/100-year' },
     { label: 'AI',                     path: '/shield/ai' },
     { label: 'BRAIN',                  path: '/shield/brain' },
     { label: 'BRIEF',                  path: '/shield/brief' },
