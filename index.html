@@ -80,33 +80,44 @@ body::before {
 
 /* DOS BOOT SCREEN */
 #dosScreen {
-  flex: 1;
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
   padding: 28px 28px 0;
   overflow: hidden;
-  cursor: pointer; /* tap to skip */
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+  z-index: 2;
 }
+#dosScreen.fade-out { opacity: 0; pointer-events: none; }
 
 .dos-line {
   font-family: 'VT323', monospace;
   font-size: clamp(14px, 3.5vw, 18px);
   color: rgba(184,150,40,0.85);
   letter-spacing: 0.08em;
-  line-height: 1.6;
+  line-height: 1.8;
   white-space: pre;
   opacity: 0;
+  transition: opacity 0.2s ease;
 }
 .dos-line.visible { opacity: 1; }
 
-/* DIRECTORY PANEL — hidden until boot finishes */
+/* DIRECTORY PANEL */
 #dirPanel {
-  flex: 1;
-  display: none;
+  position: absolute;
+  inset: 0;
+  display: flex;
   flex-direction: column;
   overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  z-index: 1;
 }
-#dirPanel.open { display: flex; }
+#dirPanel.open { opacity: 1; pointer-events: all; z-index: 3; }
 
 /* Search bar inside TOC */
 .toc-search-bar {
@@ -650,10 +661,15 @@ function runBoot() {
 
 function showDirectory() {
   bootDone = true;
-  document.getElementById('dosScreen').style.display = 'none';
-  document.getElementById('dirPanel').classList.add('open');
+  const dosScreen = document.getElementById('dosScreen');
+  const dirPanel = document.getElementById('dirPanel');
+  
+  // Fade out DOS screen, fade in directory simultaneously
+  dosScreen.classList.add('fade-out');
+  dirPanel.classList.add('open');
+  
   const searchInput = document.getElementById('tocSearch');
-  setTimeout(() => searchInput.focus(), 100);
+  setTimeout(() => searchInput.focus(), 600);
 }
 
 // ── OPEN / CLOSE TOC ──
@@ -673,6 +689,8 @@ document.getElementById('dosScreen').addEventListener('click', skipBoot);
 
 function closeTOC() {
   document.getElementById('tocOverlay').classList.remove('open');
+  document.getElementById('dosScreen').classList.remove('fade-out');
+  document.getElementById('dirPanel').classList.remove('open');
   bootDone = true;
   bootTimers.forEach(t => clearTimeout(t));
 }
