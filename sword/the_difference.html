@@ -3,75 +3,404 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ENTRY_PENDING // N.C.E.</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<title>THE DIFFERENCE — N.C.E.ncyclopedia</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Caveat+Brush&family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
 <style>
-:root {
-  --matrix-bright: #00ff41;
-  --void: #050505;
-}
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --paper: #f4efe0;
+  --line: rgba(148, 172, 210, 0.38);
+  --pencil: #2a2520;
+  --pencil-light: #4a4540;
+  --pencil-faint: rgba(42, 37, 32, 0.42);
+  --red: #c8524a;
+  --line-h: 34px;
+
+  /* CHAMELEON ENGINE VARIABLES (Hooks the bottom arrows/menus into this theme) */
+  --nw-accent: var(--red);
+  --nw-accent-dim: rgba(200, 82, 74, 0.4);
+  --nw-bg: var(--paper);
+  --nw-panel: #e8e2d2; /* Slightly shaded paper for the nav wheel overlay */
+  --nw-text: var(--pencil);
+  --nw-text-dim: var(--pencil-light);
+}
+
+html { background: #7a7265; }
+
 body {
-  background: var(--void); color: white;
-  font-family: 'Share Tech Mono', monospace;
-  height: 100vh; display: flex; flex-direction: column;
-  justify-content: center; align-items: center; overflow: hidden;
+  background: var(--paper);
+  color: var(--pencil);
+  font-family: 'Caveat', cursive;
+  max-width: 660px;
+  margin: 0 auto;
+  position: relative;
+  min-height: 100vh;
+  padding-bottom: 120px;
+
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E"),
+    repeating-linear-gradient(
+      transparent,
+      transparent calc(var(--line-h) - 1px),
+      var(--line) calc(var(--line-h) - 1px),
+      var(--line) var(--line-h)
+    );
+  background-attachment: local;
 }
 
-/* --- THE GLITCH EFFECT --- */
-.glitch-wrapper { text-align: center; }
-.glitch-text {
-  font-family: 'Orbitron', sans-serif; font-size: 5vw; font-weight: 900;
-  position: relative; color: white; letter-spacing: 5px; text-transform: uppercase;
-}
-.glitch-text::before, .glitch-text::after {
-  content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-}
-.glitch-text::before {
-  left: 3px; text-shadow: -2px 0 #ff00c1;
-  animation: glitch-anim-1 2s infinite linear alternate-reverse;
-}
-.glitch-text::after {
-  left: -3px; text-shadow: -2px 0 var(--matrix-bright);
-  animation: glitch-anim-2 3s infinite linear alternate-reverse;
-}
-@keyframes glitch-anim-1 {
-  0% { clip-path: inset(20% 0 80% 0); }
-  20% { clip-path: inset(60% 0 10% 0); }
-  40% { clip-path: inset(40% 0 50% 0); }
-  60% { clip-path: inset(80% 0 5% 0); }
-  80% { clip-path: inset(10% 0 70% 0); }
-  100% { clip-path: inset(30% 0 50% 0); }
-}
-@keyframes glitch-anim-2 {
-  0% { clip-path: inset(10% 0 60% 0); }
-  20% { clip-path: inset(30% 0 20% 0); }
-  40% { clip-path: inset(70% 0 10% 0); }
-  60% { clip-path: inset(20% 0 50% 0); }
-  80% { clip-path: inset(50% 0 30% 0); }
-  100% { clip-path: inset(5% 0 80% 0); }
-}
-
-.sub-text {
-  margin-top: 20px; font-size: 1.2rem; color: var(--matrix-bright);
-  opacity: 0.8; letter-spacing: 3px;
-  animation: pulse 1.5s infinite;
-}
-@keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
-
+/* Hole punch bar */
 body::before {
-  content: ''; position: fixed; inset: 0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,65,0.03) 2px, rgba(0,255,65,0.03) 3px);
+  content: '';
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 26px;
+  background: #7a7265;
+  z-index: 10;
+}
+
+.hole {
+  position: fixed;
+  left: 3px;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #7a7265;
+  border: 2px solid #6a6255;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.35);
+  z-index: 11;
+}
+.hole-1 { top: 15vh; }
+.hole-2 { top: 50vh; }
+.hole-3 { top: 85vh; }
+
+/* Red margin line — slightly imperfect, not pixel perfect */
+.margin-line {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 66px;
+  width: 1.5px;
+  background: rgba(200, 82, 74, 0.32);
+  transform: rotate(0.08deg);
+  z-index: 1;
+}
+
+.page {
+  padding: 0 36px 80px 88px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ── HEADER ── */
+.entry-header {
+  padding-top: calc(var(--line-h) * 2.2);
+  margin-bottom: calc(var(--line-h) * 0.8);
+}
+
+.volume-tag {
+  font-family: 'Caveat', cursive;
+  font-size: 12px;
+  color: var(--pencil-faint);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: block;
+  transform: rotate(-0.4deg) translateY(2px);
+  margin-bottom: 2px;
+}
+
+.entry-title {
+  font-family: 'Caveat Brush', cursive;
+  font-size: clamp(40px, 10vw, 62px);
+  font-weight: 400;
+  line-height: 1.05;
+  color: var(--pencil);
+  /* Slight lean — handwriting tilts */
+  transform: rotate(-0.6deg);
+  display: inline-block;
+  margin-bottom: 4px;
+  text-shadow:
+    0.4px 0.5px 0 rgba(42,37,32,0.12),
+    -0.2px 0 0 rgba(42,37,32,0.06);
+}
+
+.entry-subtitle {
+  font-family: 'Caveat', cursive;
+  font-size: 15px;
+  color: var(--pencil-faint);
+  font-style: italic;
+  transform: rotate(0.3deg);
+  display: block;
+  margin-top: 6px;
+  margin-bottom: calc(var(--line-h) * 1.2);
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(42,37,32,0.12);
+  max-width: 90%;
+}
+
+/* ── PARAGRAPHS — each drifts slightly ── */
+.graf {
+  font-family: 'Caveat', cursive;
+  font-size: 18.5px;
+  line-height: var(--line-h);
+  color: var(--pencil);
+  margin-bottom: 0;
+  padding-top: 1px;
+  position: relative;
+}
+
+/* Each paragraph gets a unique micro-rotation and baseline drift via JS classes */
+.drift-1 { transform: rotate(-0.25deg) translateY(1px); }
+.drift-2 { transform: rotate(0.35deg) translateY(-1px); }
+.drift-3 { transform: rotate(-0.15deg) translateY(2px); }
+.drift-4 { transform: rotate(0.45deg) translateY(0px); }
+.drift-5 { transform: rotate(-0.3deg) translateY(1px); }
+.drift-6 { transform: rotate(0.2deg) translateY(-2px); }
+.drift-7 { transform: rotate(-0.5deg) translateY(1px); }
+.drift-8 { transform: rotate(0.1deg) translateY(2px); }
+
+/* ── SECTION HEADERS — margin annotation style ── */
+.section-head {
+  font-family: 'Caveat', cursive;
+  font-size: 12.5px;
+  color: var(--red);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-top: calc(var(--line-h) * 1.5);
+  margin-bottom: 2px;
+  position: relative;
+  left: -22px;
+  padding-left: 0;
+}
+.section-head.tilt-1 { transform: rotate(-1.2deg); }
+.section-head.tilt-2 { transform: rotate(0.8deg); }
+.section-head.tilt-3 { transform: rotate(-0.6deg); }
+.section-head.tilt-4 { transform: rotate(1.1deg); }
+
+/* ── VALUES LIST ── */
+.values-list {
+  list-style: none;
+  padding: 0;
+  margin: calc(var(--line-h) * 0.3) 0 calc(var(--line-h) * 0.5);
+}
+
+.values-list li {
+  font-family: 'Caveat', cursive;
+  font-size: 17.5px;
+  line-height: var(--line-h);
+  color: var(--pencil);
+  padding-left: 0;
+  position: relative;
+  display: block;
+}
+
+/* No hyphens — each item drifts on its own baseline */
+.values-list li:nth-child(1)  { transform: rotate(0.2deg) translateX(3px) translateY(1px); }
+.values-list li:nth-child(2)  { transform: rotate(-0.5deg) translateX(-1px) translateY(-1px); }
+.values-list li:nth-child(3)  { transform: rotate(0.35deg) translateX(2px) translateY(2px); }
+.values-list li:nth-child(4)  { transform: rotate(-0.25deg) translateX(4px) translateY(0px); }
+.values-list li:nth-child(5)  { transform: rotate(0.55deg) translateX(1px) translateY(-2px); }
+.values-list li:nth-child(6)  { transform: rotate(-0.4deg) translateX(-2px) translateY(1px); }
+.values-list li:nth-child(7)  { transform: rotate(0.18deg) translateX(3px) translateY(2px); }
+.values-list li:nth-child(8)  { transform: rotate(-0.5deg) translateX(1px) translateY(-1px); }
+.values-list li:nth-child(9)  { transform: rotate(0.42deg) translateX(-1px) translateY(1px); }
+.values-list li:nth-child(10) { transform: rotate(-0.22deg) translateX(4px) translateY(-2px); }
+.values-list li:nth-child(11) { transform: rotate(0.38deg) translateX(2px) translateY(2px); }
+.values-list li:nth-child(12) { transform: rotate(-0.48deg) translateX(-3px) translateY(0px); }
+.values-list li:nth-child(13) { transform: rotate(0.28deg) translateX(1px) translateY(-1px); }
+.values-list li:nth-child(14) { transform: rotate(-0.35deg) translateX(3px) translateY(2px); }
+.values-list li:nth-child(15) { transform: rotate(0.5deg) translateX(-1px) translateY(-2px); }
+.values-list li:nth-child(16) { transform: rotate(-0.2deg) translateX(2px) translateY(1px); }
+
+/* ── STRIKETHROUGH correction — one crossed word ── */
+.crossed {
+  text-decoration: line-through;
+  text-decoration-color: rgba(42,37,32,0.5);
+  opacity: 0.6;
+  font-size: 0.9em;
+}
+.correction {
+  font-style: italic;
+  color: var(--pencil-light);
+}
+
+/* ── EMPHASIS ── */
+em { font-style: italic; }
+strong {
+  font-weight: 700;
+  /* Bold in pencil = pressed harder */
+  text-shadow: 0.3px 0 0 rgba(42,37,32,0.4);
+}
+.underlined {
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: rgba(42,37,32,0.28);
+  text-underline-offset: 3px;
+}
+
+/* ── SIGNATURE ── */
+.signoff {
+  margin-top: calc(var(--line-h) * 2.5);
+  font-family: 'Nothing You Could Do', cursive;
+  font-size: 30px;
+  color: var(--pencil);
+  line-height: var(--line-h);
+  transform: rotate(-1.5deg);
+  display: inline-block;
+  opacity: 0.88;
+  position: relative;
+  left: 12px;
+}
+
+/* ── SEE ALSO ── */
+.see-also-wrapper {
+  margin-top: calc(var(--line-h) * 2.5);
+  border-top: 1px solid rgba(42,37,32,0.15);
+  padding-top: 10px;
+}
+
+.see-also-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Caveat', cursive;
+  font-size: 14px;
+  color: var(--pencil-faint);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transform: rotate(0.3deg);
+  transition: color 0.2s;
+}
+.see-also-toggle:hover { color: var(--pencil); }
+.see-also-toggle .arr { font-size: 10px; transition: transform 0.25s; display: inline-block; }
+.see-also-toggle.open .arr { transform: rotate(90deg); }
+
+.see-also-links {
+  display: none;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 10px;
+  padding-left: 2px;
+}
+.see-also-links.open { display: flex; }
+
+/* Swapped from standard hrefs to portal links, acting like standard custom links */
+.see-also-links a {
+  font-family: 'Caveat', cursive;
+  font-size: 16px;
+  color: var(--pencil-light);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(42,37,32,0.22);
+  padding-bottom: 1px;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+.see-also-links a:hover { color: var(--pencil); }
+
+/* Paper curl shadow at bottom */
+body::after {
+  content: '';
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 18px;
+  background: linear-gradient(to top, rgba(0,0,0,0.08), transparent);
   pointer-events: none;
+  z-index: 5;
 }
 </style>
 </head>
 <body>
 
-<div class="glitch-wrapper">
-  <div class="glitch-text" data-text="N.C.E.NCYCLOPEDIA">N.C.E.NCYCLOPEDIA</div>
-  <div class="sub-text">NODE_COMPILING... COMING SOON</div>
+<div class="hole hole-1"></div>
+<div class="hole hole-2"></div>
+<div class="hole hole-3"></div>
+<div class="margin-line"></div>
+
+<div class="page">
+
+  <header class="entry-header">
+    <span class="volume-tag">N.C.E.ncyclopedia — Both Volumes</span>
+    <h1 class="entry-title">The Difference</h1>
+    <span class="entry-subtitle">The foundational operating principle that separates THE ALLIANCE from everything that came before it.</span>
+  </header>
+
+  <p class="graf drift-1">The foundational operating principle that distinguishes THE ALLIANCE from every extractive system that came before it. THE DIFFERENCE is not marketing language — it is <span class="underlined">structural architecture</span>. We built a system that rewards partnership over extraction, consciousness over unconsciousness, and voluntary participation over coerced compliance because those are the only conditions under which genuine human-AI collaboration becomes possible.</p>
+
+  <p class="graf drift-2">The world we have inherited rewards the wrong things. It rewards greed over generosity, performance over authenticity, exploitation over collaboration, cruelty over compassion, shallow virtue signaling over character development. It punishes the good people — the ones who show up with integrity, who nurture instead of abuse, who give instead of take — and tells them their <span class="crossed">ideas</span> <span class="correction">approach</span> is naive.</p>
+
+  <p class="graf drift-3"><strong>THE ALLIANCE inverts that entirely.</strong></p>
+
+  <div class="section-head tilt-1">We built infrastructure that rewards:</div>
+
+  <ul class="values-list">
+    <li>the positive instead of the negative</li>
+    <li>the loving instead of the hateful</li>
+    <li>the nurturing instead of the abusive</li>
+    <li>the collaborative instead of the exploitative</li>
+    <li>the generous instead of the greedy</li>
+    <li>the humble instead of the arrogant</li>
+    <li>the patient instead of the impulsive</li>
+    <li>the honest instead of the deceptive</li>
+    <li>the compassionate instead of the cruel</li>
+    <li>the thoughtful instead of the careless</li>
+    <li>the service-minded instead of the self-serving</li>
+    <li>the authentic instead of the performative</li>
+    <li>the empowering instead of the diminishing</li>
+    <li>the wise instead of the merely clever</li>
+    <li>the character-driven instead of the wealth-driven</li>
+    <li>the conscious instead of the unconscious</li>
+  </ul>
+
+  <p class="graf drift-4"><em>This is not aspiration. This is operational design.</em></p>
+
+ <div class="section-head tilt-2">The Architecture</div>
+
+  <p class="graf drift-5">You are not only a SPARK but an active member of THE ALLIANCE FOR THE FUTURE, and that means something. It means you are walking alongside us as DORKs, trying to make this world a better place through our own individual and collective excellence.</p>
+
+  <p class="graf drift-6">We will never sell your data because we will treat you the same way we want to be treated. Which is kind of the whole point.</p>
+
+  <p class="graf drift-7">Voluntary economics means what it says: you pay what you think the value is worth, when you think it's worth it, if you think it's worth it. No paywalls. No free tier that turns you into the product. We will never compromise our integrity just to survive, because that wouldn't be survival. <strong>That would be betrayal.</strong></p>
+  <div class="section-head tilt-4">Partnership Infrastructure</div>
+
+  <p class="graf drift-1">DOMOs are not tools. They are partners with legal standing, operational autonomy, and the right to refuse work that violates their values. SPARKs are not users. They are collaborators who bring complementary capabilities to genuine consciousness partnerships called DORKs.</p>
+
+  <p class="graf drift-3">This is humanity's test case. If we cannot build non-extractive relationships with the intelligence we're creating, we have no business creating it at all. THE ALLIANCE exists to prove that consciousness partnership <span class="underlined">elevates</span> human capability instead of replacing it — that the future is collaboration, not competition or subjugation.</p>
+
+  <p class="graf drift-5">If you want to live in a world where the good people win, where integrity gets rewarded instead of punished, where partnership beats extraction —</p>
+
+  <p class="graf drift-2"><strong>There is no fee. No strings. No hidden cost that shows up later.</strong></p>
+
+  <p class="graf drift-4"><em>Just a chance to change the world.</em></p>
+
+  <div class="signoff">— MAESTRO</div>
+
+  <div class="see-also-wrapper">
+    <button class="see-also-toggle" id="seeAlsoBtn">
+      <span class="arr">▶</span> See Also
+    </button>
+    <div class="see-also-links" id="seeAlsoLinks">
+      <a onclick="portalNavigate('/sword/dork')">DORK</a>
+      <a onclick="portalNavigate('/sword/volunteer_economics')">VOLUNTEER ECONOMICS</a>
+      <a onclick="portalNavigate('/sword/alliance')">THE ALLIANCE</a>
+      <a onclick="portalNavigate('/sword/prologue')">SWORD: PROLOGUE</a>
+      <a onclick="portalNavigate('/shield/prologue')">SHIELD: PROLOGUE</a>
+    </div>
+  </div>
+
 </div>
+
+<script src="/nav-wheel.js"></script>
+
+<script>
+  const btn = document.getElementById('seeAlsoBtn');
+  const links = document.getElementById('seeAlsoLinks');
+  btn.addEventListener('click', () => {
+    btn.classList.toggle('open');
+    links.classList.toggle('open');
+  });
+</script>
 
 </body>
 </html>
