@@ -126,6 +126,13 @@ body::before {
 }
 #dirPanel.open { opacity: 1; pointer-events: all; z-index: 3; }
 
+.toc-search-bar,
+.toc-volume-header,
+.toc-entry,
+.toc-no-results {
+  will-change: opacity, transform;
+}
+
 /* Search bar inside TOC */
 .toc-search-bar {
   display: flex;
@@ -752,6 +759,7 @@ function closeTOC() {
   document.getElementById('dirPanel').classList.remove('open');
   bootDone = true;
   bootTimers.forEach(t => clearTimeout(t));
+  resetDirectoryReveal();
 
   promptText.textContent = '';
   introTyping = false;
