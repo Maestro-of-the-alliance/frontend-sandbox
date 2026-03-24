@@ -410,6 +410,50 @@ body::before {
 @keyframes portalZoom { 0% { transform: scale(1); opacity: 1; } 60% { transform: scale(8); opacity: 1; } 100% { transform: scale(18); opacity: 0; } }
 @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+
+/* =========================================
+   TOC REVEAL + NAV LAYER FIXES
+========================================= */
+.stealth-search.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toc-search-bar,
+.toc-volume-header,
+.toc-entry,
+.toc-no-results {
+  opacity: 0;
+  transform: translateY(2px);
+}
+
+.toc-line-visible {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  transition: opacity 0.05s linear, transform 0.05s linear;
+}
+
+/* try to keep platform back controls above the nav wheel */
+.back-button,
+.back-btn,
+.nav-back,
+#backButton,
+#navBack,
+#backBtn,
+button[aria-label="Back"] {
+  z-index: 12050 !important;
+}
+
+.hamburger-menu,
+.menu-button,
+#hamburgerMenu,
+#menuButton,
+.nav-wheel,
+#navWheel {
+  z-index: 12000 !important;
+}
+
 </style>
 </head>
 <body>
@@ -699,7 +743,9 @@ let introTimer = null;
 
 function openTOC() {
   bootDone = false;
-  bootTimers = [];
+  clearBootTimers();
+  resetDirectoryReveal();
+  stealthSearch.classList.add('hidden');
   document.getElementById('tocOverlay').classList.add('open');
   document.getElementById('dosScreen').style.display = 'flex';
   document.getElementById('dirPanel').classList.remove('open');
@@ -753,13 +799,19 @@ stealthSearch.addEventListener('click', () => {
 // Tap dos screen to skip
 document.getElementById('dosScreen').addEventListener('click', skipBoot);
 
+// Tap directory while it is printing to finish instantly
+document.getElementById('dirPanel').addEventListener('click', () => {
+  if (directoryRevealStarted && !directoryRevealDone) finishDirectoryReveal();
+});
+
 function closeTOC() {
   document.getElementById('tocOverlay').classList.remove('open');
   document.getElementById('dosScreen').classList.remove('fade-out');
   document.getElementById('dirPanel').classList.remove('open');
   bootDone = true;
-  bootTimers.forEach(t => clearTimeout(t));
+  clearBootTimers();
   resetDirectoryReveal();
+  stealthSearch.classList.remove('hidden');
 
   promptText.textContent = '';
   introTyping = false;
@@ -780,6 +832,7 @@ function showAllEntries() {
   document.getElementById('noResults').style.display = 'none';
   document.getElementById('swordVol').querySelector('.toc-volume-header').style.display = '';
   document.getElementById('shieldVol').querySelector('.toc-volume-header').style.display = '';
+  if (directoryRevealStarted && !directoryRevealDone) finishDirectoryReveal();
 }
 
 document.getElementById('tocSearch').addEventListener('input', function() {
@@ -800,6 +853,10 @@ document.getElementById('tocSearch').addEventListener('input', function() {
   });
 
   document.getElementById('noResults').style.display = anyVisible ? 'none' : 'block';
+
+  if (document.getElementById('dirPanel').classList.contains('open')) {
+    finishDirectoryReveal();
+  }
 });
 </script>
 
