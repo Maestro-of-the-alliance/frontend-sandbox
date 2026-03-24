@@ -61,6 +61,13 @@ body::before {
   text-shadow: 0 0 10px rgba(184,150,40,0.4);
 }
 .prompt-arrow { user-select: none; }
+.prompt-text {
+  margin-left: 6px;
+  user-select: none;
+  white-space: pre;
+  color: inherit;
+  letter-spacing: 0.08em;
+}
 .cursor { animation: blink 1s step-end infinite; user-select: none; margin-left: 2px; }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
@@ -403,6 +410,7 @@ body::before {
 <!-- STEALTH SEARCH TRIGGER -->
 <div class="stealth-search" id="stealthSearch" aria-label="Open Table of Contents">
   <span class="prompt-arrow">&gt;</span>
+  <span class="prompt-text" id="promptText"></span>
   <span class="cursor">_</span>
 </div>
 
@@ -673,7 +681,16 @@ function showDirectory() {
 }
 
 // ── OPEN / CLOSE TOC ──
-document.getElementById('stealthSearch').addEventListener('click', () => {
+const stealthSearch = document.getElementById('stealthSearch');
+const promptText = document.getElementById('promptText');
+const STEALTH_MESSAGE = ' access N.C.E.ncyclopedia';
+
+let introTyping = false;
+let introDone = false;
+let introIndex = 0;
+let introTimer = null;
+
+function openTOC() {
   bootDone = false;
   bootTimers = [];
   document.getElementById('tocOverlay').classList.add('open');
@@ -682,6 +699,48 @@ document.getElementById('stealthSearch').addEventListener('click', () => {
   document.getElementById('tocSearch').value = '';
   showAllEntries();
   runBoot();
+}
+
+function finishIntroAndOpen() {
+  if (introTimer) clearTimeout(introTimer);
+  promptText.textContent = STEALTH_MESSAGE;
+  introTyping = false;
+  introDone = true;
+
+  setTimeout(() => {
+    openTOC();
+  }, 150);
+}
+
+function typeIntro() {
+  if (introIndex < STEALTH_MESSAGE.length) {
+    promptText.textContent += STEALTH_MESSAGE[introIndex];
+    introIndex++;
+    introTimer = setTimeout(typeIntro, 28);
+  } else {
+    introTyping = false;
+    introDone = true;
+    setTimeout(() => {
+      openTOC();
+    }, 150);
+  }
+}
+
+stealthSearch.addEventListener('click', () => {
+  if (!introTyping && !introDone) {
+    introTyping = true;
+    introIndex = 0;
+    promptText.textContent = '';
+    typeIntro();
+    return;
+  }
+
+  if (introTyping) {
+    finishIntroAndOpen();
+    return;
+  }
+
+  openTOC();
 });
 
 // Tap dos screen to skip
@@ -693,6 +752,12 @@ function closeTOC() {
   document.getElementById('dirPanel').classList.remove('open');
   bootDone = true;
   bootTimers.forEach(t => clearTimeout(t));
+
+  promptText.textContent = '';
+  introTyping = false;
+  introDone = false;
+  introIndex = 0;
+  if (introTimer) clearTimeout(introTimer);
 }
 
 document.getElementById('tocClose').addEventListener('click', closeTOC);
