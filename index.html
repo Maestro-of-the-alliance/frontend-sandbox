@@ -629,7 +629,15 @@ function runBoot() {
     }, delay);
     bootTimers.push(t);
 
-    delay += text === '' ? 80 : 120;
+    if (text === '') {
+      delay += 180;
+    } else if (text.includes('...')) {
+      delay += 600;
+    } else if (i < 3) {
+      delay += 400;
+    } else {
+      delay += 280 + Math.floor(Math.random() * 80);
+    }
   });
 }
 
