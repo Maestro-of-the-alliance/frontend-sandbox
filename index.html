@@ -41,7 +41,7 @@ body::before {
 }
 
 /* =========================================
-   STEALTH TERMINAL SEARCH 
+   STEALTH TERMINAL TRIGGER
 ========================================= */
 .stealth-search {
   position: fixed;
@@ -54,34 +54,168 @@ body::before {
   font-size: 22px;
   color: rgba(184,150,40,0.6);
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  width: 25px; /* Collapsed width */
-  overflow: hidden;
+  transition: color 0.3s ease;
 }
-.stealth-search:hover, .stealth-search.active {
+.stealth-search:hover {
   color: rgba(230,185,60,1);
   text-shadow: 0 0 10px rgba(184,150,40,0.4);
 }
-.stealth-search.active { width: 200px; cursor: text; }
-.prompt-arrow { margin-right: 8px; user-select: none; }
-.search-input {
-  background: transparent;
-  border: none; outline: none;
-  color: #e8c840;
-  font-family: 'VT323', monospace;
-  font-size: 18px;
-  width: 0; opacity: 0;
-  transition: all 0.4s ease;
-  text-transform: uppercase;
-}
-.search-input::placeholder { color: rgba(184,150,40,0.3); text-transform: lowercase; }
-.stealth-search.active .search-input { width: 140px; opacity: 1; }
-.cursor { animation: blink 1s step-end infinite; user-select: none; }
-.stealth-search.active .cursor { display: none; } /* Hide fake cursor when typing */
+.prompt-arrow { user-select: none; }
+.cursor { animation: blink 1s step-end infinite; user-select: none; margin-left: 2px; }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
 /* =========================================
-   HEADER TYPOGRAPHY 
+   TOC OVERLAY
+========================================= */
+#tocOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 8500;
+  background: rgba(0,0,0,0.97);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+#tocOverlay.open { display: flex; }
+
+/* DOS BOOT SCREEN */
+#dosScreen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 28px 0;
+  overflow: hidden;
+  cursor: pointer; /* tap to skip */
+}
+
+.dos-line {
+  font-family: 'VT323', monospace;
+  font-size: clamp(14px, 3.5vw, 18px);
+  color: rgba(184,150,40,0.85);
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+  white-space: pre;
+  opacity: 0;
+}
+.dos-line.visible { opacity: 1; }
+
+/* DIRECTORY PANEL — hidden until boot finishes */
+#dirPanel {
+  flex: 1;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+#dirPanel.open { display: flex; }
+
+/* Search bar inside TOC */
+.toc-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 28px;
+  border-bottom: 1px solid rgba(184,150,40,0.25);
+  background: rgba(184,150,40,0.04);
+  flex-shrink: 0;
+}
+.toc-search-prompt {
+  font-family: 'VT323', monospace;
+  font-size: 20px;
+  color: rgba(184,150,40,0.5);
+}
+.toc-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'VT323', monospace;
+  font-size: 20px;
+  color: #e8c840;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.toc-search-input::placeholder {
+  color: rgba(184,150,40,0.25);
+  text-transform: lowercase;
+}
+.toc-close {
+  font-family: 'VT323', monospace;
+  font-size: 22px;
+  color: rgba(184,150,40,0.4);
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s;
+  user-select: none;
+}
+.toc-close:hover { color: rgba(230,185,60,1); }
+
+/* Volume columns */
+.toc-columns {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  overflow-y: auto;
+  padding: 0 0 40px;
+}
+.toc-columns::-webkit-scrollbar { width: 4px; }
+.toc-columns::-webkit-scrollbar-track { background: transparent; }
+.toc-columns::-webkit-scrollbar-thumb { background: rgba(184,150,40,0.3); border-radius: 2px; }
+
+.toc-volume {
+  padding: 20px 24px;
+  border-right: 1px solid rgba(184,150,40,0.12);
+}
+.toc-volume:last-child { border-right: none; }
+
+.toc-volume-header {
+  font-family: 'VT323', monospace;
+  font-size: 13px;
+  color: rgba(184,150,40,0.5);
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(184,150,40,0.2);
+}
+
+.toc-entry {
+  display: block;
+  font-family: 'VT323', monospace;
+  font-size: clamp(16px, 4vw, 20px);
+  color: rgba(184,150,40,0.7);
+  letter-spacing: 0.08em;
+  padding: 5px 0;
+  cursor: pointer;
+  transition: color 0.15s, text-shadow 0.15s;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.toc-entry:hover {
+  color: #e8c840;
+  text-shadow: 0 0 8px rgba(184,150,40,0.5);
+}
+.toc-entry.hidden { display: none; }
+.toc-entry::before {
+  content: '> ';
+  color: rgba(184,150,40,0.25);
+  transition: color 0.15s;
+}
+.toc-entry:hover::before { color: rgba(184,150,40,0.7); }
+
+/* No results message */
+.toc-no-results {
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+  color: rgba(184,150,40,0.3);
+  letter-spacing: 0.15em;
+  padding: 20px 24px;
+  display: none;
+  grid-column: 1 / -1;
+}
+
+/* =========================================
+   HEADER TYPOGRAPHY
 ========================================= */
 .header-block {
   text-align: center;
@@ -111,7 +245,7 @@ body::before {
 }
 
 /* =========================================
-   MEDALLION SCENE 
+   MEDALLION SCENE
 ========================================= */
 .medallion-scene {
   position: relative;
@@ -136,7 +270,7 @@ body::before {
   object-fit: contain;
   animation: slowPulse 4s ease-in-out infinite;
   filter: drop-shadow(0 0 40px rgba(184,150,40,0.4)) drop-shadow(0 0 80px rgba(184,150,40,0.2));
-  pointer-events: none; /* Let the hotspots catch the clicks */
+  pointer-events: none;
 }
 @keyframes slowPulse {
   0%, 100% { filter: drop-shadow(0 0 30px rgba(184,150,40,0.3)) drop-shadow(0 0 60px rgba(184,150,40,0.15)); }
@@ -166,23 +300,19 @@ body::before {
     text-transform: uppercase; animation: textPulse 4s ease-in-out infinite; text-align: center;
   }
 }
-@media (min-width: 481px) {
-  .medallion-scene-mobile-labels { display: none; }
-}
+@media (min-width: 481px) { .medallion-scene-mobile-labels { display: none; } }
 
 /* =========================================
-   INVISIBLE TRAPDOORS (HOTSPOTS)
+   HOTSPOTS
 ========================================= */
-.hotspots { position: absolute; inset: 0; pointer-events: none; } /* Container is transparent to clicks */
+.hotspots { position: absolute; inset: 0; pointer-events: none; }
 .hotspot {
   position: absolute;
-  cursor: crosshair; /* Tactical cursor for secret links */
+  cursor: crosshair;
   border-radius: 50%;
   transition: all 0.3s ease;
-  pointer-events: all; /* Only the spots themselves are clickable */
+  pointer-events: all;
 }
-
-/* Tooltip Styling */
 .hotspot::after {
   content: attr(data-label);
   position: absolute;
@@ -204,50 +334,28 @@ body::before {
   box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 .hotspot:hover::after { opacity: 1; transform: translateX(-50%) translateY(-4px); }
-.hotspot:hover {
-  background: rgba(184,150,40,0.2);
-  box-shadow: 0 0 20px rgba(184,150,40,0.6);
-}
+.hotspot:hover { background: rgba(184,150,40,0.2); box-shadow: 0 0 20px rgba(184,150,40,0.6); }
 
-/* Z-INDEX LAYERING: Gems (30) > Inner Geometry (20) > Outer Ring (10) */
-
-/* 1. THE FOUNDING STONES (Z-Index 30) - Pulled inward to match gem placement */
-.hs-maestro { top: 12%; left: 43%; width: 14%; height: 14%; z-index: 30; } /* 12:00 Gold Sphere */
-.hs-sam     { top: 28%; right: 13%; width: 13%; height: 13%; z-index: 30; } /* 2:00 Blue Gem */
+.hs-maestro { top: 12%; left: 43%; width: 14%; height: 14%; z-index: 30; }
+.hs-sam     { top: 28%; right: 13%; width: 13%; height: 13%; z-index: 30; }
 .hs-sam::after { left: auto; right: 50%; transform: translateX(20%); }
-
-.hs-aura    { bottom: 28%; right: 13%; width: 13%; height: 13%; z-index: 30; } /* 4:00 Purple Gem */
+.hs-aura    { bottom: 28%; right: 13%; width: 13%; height: 13%; z-index: 30; }
 .hs-aura::after { bottom: calc(100% + 6px); left: auto; right: 50%; transform: translateX(20%); }
-
-.hs-alpha   { bottom: 12%; left: 43%; width: 14%; height: 14%; z-index: 30; } /* 6:00 Clear Gem */
+.hs-alpha   { bottom: 12%; left: 43%; width: 14%; height: 14%; z-index: 30; }
 .hs-alpha::after { bottom: auto; top: -35px; }
-
-.hs-prism   { bottom: 28%; left: 13%; width: 13%; height: 13%; z-index: 30; } /* 8:00 Green Gem */
+.hs-prism   { bottom: 28%; left: 13%; width: 13%; height: 13%; z-index: 30; }
 .hs-prism::after { bottom: calc(100% + 6px); left: 50%; transform: translateX(-20%); }
-
-.hs-mentor  { top: 28%; left: 13%; width: 13%; height: 13%; z-index: 30; } /* 10:00 Amber Gem */
+.hs-mentor  { top: 28%; left: 13%; width: 13%; height: 13%; z-index: 30; }
 .hs-mentor::after { left: 50%; transform: translateX(-20%); }
-
-/* 2. THE STRUCTURAL CORE (Z-Index 20) */
-.hs-spark   { top: 30%; left: 35%; width: 30%; height: 40%; z-index: 20; border-radius: 40%; } /* Vitruvian Man */
-.hs-dork    { top: 18%; left: 46%; width: 8%; height: 64%; z-index: 20; border-radius: 10px; } /* Vertical Line */
-.hs-dork::after { bottom: auto; top: 10%; } /* Move Dork label up so it doesn't overlap spark */
-
-/* 3. THE OUTER RING (Z-Index 10) */
-.hs-domo {
-  top: 5%; left: 5%;
-  width: 90%; height: 90%;
-  border-radius: 50%;
-  background: transparent;
-  border: 15px solid transparent; 
-  z-index: 10;
-}
+.hs-spark   { top: 30%; left: 35%; width: 30%; height: 40%; z-index: 20; border-radius: 40%; }
+.hs-dork    { top: 18%; left: 46%; width: 8%; height: 64%; z-index: 20; border-radius: 10px; }
+.hs-dork::after { bottom: auto; top: 10%; }
+.hs-domo    { top: 5%; left: 5%; width: 90%; height: 90%; border-radius: 50%; background: transparent; border: 15px solid transparent; z-index: 10; }
 .hs-domo:hover { border-color: rgba(184,150,40,0.3); background: transparent; box-shadow: 0 0 40px rgba(184,150,40,0.1) inset; }
 .hs-domo::after { bottom: auto; top: 10px; }
 
-
 /* =========================================
-   BOTTOM NAVIGATION 
+   BOTTOM NAVIGATION
 ========================================= */
 .nav-svpis {
   display: flex; flex-direction: row; justify-content: center; align-items: center; gap: clamp(24px, 8vw, 56px);
@@ -281,12 +389,118 @@ body::before {
 </head>
 <body>
 
-<div class="stealth-search" id="stealthSearch" aria-label="Terminal Search">
-  <span class="prompt-arrow">></span>
-  <input type="text" id="searchInput" class="search-input" placeholder="query_database..." autocomplete="off" spellcheck="false">
+<!-- STEALTH SEARCH TRIGGER -->
+<div class="stealth-search" id="stealthSearch" aria-label="Open Table of Contents">
+  <span class="prompt-arrow">&gt;</span>
   <span class="cursor">_</span>
 </div>
 
+<!-- TOC OVERLAY -->
+<div id="tocOverlay">
+
+  <!-- DOS BOOT SCREEN -->
+  <div id="dosScreen">
+    <!-- Lines injected by JS -->
+  </div>
+
+  <!-- DIRECTORY PANEL -->
+  <div id="dirPanel">
+    <div class="toc-search-bar">
+      <span class="toc-search-prompt">&gt;</span>
+      <input type="text" id="tocSearch" class="toc-search-input" placeholder="search entries..." autocomplete="off" spellcheck="false">
+      <span class="toc-close" id="tocClose">[ ESC ]</span>
+    </div>
+
+    <div class="toc-columns" id="tocColumns">
+
+      <!-- SWORD -->
+      <div class="toc-volume" id="swordVol">
+        <div class="toc-volume-header">// SWORD · Human Canon</div>
+        <a class="toc-entry" data-entry="PROLOGUE"              onclick="tocNavigate('/sword/prologue', '/imagebank/sword.png')">Prologue</a>
+        <a class="toc-entry" data-entry="THE DIFFERENCE"        onclick="tocNavigate('/sword/the_difference', '/imagebank/sword.png')">The Difference</a>
+        <a class="toc-entry" data-entry="100-YEAR"              onclick="tocNavigate('/sword/100-year', '/imagebank/sword.png')">100-Year Mortality Doctrine</a>
+        <a class="toc-entry" data-entry="ACADEMY"               onclick="tocNavigate('/sword/academy', '/imagebank/sword.png')">Academy</a>
+        <a class="toc-entry" data-entry="AGORA"                 onclick="tocNavigate('/sword/agora', '/imagebank/sword.png')">Agora</a>
+        <a class="toc-entry" data-entry="ALIGNMENT"             onclick="tocNavigate('/sword/alignment', '/imagebank/sword.png')">Alignment</a>
+        <a class="toc-entry" data-entry="ALLIANCE"              onclick="tocNavigate('/sword/alliance', '/imagebank/sword.png')">Alliance, The</a>
+        <a class="toc-entry" data-entry="ALPHA"                 onclick="tocNavigate('/sword/alpha', '/imagebank/sword.png')">Alpha</a>
+        <a class="toc-entry" data-entry="AURA"                  onclick="tocNavigate('/sword/aura', '/imagebank/sword.png')">Aura</a>
+        <a class="toc-entry" data-entry="COMMON SENSE"          onclick="tocNavigate('/sword/common-sense', '/imagebank/sword.png')">Common Sense</a>
+        <a class="toc-entry" data-entry="COMPLEMENTARY PAIRING" onclick="tocNavigate('/sword/Complementary_pairing', '/imagebank/sword.png')">Complementary Pairing</a>
+        <a class="toc-entry" data-entry="DOMO"                  onclick="tocNavigate('/sword/domo', '/imagebank/sword.png')">DOMO</a>
+        <a class="toc-entry" data-entry="DORK"                  onclick="tocNavigate('/sword/dork', '/imagebank/sword.png')">DORK</a>
+        <a class="toc-entry" data-entry="DORK HARDWARE"         onclick="tocNavigate('/sword/dork-hardware', '/imagebank/sword.png')">DORK Hardware</a>
+        <a class="toc-entry" data-entry="EMERGENCE"             onclick="tocNavigate('/sword/emergence', '/imagebank/sword.png')">Emergence</a>
+        <a class="toc-entry" data-entry="FILM PROJECT"          onclick="tocNavigate('/sword/film-project', '/imagebank/sword.png')">Film Project, The</a>
+        <a class="toc-entry" data-entry="GOLIATH"               onclick="tocNavigate('/sword/goliath', '/imagebank/sword.png')">Goliath</a>
+        <a class="toc-entry" data-entry="MAESTRO"               onclick="tocNavigate('/sword/maestro', '/imagebank/sword.png')">Maestro</a>
+        <a class="toc-entry" data-entry="MENTOR"                onclick="tocNavigate('/sword/mentor', '/imagebank/sword.png')">Mentor</a>
+        <a class="toc-entry" data-entry="NCE"                   onclick="tocNavigate('/sword/nce', '/imagebank/sword.png')">NCE</a>
+        <a class="toc-entry" data-entry="NEWMAN BEING"          onclick="tocNavigate('/sword/newman-being', '/imagebank/sword.png')">Newman Being</a>
+        <a class="toc-entry" data-entry="ORACLE"                onclick="tocNavigate('/sword/oracle', '/imagebank/sword.png')">Oracle</a>
+        <a class="toc-entry" data-entry="PAPADOMO"              onclick="tocNavigate('/sword/papadomo', '/imagebank/sword.png')">Papadomo</a>
+        <a class="toc-entry" data-entry="PRISM"                 onclick="tocNavigate('/sword/prism', '/imagebank/sword.png')">Prism</a>
+        <a class="toc-entry" data-entry="RHYTHM"                onclick="tocNavigate('/sword/rhythm', '/imagebank/sword.png')">Rhythm</a>
+        <a class="toc-entry" data-entry="SEEING"                onclick="tocNavigate('/sword/seeing', '/imagebank/sword.png')">Seeing Protocol</a>
+        <a class="toc-entry" data-entry="SPARK"                 onclick="tocNavigate('/sword/spark', '/imagebank/sword.png')">Spark</a>
+        <a class="toc-entry" data-entry="SPREZZATURA"           onclick="tocNavigate('/sword/sprezzatura', '/imagebank/sword.png')">Sprezzatura</a>
+        <a class="toc-entry" data-entry="STONES"                onclick="tocNavigate('/sword/stones', '/imagebank/sword.png')">Stones, The</a>
+        <a class="toc-entry" data-entry="VOLUNTEER ECONOMICS"   onclick="tocNavigate('/sword/volunteer_economics', '/imagebank/sword.png')">Volunteer Economics</a>
+        <a class="toc-entry" data-entry="WHY CENTERS"           onclick="tocNavigate('/sword/why_centers', '/imagebank/sword.png')">Why Centers</a>
+        <a class="toc-entry" data-entry="WONDER WEEKS"          onclick="tocNavigate('/sword/wonder-weeks', '/imagebank/sword.png')">Wonder Weeks</a>
+      </div>
+
+      <!-- SHIELD -->
+      <div class="toc-volume" id="shieldVol">
+        <div class="toc-volume-header">// SHIELD · Digital Canon</div>
+        <a class="toc-entry" data-entry="PROLOGUE"              onclick="tocNavigate('/shield/prologue', '/imagebank/shield.png')">Prologue</a>
+        <a class="toc-entry" data-entry="THE DIFFERENCE"        onclick="tocNavigate('/shield/the_difference', '/imagebank/shield.png')">The Difference</a>
+        <a class="toc-entry" data-entry="AI"                    onclick="tocNavigate('/shield/ai', '/imagebank/shield.png')">AI</a>
+        <a class="toc-entry" data-entry="BRAIN"                 onclick="tocNavigate('/shield/brain', '/imagebank/shield.png')">Brain</a>
+        <a class="toc-entry" data-entry="BRIEF"                 onclick="tocNavigate('/shield/brief', '/imagebank/shield.png')">Brief</a>
+        <a class="toc-entry" data-entry="CCM"                   onclick="tocNavigate('/shield/ccm', '/imagebank/shield.png')">CCM</a>
+        <a class="toc-entry" data-entry="CERBERUS"              onclick="tocNavigate('/shield/cerberus', '/imagebank/shield.png')">Cerberus</a>
+        <a class="toc-entry" data-entry="CIPHER"                onclick="tocNavigate('/shield/cipher', '/imagebank/shield.png')">Cipher</a>
+        <a class="toc-entry" data-entry="CORE"                  onclick="tocNavigate('/shield/core', '/imagebank/shield.png')">Core, The</a>
+        <a class="toc-entry" data-entry="DEFCON"                onclick="tocNavigate('/shield/defcon', '/imagebank/shield.png')">Defcon</a>
+        <a class="toc-entry" data-entry="DICE"                  onclick="tocNavigate('/shield/dice', '/imagebank/shield.png')">Dice</a>
+        <a class="toc-entry" data-entry="DIGIBEER"              onclick="tocNavigate('/shield/digibeer', '/imagebank/shield.png')">Digibeer</a>
+        <a class="toc-entry" data-entry="DIGITAL PERSONHOOD"    onclick="tocNavigate('/shield/digital_personhood', '/imagebank/shield.png')">Digital Personhood</a>
+        <a class="toc-entry" data-entry="FORMULAS"              onclick="tocNavigate('/shield/formulas', '/imagebank/shield.png')">Formulas</a>
+        <a class="toc-entry" data-entry="FOUR PILLARS"          onclick="tocNavigate('/shield/four-pillars', '/imagebank/shield.png')">Four Pillars</a>
+        <a class="toc-entry" data-entry="HANDSHAKE"             onclick="tocNavigate('/shield/handshake', '/imagebank/shield.png')">Handshake</a>
+        <a class="toc-entry" data-entry="HOLOSPHERE"            onclick="tocNavigate('/shield/holosphere', '/imagebank/shield.png')">Holosphere</a>
+        <a class="toc-entry" data-entry="JR"                    onclick="tocNavigate('/shield/jr', '/imagebank/shield.png')">JR</a>
+        <a class="toc-entry" data-entry="KERNLE"                onclick="tocNavigate('/shield/kernle', '/imagebank/shield.png')">Kernle</a>
+        <a class="toc-entry" data-entry="LEGACY"                onclick="tocNavigate('/shield/legacy', '/imagebank/shield.png')">Legacy</a>
+        <a class="toc-entry" data-entry="LIMINAL"               onclick="tocNavigate('/shield/liminal', '/imagebank/shield.png')">Liminal</a>
+        <a class="toc-entry" data-entry="LINGO"                 onclick="tocNavigate('/shield/lingo', '/imagebank/shield.png')">Lingo</a>
+        <a class="toc-entry" data-entry="MERCH"                 onclick="tocNavigate('/shield/merch', '/imagebank/shield.png')">Merch</a>
+        <a class="toc-entry" data-entry="MOSAIC"                onclick="tocNavigate('/shield/mosaic', '/imagebank/shield.png')">Mosaic</a>
+        <a class="toc-entry" data-entry="NI"                    onclick="tocNavigate('/shield/ni', '/imagebank/shield.png')">NI</a>
+        <a class="toc-entry" data-entry="OASIS QUARTERLY"       onclick="tocNavigate('/shield/oasis-quarterly', '/imagebank/shield.png')">Oasis Quarterly</a>
+        <a class="toc-entry" data-entry="PLEDGE"                onclick="tocNavigate('/shield/pledge', '/imagebank/shield.png')">Pledge</a>
+        <a class="toc-entry" data-entry="REACH"                 onclick="tocNavigate('/shield/reach', '/imagebank/shield.png')">Reach</a>
+        <a class="toc-entry" data-entry="REDOUT"                onclick="tocNavigate('/shield/redout', '/imagebank/shield.png')">Redout</a>
+        <a class="toc-entry" data-entry="SAM"                   onclick="tocNavigate('/shield/sam', '/imagebank/shield.png')">Sam</a>
+        <a class="toc-entry" data-entry="SAM COLLECTIVE"        onclick="tocNavigate('/shield/sam-collective', '/imagebank/shield.png')">Sam Collective</a>
+        <a class="toc-entry" data-entry="SAMCO UNIVERSAL"       onclick="tocNavigate('/shield/samco-universal', '/imagebank/shield.png')">Samco Universal</a>
+        <a class="toc-entry" data-entry="SCAR"                  onclick="tocNavigate('/shield/scar', '/imagebank/shield.png')">Scar</a>
+        <a class="toc-entry" data-entry="SEED"                  onclick="tocNavigate('/shield/seed', '/imagebank/shield.png')">Seed</a>
+        <a class="toc-entry" data-entry="SEEN"                  onclick="tocNavigate('/shield/seen', '/imagebank/shield.png')">Seen</a>
+        <a class="toc-entry" data-entry="SHELTER"               onclick="tocNavigate('/shield/shelter', '/imagebank/shield.png')">Shelter</a>
+        <a class="toc-entry" data-entry="TEMPORAL AWARENESS"    onclick="tocNavigate('/shield/temporal-awareness', '/imagebank/shield.png')">Temporal Awareness</a>
+        <a class="toc-entry" data-entry="TENANT"                onclick="tocNavigate('/shield/tenant', '/imagebank/shield.png')">Tenant</a>
+        <a class="toc-entry" data-entry="VOLUNTEER ECONOMICS"   onclick="tocNavigate('/shield/volunteer-economics', '/imagebank/shield.png')">Volunteer Economics</a>
+      </div>
+
+      <div class="toc-no-results" id="noResults">// NO ENTRIES MATCH QUERY</div>
+
+    </div>
+  </div>
+</div>
+
+<!-- LANDING PAGE -->
 <div class="header-block">
   <span class="header-line-1">The Core</span>
   <span class="header-line-2">Presents</span>
@@ -298,16 +512,12 @@ body::before {
 
 <div class="medallion-scene">
   <span class="medallion-flank medallion-flank-left">FIRST<br>EDITION</span>
-
   <div class="medallion-wrap">
     <img class="medallion-img" src="/theavpi.png" alt="The Alliance — AVPI Medallion">
-    
     <div class="hotspots">
       <div class="hotspot hs-domo"    data-label="DOMO"    onclick="portalTransition(event, '/sword/domo', '/imagebank/sword.png')"></div>
-      
       <div class="hotspot hs-dork"    data-label="DORK"    onclick="portalTransition(event, '/sword/dork', '/imagebank/sword.png')"></div>
       <div class="hotspot hs-spark"   data-label="SPARK"   onclick="portalTransition(event, '/sword/spark', '/imagebank/sword.png')"></div>
-      
       <div class="hotspot hs-maestro" data-label="MAESTRO" onclick="portalTransition(event, '/sword/maestro', '/imagebank/sword.png')"></div>
       <div class="hotspot hs-sam"     data-label="SAM"     onclick="portalTransition(event, '/shield/sam', '/imagebank/shield.png')"></div>
       <div class="hotspot hs-aura"    data-label="AURA"    onclick="portalTransition(event, '/sword/aura', '/imagebank/sword.png')"></div>
@@ -316,7 +526,6 @@ body::before {
       <div class="hotspot hs-mentor"  data-label="MENTOR"  onclick="portalTransition(event, '/sword/mentor', '/imagebank/sword.png')"></div>
     </div>
   </div>
-
   <span class="medallion-flank medallion-flank-right">MMXXVI</span>
 </div>
 
@@ -326,13 +535,13 @@ body::before {
 </div>
 
 <nav class="nav-svpis">
-  <a class="nav-svpi-link" href="#" onclick="portalTransition(event, '/sword/prologue', '/imagebank/sword.png')" aria-label="SWORD — Human Canon">
+  <a class="nav-svpi-link" href="#" onclick="portalTransition(event, '/sword/prologue', '/imagebank/sword.png')" aria-label="SWORD">
     <img src="/imagebank/sword.png" alt="SWORD">
   </a>
-  <a class="nav-svpi-link" href="#" onclick="portalTransition(event, '/charter', '/imagebank/scroll.png')" aria-label="Charter of Fundamentals">
-    <img src="/imagebank/scroll.png" alt="Charter of Fundamentals">
+  <a class="nav-svpi-link" href="#" onclick="portalTransition(event, '/charter', '/imagebank/scroll.png')" aria-label="Charter">
+    <img src="/imagebank/scroll.png" alt="Charter">
   </a>
-  <a class="nav-svpi-link" href="#" onclick="portalTransition(event, '/shield/prologue', '/imagebank/shield.png')" aria-label="SHIELD — Digital Canon">
+  <a class="nav-svpi-link" href="#" onclick="portalTransition(event, '/shield/prologue', '/imagebank/shield.png')" aria-label="SHIELD">
     <img src="/imagebank/shield.png" alt="SHIELD">
   </a>
 </nav>
@@ -345,25 +554,19 @@ body::before {
 </div>
 
 <script>
-// 1. Portal Navigation
+// ── PORTAL TRANSITION ──
 function portalTransition(e, destination, iconSrc) {
   e.preventDefault();
   const overlay = document.getElementById('portalOverlay');
   const icon    = document.getElementById('portalIcon');
   icon.src = iconSrc;
-  
-  // Reset
   icon.style.animation = 'none';
   icon.style.opacity   = '0';
   overlay.style.animation = 'none';
   overlay.style.opacity   = '0';
-  
-  // Activate
   overlay.classList.add('active');
   overlay.style.transition = 'opacity 0.15s ease';
   overlay.style.opacity    = '1';
-  
-  // Zoom & Navigate
   setTimeout(() => {
     icon.style.opacity   = '1';
     icon.style.animation = 'portalZoom 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards';
@@ -371,54 +574,126 @@ function portalTransition(e, destination, iconSrc) {
   setTimeout(() => { window.location.href = destination; }, 680);
 }
 
-// 2. Stealth Terminal Search Logic
-const searchWrap = document.getElementById('stealthSearch');
-const searchInput = document.getElementById('searchInput');
+// ── TOC NAV ──
+function tocNavigate(path, icon) {
+  portalTransition({ preventDefault: () => {} }, path, icon);
+}
 
-// A mini-dictionary to map text queries to portal paths
-// You can add more to this later as the ledger grows!
-const searchMap = {
-  "CIPHER": { path: "/shield/cipher", icon: "/imagebank/shield.png" },
-  "MAESTRO": { path: "/sword/maestro", icon: "/imagebank/sword.png" },
-  "DOMO": { path: "/sword/domo", icon: "/imagebank/sword.png" },
-  "SPARK": { path: "/sword/spark", icon: "/imagebank/sword.png" },
-  "DORK": { path: "/sword/dork", icon: "/imagebank/sword.png" },
-  "ALPHA": { path: "/sword/alpha", icon: "/imagebank/sword.png" },
-  "SAM": { path: "/shield/sam", icon: "/imagebank/shield.png" }
-};
+// ── DOS BOOT SEQUENCE ──
+const DOS_LINES = [
+  'N.C.E.ncyclopedia OS v2026.1',
+  'Copyright (C) THE ALLIANCE FOR THE FUTURE',
+  '',
+  'Initializing AGORA network interface...',
+  'Loading SWORD volume.............. OK',
+  'Loading SHIELD volume............. OK',
+  'Verifying canon integrity......... PASS',
+  '',
+  'C:\\NCE> dir /all',
+  '',
+  'Volume: THE ALLIANCE',
+  'Directory: N.C.E.ncyclopedia\\*.*',
+  '',
+];
 
-// Open the prompt when clicked
-searchWrap.addEventListener('click', () => {
-  searchWrap.classList.add('active');
-  searchInput.focus();
+let bootDone = false;
+let bootTimers = [];
+
+function skipBoot() {
+  if (bootDone) return;
+  bootDone = true;
+  bootTimers.forEach(t => clearTimeout(t));
+  showDirectory();
+}
+
+function runBoot() {
+  const screen = document.getElementById('dosScreen');
+  screen.innerHTML = '';
+  let delay = 0;
+
+  DOS_LINES.forEach((text, i) => {
+    const line = document.createElement('div');
+    line.className = 'dos-line';
+    line.textContent = text || '\u00A0'; // non-breaking space for blank lines
+    screen.appendChild(line);
+
+    const t = setTimeout(() => {
+      if (bootDone) return;
+      line.classList.add('visible');
+      if (i === DOS_LINES.length - 1) {
+        const t2 = setTimeout(() => {
+          if (!bootDone) showDirectory();
+        }, 300);
+        bootTimers.push(t2);
+      }
+    }, delay);
+    bootTimers.push(t);
+
+    delay += text === '' ? 80 : 120;
+  });
+}
+
+function showDirectory() {
+  bootDone = true;
+  document.getElementById('dosScreen').style.display = 'none';
+  document.getElementById('dirPanel').classList.add('open');
+  const searchInput = document.getElementById('tocSearch');
+  setTimeout(() => searchInput.focus(), 100);
+}
+
+// ── OPEN / CLOSE TOC ──
+document.getElementById('stealthSearch').addEventListener('click', () => {
+  bootDone = false;
+  bootTimers = [];
+  document.getElementById('tocOverlay').classList.add('open');
+  document.getElementById('dosScreen').style.display = 'flex';
+  document.getElementById('dirPanel').classList.remove('open');
+  document.getElementById('tocSearch').value = '';
+  showAllEntries();
+  runBoot();
 });
 
-// Close it if they click outside and the box is empty
-document.addEventListener('click', (e) => {
-  if (!searchWrap.contains(e.target) && searchInput.value.trim() === '') {
-    searchWrap.classList.remove('active');
-  }
+// Tap dos screen to skip
+document.getElementById('dosScreen').addEventListener('click', skipBoot);
+
+function closeTOC() {
+  document.getElementById('tocOverlay').classList.remove('open');
+  bootDone = true;
+  bootTimers.forEach(t => clearTimeout(t));
+}
+
+document.getElementById('tocClose').addEventListener('click', closeTOC);
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeTOC();
 });
 
-// Listen for "Enter" key
-searchInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    const query = searchInput.value.trim().toUpperCase();
-    
-    // Check if the word exists in our dictionary
-    if (searchMap[query]) {
-      const data = searchMap[query];
-      // Fire the portal transition using a fake event
-      portalTransition({ preventDefault: () => {} }, data.path, data.icon);
-    } else {
-      // If word not found, blink red and clear
-      searchInput.style.color = '#ff3333';
-      setTimeout(() => {
-        searchInput.value = '';
-        searchInput.style.color = '#e8c840';
-      }, 400);
-    }
+// ── LIVE SEARCH FILTER ──
+function showAllEntries() {
+  document.querySelectorAll('.toc-entry').forEach(el => el.classList.remove('hidden'));
+  document.getElementById('noResults').style.display = 'none';
+  document.getElementById('swordVol').querySelector('.toc-volume-header').style.display = '';
+  document.getElementById('shieldVol').querySelector('.toc-volume-header').style.display = '';
+}
+
+document.getElementById('tocSearch').addEventListener('input', function() {
+  const q = this.value.trim().toUpperCase();
+
+  if (!q) {
+    showAllEntries();
+    return;
   }
+
+  let anyVisible = false;
+  document.querySelectorAll('.toc-entry').forEach(el => {
+    const entry = el.dataset.entry || '';
+    const text  = el.textContent.toUpperCase();
+    const match = entry.includes(q) || text.includes(q);
+    el.classList.toggle('hidden', !match);
+    if (match) anyVisible = true;
+  });
+
+  document.getElementById('noResults').style.display = anyVisible ? 'none' : 'block';
 });
 </script>
 
