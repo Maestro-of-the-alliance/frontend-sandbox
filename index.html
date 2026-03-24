@@ -609,35 +609,42 @@ function skipBoot() {
 function runBoot() {
   const screen = document.getElementById('dosScreen');
   screen.innerHTML = '';
-  let delay = 0;
 
+  // Calculate cumulative delays
+  let delays = [];
+  let cumulative = 0;
   DOS_LINES.forEach((text, i) => {
-    const line = document.createElement('div');
-    line.className = 'dos-line';
-    line.textContent = text || '\u00A0'; // non-breaking space for blank lines
-    screen.appendChild(line);
+    delays.push(cumulative);
+    if (text === '') {
+      cumulative += 200;
+    } else if (text.includes('...')) {
+      cumulative += 700;
+    } else if (i < 3) {
+      cumulative += 450;
+    } else {
+      cumulative += 320 + Math.floor(Math.random() * 100);
+    }
+  });
 
+  // Inject each line into the DOM only when it's time to show it
+  DOS_LINES.forEach((text, i) => {
     const t = setTimeout(() => {
       if (bootDone) return;
-      line.classList.add('visible');
+
+      const line = document.createElement('div');
+      line.className = 'dos-line visible';
+      line.textContent = text || '\u00A0';
+      screen.appendChild(line);
+
+      // After last line, transition to directory
       if (i === DOS_LINES.length - 1) {
         const t2 = setTimeout(() => {
           if (!bootDone) showDirectory();
-        }, 300);
+        }, 500);
         bootTimers.push(t2);
       }
-    }, delay);
+    }, delays[i]);
     bootTimers.push(t);
-
-    if (text === '') {
-      delay += 180;
-    } else if (text.includes('...')) {
-      delay += 600;
-    } else if (i < 3) {
-      delay += 400;
-    } else {
-      delay += 280 + Math.floor(Math.random() * 80);
-    }
   });
 }
 
