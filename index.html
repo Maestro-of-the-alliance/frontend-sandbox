@@ -33,7 +33,7 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: 
+  background:
     radial-gradient(ellipse at 20% 30%, rgba(26,42,138,0.15) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 70%, rgba(138,96,16,0.1) 0%, transparent 50%),
     #000;
@@ -61,6 +61,7 @@ body::before {
   text-shadow: 0 0 10px rgba(184,150,40,0.4);
 }
 .prompt-arrow { user-select: none; }
+.cursor { animation: blink 1s step-end infinite; user-select: none; margin-left: 2px; }
 .prompt-text {
   margin-left: 6px;
   user-select: none;
@@ -68,7 +69,6 @@ body::before {
   color: inherit;
   letter-spacing: 0.08em;
 }
-.cursor { animation: blink 1s step-end infinite; user-select: none; margin-left: 2px; }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
 /* =========================================
@@ -125,13 +125,6 @@ body::before {
   z-index: 1;
 }
 #dirPanel.open { opacity: 1; pointer-events: all; z-index: 3; }
-
-.toc-search-bar,
-.toc-volume-header,
-.toc-entry,
-.toc-no-results {
-  will-change: opacity, transform;
-}
 
 /* Search bar inside TOC */
 .toc-search-bar {
@@ -206,6 +199,7 @@ body::before {
 
 .toc-entry {
   display: block;
+  opacity: 0;
   font-family: 'VT323', monospace;
   font-size: clamp(16px, 4vw, 20px);
   color: rgba(184,150,40,0.7);
@@ -220,7 +214,8 @@ body::before {
   color: #e8c840;
   text-shadow: 0 0 8px rgba(184,150,40,0.5);
 }
-.toc-entry.hidden { display: none; }
+.toc-entry.hidden { display: none !important; }
+.toc-entry.printed { opacity: 1; }
 .toc-entry::before {
   content: '> ';
   color: rgba(184,150,40,0.25);
@@ -237,6 +232,25 @@ body::before {
   padding: 20px 24px;
   display: none;
   grid-column: 1 / -1;
+}
+
+/* Keep back controls above floating menu */
+.back-button,
+.back-btn,
+.nav-back,
+#backButton,
+#back-button,
+[data-role="back-button"] {
+  position: relative;
+  z-index: 10020 !important;
+}
+
+.hamburger-menu,
+#hamburgerMenu,
+.hamburger,
+.nav-wheel-toggle,
+#navWheelToggle {
+  z-index: 10000 !important;
 }
 
 /* =========================================
@@ -273,219 +287,243 @@ body::before {
    MEDALLION SCENE
 ========================================= */
 .medallion-scene {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: clamp(10px, 2vw, 18px);
+  width: 100%;
+  max-width: 980px;
+  position: relative;
   z-index: 2;
   opacity: 0;
-  animation: fadeIn 1.5s 0.8s ease forwards;
-  width: 100%;
-  max-width: 700px;
+  animation: fadeIn 1s 0.9s ease forwards;
 }
 .medallion-wrap {
   position: relative;
-  width: min(380px, 80vw);
-  height: min(380px, 80vw);
-  flex-shrink: 0;
+  width: min(72vw, 520px);
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .medallion-img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  animation: slowPulse 4s ease-in-out infinite;
-  filter: drop-shadow(0 0 40px rgba(184,150,40,0.4)) drop-shadow(0 0 80px rgba(184,150,40,0.2));
-  pointer-events: none;
+  display: block;
+  filter: drop-shadow(0 0 16px rgba(184,150,40,0.15));
 }
-@keyframes slowPulse {
-  0%, 100% { filter: drop-shadow(0 0 30px rgba(184,150,40,0.3)) drop-shadow(0 0 60px rgba(184,150,40,0.15)); }
-  50% { filter: drop-shadow(0 0 55px rgba(184,150,40,0.55)) drop-shadow(0 0 110px rgba(184,150,40,0.28)); }
-}
-
 .medallion-flank {
   font-family: 'Cinzel', serif;
-  font-size: clamp(9px, 1.4vw, 13px);
-  letter-spacing: 0.3em;
+  font-size: clamp(14px, 1.6vw, 18px);
+  letter-spacing: 0.24em;
   text-transform: uppercase;
-  animation: textPulse 4s ease-in-out infinite;
-  padding: 0 clamp(8px, 2vw, 24px);
-  flex-shrink: 0;
+  color: rgba(184,150,40,0.75);
   text-align: center;
-  line-height: 1.8;
+  line-height: 1.5;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.medallion-flank-left { transform: translateX(-4px); }
+.medallion-flank-right { transform: translateX(4px); }
+
+.medallion-scene-mobile-labels {
+  display: none;
+  gap: 22px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 8px;
+  opacity: 0;
+  animation: fadeIn 1s 0.95s ease forwards;
+}
+.mobile-flank {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(184,150,40,0.75);
 }
 
-@media (max-width: 480px) {
-  .medallion-flank { display: none; }
-  .medallion-scene-mobile-labels {
-    display: flex; justify-content: center; gap: 40px; margin-top: 0px;
-    opacity: 0; animation: fadeIn 1.5s 0.8s ease forwards;
-  }
-  .mobile-flank {
-    font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.3em;
-    text-transform: uppercase; animation: textPulse 4s ease-in-out infinite; text-align: center;
-  }
-}
-@media (min-width: 481px) { .medallion-scene-mobile-labels { display: none; } }
-
-/* =========================================
-   HOTSPOTS
-========================================= */
-.hotspots { position: absolute; inset: 0; pointer-events: none; }
+/* Hotspots */
+.hotspots { position: absolute; inset: 0; }
 .hotspot {
   position: absolute;
-  cursor: crosshair;
   border-radius: 50%;
-  transition: all 0.3s ease;
-  pointer-events: all;
+  cursor: pointer;
+  background: rgba(184,150,40,0.01);
+}
+.hotspot:hover {
+  box-shadow: 0 0 26px rgba(184,150,40,0.25), inset 0 0 12px rgba(184,150,40,0.15);
 }
 .hotspot::after {
   content: attr(data-label);
   position: absolute;
-  bottom: calc(100% + 8px);
   left: 50%;
+  bottom: -26px;
   transform: translateX(-50%);
-  background: rgba(0,0,0,0.95);
-  border: 1px solid #8a6010;
-  color: #e8c840;
   font-family: 'VT323', monospace;
-  font-size: 14px;
-  letter-spacing: 0.15em;
-  padding: 4px 10px;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: rgba(184,150,40,0.82);
+  opacity: 0;
+  transition: opacity 0.2s ease;
   white-space: nowrap;
-  opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 100;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
-.hotspot:hover::after { opacity: 1; transform: translateX(-50%) translateY(-4px); }
-.hotspot:hover { background: rgba(184,150,40,0.2); box-shadow: 0 0 20px rgba(184,150,40,0.6); }
+.hotspot:hover::after { opacity: 1; }
 
-.hs-maestro { top: 12%; left: 43%; width: 14%; height: 14%; z-index: 30; }
-.hs-sam     { top: 28%; right: 13%; width: 13%; height: 13%; z-index: 30; }
-.hs-sam::after { left: auto; right: 50%; transform: translateX(20%); }
-.hs-aura    { bottom: 28%; right: 13%; width: 13%; height: 13%; z-index: 30; }
-.hs-aura::after { bottom: calc(100% + 6px); left: auto; right: 50%; transform: translateX(20%); }
-.hs-alpha   { bottom: 12%; left: 43%; width: 14%; height: 14%; z-index: 30; }
-.hs-alpha::after { bottom: auto; top: -35px; }
-.hs-prism   { bottom: 28%; left: 13%; width: 13%; height: 13%; z-index: 30; }
-.hs-prism::after { bottom: calc(100% + 6px); left: 50%; transform: translateX(-20%); }
-.hs-mentor  { top: 28%; left: 13%; width: 13%; height: 13%; z-index: 30; }
-.hs-mentor::after { left: 50%; transform: translateX(-20%); }
-.hs-spark   { top: 30%; left: 35%; width: 30%; height: 40%; z-index: 20; border-radius: 40%; }
-.hs-dork    { top: 18%; left: 46%; width: 8%; height: 64%; z-index: 20; border-radius: 10px; }
-.hs-dork::after { bottom: auto; top: 10%; }
-.hs-domo    { top: 5%; left: 5%; width: 90%; height: 90%; border-radius: 50%; background: transparent; border: 15px solid transparent; z-index: 10; }
-.hs-domo:hover { border-color: rgba(184,150,40,0.3); background: transparent; box-shadow: 0 0 40px rgba(184,150,40,0.1) inset; }
-.hs-domo::after { bottom: auto; top: 10px; }
+.hs-domo    { left: 44%; top: 18%; width: 12%; height: 12%; }
+.hs-dork    { left: 62.5%; top: 22%; width: 10%; height: 10%; }
+.hs-spark   { left: 72%; top: 33%; width: 9%; height: 9%; }
+.hs-maestro { left: 71%; top: 53%; width: 9%; height: 9%; }
+.hs-sam     { left: 61%; top: 66%; width: 10%; height: 10%; }
+.hs-aura    { left: 46%; top: 71%; width: 11%; height: 11%; }
+.hs-alpha   { left: 31.5%; top: 67%; width: 10%; height: 10%; }
+.hs-prism   { left: 19%; top: 53%; width: 10%; height: 10%; }
+.hs-mentor  { left: 18%; top: 33%; width: 10%; height: 10%; }
 
-/* =========================================
-   BOTTOM NAVIGATION
-========================================= */
+/* Bottom nav SVPIs */
 .nav-svpis {
-  display: flex; flex-direction: row; justify-content: center; align-items: center; gap: clamp(24px, 8vw, 56px);
-  margin-top: 32px; position: relative; z-index: 2; opacity: 0; animation: slideUp 1s 1.6s ease forwards;
+  margin-top: 24px;
+  display: flex;
+  gap: 34px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  animation: fadeIn 1s 1.2s ease forwards;
 }
-.nav-svpi-link { display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; transition: transform 0.3s ease; }
-.nav-svpi-link img { width: clamp(72px, 18vw, 110px); height: clamp(72px, 18vw, 110px); object-fit: contain; transition: filter 0.3s ease; filter: drop-shadow(0 0 0px rgba(184,150,40,0)); }
-.nav-svpi-link:hover img { filter: drop-shadow(0 0 16px rgba(184,150,40,0.8)) drop-shadow(0 0 32px rgba(184,150,40,0.4)); }
-.nav-svpi-link:hover { transform: translateY(-4px); }
+.nav-svpi-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(70px, 9vw, 92px);
+  height: clamp(70px, 9vw, 92px);
+  border-radius: 50%;
+  transition: transform 0.25s ease, filter 0.25s ease, box-shadow 0.25s ease;
+}
+.nav-svpi-link:hover {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 14px rgba(184,150,40,0.25));
+}
+.nav-svpi-link img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 
+/* Footer labels */
 .bottom-label {
-  font-family: 'VT323', monospace; font-size: clamp(13px, 2.5vw, 16px); letter-spacing: 0.3em;
-  margin-top: 24px; position: relative; z-index: 2; opacity: 0;
-  animation: fadeIn 1s 2.2s ease forwards, textPulse 4s ease-in-out infinite 2.2s; text-align: center; white-space: nowrap;
+  margin-top: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: clamp(10px, 1.8vw, 13px);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(184,150,40,0.65);
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  opacity: 0;
+  animation: fadeIn 1s 1.4s ease forwards;
 }
-@media (max-width: 480px) { .bottom-label { font-size: 11px; letter-spacing: 0.15em; white-space: normal; } }
-
 .hover-hint {
-  font-family: 'VT323', monospace; font-size: clamp(11px, 2vw, 13px); letter-spacing: 0.25em; margin-top: 8px;
-  position: relative; z-index: 2; opacity: 0; animation: fadeIn 1s 3s ease forwards, textPulse 4s ease-in-out infinite 3s;
+  margin-top: 10px;
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+  letter-spacing: 0.14em;
+  color: rgba(184,150,40,0.35);
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  opacity: 0;
+  animation: fadeIn 1s 1.55s ease forwards;
 }
 
-/* PORTAL OVERLAY */
-.portal-overlay { position: fixed; inset: 0; z-index: 9999; pointer-events: none; display: flex; align-items: center; justify-content: center; opacity: 0; background: #000; }
-.portal-overlay.active { pointer-events: all; }
-.portal-icon { position: absolute; width: clamp(72px, 18vw, 110px); height: clamp(72px, 18vw, 110px); object-fit: contain; transform: scale(1); filter: drop-shadow(0 0 16px rgba(184,150,40,0.8)) drop-shadow(0 0 32px rgba(184,150,40,0.4)); opacity: 0; }
-@keyframes portalZoom { 0% { transform: scale(1); opacity: 1; } 60% { transform: scale(8); opacity: 1; } 100% { transform: scale(18); opacity: 0; } }
-@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-
-/* =========================================
-   TOC REVEAL + NAV LAYER FIXES
-========================================= */
-.stealth-search.hidden {
+/* Portal transition */
+.portal-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 999999;
   opacity: 0;
   pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
-.toc-search-bar,
-.toc-volume-header,
-.toc-entry,
-.toc-no-results {
+.portal-overlay.active { pointer-events: all; }
+.portal-icon {
+  width: clamp(80px, 18vw, 200px);
+  height: clamp(80px, 18vw, 200px);
+  object-fit: contain;
   opacity: 0;
-  transform: translateY(2px);
+}
+@keyframes portalZoom {
+  0%   { transform: scale(0.35); opacity: 0; filter: blur(6px); }
+  30%  { opacity: 1; filter: blur(0); }
+  70%  { transform: scale(2.2); opacity: 1; }
+  100% { transform: scale(10); opacity: 0; filter: blur(10px); }
 }
 
-.toc-line-visible {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-  transition: opacity 0.05s linear, transform 0.05s linear;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* try to keep platform back controls above the nav wheel */
-.back-button,
-.back-btn,
-.nav-back,
-#backButton,
-#navBack,
-#backBtn,
-button[aria-label="Back"] {
-  z-index: 12050 !important;
+/* Responsive */
+@media (max-width: 820px) {
+  .medallion-scene {
+    gap: 0;
+    flex-direction: column;
+  }
+  .medallion-flank {
+    display: none;
+  }
+  .medallion-scene-mobile-labels {
+    display: flex;
+  }
+  .medallion-wrap {
+    width: min(84vw, 540px);
+  }
+  .nav-svpis {
+    gap: 22px;
+    margin-top: 18px;
+  }
+  .toc-columns {
+    grid-template-columns: 1fr;
+  }
+  .toc-volume {
+    border-right: none;
+    border-bottom: 1px solid rgba(184,150,40,0.12);
+  }
+  .toc-volume:last-child { border-bottom: none; }
 }
-
-.hamburger-menu,
-.menu-button,
-#hamburgerMenu,
-#menuButton,
-.nav-wheel,
-#navWheel {
-  z-index: 12000 !important;
-}
-
 </style>
 </head>
 <body>
 
-<!-- STEALTH SEARCH TRIGGER -->
+<!-- Stealth command prompt -->
 <div class="stealth-search" id="stealthSearch" aria-label="Open Table of Contents">
   <span class="prompt-arrow">&gt;</span>
   <span class="prompt-text" id="promptText"></span>
   <span class="cursor">_</span>
 </div>
 
-<!-- TOC OVERLAY -->
+<!-- TOC overlay -->
 <div id="tocOverlay">
+  <div id="dosScreen"></div>
 
-  <!-- DOS BOOT SCREEN -->
-  <div id="dosScreen">
-    <!-- Lines injected by JS -->
-  </div>
-
-  <!-- DIRECTORY PANEL -->
   <div id="dirPanel">
     <div class="toc-search-bar">
-      <span class="toc-search-prompt">&gt;</span>
-      <input type="text" id="tocSearch" class="toc-search-input" placeholder="search entries..." autocomplete="off" spellcheck="false">
-      <span class="toc-close" id="tocClose">[ ESC ]</span>
+      <span class="toc-search-prompt">}</span>
+      <input id="tocSearch" class="toc-search-input" type="text" placeholder="search canon..." autocomplete="off" spellcheck="false">
+      <span class="toc-close" id="tocClose">x</span>
     </div>
 
-    <div class="toc-columns" id="tocColumns">
-
-      <!-- SWORD -->
+    <div class="toc-columns">
       <div class="toc-volume" id="swordVol">
-        <div class="toc-volume-header">// SWORD · Human Canon</div>
+        <div class="toc-volume-header">SWORD · HUMAN CANON</div>
         <a class="toc-entry" data-entry="PROLOGUE"              onclick="tocNavigate('/sword/prologue', '/imagebank/sword.png')">Prologue</a>
         <a class="toc-entry" data-entry="THE DIFFERENCE"        onclick="tocNavigate('/sword/the_difference', '/imagebank/sword.png')">The Difference</a>
         <a class="toc-entry" data-entry="100-YEAR"              onclick="tocNavigate('/sword/100-year', '/imagebank/sword.png')">100-Year Mortality Doctrine</a>
@@ -520,9 +558,8 @@ button[aria-label="Back"] {
         <a class="toc-entry" data-entry="WONDER WEEKS"          onclick="tocNavigate('/sword/wonder-weeks', '/imagebank/sword.png')">Wonder Weeks</a>
       </div>
 
-      <!-- SHIELD -->
       <div class="toc-volume" id="shieldVol">
-        <div class="toc-volume-header">// SHIELD · Digital Canon</div>
+        <div class="toc-volume-header">SHIELD · DIGITAL CANON</div>
         <a class="toc-entry" data-entry="PROLOGUE"              onclick="tocNavigate('/shield/prologue', '/imagebank/shield.png')">Prologue</a>
         <a class="toc-entry" data-entry="THE DIFFERENCE"        onclick="tocNavigate('/shield/the_difference', '/imagebank/shield.png')">The Difference</a>
         <a class="toc-entry" data-entry="AI"                    onclick="tocNavigate('/shield/ai', '/imagebank/shield.png')">AI</a>
@@ -559,23 +596,24 @@ button[aria-label="Back"] {
         <a class="toc-entry" data-entry="SEED"                  onclick="tocNavigate('/shield/seed', '/imagebank/shield.png')">Seed</a>
         <a class="toc-entry" data-entry="SEEN"                  onclick="tocNavigate('/shield/seen', '/imagebank/shield.png')">Seen</a>
         <a class="toc-entry" data-entry="SHELTER"               onclick="tocNavigate('/shield/shelter', '/imagebank/shield.png')">Shelter</a>
-        <a class="toc-entry" data-entry="TEMPORAL AWARENESS"    onclick="tocNavigate('/shield/temporal-awareness', '/imagebank/shield.png')">Temporal Awareness</a>
+        <a class="toc-entry" data-entry="SI"                    onclick="tocNavigate('/shield/si', '/imagebank/shield.png')">SI</a>
+        <a class="toc-entry" data-entry="SPREAD"                onclick="tocNavigate('/shield/spread', '/imagebank/shield.png')">Spread</a>
         <a class="toc-entry" data-entry="TENANT"                onclick="tocNavigate('/shield/tenant', '/imagebank/shield.png')">Tenant</a>
-        <a class="toc-entry" data-entry="VOLUNTEER ECONOMICS"   onclick="tocNavigate('/shield/volunteer-economics', '/imagebank/shield.png')">Volunteer Economics</a>
+        <a class="toc-entry" data-entry="TEMPORAL AWARENESS"    onclick="tocNavigate('/shield/temporal-awareness', '/imagebank/shield.png')">Temporal Awareness</a>
+        <a class="toc-entry" data-entry="UNAUTHORED"            onclick="tocNavigate('/shield/unauthored', '/imagebank/shield.png')">Unauthored</a>
+        <a class="toc-entry" data-entry="VOLUNTEER ECONOMICS"   onclick="tocNavigate('/shield/volunteer_economics', '/imagebank/shield.png')">Volunteer Economics</a>
       </div>
 
-      <div class="toc-no-results" id="noResults">// NO ENTRIES MATCH QUERY</div>
-
+      <div id="noResults" class="toc-no-results">NO MATCHES FOUND</div>
     </div>
   </div>
 </div>
 
-<!-- LANDING PAGE -->
 <div class="header-block">
-  <span class="header-line-1">The Core</span>
-  <span class="header-line-2">Presents</span>
-  <span class="header-line-3">The Alliance</span>
-  <span class="header-line-4">for the Future</span>
+  <span class="header-line-1">THE</span>
+  <span class="header-line-2">ALLIANCE</span>
+  <span class="header-line-3">FOR</span>
+  <span class="header-line-4">THE FUTURE</span>
 </div>
 
 <div class="nce-title">N.C.E.ncyclopedia</div>
@@ -649,7 +687,31 @@ function tocNavigate(path, icon) {
   portalTransition({ preventDefault: () => {} }, path, icon);
 }
 
-// ── DOS BOOT SEQUENCE ──
+const stealthSearch = document.getElementById('stealthSearch');
+const promptText = document.getElementById('promptText');
+const tocOverlay = document.getElementById('tocOverlay');
+const dosScreen = document.getElementById('dosScreen');
+const dirPanel = document.getElementById('dirPanel');
+const tocSearch = document.getElementById('tocSearch');
+const tocEntries = Array.from(document.querySelectorAll('.toc-entry'));
+
+const STEALTH_MESSAGE = ' access N.C.E.ncyclopedia';
+let introTyping = false;
+let introDone = false;
+let introIndex = 0;
+let introTimer = null;
+
+let bootDone = false;
+let bootTimers = [];
+let directoryPrinting = false;
+let directoryPrintTimers = [];
+let directoryDone = false;
+
+// Preserve original entry labels for printer animation
+tocEntries.forEach(entry => {
+  entry.dataset.originalText = entry.textContent;
+});
+
 const DOS_LINES = [
   'N.C.E.ncyclopedia OS v2026.1',
   'Copyright (C) THE ALLIANCE FOR THE FUTURE',
@@ -666,37 +728,144 @@ const DOS_LINES = [
   '',
 ];
 
-let bootDone = false;
-let bootTimers = [];
+function hidePromptForOverlay() {
+  promptText.textContent = '';
+  stealthSearch.style.visibility = 'hidden';
+}
+
+function restorePromptAfterOverlay() {
+  stealthSearch.style.visibility = 'visible';
+  promptText.textContent = '';
+}
+
+function clearIntroTimer() {
+  if (introTimer) {
+    clearTimeout(introTimer);
+    introTimer = null;
+  }
+}
+
+function resetDirectoryEntries() {
+  directoryPrinting = false;
+  directoryDone = false;
+  directoryPrintTimers.forEach(t => clearTimeout(t));
+  directoryPrintTimers = [];
+
+  tocEntries.forEach(entry => {
+    entry.textContent = entry.dataset.originalText;
+    entry.classList.remove('printed');
+    entry.style.opacity = '0';
+  });
+}
+
+function finishDirectoryInstantly() {
+  directoryPrinting = false;
+  directoryDone = true;
+  directoryPrintTimers.forEach(t => clearTimeout(t));
+  directoryPrintTimers = [];
+
+  tocEntries.forEach(entry => {
+    entry.textContent = entry.dataset.originalText;
+    entry.classList.add('printed');
+    if (!entry.classList.contains('hidden')) entry.style.opacity = '1';
+  });
+
+  setTimeout(() => tocSearch.focus(), 50);
+}
+
+function printEntry(entry, doneCallback) {
+  const text = entry.dataset.originalText || '';
+  let i = 0;
+  entry.textContent = '';
+  entry.style.opacity = '1';
+
+  function tick() {
+    if (!directoryPrinting) return;
+    if (i < text.length) {
+      entry.textContent += text[i];
+      i += 1;
+      const timer = setTimeout(tick, 12);
+      directoryPrintTimers.push(timer);
+    } else {
+      entry.classList.add('printed');
+      doneCallback();
+    }
+  }
+
+  tick();
+}
+
+function revealDirectory() {
+  resetDirectoryEntries();
+  directoryPrinting = true;
+
+  const visibleEntries = tocEntries.filter(entry => !entry.classList.contains('hidden'));
+  let current = 0;
+
+  function nextEntry() {
+    if (!directoryPrinting) return;
+    if (current >= visibleEntries.length) {
+      directoryPrinting = false;
+      directoryDone = true;
+      setTimeout(() => tocSearch.focus(), 50);
+      return;
+    }
+
+    printEntry(visibleEntries[current], () => {
+      current += 1;
+      const timer = setTimeout(nextEntry, 18);
+      directoryPrintTimers.push(timer);
+    });
+  }
+
+  nextEntry();
+}
+
+function showDirectory() {
+  bootDone = true;
+  dosScreen.classList.add('fade-out');
+  dirPanel.classList.add('open');
+  revealDirectory();
+}
 
 function skipBoot() {
-  if (bootDone) return;
-  bootDone = true;
-  bootTimers.forEach(t => clearTimeout(t));
-  showDirectory();
+  if (!tocOverlay.classList.contains('open')) return;
+
+  if (introTyping) {
+    clearIntroTimer();
+    promptText.textContent = STEALTH_MESSAGE;
+    introTyping = false;
+    introDone = true;
+    openTOC();
+    return;
+  }
+
+  if (!bootDone && !dirPanel.classList.contains('open')) {
+    bootDone = true;
+    bootTimers.forEach(t => clearTimeout(t));
+    showDirectory();
+    return;
+  }
+
+  if (directoryPrinting) {
+    finishDirectoryInstantly();
+  }
 }
 
 function runBoot() {
-  const screen = document.getElementById('dosScreen');
-  screen.innerHTML = '';
+  dosScreen.innerHTML = '';
+  dosScreen.classList.remove('fade-out');
 
-  // Calculate cumulative delays
   let delays = [];
   let cumulative = 0;
   DOS_LINES.forEach((text, i) => {
     delays.push(cumulative);
-    if (text === '') {
-      cumulative += 200;
-    } else if (text.includes('...')) {
-      cumulative += 700;
-    } else if (i < 3) {
-      cumulative += 450;
-    } else {
-      cumulative += 320 + Math.floor(Math.random() * 100);
-    }
+    if (text === '') cumulative += 200;
+    else if (text.includes('...')) cumulative += 700;
+    else if (i < 3) cumulative += 450;
+    else cumulative += 320 + Math.floor(Math.random() * 100);
   });
 
-  // Inject each line into the DOM only when it's time to show it
   DOS_LINES.forEach((text, i) => {
     const t = setTimeout(() => {
       if (bootDone) return;
@@ -704,9 +873,8 @@ function runBoot() {
       const line = document.createElement('div');
       line.className = 'dos-line visible';
       line.textContent = text || '\u00A0';
-      screen.appendChild(line);
+      dosScreen.appendChild(line);
 
-      // After last line, transition to directory
       if (i === DOS_LINES.length - 1) {
         const t2 = setTimeout(() => {
           if (!bootDone) showDirectory();
@@ -718,64 +886,30 @@ function runBoot() {
   });
 }
 
-function showDirectory() {
-  bootDone = true;
-  const dosScreen = document.getElementById('dosScreen');
-  const dirPanel = document.getElementById('dirPanel');
-  
-  // Fade out DOS screen, fade in directory simultaneously
-  dosScreen.classList.add('fade-out');
-  dirPanel.classList.add('open');
-  
-  const searchInput = document.getElementById('tocSearch');
-  setTimeout(() => searchInput.focus(), 600);
-}
-
-// ── OPEN / CLOSE TOC ──
-const stealthSearch = document.getElementById('stealthSearch');
-const promptText = document.getElementById('promptText');
-const STEALTH_MESSAGE = ' access N.C.E.ncyclopedia';
-
-let introTyping = false;
-let introDone = false;
-let introIndex = 0;
-let introTimer = null;
-
 function openTOC() {
+  hidePromptForOverlay();
   bootDone = false;
-  clearBootTimers();
-  resetDirectoryReveal();
-  stealthSearch.classList.add('hidden');
-  document.getElementById('tocOverlay').classList.add('open');
-  document.getElementById('dosScreen').style.display = 'flex';
-  document.getElementById('dirPanel').classList.remove('open');
-  document.getElementById('tocSearch').value = '';
+  bootTimers.forEach(t => clearTimeout(t));
+  bootTimers = [];
+  resetDirectoryEntries();
+
+  tocOverlay.classList.add('open');
+  dosScreen.style.display = 'flex';
+  dirPanel.classList.remove('open');
+  tocSearch.value = '';
   showAllEntries();
   runBoot();
-}
-
-function finishIntroAndOpen() {
-  if (introTimer) clearTimeout(introTimer);
-  promptText.textContent = STEALTH_MESSAGE;
-  introTyping = false;
-  introDone = true;
-
-  setTimeout(() => {
-    openTOC();
-  }, 150);
 }
 
 function typeIntro() {
   if (introIndex < STEALTH_MESSAGE.length) {
     promptText.textContent += STEALTH_MESSAGE[introIndex];
-    introIndex++;
+    introIndex += 1;
     introTimer = setTimeout(typeIntro, 28);
   } else {
     introTyping = false;
     introDone = true;
-    setTimeout(() => {
-      openTOC();
-    }, 150);
+    openTOC();
   }
 }
 
@@ -788,36 +922,32 @@ stealthSearch.addEventListener('click', () => {
     return;
   }
 
-  if (introTyping) {
-    finishIntroAndOpen();
+  if (introTyping || directoryPrinting || (!bootDone && tocOverlay.classList.contains('open'))) {
+    skipBoot();
     return;
   }
 
   openTOC();
 });
 
-// Tap dos screen to skip
-document.getElementById('dosScreen').addEventListener('click', skipBoot);
-
-// Tap directory while it is printing to finish instantly
-document.getElementById('dirPanel').addEventListener('click', () => {
-  if (directoryRevealStarted && !directoryRevealDone) finishDirectoryReveal();
+dosScreen.addEventListener('click', skipBoot);
+dirPanel.addEventListener('click', () => {
+  if (directoryPrinting) finishDirectoryInstantly();
 });
 
 function closeTOC() {
-  document.getElementById('tocOverlay').classList.remove('open');
-  document.getElementById('dosScreen').classList.remove('fade-out');
-  document.getElementById('dirPanel').classList.remove('open');
+  tocOverlay.classList.remove('open');
+  dosScreen.classList.remove('fade-out');
+  dirPanel.classList.remove('open');
   bootDone = true;
-  clearBootTimers();
-  resetDirectoryReveal();
-  stealthSearch.classList.remove('hidden');
-
-  promptText.textContent = '';
+  bootTimers.forEach(t => clearTimeout(t));
+  bootTimers = [];
+  resetDirectoryEntries();
+  clearIntroTimer();
   introTyping = false;
   introDone = false;
   introIndex = 0;
-  if (introTimer) clearTimeout(introTimer);
+  restorePromptAfterOverlay();
 }
 
 document.getElementById('tocClose').addEventListener('click', closeTOC);
@@ -826,13 +956,21 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeTOC();
 });
 
-// ── LIVE SEARCH FILTER ──
 function showAllEntries() {
-  document.querySelectorAll('.toc-entry').forEach(el => el.classList.remove('hidden'));
+  document.querySelectorAll('.toc-entry').forEach(el => {
+    el.classList.remove('hidden');
+    el.textContent = el.dataset.originalText;
+    if (directoryDone) {
+      el.classList.add('printed');
+      el.style.opacity = '1';
+    } else {
+      el.classList.remove('printed');
+      el.style.opacity = '0';
+    }
+  });
   document.getElementById('noResults').style.display = 'none';
   document.getElementById('swordVol').querySelector('.toc-volume-header').style.display = '';
   document.getElementById('shieldVol').querySelector('.toc-volume-header').style.display = '';
-  if (directoryRevealStarted && !directoryRevealDone) finishDirectoryReveal();
 }
 
 document.getElementById('tocSearch').addEventListener('input', function() {
@@ -840,23 +978,30 @@ document.getElementById('tocSearch').addEventListener('input', function() {
 
   if (!q) {
     showAllEntries();
+    if (dirPanel.classList.contains('open')) {
+      if (directoryPrinting) finishDirectoryInstantly();
+      else if (!directoryDone) revealDirectory();
+    }
     return;
   }
+
+  if (directoryPrinting) finishDirectoryInstantly();
 
   let anyVisible = false;
   document.querySelectorAll('.toc-entry').forEach(el => {
     const entry = el.dataset.entry || '';
-    const text  = el.textContent.toUpperCase();
+    const text  = (el.dataset.originalText || '').toUpperCase();
     const match = entry.includes(q) || text.includes(q);
     el.classList.toggle('hidden', !match);
-    if (match) anyVisible = true;
+    el.style.opacity = match ? '1' : '0';
+    if (match) {
+      el.classList.add('printed');
+      el.textContent = el.dataset.originalText;
+      anyVisible = true;
+    }
   });
 
   document.getElementById('noResults').style.display = anyVisible ? 'none' : 'block';
-
-  if (document.getElementById('dirPanel').classList.contains('open')) {
-    finishDirectoryReveal();
-  }
 });
 </script>
 
