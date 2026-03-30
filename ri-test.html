@@ -21,7 +21,7 @@
 
   .page {
     display: grid;
-    grid-template-columns: 24px minmax(0, 1fr) 24px;
+    grid-template-columns: 22px minmax(0, 1fr) 22px;
     min-height: 100vh;
   }
 
@@ -38,14 +38,16 @@
 
   .reveal-zone {
     position: relative;
-    width: min(760px, calc(100vw - 64px));
+    width: min(760px, calc(100vw - 56px));
     padding: 72px 14px 80px;
     box-sizing: border-box;
     touch-action: none;
+    min-height: 100vh;
   }
 
   .stack {
     position: relative;
+    min-height: 100%;
   }
 
   #ghost,
@@ -126,7 +128,7 @@
     left: 12px;
     bottom: 12px;
     z-index: 40;
-    color: rgba(255, 240, 180, 0.18);
+    color: rgba(255, 240, 180, 0.16);
     font-size: 11px;
     letter-spacing: 0.03em;
     pointer-events: none;
@@ -134,21 +136,23 @@
 
   .beam {
     position: fixed;
-    width: 160px;
-    height: 160px;
+    width: 156px;
+    height: 156px;
     border-radius: 50%;
     pointer-events: none;
     z-index: 20;
     transform: translate(-50%, -50%);
     background:
       radial-gradient(circle,
-        rgba(255,248,220,0.14) 0%,
-        rgba(255,240,200,0.10) 40%,
-        rgba(255,220,160,0.045) 72%,
+        rgba(255,248,220,0.16) 0%,
+        rgba(255,240,205,0.11) 26%,
+        rgba(255,230,185,0.07) 48%,
+        rgba(255,220,160,0.038) 68%,
         rgba(255,255,255,0) 100%);
     mix-blend-mode: screen;
     opacity: 0;
     transition: opacity 0.12s ease;
+    filter: blur(1px);
   }
 
   .beam.active {
@@ -164,11 +168,11 @@
 
   @media (max-width: 700px) {
     .page {
-      grid-template-columns: 16px minmax(0, 1fr) 16px;
+      grid-template-columns: 14px minmax(0, 1fr) 14px;
     }
 
     .reveal-zone {
-      width: min(720px, calc(100vw - 40px));
+      width: min(720px, calc(100vw - 36px));
       padding: 72px 8px 72px;
     }
 
@@ -186,8 +190,8 @@
     }
 
     .beam {
-      width: 150px;
-      height: 150px;
+      width: 148px;
+      height: 148px;
     }
   }
 </style>
@@ -199,7 +203,9 @@
 
   <svg class="defs" aria-hidden="true" focusable="false">
     <defs>
-      <clipPath id="revealClip" clipPathUnits="userSpaceOnUse"></clipPath>
+      <clipPath id="revealClip" clipPathUnits="userSpaceOnUse">
+        <rect x="0" y="0" width="0" height="0"></rect>
+      </clipPath>
     </defs>
   </svg>
 
@@ -343,8 +349,20 @@
   let revealedAll = false;
   const radius = 70;
 
-  function buildClipBase() {
+  let targetX = 0;
+  let targetY = 0;
+  let beamX = 0;
+  let beamY = 0;
+  let beamActive = false;
+
+  function resetClip() {
     while (clipPath.firstChild) clipPath.removeChild(clipPath.firstChild);
+    const zeroRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    zeroRect.setAttribute('x', '0');
+    zeroRect.setAttribute('y', '0');
+    zeroRect.setAttribute('width', '0');
+    zeroRect.setAttribute('height', '0');
+    clipPath.appendChild(zeroRect);
   }
 
   function revealAt(clientX, clientY) {
@@ -362,9 +380,24 @@
     circle.setAttribute('r', radius);
     clipPath.appendChild(circle);
 
-    beam.style.left = `${clientX}px`;
-    beam.style.top = `${clientY}px`;
+    targetX = clientX;
+    targetY = clientY;
+    if (!beamActive) {
+      beamX = clientX;
+      beamY = clientY;
+    }
+    beamActive = true;
     beam.classList.add('active');
+  }
+
+  function animateBeam() {
+    if (beamActive) {
+      beamX += (targetX - beamX) * 0.22;
+      beamY += (targetY - beamY) * 0.22;
+      beam.style.left = `${beamX}px`;
+      beam.style.top = `${beamY}px`;
+    }
+    requestAnimationFrame(animateBeam);
   }
 
   zone.addEventListener('mousemove', (e) => {
@@ -372,6 +405,7 @@
   });
 
   zone.addEventListener('mouseleave', () => {
+    beamActive = false;
     beam.classList.remove('active');
   });
 
@@ -392,25 +426,30 @@
   }, { passive: false });
 
   zone.addEventListener('touchend', () => {
+    beamActive = false;
     beam.classList.remove('active');
   }, { passive: true });
 
   skipBtn.addEventListener('click', () => {
     revealedAll = true;
-    buildClipBase();
 
+    while (clipPath.firstChild) clipPath.removeChild(clipPath.firstChild);
     const rect = stack.getBoundingClientRect();
-    const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    r.setAttribute('x', '0');
-    r.setAttribute('y', '0');
-    r.setAttribute('width', rect.width);
-    r.setAttribute('height', rect.height);
-    clipPath.appendChild(r);
+    const fullRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    fullRect.setAttribute('x', '0');
+    fullRect.setAttribute('y', '0');
+    fullRect.setAttribute('width', rect.width);
+    fullRect.setAttribute('height', rect.height);
+    clipPath.appendChild(fullRect);
 
+    beamActive = false;
     beam.classList.remove('active');
   });
 
-  window.addEventListener('load', buildClipBase);
+  window.addEventListener('load', () => {
+    resetClip();
+    animateBeam();
+  });
 </script>
 </body>
 </html>
