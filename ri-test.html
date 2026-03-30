@@ -57,14 +57,31 @@
     letter-spacing: 0.01em;
   }
 
+  /* Ghost — everything nearly invisible, no exceptions */
   #ghost {
     position: absolute;
     inset: 0;
-    color: rgba(255, 245, 220, 0.08);
-    text-shadow: 0 0 6px rgba(255, 240, 180, 0.03);
+    color: rgba(255, 245, 220, 0.07);
+    text-shadow: none;
     pointer-events: none;
     user-select: none;
     z-index: 1;
+  }
+
+  /* Force ALL ghost children to stay dark — no overrides */
+  #ghost h1,
+  #ghost h2,
+  #ghost h3,
+  #ghost p,
+  #ghost strong,
+  #ghost b,
+  #ghost em,
+  #ghost .meta,
+  #ghost .section-title,
+  #ghost * {
+    color: inherit !important;
+    text-shadow: none !important;
+    background: transparent !important;
   }
 
   #real {
@@ -77,7 +94,6 @@
     pointer-events: none;
   }
 
-  /* Start fully hidden; revealed through SVG mask */
   #real svg {
     display: block;
     width: 100%;
@@ -85,21 +101,18 @@
     overflow: visible;
   }
 
+  /* Typography */
   h1 {
     margin: 0 0 18px;
     font-size: clamp(34px, 6vw, 56px);
-    color: rgba(255, 248, 220, 0.98);
-    text-shadow:
-      0 0 8px rgba(255, 240, 180, 0.16),
-      0 0 18px rgba(255, 240, 180, 0.07);
     letter-spacing: 0.03em;
   }
 
   .meta {
     margin-bottom: 28px;
-    color: rgba(255, 238, 200, 0.75);
     font-size: 15px;
     line-height: 1.55;
+    opacity: 0.75;
   }
 
   p {
@@ -107,7 +120,7 @@
   }
 
   strong, b {
-    color: rgba(255, 240, 205, 0.98);
+    font-weight: 700;
   }
 
   .skip {
@@ -197,7 +210,7 @@
 </head>
 <body>
   <button class="skip" id="skipBtn">Skip Reveal</button>
-  <div class="hint">move through the center panel</div>
+  <div class="hint">move through the center panel to reveal</div>
   <div class="beam" id="beam"></div>
 
   <div class="page">
@@ -213,7 +226,7 @@
             <div class="meta">
               NCE · DEF.018<br>
               Canonical Entry — Verified by J.R.<br>
-              Noun. Pronunciation: “AR-eye” / Plural: “RISE”<br>
+              Noun. Pronunciation: "AR-eye" / Plural: "RISE"<br>
               Acronym: Real Intelligence
             </div>
 
@@ -285,7 +298,6 @@
   let revealedAll = false;
   const radius = 70;
 
-  // Build SVG masked copy of the full content
   function buildMaskedSVG() {
     const rect = stack.getBoundingClientRect();
     const width = Math.ceil(rect.width);
@@ -306,17 +318,11 @@
               line-height: 1.8;
               letter-spacing: 0.01em;
               color: rgba(255,248,225,0.96);
-              text-shadow:
-                0 0 10px rgba(255,245,210,0.16),
-                0 0 22px rgba(255,240,180,0.06);
             }
             .svg-wrap h1 {
               margin: 0 0 18px;
               font-size: clamp(34px, 6vw, 56px);
               color: rgba(255,248,220,0.98);
-              text-shadow:
-                0 0 8px rgba(255,240,180,0.16),
-                0 0 18px rgba(255,240,180,0.07);
               letter-spacing: 0.03em;
             }
             .svg-wrap .meta {
@@ -454,8 +460,10 @@
   skipBtn.addEventListener('click', () => {
     revealedAll = true;
     real.innerHTML = ghost.innerHTML;
+    real.style.color = 'rgba(255,248,225,0.96)';
     beamActive = false;
     beam.classList.remove('active');
+    skipBtn.style.display = 'none';
   });
 
   window.addEventListener('load', () => {
