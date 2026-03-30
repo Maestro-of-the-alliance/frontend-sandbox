@@ -42,66 +42,53 @@
     padding: 72px 14px 80px;
     box-sizing: border-box;
     touch-action: none;
-    min-height: 100vh;
   }
 
   .stack {
     position: relative;
-    min-height: 100%;
   }
 
-  #ghost,
-  #real {
+  /* Ghost — the dark placeholder text, all children inherit dark color */
+  #ghost {
     font-size: clamp(17px, 2.05vw, 22px);
     line-height: 1.8;
     letter-spacing: 0.01em;
-  }
-
-  /* Ghost — everything nearly invisible, no exceptions */
-  #ghost {
-    position: absolute;
-    inset: 0;
     color: rgba(255, 245, 220, 0.07);
     text-shadow: none;
     pointer-events: none;
     user-select: none;
-    z-index: 1;
   }
 
-  /* Force ALL ghost children to stay dark — no overrides */
+  /* Force every ghost child to stay invisible */
+  #ghost *,
   #ghost h1,
-  #ghost h2,
-  #ghost h3,
   #ghost p,
   #ghost strong,
   #ghost b,
   #ghost em,
-  #ghost .meta,
-  #ghost .section-title,
-  #ghost * {
+  #ghost div {
     color: inherit !important;
     text-shadow: none !important;
     background: transparent !important;
   }
 
+  /* Real — the revealed layer, sits on top via absolute */
   #real {
-    position: relative;
-    color: rgba(255, 248, 225, 0.96);
-    text-shadow:
-      0 0 10px rgba(255, 245, 210, 0.16),
-      0 0 22px rgba(255, 240, 180, 0.06);
-    z-index: 2;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     pointer-events: none;
+    z-index: 2;
   }
 
   #real svg {
     display: block;
     width: 100%;
-    height: auto;
     overflow: visible;
   }
 
-  /* Typography */
+  /* Typography shared */
   h1 {
     margin: 0 0 18px;
     font-size: clamp(34px, 6vw, 56px);
@@ -112,15 +99,10 @@
     margin-bottom: 28px;
     font-size: 15px;
     line-height: 1.55;
-    opacity: 0.75;
   }
 
   p {
     margin: 0 0 20px;
-  }
-
-  strong, b {
-    font-weight: 700;
   }
 
   .skip {
@@ -210,7 +192,7 @@
 </head>
 <body>
   <button class="skip" id="skipBtn">Skip Reveal</button>
-  <div class="hint">move through the center panel to reveal</div>
+  <div class="hint">move through the panel to reveal</div>
   <div class="beam" id="beam"></div>
 
   <div class="page">
@@ -220,6 +202,7 @@
       <div class="reveal-zone" id="revealZone">
         <div class="stack" id="stack">
 
+          <!-- Ghost layer — always visible but nearly dark -->
           <div id="ghost">
             <h1>RI — Real Intelligence</h1>
 
@@ -278,6 +261,7 @@
             The FORMULAs (FM-06)</p>
           </div>
 
+          <!-- Real layer — revealed by torch -->
           <div id="real"></div>
 
         </div>
@@ -288,56 +272,65 @@
   </div>
 
 <script>
-  const zone = document.getElementById('revealZone');
-  const stack = document.getElementById('stack');
-  const beam = document.getElementById('beam');
-  const skipBtn = document.getElementById('skipBtn');
-  const real = document.getElementById('real');
-  const ghost = document.getElementById('ghost');
+  const zone     = document.getElementById('revealZone');
+  const stack    = document.getElementById('stack');
+  const beam     = document.getElementById('beam');
+  const skipBtn  = document.getElementById('skipBtn');
+  const real     = document.getElementById('real');
+  const ghost    = document.getElementById('ghost');
 
   let revealedAll = false;
   const radius = 70;
 
+  // ── KEY FIX: measure FULL scroll height, not just viewport ──
   function buildMaskedSVG() {
-    const rect = stack.getBoundingClientRect();
-    const width = Math.ceil(rect.width);
-    const height = Math.ceil(rect.height);
+    // Force a layout flush so we get accurate full height
+    const width  = Math.ceil(ghost.offsetWidth);
+    const height = Math.ceil(ghost.scrollHeight);
+
+    // Set the real div to match exact ghost dimensions
+    real.style.width  = width + 'px';
+    real.style.height = height + 'px';
 
     const contentHTML = ghost.innerHTML;
 
     real.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMinYMin meet">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="${width}"
+           height="${height}"
+           viewBox="0 0 ${width} ${height}"
+           preserveAspectRatio="xMinYMin meet"
+           style="display:block;overflow:visible;">
         <defs>
           <mask id="revealMask">
             <rect x="0" y="0" width="${width}" height="${height}" fill="black"></rect>
           </mask>
           <style>
-            .svg-wrap {
+            .sv {
               font-family: 'Special Elite', monospace;
               font-size: clamp(17px, 2.05vw, 22px);
               line-height: 1.8;
               letter-spacing: 0.01em;
               color: rgba(255,248,225,0.96);
             }
-            .svg-wrap h1 {
+            .sv h1 {
               margin: 0 0 18px;
               font-size: clamp(34px, 6vw, 56px);
               color: rgba(255,248,220,0.98);
               letter-spacing: 0.03em;
             }
-            .svg-wrap .meta {
+            .sv .meta {
               margin-bottom: 28px;
               color: rgba(255,238,200,0.75);
               font-size: 15px;
               line-height: 1.55;
             }
-            .svg-wrap p { margin: 0 0 20px; }
-            .svg-wrap strong, .svg-wrap b { color: rgba(255,240,205,0.98); }
+            .sv p { margin: 0 0 20px; }
+            .sv strong, .sv b { color: rgba(255,240,205,0.98); }
           </style>
         </defs>
-
         <foreignObject x="0" y="0" width="${width}" height="${height}" mask="url(#revealMask)">
-          <div xmlns="http://www.w3.org/1999/xhtml" class="svg-wrap">${contentHTML}</div>
+          <div xmlns="http://www.w3.org/1999/xhtml" class="sv">${contentHTML}</div>
         </foreignObject>
       </svg>
     `;
@@ -346,57 +339,55 @@
   function revealAt(clientX, clientY) {
     if (revealedAll) return;
 
-    const svg = real.querySelector('svg');
+    const svg  = real.querySelector('svg');
     const mask = real.querySelector('#revealMask');
     if (!svg || !mask) return;
 
-    const rect = stack.getBoundingClientRect();
+    // Use ghost's bounding rect as the reference — it's always in flow
+    const rect = ghost.getBoundingClientRect();
     const x = clientX - rect.left;
-    const y = clientY - rect.top;
+    // Account for page scroll
+    const y = clientY - rect.top + (real.getBoundingClientRect().top - ghost.getBoundingClientRect().top);
 
-    if (x < 0 || y < 0 || x > rect.width || y > rect.height) return;
+    // Use scroll-adjusted y
+    const scrollY = window.scrollY || document.documentElement.scrollTop;
+    const ghostTop = ghost.getBoundingClientRect().top + scrollY;
+    const absY = clientY + scrollY - ghostTop;
+    const absX = clientX - ghost.getBoundingClientRect().left;
 
-    const svgns = 'http://www.w3.org/2000/svg';
-    const gradId = `grad-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+    if (absX < 0 || absY < 0) return;
 
-    let defs = svg.querySelector('defs');
+    const svgns  = 'http://www.w3.org/2000/svg';
+    const gradId = `g${Date.now()}${Math.floor(Math.random()*1e6)}`;
+    const defs   = svg.querySelector('defs');
 
     const radial = document.createElementNS(svgns, 'radialGradient');
     radial.setAttribute('id', gradId);
-    radial.setAttribute('cx', x);
-    radial.setAttribute('cy', y);
+    radial.setAttribute('cx', absX);
+    radial.setAttribute('cy', absY);
     radial.setAttribute('r', radius);
     radial.setAttribute('gradientUnits', 'userSpaceOnUse');
 
-    const s1 = document.createElementNS(svgns, 'stop');
-    s1.setAttribute('offset', '0%');
-    s1.setAttribute('stop-color', 'white');
-    s1.setAttribute('stop-opacity', '1');
+    const stops = [
+      ['0%',   'white', '1'],
+      ['55%',  'white', '0.82'],
+      ['82%',  'white', '0.22'],
+      ['100%', 'white', '0'],
+    ];
 
-    const s2 = document.createElementNS(svgns, 'stop');
-    s2.setAttribute('offset', '55%');
-    s2.setAttribute('stop-color', 'white');
-    s2.setAttribute('stop-opacity', '0.82');
+    stops.forEach(([offset, color, opacity]) => {
+      const s = document.createElementNS(svgns, 'stop');
+      s.setAttribute('offset', offset);
+      s.setAttribute('stop-color', color);
+      s.setAttribute('stop-opacity', opacity);
+      radial.appendChild(s);
+    });
 
-    const s3 = document.createElementNS(svgns, 'stop');
-    s3.setAttribute('offset', '82%');
-    s3.setAttribute('stop-color', 'white');
-    s3.setAttribute('stop-opacity', '0.22');
-
-    const s4 = document.createElementNS(svgns, 'stop');
-    s4.setAttribute('offset', '100%');
-    s4.setAttribute('stop-color', 'white');
-    s4.setAttribute('stop-opacity', '0');
-
-    radial.appendChild(s1);
-    radial.appendChild(s2);
-    radial.appendChild(s3);
-    radial.appendChild(s4);
     defs.appendChild(radial);
 
     const circle = document.createElementNS(svgns, 'circle');
-    circle.setAttribute('cx', x);
-    circle.setAttribute('cy', y);
+    circle.setAttribute('cx', absX);
+    circle.setAttribute('cy', absY);
     circle.setAttribute('r', radius);
     circle.setAttribute('fill', `url(#${gradId})`);
     mask.appendChild(circle);
@@ -411,10 +402,8 @@
     beam.classList.add('active');
   }
 
-  let targetX = 0;
-  let targetY = 0;
-  let beamX = 0;
-  let beamY = 0;
+  let targetX = 0, targetY = 0;
+  let beamX = 0,   beamY = 0;
   let beamActive = false;
 
   function animateBeam() {
@@ -422,34 +411,26 @@
       beamX += (targetX - beamX) * 0.22;
       beamY += (targetY - beamY) * 0.22;
       beam.style.left = `${beamX}px`;
-      beam.style.top = `${beamY}px`;
+      beam.style.top  = `${beamY}px`;
     }
     requestAnimationFrame(animateBeam);
   }
 
-  zone.addEventListener('mousemove', (e) => {
-    revealAt(e.clientX, e.clientY);
-  });
+  zone.addEventListener('mousemove', e => revealAt(e.clientX, e.clientY));
 
   zone.addEventListener('mouseleave', () => {
     beamActive = false;
     beam.classList.remove('active');
   });
 
-  zone.addEventListener('touchstart', (e) => {
+  zone.addEventListener('touchstart', e => {
     const t = e.touches[0];
-    if (t) {
-      e.preventDefault();
-      revealAt(t.clientX, t.clientY);
-    }
+    if (t) { e.preventDefault(); revealAt(t.clientX, t.clientY); }
   }, { passive: false });
 
-  zone.addEventListener('touchmove', (e) => {
+  zone.addEventListener('touchmove', e => {
     const t = e.touches[0];
-    if (t) {
-      e.preventDefault();
-      revealAt(t.clientX, t.clientY);
-    }
+    if (t) { e.preventDefault(); revealAt(t.clientX, t.clientY); }
   }, { passive: false });
 
   zone.addEventListener('touchend', () => {
@@ -459,20 +440,48 @@
 
   skipBtn.addEventListener('click', () => {
     revealedAll = true;
-    real.innerHTML = ghost.innerHTML;
+    // Replace real with a fully visible copy
+    real.innerHTML = '';
+    real.style.position = 'absolute';
+    real.style.top = '0';
+    real.style.left = '0';
+    real.style.width = '100%';
     real.style.color = 'rgba(255,248,225,0.96)';
+    real.innerHTML = ghost.innerHTML;
+    // Style the skipped version
+    const allEl = real.querySelectorAll('*');
+    allEl.forEach(el => {
+      el.style.color = '';
+      el.style.textShadow = '';
+    });
+    real.querySelector('h1') && (real.querySelector('h1').style.color = 'rgba(255,248,220,0.98)');
     beamActive = false;
     beam.classList.remove('active');
     skipBtn.style.display = 'none';
   });
 
-  window.addEventListener('load', () => {
+  // ── INIT — wait for fonts then measure full height ──
+  function init() {
     buildMaskedSVG();
     animateBeam();
-  });
+  }
 
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => {
+      // Extra tick to ensure layout is complete
+      requestAnimationFrame(() => setTimeout(init, 80));
+    });
+  } else {
+    window.addEventListener('load', () => setTimeout(init, 100));
+  }
+
+  // Rebuild on resize
+  let resizeTimer;
   window.addEventListener('resize', () => {
-    if (!revealedAll) buildMaskedSVG();
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (!revealedAll) buildMaskedSVG();
+    }, 200);
   });
 </script>
 </body>
