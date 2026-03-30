@@ -59,7 +59,7 @@
     user-select: none;
   }
 
-  /* Force every ghost child to stay invisible */
+  /* Force every ghost child to stay dim */
   #ghost *,
   #ghost h1,
   #ghost p,
@@ -129,7 +129,7 @@
     left: 12px;
     bottom: 12px;
     z-index: 40;
-    color: rgba(255, 240, 180, 0.16);
+    color: rgba(255, 240, 180, 0.10);
     font-size: 11px;
     letter-spacing: 0.03em;
     pointer-events: none;
@@ -137,23 +137,23 @@
 
   .beam {
     position: fixed;
-    width: 156px;
-    height: 156px;
+    width: 172px;
+    height: 172px;
     border-radius: 50%;
     pointer-events: none;
     z-index: 20;
     transform: translate(-50%, -50%);
     background:
       radial-gradient(circle,
-        rgba(255,248,220,0.16) 0%,
-        rgba(255,240,205,0.11) 26%,
-        rgba(255,230,185,0.07) 48%,
-        rgba(255,220,160,0.038) 68%,
-        rgba(255,255,255,0) 100%);
+        rgba(255,248,220,0.18) 0%,
+        rgba(255,242,210,0.13) 22%,
+        rgba(255,232,190,0.085) 46%,
+        rgba(255,220,160,0.045) 68%,
+        rgba(255,255,255,0.0) 100%);
     mix-blend-mode: screen;
     opacity: 0;
     transition: opacity 0.12s ease;
-    filter: blur(1px);
+    filter: blur(2px);
   }
 
   .beam.active {
@@ -184,8 +184,8 @@
     }
 
     .beam {
-      width: 148px;
-      height: 148px;
+      width: 160px;
+      height: 160px;
     }
   }
 </style>
@@ -282,13 +282,10 @@
   let revealedAll = false;
   const radius = 70;
 
-  // ── KEY FIX: measure FULL scroll height, not just viewport ──
   function buildMaskedSVG() {
-    // Force a layout flush so we get accurate full height
     const width  = Math.ceil(ghost.offsetWidth);
     const height = Math.ceil(ghost.scrollHeight);
 
-    // Set the real div to match exact ghost dimensions
     real.style.width  = width + 'px';
     real.style.height = height + 'px';
 
@@ -311,13 +308,19 @@
               font-size: clamp(17px, 2.05vw, 22px);
               line-height: 1.8;
               letter-spacing: 0.01em;
-              color: rgba(255,248,225,0.96);
+              color: rgba(255,248,225,0.98);
+              text-shadow:
+                0 0 8px rgba(255,245,210,0.12),
+                0 0 18px rgba(255,235,180,0.05);
             }
             .sv h1 {
               margin: 0 0 18px;
               font-size: clamp(34px, 6vw, 56px);
-              color: rgba(255,248,220,0.98);
+              color: rgba(255,248,220,0.99);
               letter-spacing: 0.03em;
+              text-shadow:
+                0 0 10px rgba(255,240,180,0.14),
+                0 0 22px rgba(255,230,160,0.05);
             }
             .sv .meta {
               margin-bottom: 28px;
@@ -343,17 +346,12 @@
     const mask = real.querySelector('#revealMask');
     if (!svg || !mask) return;
 
-    // Use ghost's bounding rect as the reference — it's always in flow
-    const rect = ghost.getBoundingClientRect();
-    const x = clientX - rect.left;
-    // Account for page scroll
-    const y = clientY - rect.top + (real.getBoundingClientRect().top - ghost.getBoundingClientRect().top);
-
-    // Use scroll-adjusted y
     const scrollY = window.scrollY || document.documentElement.scrollTop;
-    const ghostTop = ghost.getBoundingClientRect().top + scrollY;
+    const ghostRect = ghost.getBoundingClientRect();
+    const ghostTop = ghostRect.top + scrollY;
+
+    const absX = clientX - ghostRect.left;
     const absY = clientY + scrollY - ghostTop;
-    const absX = clientX - ghost.getBoundingClientRect().left;
 
     if (absX < 0 || absY < 0) return;
 
@@ -370,9 +368,10 @@
 
     const stops = [
       ['0%',   'white', '1'],
-      ['55%',  'white', '0.82'],
-      ['82%',  'white', '0.22'],
-      ['100%', 'white', '0'],
+      ['38%',  'white', '0.92'],
+      ['64%',  'white', '0.58'],
+      ['84%',  'white', '0.20'],
+      ['100%', 'white', '0']
     ];
 
     stops.forEach(([offset, color, opacity]) => {
@@ -408,8 +407,8 @@
 
   function animateBeam() {
     if (beamActive) {
-      beamX += (targetX - beamX) * 0.22;
-      beamY += (targetY - beamY) * 0.22;
+      beamX += (targetX - beamX) * 0.16;
+      beamY += (targetY - beamY) * 0.16;
       beam.style.left = `${beamX}px`;
       beam.style.top  = `${beamY}px`;
     }
@@ -440,27 +439,27 @@
 
   skipBtn.addEventListener('click', () => {
     revealedAll = true;
-    // Replace real with a fully visible copy
     real.innerHTML = '';
     real.style.position = 'absolute';
     real.style.top = '0';
     real.style.left = '0';
     real.style.width = '100%';
-    real.style.color = 'rgba(255,248,225,0.96)';
     real.innerHTML = ghost.innerHTML;
-    // Style the skipped version
+
     const allEl = real.querySelectorAll('*');
     allEl.forEach(el => {
       el.style.color = '';
       el.style.textShadow = '';
     });
-    real.querySelector('h1') && (real.querySelector('h1').style.color = 'rgba(255,248,220,0.98)');
+
+    const h1 = real.querySelector('h1');
+    if (h1) h1.style.color = 'rgba(255,248,220,0.99)';
+
     beamActive = false;
     beam.classList.remove('active');
     skipBtn.style.display = 'none';
   });
 
-  // ── INIT — wait for fonts then measure full height ──
   function init() {
     buildMaskedSVG();
     animateBeam();
@@ -468,14 +467,12 @@
 
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(() => {
-      // Extra tick to ensure layout is complete
       requestAnimationFrame(() => setTimeout(init, 80));
     });
   } else {
     window.addEventListener('load', () => setTimeout(init, 100));
   }
 
-  // Rebuild on resize
   let resizeTimer;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
