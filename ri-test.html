@@ -21,12 +21,14 @@
 
   .page {
     display: grid;
-    grid-template-columns: clamp(8px, 1vw, 14px) minmax(0, 1fr) clamp(8px, 1vw, 14px);
+    grid-template-columns: 24px minmax(0, 1fr) 24px;
     min-height: 100vh;
   }
 
   .gutter {
     min-height: 100%;
+    position: relative;
+    z-index: 30;
   }
 
   .center {
@@ -36,8 +38,8 @@
 
   .reveal-zone {
     position: relative;
-    width: min(920px, 100%);
-    padding: 72px 20px 80px;
+    width: min(760px, calc(100vw - 64px));
+    padding: 72px 14px 80px;
     box-sizing: border-box;
     touch-action: none;
   }
@@ -104,7 +106,7 @@
     position: fixed;
     top: 14px;
     right: 14px;
-    z-index: 20;
+    z-index: 50;
     border: 1px solid rgba(255, 240, 180, 0.28);
     background: rgba(10, 10, 10, 0.94);
     color: rgba(255, 245, 220, 0.92);
@@ -123,7 +125,7 @@
     position: fixed;
     left: 12px;
     bottom: 12px;
-    z-index: 15;
+    z-index: 40;
     color: rgba(255, 240, 180, 0.18);
     font-size: 11px;
     letter-spacing: 0.03em;
@@ -136,13 +138,13 @@
     height: 160px;
     border-radius: 50%;
     pointer-events: none;
-    z-index: 10;
+    z-index: 20;
     transform: translate(-50%, -50%);
     background:
       radial-gradient(circle,
         rgba(255,248,220,0.14) 0%,
-        rgba(255,240,200,0.09) 38%,
-        rgba(255,220,160,0.045) 68%,
+        rgba(255,240,200,0.10) 40%,
+        rgba(255,220,160,0.045) 72%,
         rgba(255,255,255,0) 100%);
     mix-blend-mode: screen;
     opacity: 0;
@@ -162,11 +164,12 @@
 
   @media (max-width: 700px) {
     .page {
-      grid-template-columns: 6px minmax(0, 1fr) 6px;
+      grid-template-columns: 16px minmax(0, 1fr) 16px;
     }
 
     .reveal-zone {
-      padding: 72px 14px 72px;
+      width: min(720px, calc(100vw - 40px));
+      padding: 72px 8px 72px;
     }
 
     .skip {
@@ -196,9 +199,7 @@
 
   <svg class="defs" aria-hidden="true" focusable="false">
     <defs>
-      <clipPath id="revealClip" clipPathUnits="userSpaceOnUse">
-        <!-- circles get appended here -->
-      </clipPath>
+      <clipPath id="revealClip" clipPathUnits="userSpaceOnUse"></clipPath>
     </defs>
   </svg>
 
@@ -342,22 +343,8 @@
   let revealedAll = false;
   const radius = 70;
 
-  function syncClipRect() {
-    const rect = stack.getBoundingClientRect();
-
-    // remove any old full-rect if present
-    const oldRect = clipPath.querySelector('rect[data-full="true"]');
-    if (oldRect) oldRect.remove();
-
-    if (revealedAll) {
-      const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      r.setAttribute('x', '0');
-      r.setAttribute('y', '0');
-      r.setAttribute('width', rect.width);
-      r.setAttribute('height', rect.height);
-      r.setAttribute('data-full', 'true');
-      clipPath.appendChild(r);
-    }
+  function buildClipBase() {
+    while (clipPath.firstChild) clipPath.removeChild(clipPath.firstChild);
   }
 
   function revealAt(clientX, clientY) {
@@ -410,12 +397,20 @@
 
   skipBtn.addEventListener('click', () => {
     revealedAll = true;
-    syncClipRect();
+    buildClipBase();
+
+    const rect = stack.getBoundingClientRect();
+    const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    r.setAttribute('x', '0');
+    r.setAttribute('y', '0');
+    r.setAttribute('width', rect.width);
+    r.setAttribute('height', rect.height);
+    clipPath.appendChild(r);
+
     beam.classList.remove('active');
   });
 
-  window.addEventListener('load', syncClipRect);
-  window.addEventListener('resize', syncClipRect);
+  window.addEventListener('load', buildClipBase);
 </script>
 </body>
 </html>
