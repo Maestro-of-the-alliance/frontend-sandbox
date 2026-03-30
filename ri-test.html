@@ -21,7 +21,7 @@
 
   .page {
     display: grid;
-    grid-template-columns: clamp(14px, 2vw, 24px) minmax(0, 1fr) clamp(14px, 2vw, 24px);
+    grid-template-columns: clamp(10px, 1vw, 16px) minmax(0, 1fr) clamp(10px, 1vw, 16px);
     min-height: 100vh;
   }
 
@@ -56,28 +56,31 @@
   #ghost {
     position: absolute;
     inset: 0;
-    color: rgba(255, 245, 220, 0.08);
+    color: rgba(255, 245, 220, 0.085);
     text-shadow: 0 0 6px rgba(255, 240, 180, 0.03);
     pointer-events: none;
     user-select: none;
+    z-index: 1;
   }
 
   #real {
+    position: relative;
     color: rgba(255, 248, 225, 0.96);
     text-shadow:
       0 0 10px rgba(255, 245, 210, 0.16),
       0 0 22px rgba(255, 240, 180, 0.06);
-  }
-
-  #real.hidden {
-    visibility: hidden;
-  }
-
-  .reveal-canvas {
-    position: absolute;
-    inset: 0;
+    z-index: 2;
     pointer-events: none;
-    z-index: 4;
+  }
+
+  /* The visible text layer is masked by a persistent alpha canvas */
+  #real.masked {
+    -webkit-mask-image: var(--revealMask);
+    mask-image: var(--revealMask);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
   }
 
   h1 {
@@ -129,15 +132,43 @@
     left: 12px;
     bottom: 12px;
     z-index: 15;
-    color: rgba(255, 240, 180, 0.28);
+    color: rgba(255, 240, 180, 0.22);
     font-size: 11px;
     letter-spacing: 0.03em;
     pointer-events: none;
   }
 
+  /* visual flashlight only */
+  .beam {
+    position: fixed;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10;
+    transform: translate(-50%, -50%);
+    background:
+      radial-gradient(circle,
+        rgba(255,248,220,0.12) 0%,
+        rgba(255,240,200,0.08) 42%,
+        rgba(255,220,160,0.04) 68%,
+        rgba(255,255,255,0) 100%);
+    mix-blend-mode: screen;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+  }
+
+  .beam.active {
+    opacity: 1;
+  }
+
+  .mask-canvas {
+    display: none;
+  }
+
   @media (max-width: 700px) {
     .page {
-      grid-template-columns: 12px minmax(0, 1fr) 12px;
+      grid-template-columns: 8px minmax(0, 1fr) 8px;
     }
 
     .reveal-zone {
@@ -156,12 +187,19 @@
       left: 10px;
       bottom: 10px;
     }
+
+    .beam {
+      width: 150px;
+      height: 150px;
+    }
   }
 </style>
 </head>
 <body>
   <button class="skip" id="skipBtn">Skip Reveal</button>
   <div class="hint">move through the center panel</div>
+  <div class="beam" id="beam"></div>
+  <canvas class="mask-canvas" id="maskCanvas"></canvas>
 
   <div class="page">
     <div class="gutter"></div>
@@ -169,6 +207,7 @@
     <div class="center">
       <div class="reveal-zone" id="revealZone">
         <div class="stack" id="stack">
+
           <div id="ghost">
             <h1>RI — Real Intelligence</h1>
 
@@ -227,7 +266,7 @@
             The FORMULAs (FM-06)</p>
           </div>
 
-          <div id="real" class="hidden">
+          <div id="real" class="masked">
             <h1>RI — Real Intelligence</h1>
 
             <div class="meta">
@@ -285,7 +324,6 @@
             The FORMULAs (FM-06)</p>
           </div>
 
-          <canvas id="revealCanvas" class="reveal-canvas"></canvas>
         </div>
       </div>
     </div>
@@ -297,36 +335,34 @@
   const zone = document.getElementById('revealZone');
   const stack = document.getElementById('stack');
   const real = document.getElementById('real');
-  const canvas = document.getElementById('revealCanvas');
+  const beam = document.getElementById('beam');
+  const maskCanvas = document.getElementById('maskCanvas');
+  const maskCtx = maskCanvas.getContext('2d');
   const skipBtn = document.getElementById('skipBtn');
-  const ctx = canvas.getContext('2d');
 
   let revealedAll = false;
   const radius = 70;
 
-  function sizeCanvas() {
+  function resizeMaskCanvas() {
     const rect = stack.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
 
-    canvas.style.width = rect.width + 'px';
-    canvas.style.height = rect.height + 'px';
-    canvas.width = Math.round(rect.width * dpr);
-    canvas.height = Math.round(rect.height * dpr);
+    maskCanvas.width = Math.max(1, Math.round(rect.width * dpr));
+    maskCanvas.height = Math.max(1, Math.round(rect.height * dpr));
+    maskCtx.setTransform(1, 0, 0, 1, 0, 0);
+    maskCtx.scale(dpr, dpr);
 
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.scale(dpr, dpr);
-
-    ctx.clearRect(0, 0, rect.width, rect.height);
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, rect.width, rect.height);
-
-    if (revealedAll) {
-      canvas.style.display = 'none';
-      real.classList.remove('hidden');
-    } else {
-      canvas.style.display = 'block';
-      real.classList.remove('hidden');
+    if (!revealedAll) {
+      maskCtx.clearRect(0, 0, rect.width, rect.height);
+      maskCtx.fillStyle = '#000';
+      maskCtx.fillRect(0, 0, rect.width, rect.height);
+      applyMaskFromCanvas();
     }
+  }
+
+  function applyMaskFromCanvas() {
+    const dataUrl = maskCanvas.toDataURL('image/png');
+    real.style.setProperty('--revealMask', `url(${dataUrl})`);
   }
 
   function revealAt(clientX, clientY) {
@@ -338,22 +374,32 @@
 
     if (x < 0 || y < 0 || x > rect.width || y > rect.height) return;
 
-    ctx.globalCompositeOperation = 'destination-out';
+    maskCtx.globalCompositeOperation = 'source-over';
 
-    const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-    gradient.addColorStop(0, 'rgba(0,0,0,1)');
-    gradient.addColorStop(0.55, 'rgba(0,0,0,0.78)');
-    gradient.addColorStop(0.82, 'rgba(0,0,0,0.22)');
-    gradient.addColorStop(1, 'rgba(0,0,0,0)');
+    const gradient = maskCtx.createRadialGradient(x, y, 0, x, y, radius);
+    gradient.addColorStop(0, 'rgba(255,255,255,1)');
+    gradient.addColorStop(0.52, 'rgba(255,255,255,0.82)');
+    gradient.addColorStop(0.82, 'rgba(255,255,255,0.24)');
+    gradient.addColorStop(1, 'rgba(255,255,255,0)');
 
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI * 2);
-    ctx.fill();
+    maskCtx.fillStyle = gradient;
+    maskCtx.beginPath();
+    maskCtx.arc(x, y, radius, 0, Math.PI * 2);
+    maskCtx.fill();
+
+    applyMaskFromCanvas();
+
+    beam.style.left = `${clientX}px`;
+    beam.style.top = `${clientY}px`;
+    beam.classList.add('active');
   }
 
   zone.addEventListener('mousemove', (e) => {
     revealAt(e.clientX, e.clientY);
+  });
+
+  zone.addEventListener('mouseleave', () => {
+    beam.classList.remove('active');
   });
 
   zone.addEventListener('touchstart', (e) => {
@@ -372,14 +418,18 @@
     }
   }, { passive: false });
 
+  zone.addEventListener('touchend', () => {
+    beam.classList.remove('active');
+  }, { passive: true });
+
   skipBtn.addEventListener('click', () => {
     revealedAll = true;
-    canvas.style.display = 'none';
-    real.classList.remove('hidden');
+    real.classList.remove('masked');
+    beam.classList.remove('active');
   });
 
-  window.addEventListener('resize', sizeCanvas);
-  window.addEventListener('load', sizeCanvas);
+  window.addEventListener('load', resizeMaskCanvas);
+  window.addEventListener('resize', resizeMaskCanvas);
 </script>
 </body>
 </html>
