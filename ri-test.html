@@ -372,39 +372,52 @@ function startDeterioration() {
   deteriorating = true;
 
   // Jump to top so coordinate math syncs perfectly
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo(0, 0);
 
+  const papyrus = document.getElementById('papyrusView');
+  const translation = document.getElementById('translationView');
+
+  // Make translation view visible underneath
+  translation.style.opacity = '1';
+  translation.style.position = 'absolute';
+  translation.style.top = '0';
+  translation.style.left = '0';
+  translation.style.width = '100%';
+  translation.style.zIndex = '1';
+  
+  papyrus.style.position = 'relative';
+  papyrus.style.zIndex = '2';
+
+  // Calculate strict dimensions
+  const cw = Math.max(document.body.scrollWidth, document.documentElement.scrollWidth, window.innerWidth);
+  const ch = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight, window.innerHeight);
+
+  // 1. Setup SVG Mask (This physically punches holes in the DOM elements)
+  const svgns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgns, "svg");
+  
+  // Explicit pixel dimensions fix the zero-collapse glitch!
+  svg.setAttribute("width", cw);
+  svg.setAttribute("height", ch);
+  svg.style.cssText = "position:absolute; top:0; left:0; pointer-events:none; z-index:-1;";
+
+  const defs = document.createElementNS(svgns, "defs");
+  const mask = document.createElementNS(svgns, "mask");
+  mask.id = "burnMask";
+  mask.setAttribute("maskUnits", "userSpaceOnUse");
+
+  const rect = document.createElementNS(svgns, "rect");
+  rect.setAttribute("width", cw);
+  rect.setAttribute("height", ch);
+  rect.setAttribute("fill", "white"); // Fully opaque base
+  mask.appendChild(rect);
+
+  defs.appendChild(mask);
+  svg.appendChild(defs);
+  document.body.appendChild(svg);
+
+  // Force DOM update before applying mask
   setTimeout(() => {
-    const papyrus = document.getElementById('papyrusView');
-    const translation = document.getElementById('translationView');
-
-    // Make translation view visible underneath
-    translation.style.opacity = '1';
-    translation.style.position = 'absolute';
-    translation.style.zIndex = '1';
-    
-    papyrus.style.position = 'relative';
-    papyrus.style.zIndex = '2';
-
-    // 1. Setup SVG Mask (This physically punches holes in the DOM elements)
-    const svgns = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(svgns, "svg");
-    svg.style.cssText = "position:absolute; width:0; height:0; pointer-events:none;";
-    const defs = document.createElementNS(svgns, "defs");
-    const mask = document.createElementNS(svgns, "mask");
-    mask.id = "burnMask";
-
-    const rect = document.createElementNS(svgns, "rect");
-    rect.setAttribute("width", "100%");
-    rect.setAttribute("height", "100%");
-    rect.setAttribute("fill", "white");
-    mask.appendChild(rect);
-
-    defs.appendChild(mask);
-    svg.appendChild(defs);
-    document.body.appendChild(svg);
-
-    // Apply SVG mask to the papyrus DOM
     papyrus.style.mask = "url(#burnMask)";
     papyrus.style.webkitMask = "url(#burnMask)";
 
@@ -416,14 +429,10 @@ function startDeterioration() {
       pointer-events: none;
       z-index: 5;
     `;
+    canvas.width = cw;
+    canvas.height = ch;
     document.body.appendChild(canvas);
     const ctx = canvas.getContext('2d');
-
-    function resize() {
-      canvas.width = Math.max(document.body.scrollWidth, window.innerWidth);
-      canvas.height = Math.max(document.body.scrollHeight, window.innerHeight);
-    }
-    resize();
 
     class Splotch {
       constructor(x, y, delay) {
@@ -486,11 +495,13 @@ function startDeterioration() {
         }
         ctx.closePath();
         
-        const grad = ctx.createRadialGradient(0, 0, this.r * 0.3, 0, 0, this.r);
+        // Added Fiery Orange Glow
+        const grad = ctx.createRadialGradient(0, 0, this.r * 0.4, 0, 0, this.r);
         grad.addColorStop(0, 'rgba(10, 8, 6, 0)');
-        grad.addColorStop(0.6, 'rgba(30, 15, 5, 0)');
-        grad.addColorStop(0.85, 'rgba(40, 20, 5, 0.95)'); // Crispy burn line
-        grad.addColorStop(1, 'rgba(200, 150, 50, 0.4)');
+        grad.addColorStop(0.65, 'rgba(10, 8, 6, 0)');
+        grad.addColorStop(0.85, 'rgba(50, 15, 5, 0.95)'); // Dark crispy edge
+        grad.addColorStop(0.92, 'rgba(255, 80, 0, 0.85)'); // Fiery orange
+        grad.addColorStop(1, 'rgba(200, 150, 50, 0)');
         ctx.fillStyle = grad;
         ctx.fill();
         ctx.restore();
@@ -594,7 +605,7 @@ function startDeterioration() {
       }
     }
     requestAnimationFrame(frame);
-  }, 250); 
+  }, 10); // 10ms delay ensures DOM is ready
 }
 
 // ── TRANSLATE BUTTON LOGIC ──
@@ -613,10 +624,16 @@ document.getElementById('translateBtn').addEventListener('click', () => {
     const translation = document.getElementById('translationView');
     translation.style.opacity = '';
     translation.style.position = '';
+    translation.style.top = '';
+    translation.style.left = '';
+    translation.style.width = '';
     translation.style.zIndex = '';
     
     const papyrus = document.getElementById('papyrusView');
+    papyrus.style.position = '';
     papyrus.style.zIndex = '';
+    papyrus.style.mask = '';
+    papyrus.style.webkitMask = '';
   }
 });
 
