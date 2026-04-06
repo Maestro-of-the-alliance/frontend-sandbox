@@ -1066,7 +1066,27 @@ function closeTOC() {
 }
 
 tocClose.addEventListener('click', closeTOC);
+
+// Escape key
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTOC(); });
+
+// Click outside the column panel closes TOC
+tocOverlay.addEventListener('click', e => {
+  if (e.target === tocOverlay) closeTOC();
+});
+
+// Browser back button closes TOC instead of navigating away
+window.addEventListener('popstate', () => {
+  if (tocOverlay.classList.contains('open')) closeTOC();
+});
+
+// Original openTOC pushes history so back button has somewhere to go
+const _origOpenTOC = openTOC;
+stealthSearch.removeEventListener('click', openTOC);
+stealthSearch.addEventListener('click', () => {
+  history.pushState({ toc: true }, '');
+  openTOC();
+});
 
 function runDOSBoot() {
   dosScreen.innerHTML = '';
