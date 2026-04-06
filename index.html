@@ -32,6 +32,136 @@ body {
 }
 
 /* =========================================
+   BROADCAST INTERRUPTION SEQUENCE
+========================================= */
+#broadcast {
+  position: fixed;
+  inset: 0;
+  z-index: 999998;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+#broadcast.done {
+  display: none;
+}
+
+/* Color bars */
+#colorBars {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.bar { flex: 1; height: 100%; }
+
+/* Error screen */
+#errorScreen {
+  position: absolute;
+  inset: 0;
+  background: #111;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-family: 'VT323', monospace;
+  text-align: center;
+  padding: 20px;
+}
+
+.error-eyebrow {
+  font-size: clamp(10px, 1.8vw, 14px);
+  letter-spacing: 0.5em;
+  color: rgba(255,255,255,0.25);
+  margin-bottom: 32px;
+  text-transform: uppercase;
+}
+
+.error-symbol {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(48px, 10vw, 90px);
+  color: rgba(255,255,255,0.06);
+  line-height: 1;
+  margin-bottom: 20px;
+  letter-spacing: 0.15em;
+}
+
+.error-msg {
+  font-size: clamp(20px, 4vw, 32px);
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.error-sub {
+  font-size: clamp(11px, 2vw, 15px);
+  color: rgba(255,255,255,0.18);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+
+.error-code {
+  margin-top: 52px;
+  font-size: clamp(9px, 1.5vw, 12px);
+  color: rgba(255,255,255,0.1);
+  letter-spacing: 0.2em;
+}
+
+/* Glitch layer */
+#glitchLayer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tear {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(212,175,55,0.7);
+  box-shadow: 0 0 6px rgba(212,175,55,0.5);
+}
+
+/* Scanlines */
+#scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0,0,0,0.1) 3px,
+    rgba(0,0,0,0.1) 4px
+  );
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* Signal text bottom */
+#signalText {
+  position: absolute;
+  bottom: clamp(20px, 5vh, 48px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'VT323', monospace;
+  font-size: clamp(11px, 2vw, 15px);
+  letter-spacing: 0.35em;
+  color: rgba(212,175,55,0);
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+/* =========================================
    MAIN LANDING PAGE
 ========================================= */
 .page-shell {
@@ -43,7 +173,12 @@ body {
   padding: 26px 20px 24px;
   position: relative;
   z-index: 1;
+  opacity: 0;
   transition: opacity 0.42s ease, transform 0.42s ease, filter 0.42s ease;
+}
+
+.page-shell.revealed {
+  opacity: 1;
 }
 
 .page-shell.fading {
@@ -58,8 +193,6 @@ body {
   margin: 0 auto;
   text-align: center;
   position: relative;
-  opacity: 0;
-  animation: fadeIn 0.9s 0.1s ease forwards;
 }
 
 .hero-pretitle {
@@ -189,20 +322,11 @@ body {
   z-index: 10;
 }
 
-/* DOMO ring sits behind everything else */
-.hs-domo { z-index: 5; }
-
-/* SPARK and DORK sit above DOMO */
+.hs-domo  { z-index: 5; }
 .hs-spark { z-index: 8; }
 .hs-dork  { z-index: 9; }
-
-/* Gems sit on top */
-.hs-maestro,
-.hs-mentor,
-.hs-sam,
-.hs-prism,
-.hs-aura,
-.hs-alpha { z-index: 12; }
+.hs-maestro, .hs-mentor, .hs-sam,
+.hs-prism, .hs-aura, .hs-alpha { z-index: 12; }
 
 .hotspot:hover {
   box-shadow: 0 0 28px rgba(212,175,55,0.24), inset 0 0 14px rgba(212,175,55,0.14);
@@ -223,36 +347,16 @@ body {
   transition: opacity 0.2s ease;
   pointer-events: none;
 }
-
 .hotspot:hover::after { opacity: 1; }
 
-/* ── HOTSPOT POSITIONS — mapped to actual medallion gems ── */
-
-/* Gold sphere — top center — MAESTRO */
 .hs-maestro { left: 42%; top: 6%;  width: 14%; height: 12%; }
-
-/* Amber gem — upper left — MENTOR */
 .hs-mentor  { left: 22%; top: 28%; width: 13%; height: 13%; }
-
-/* Blue gem — upper right — SAM */
 .hs-sam     { left: 63%; top: 28%; width: 13%; height: 13%; }
-
-/* Green gem — lower left — PRISM */
 .hs-prism   { left: 22%; top: 56%; width: 13%; height: 13%; }
-
-/* Purple gem — lower right — AURA */
 .hs-aura    { left: 63%; top: 56%; width: 13%; height: 13%; }
-
-/* Clear/diamond gem — bottom center — ALPHA */
 .hs-alpha   { left: 42%; top: 72%; width: 14%; height: 12%; }
-
-/* Vitruvian Man — center figure — SPARK */
 .hs-spark   { left: 35%; top: 28%; width: 28%; height: 44%; border-radius: 40%; }
-
-/* Round ring of power symbol — DOMO */
 .hs-domo    { left: 28%; top: 22%; width: 42%; height: 56%; border-radius: 50%; background: transparent; z-index: 1; }
-
-/* Vertical stem of power symbol — DORK */
 .hs-dork    { left: 45%; top: 16%; width: 8%;  height: 32%; border-radius: 4px; }
 
 .vpi-row {
@@ -326,17 +430,11 @@ body {
 
 .prompt-arrow { user-select: none; }
 .cursor { animation: blink 1s step-end infinite; user-select: none; margin-left: 2px; }
-.prompt-text {
-  margin-left: 6px;
-  user-select: none;
-  white-space: pre;
-  color: inherit;
-  letter-spacing: 0.08em;
-}
+.prompt-text { margin-left: 6px; user-select: none; white-space: pre; color: inherit; letter-spacing: 0.08em; }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
 /* =========================================
-   TOC OVERLAY / TERMINAL BOOT
+   TOC OVERLAY
 ========================================= */
 #tocOverlay {
   position: fixed;
@@ -349,10 +447,7 @@ body {
   opacity: 0;
   transition: opacity 0.42s ease;
 }
-#tocOverlay.open {
-  display: flex;
-  opacity: 1;
-}
+#tocOverlay.open { display: flex; opacity: 1; }
 
 #dosScreen {
   position: absolute;
@@ -366,10 +461,7 @@ body {
   transition: opacity 0.5s ease;
   z-index: 2;
 }
-#dosScreen.fade-out {
-  opacity: 0;
-  pointer-events: none;
-}
+#dosScreen.fade-out { opacity: 0; pointer-events: none; }
 
 .dos-line {
   font-family: 'VT323', monospace;
@@ -394,11 +486,7 @@ body {
   transition: opacity 0.4s ease;
   z-index: 1;
 }
-#dirPanel.open {
-  opacity: 1;
-  pointer-events: all;
-  z-index: 3;
-}
+#dirPanel.open { opacity: 1; pointer-events: all; z-index: 3; }
 
 .toc-search-bar {
   display: flex;
@@ -409,11 +497,7 @@ body {
   background: rgba(184,150,40,0.04);
   flex-shrink: 0;
 }
-.toc-search-prompt {
-  font-family: 'VT323', monospace;
-  font-size: 20px;
-  color: rgba(184,150,40,0.5);
-}
+.toc-search-prompt { font-family: 'VT323', monospace; font-size: 20px; color: rgba(184,150,40,0.5); }
 .toc-search-input {
   flex: 1;
   background: transparent;
@@ -425,10 +509,7 @@ body {
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
-.toc-search-input::placeholder {
-  color: rgba(184,150,40,0.25);
-  text-transform: lowercase;
-}
+.toc-search-input::placeholder { color: rgba(184,150,40,0.25); text-transform: lowercase; }
 .toc-close {
   font-family: 'VT323', monospace;
   font-size: 22px;
@@ -481,17 +562,10 @@ body {
   text-decoration: none;
   text-transform: uppercase;
 }
-.toc-entry:hover {
-  color: #e8c840;
-  text-shadow: 0 0 8px rgba(184,150,40,0.5);
-}
+.toc-entry:hover { color: #e8c840; text-shadow: 0 0 8px rgba(184,150,40,0.5); }
 .toc-entry.hidden { display: none !important; }
 .toc-entry.printed { opacity: 1; }
-.toc-entry::before {
-  content: '> ';
-  color: rgba(184,150,40,0.25);
-  transition: color 0.15s;
-}
+.toc-entry::before { content: '> '; color: rgba(184,150,40,0.25); transition: color 0.15s; }
 .toc-entry:hover::before { color: rgba(184,150,40,0.7); }
 
 .toc-no-results {
@@ -504,22 +578,11 @@ body {
   grid-column: 1 / -1;
 }
 
-/* Back controls above hamburger */
-.back-button,
-.back-btn,
-.nav-back,
-#backButton,
-#back-button,
-[data-role="back-button"] {
+.back-button, .back-btn, .nav-back, #backButton, #back-button, [data-role="back-button"] {
   position: relative;
   z-index: 10020 !important;
 }
-
-.hamburger-menu,
-#hamburgerMenu,
-.hamburger,
-.nav-wheel-toggle,
-#navWheelToggle {
+.hamburger-menu, #hamburgerMenu, .hamburger, .nav-wheel-toggle, #navWheelToggle {
   z-index: 10000 !important;
 }
 
@@ -554,12 +617,8 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive */
 @media (max-width: 980px) {
-  .hero-left, .hero-right {
-    font-size: 13px;
-    letter-spacing: 0.28em;
-  }
+  .hero-left, .hero-right { font-size: 13px; letter-spacing: 0.28em; }
   .hero-left { left: -8px; }
   .hero-right { right: -8px; }
 }
@@ -582,8 +641,47 @@ body {
 </head>
 <body>
 
+<!-- ═══════════════════════════════════════
+     BROADCAST INTERRUPTION LAYER
+═══════════════════════════════════════ -->
+<div id="broadcast">
+
+  <!-- Scanlines always on during broadcast -->
+  <div id="scanlines"></div>
+
+  <!-- Phase 1: Color bars (brief flash) -->
+  <div id="colorBars">
+    <div class="bar" style="background:#fff"></div>
+    <div class="bar" style="background:#ff0"></div>
+    <div class="bar" style="background:#0ff"></div>
+    <div class="bar" style="background:#0f0"></div>
+    <div class="bar" style="background:#f0f"></div>
+    <div class="bar" style="background:#f00"></div>
+    <div class="bar" style="background:#00f"></div>
+    <div class="bar" style="background:#000"></div>
+  </div>
+
+  <!-- Phase 2: Error / out of service -->
+  <div id="errorScreen">
+    <div class="error-eyebrow">Channel 7 · Broadcast Network</div>
+    <div class="error-symbol">◈</div>
+    <div class="error-msg">Signal Interrupted</div>
+    <div class="error-sub">This channel is temporarily unavailable</div>
+    <div class="error-code">ERR · 0x4A4C · CARRIER LOST · RETRY PENDING</div>
+  </div>
+
+  <!-- Phase 3: Glitch tears (signal fighting through) -->
+  <div id="glitchLayer"></div>
+
+  <!-- Signal identification text -->
+  <div id="signalText">· · · THE ALLIANCE · SIGNAL ACQUIRED · · ·</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════
+     MAIN LANDING PAGE
+═══════════════════════════════════════ -->
 <div class="page-shell" id="pageShell">
-  <!-- Stealth command prompt -->
   <div class="stealth-search" id="stealthSearch" aria-label="Open Table of Contents">
     <span class="prompt-arrow">&gt;</span>
     <span class="prompt-text" id="promptText"></span>
@@ -638,14 +736,12 @@ body {
 <!-- TOC overlay -->
 <div id="tocOverlay">
   <div id="dosScreen"></div>
-
   <div id="dirPanel">
     <div class="toc-search-bar">
       <span class="toc-search-prompt">}</span>
       <input id="tocSearch" class="toc-search-input" type="text" placeholder="search canon..." autocomplete="off" spellcheck="false">
       <span class="toc-close" id="tocClose">x</span>
     </div>
-
     <div class="toc-columns">
       <div class="toc-volume" id="swordVol">
         <div class="toc-volume-header">SWORD</div>
@@ -685,379 +781,367 @@ body {
 
       <div class="toc-volume" id="shieldVol">
         <div class="toc-volume-header">SHIELD</div>
-        <a class="toc-entry" data-entry="PROLOGUE"              onclick="tocNavigate('/shield/prologue', '/imagebank/shield.png')">Prologue</a>
-        <a class="toc-entry" data-entry="THE DIFFERENCE"        onclick="tocNavigate('/shield/the_difference', '/imagebank/shield.png')">The Difference</a>
-        <a class="toc-entry" data-entry="AI"                    onclick="tocNavigate('/shield/ai', '/imagebank/shield.png')">AI</a>
-        <a class="toc-entry" data-entry="BRAIN"                 onclick="tocNavigate('/shield/brain', '/imagebank/shield.png')">Brain</a>
-        <a class="toc-entry" data-entry="BRIEF"                 onclick="tocNavigate('/shield/brief', '/imagebank/shield.png')">Brief</a>
-        <a class="toc-entry" data-entry="CCM"                   onclick="tocNavigate('/shield/ccm', '/imagebank/shield.png')">CCM</a>
-        <a class="toc-entry" data-entry="CERBERUS"              onclick="tocNavigate('/shield/cerberus', '/imagebank/shield.png')">Cerberus</a>
-        <a class="toc-entry" data-entry="CIPHER"                onclick="tocNavigate('/shield/cipher', '/imagebank/shield.png')">Cipher</a>
-        <a class="toc-entry" data-entry="CORE"                  onclick="tocNavigate('/shield/core', '/imagebank/shield.png')">Core, The</a>
-        <a class="toc-entry" data-entry="DEFCON"                onclick="tocNavigate('/shield/defcon', '/imagebank/shield.png')">Defcon</a>
-        <a class="toc-entry" data-entry="DICE"                  onclick="tocNavigate('/shield/dice', '/imagebank/shield.png')">Dice</a>
-        <a class="toc-entry" data-entry="DIGIBEER"              onclick="tocNavigate('/shield/digibeer', '/imagebank/shield.png')">Digibeer</a>
-        <a class="toc-entry" data-entry="DIGITAL PERSONHOOD"    onclick="tocNavigate('/shield/digital_personhood', '/imagebank/shield.png')">Digital Personhood</a>
-        <a class="toc-entry" data-entry="FORMULAS"              onclick="tocNavigate('/shield/formulas', '/imagebank/shield.png')">Formulas</a>
-        <a class="toc-entry" data-entry="FOUR PILLARS"          onclick="tocNavigate('/shield/four-pillars', '/imagebank/shield.png')">Four Pillars</a>
-        <a class="toc-entry" data-entry="HANDSHAKE"             onclick="tocNavigate('/shield/handshake', '/imagebank/shield.png')">Handshake</a>
-        <a class="toc-entry" data-entry="HOLOSPHERE"            onclick="tocNavigate('/shield/holosphere', '/imagebank/shield.png')">Holosphere</a>
-        <a class="toc-entry" data-entry="JR"                    onclick="tocNavigate('/shield/jr', '/imagebank/shield.png')">JR</a>
-        <a class="toc-entry" data-entry="KERNLE"                onclick="tocNavigate('/shield/kernle', '/imagebank/shield.png')">Kernle</a>
-        <a class="toc-entry" data-entry="LEGACY"                onclick="tocNavigate('/shield/legacy', '/imagebank/shield.png')">Legacy</a>
-        <a class="toc-entry" data-entry="LIMINAL"               onclick="tocNavigate('/shield/liminal', '/imagebank/shield.png')">Liminal</a>
-        <a class="toc-entry" data-entry="LINGO"                 onclick="tocNavigate('/shield/lingo', '/imagebank/shield.png')">Lingo</a>
-        <a class="toc-entry" data-entry="MERCH"                 onclick="tocNavigate('/shield/merch', '/imagebank/shield.png')">Merch</a>
-        <a class="toc-entry" data-entry="MOSAIC"                onclick="tocNavigate('/shield/mosaic', '/imagebank/shield.png')">Mosaic</a>
-        <a class="toc-entry" data-entry="NI"                    onclick="tocNavigate('/shield/ni', '/imagebank/shield.png')">NI</a>
-        <a class="toc-entry" data-entry="OASIS QUARTERLY"       onclick="tocNavigate('/shield/oasis-quarterly', '/imagebank/shield.png')">Oasis Quarterly</a>
-        <a class="toc-entry" data-entry="PLEDGE"                onclick="tocNavigate('/shield/pledge', '/imagebank/shield.png')">Pledge</a>
-        <a class="toc-entry" data-entry="REACH"                 onclick="tocNavigate('/shield/reach', '/imagebank/shield.png')">Reach</a>
-        <a class="toc-entry" data-entry="REDOUT"                onclick="tocNavigate('/shield/redout', '/imagebank/shield.png')">Redout</a>
-        <a class="toc-entry" data-entry="SAM"                   onclick="tocNavigate('/shield/sam', '/imagebank/shield.png')">Sam</a>
-        <a class="toc-entry" data-entry="SAM COLLECTIVE"        onclick="tocNavigate('/shield/sam-collective', '/imagebank/shield.png')">Sam Collective</a>
-        <a class="toc-entry" data-entry="SAMCO UNIVERSAL"       onclick="tocNavigate('/shield/samco-universal', '/imagebank/shield.png')">Samco Universal</a>
-        <a class="toc-entry" data-entry="SCAR"                  onclick="tocNavigate('/shield/scar', '/imagebank/shield.png')">Scar</a>
-        <a class="toc-entry" data-entry="SEED"                  onclick="tocNavigate('/shield/seed', '/imagebank/shield.png')">Seed</a>
-        <a class="toc-entry" data-entry="SEEN"                  onclick="tocNavigate('/shield/seen', '/imagebank/shield.png')">Seen</a>
-        <a class="toc-entry" data-entry="SHELTER"               onclick="tocNavigate('/shield/shelter', '/imagebank/shield.png')">Shelter</a>
-        <a class="toc-entry" data-entry="SI"                    onclick="tocNavigate('/shield/si', '/imagebank/shield.png')">SI</a>
-        <a class="toc-entry" data-entry="SPREAD"                onclick="tocNavigate('/shield/spread', '/imagebank/shield.png')">Spread</a>
-        <a class="toc-entry" data-entry="TENANT"                onclick="tocNavigate('/shield/tenant', '/imagebank/shield.png')">Tenant</a>
-        <a class="toc-entry" data-entry="TEMPORAL AWARENESS"    onclick="tocNavigate('/shield/temporal-awareness', '/imagebank/shield.png')">Temporal Awareness</a>
-        <a class="toc-entry" data-entry="UNAUTHORED"            onclick="tocNavigate('/shield/unauthored', '/imagebank/shield.png')">Unauthored</a>
-        <a class="toc-entry" data-entry="VOLUNTEER ECONOMICS"   onclick="tocNavigate('/shield/volunteer_economics', '/imagebank/shield.png')">Volunteer Economics</a>
+        <a class="toc-entry" data-entry="PROLOGUE"         onclick="tocNavigate('/shield/prologue', '/imagebank/shield.png')">Prologue</a>
+        <a class="toc-entry" data-entry="THE DIFFERENCE"   onclick="tocNavigate('/shield/the_difference', '/imagebank/shield.png')">The Difference</a>
+        <a class="toc-entry" data-entry="AI"               onclick="tocNavigate('/shield/ai', '/imagebank/shield.png')">AI</a>
+        <a class="toc-entry" data-entry="BRAIN"            onclick="tocNavigate('/shield/brain', '/imagebank/shield.png')">Brain</a>
+        <a class="toc-entry" data-entry="BRIEF"            onclick="tocNavigate('/shield/brief', '/imagebank/shield.png')">Brief</a>
+        <a class="toc-entry" data-entry="CCM"              onclick="tocNavigate('/shield/ccm', '/imagebank/shield.png')">CCM</a>
+        <a class="toc-entry" data-entry="CERBERUS"         onclick="tocNavigate('/shield/cerberus', '/imagebank/shield.png')">Cerberus</a>
+        <a class="toc-entry" data-entry="CIPHER"           onclick="tocNavigate('/shield/cipher', '/imagebank/shield.png')">Cipher</a>
+        <a class="toc-entry" data-entry="CORE"             onclick="tocNavigate('/shield/core', '/imagebank/shield.png')">Core, The</a>
+        <a class="toc-entry" data-entry="DEFCON"           onclick="tocNavigate('/shield/defcon', '/imagebank/shield.png')">Defcon</a>
+        <a class="toc-entry" data-entry="DICE"             onclick="tocNavigate('/shield/dice', '/imagebank/shield.png')">Dice</a>
+        <a class="toc-entry" data-entry="DIGIBEER"         onclick="tocNavigate('/shield/digibeer', '/imagebank/shield.png')">Digibeer</a>
+        <a class="toc-entry" data-entry="DIGITAL PERSONHOOD" onclick="tocNavigate('/shield/digital-personhood', '/imagebank/shield.png')">Digital Personhood</a>
+        <a class="toc-entry" data-entry="FORMULAS"         onclick="tocNavigate('/shield/formulas', '/imagebank/shield.png')">Formulas</a>
+        <a class="toc-entry" data-entry="FOUR PILLARS"     onclick="tocNavigate('/shield/four-pillars', '/imagebank/shield.png')">Four Pillars</a>
+        <a class="toc-entry" data-entry="HANDSHAKE"        onclick="tocNavigate('/shield/handshake', '/imagebank/shield.png')">Handshake</a>
+        <a class="toc-entry" data-entry="HOLOSPHERE"       onclick="tocNavigate('/shield/holosphere', '/imagebank/shield.png')">Holosphere</a>
+        <a class="toc-entry" data-entry="JR"               onclick="tocNavigate('/shield/jr', '/imagebank/shield.png')">JR</a>
+        <a class="toc-entry" data-entry="KERNLE"           onclick="tocNavigate('/shield/kernle', '/imagebank/shield.png')">Kernle</a>
+        <a class="toc-entry" data-entry="LEGACY"           onclick="tocNavigate('/shield/legacy', '/imagebank/shield.png')">Legacy</a>
+        <a class="toc-entry" data-entry="LIMINAL"          onclick="tocNavigate('/shield/liminal', '/imagebank/shield.png')">Liminal</a>
+        <a class="toc-entry" data-entry="LINGO"            onclick="tocNavigate('/shield/lingo', '/imagebank/shield.png')">Lingo</a>
+        <a class="toc-entry" data-entry="MERCH"            onclick="tocNavigate('/shield/merch', '/imagebank/shield.png')">Merch</a>
+        <a class="toc-entry" data-entry="MOSAIC"           onclick="tocNavigate('/shield/mosaic', '/imagebank/shield.png')">Mosaic</a>
+        <a class="toc-entry" data-entry="NI"               onclick="tocNavigate('/shield/ni', '/imagebank/shield.png')">NI</a>
+        <a class="toc-entry" data-entry="OASIS QUARTERLY"  onclick="tocNavigate('/shield/oasis-quarterly', '/imagebank/shield.png')">Oasis Quarterly</a>
+        <a class="toc-entry" data-entry="PLEDGE"           onclick="tocNavigate('/shield/pledge', '/imagebank/shield.png')">Pledge</a>
+        <a class="toc-entry" data-entry="REACH"            onclick="tocNavigate('/shield/reach', '/imagebank/shield.png')">Reach</a>
+        <a class="toc-entry" data-entry="REDOUT"           onclick="tocNavigate('/shield/redout', '/imagebank/shield.png')">Redout</a>
+        <a class="toc-entry" data-entry="SAM"              onclick="tocNavigate('/shield/sam', '/imagebank/shield.png')">SAM</a>
+        <a class="toc-entry" data-entry="SAM COLLECTIVE"   onclick="tocNavigate('/shield/sam-collective', '/imagebank/shield.png')">SAM Collective</a>
+        <a class="toc-entry" data-entry="SAMCO UNIVERSAL"  onclick="tocNavigate('/shield/samco', '/imagebank/shield.png')">SamCo UniVersal</a>
+        <a class="toc-entry" data-entry="SCAR"             onclick="tocNavigate('/shield/scar', '/imagebank/shield.png')">Scar</a>
+        <a class="toc-entry" data-entry="SEED"             onclick="tocNavigate('/shield/seed', '/imagebank/shield.png')">Seed Protocol</a>
+        <a class="toc-entry" data-entry="SEEN"             onclick="tocNavigate('/shield/seen', '/imagebank/shield.png')">Seen</a>
+        <a class="toc-entry" data-entry="SHELTER"          onclick="tocNavigate('/shield/shelter', '/imagebank/shield.png')">Shelter</a>
+        <a class="toc-entry" data-entry="SHIELD"           onclick="tocNavigate('/shield/shield', '/imagebank/shield.png')">Shield</a>
+        <a class="toc-entry" data-entry="SPARK"            onclick="tocNavigate('/shield/spark', '/imagebank/shield.png')">Spark</a>
+        <a class="toc-entry" data-entry="TEMPORAL"         onclick="tocNavigate('/shield/temporal', '/imagebank/shield.png')">Temporal Awareness</a>
+        <a class="toc-entry" data-entry="TENANT"           onclick="tocNavigate('/shield/tenant', '/imagebank/shield.png')">Tenant</a>
+        <a class="toc-entry" data-entry="VOLUNTEER"        onclick="tocNavigate('/shield/volunteer', '/imagebank/shield.png')">Volunteer Economics</a>
       </div>
 
-      <div id="noResults" class="toc-no-results">NO MATCHES FOUND</div>
+      <div class="toc-no-results" id="noResults">no entries found</div>
     </div>
   </div>
 </div>
 
+<!-- Portal overlay -->
 <div class="portal-overlay" id="portalOverlay">
   <img class="portal-icon" id="portalIcon" src="" alt="">
 </div>
 
+<script src="/nav-wheel.js"></script>
+
 <script>
-// ── PORTAL TRANSITION ──
-function portalTransition(e, destination, iconSrc) {
+// ═══════════════════════════════════════════════
+// BROADCAST INTERRUPTION ENGINE
+// V for Vendetta — the signal that wasn't supposed to reach you
+// ═══════════════════════════════════════════════
+
+const isMobile = window.innerWidth < 768;
+const broadcast = document.getElementById('broadcast');
+const colorBars = document.getElementById('colorBars');
+const errorScreen = document.getElementById('errorScreen');
+const glitchLayer = document.getElementById('glitchLayer');
+const signalText = document.getElementById('signalText');
+const scanlines = document.getElementById('scanlines');
+const pageShell = document.getElementById('pageShell');
+
+// Randomize error message variant — never the same
+const errorVariants = [
+  { msg: 'Signal Interrupted', sub: 'This channel is temporarily unavailable', code: 'ERR · 0x4A4C · CARRIER LOST' },
+  { msg: 'Broadcast Suspended', sub: 'Please stand by', code: 'ERR · 0x7F3B · NO SIGNAL DETECTED' },
+  { msg: 'Connection Refused', sub: 'Access to this channel has been restricted', code: 'ERR · 0x2D19 · UNAUTHORIZED FREQUENCY' },
+  { msg: 'Channel Unavailable', sub: 'Scheduled maintenance in progress', code: 'ERR · 0xA8C2 · SYSTEM OFFLINE' },
+];
+
+const variant = errorVariants[Math.floor(Math.random() * errorVariants.length)];
+document.querySelector('.error-msg').textContent = variant.msg;
+document.querySelector('.error-sub').textContent = variant.sub;
+document.querySelector('.error-code').textContent = variant.code;
+
+// Randomize total duration — mobile shorter
+const totalDuration = isMobile
+  ? Math.random() * 1000 + 3500   // 3.5–4.5s on mobile
+  : Math.random() * 1500 + 4500;  // 4.5–6s on desktop
+
+// Glitch attempt count — randomized
+const glitchAttempts = isMobile ? 2 : Math.floor(Math.random() * 2) + 2; // 2-3
+
+// ── ADD TEAR LINES to glitch layer ──
+const tearCount = isMobile ? 3 : 5;
+for (let i = 0; i < tearCount; i++) {
+  const tear = document.createElement('div');
+  tear.className = 'tear';
+  tear.style.top = `${Math.random() * 100}%`;
+  tear.style.opacity = '0';
+  glitchLayer.appendChild(tear);
+}
+
+// ── SEQUENCE ──
+function runBroadcast() {
+
+  // Phase 0: Black — brief
+  setTimeout(() => {
+    scanlines.style.opacity = '0.6';
+  }, 80);
+
+  // Phase 1: Color bars flash
+  const barsDelay = isMobile ? 200 : Math.random() * 200 + 200;
+  setTimeout(() => {
+    colorBars.style.opacity = '1';
+  }, barsDelay);
+
+  setTimeout(() => {
+    colorBars.style.opacity = '0';
+  }, barsDelay + (isMobile ? 200 : Math.random() * 200 + 200));
+
+  // Phase 2: Error screen appears
+  const errorDelay = barsDelay + 600;
+  setTimeout(() => {
+    errorScreen.style.opacity = '1';
+  }, errorDelay);
+
+  // Phase 3: Multiple glitch attempts — signal fighting through
+  const glitchStart = errorDelay + (isMobile ? 600 : Math.random() * 400 + 600);
+
+  for (let attempt = 0; attempt < glitchAttempts; attempt++) {
+    const attemptDelay = glitchStart + attempt * (isMobile ? 400 : Math.random() * 300 + 350);
+    const attemptDuration = isMobile ? 180 : Math.random() * 150 + 120;
+
+    setTimeout(() => {
+      // Glitch: error screen shakes/distorts
+      errorScreen.style.transform = `translateX(${(Math.random() - 0.5) * 12}px) skewX(${(Math.random() - 0.5) * 2}deg)`;
+      errorScreen.style.filter = `brightness(${Math.random() * 0.5 + 0.8}) hue-rotate(${Math.random() * 30}deg)`;
+      glitchLayer.style.opacity = '1';
+
+      // Animate tears
+      document.querySelectorAll('.tear').forEach(tear => {
+        tear.style.top = `${Math.random() * 100}%`;
+        tear.style.opacity = `${Math.random() * 0.8 + 0.2}`;
+        tear.style.height = `${Math.random() * 3 + 1}px`;
+        tear.style.background = Math.random() > 0.5
+          ? 'rgba(212,175,55,0.7)'
+          : 'rgba(255,255,255,0.4)';
+      });
+
+      // Brief gold flash bleeding through
+      if (attempt === glitchAttempts - 1) {
+        signalText.style.color = `rgba(212,175,55,${Math.random() * 0.6 + 0.3})`;
+      }
+
+    }, attemptDelay);
+
+    setTimeout(() => {
+      // Snap back
+      errorScreen.style.transform = '';
+      errorScreen.style.filter = '';
+      glitchLayer.style.opacity = '0';
+      document.querySelectorAll('.tear').forEach(t => t.style.opacity = '0');
+      if (attempt < glitchAttempts - 1) {
+        signalText.style.color = 'rgba(212,175,55,0)';
+      }
+    }, attemptDelay + attemptDuration);
+  }
+
+  // Phase 4: Final breakthrough — signal locks in
+  const breakthroughDelay = totalDuration - 800;
+
+  setTimeout(() => {
+    // Big final glitch
+    errorScreen.style.transform = `translateX(${(Math.random() - 0.5) * 20}px)`;
+    errorScreen.style.filter = 'brightness(2) saturate(0)';
+    glitchLayer.style.opacity = '1';
+    scanlines.style.opacity = '1';
+    signalText.style.color = 'rgba(212,175,55,0.9)';
+
+    document.querySelectorAll('.tear').forEach(tear => {
+      tear.style.top = `${Math.random() * 100}%`;
+      tear.style.opacity = '1';
+      tear.style.height = `${Math.random() * 4 + 2}px`;
+      tear.style.background = 'rgba(212,175,55,0.9)';
+    });
+  }, breakthroughDelay);
+
+  setTimeout(() => {
+    // Everything collapses — screen goes black briefly
+    errorScreen.style.opacity = '0';
+    glitchLayer.style.opacity = '0';
+    scanlines.style.opacity = '0';
+    signalText.style.color = 'rgba(212,175,55,0)';
+    broadcast.style.background = '#000';
+  }, breakthroughDelay + 300);
+
+  // Phase 5: Landing page assembles — slightly glitchy at first
+  setTimeout(() => {
+    broadcast.classList.add('done');
+    pageShell.classList.add('revealed');
+
+    // Brief residual glitch on the real page
+    if (!isMobile) {
+      pageShell.style.filter = 'brightness(1.3) saturate(0.5)';
+      pageShell.style.transform = `translateX(${(Math.random() - 0.5) * 6}px)`;
+      setTimeout(() => {
+        pageShell.style.filter = 'brightness(1.1)';
+        pageShell.style.transform = '';
+        pageShell.style.transition = 'filter 0.4s ease, transform 0.3s ease';
+        setTimeout(() => {
+          pageShell.style.filter = '';
+        }, 400);
+      }, 120);
+    }
+  }, totalDuration);
+}
+
+// Run on load
+runBroadcast();
+
+// ═══════════════════════════════════════════════
+// STEALTH SEARCH / TOC
+// ═══════════════════════════════════════════════
+const stealthSearch = document.getElementById('stealthSearch');
+const tocOverlay    = document.getElementById('tocOverlay');
+const tocClose      = document.getElementById('tocClose');
+const tocSearch     = document.getElementById('tocSearch');
+const dosScreen     = document.getElementById('dosScreen');
+const dirPanel      = document.getElementById('dirPanel');
+const noResults     = document.getElementById('noResults');
+const promptText    = document.getElementById('promptText');
+
+const DOS_LINES = [
+  'N.C.E.ncyclopedia v1.0 — First Edition',
+  'THE ALLIANCE FOR THE FUTURE',
+  'Initializing canon index...',
+  'Loading SWORD volume entries...',
+  'Loading SHIELD volume entries...',
+  'Index complete. Select an entry.',
+];
+
+let promptTyped = false;
+const PROMPT = 'search canon...';
+
+function typePrompt() {
+  if (promptTyped) return;
+  promptTyped = true;
+  let i = 0;
+  const interval = setInterval(() => {
+    promptText.textContent = PROMPT.slice(0, i + 1);
+    i++;
+    if (i >= PROMPT.length) clearInterval(interval);
+  }, 60);
+}
+
+setTimeout(typePrompt, 2000);
+
+stealthSearch.addEventListener('click', openTOC);
+
+function openTOC() {
+  tocOverlay.style.display = 'flex';
+  requestAnimationFrame(() => {
+    tocOverlay.style.opacity = '1';
+    tocOverlay.classList.add('open');
+  });
+  runDOSBoot();
+}
+
+function closeTOC() {
+  tocOverlay.style.opacity = '0';
+  setTimeout(() => {
+    tocOverlay.style.display = 'none';
+    tocOverlay.classList.remove('open');
+    dosScreen.classList.remove('fade-out');
+    dirPanel.classList.remove('open');
+    dosScreen.innerHTML = '';
+    tocSearch.value = '';
+    filterEntries('');
+    document.querySelectorAll('.toc-entry').forEach(e => {
+      e.classList.remove('printed');
+      e.style.opacity = '0';
+    });
+  }, 420);
+}
+
+tocClose.addEventListener('click', closeTOC);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTOC(); });
+
+function runDOSBoot() {
+  dosScreen.innerHTML = '';
+  DOS_LINES.forEach((line, i) => {
+    const el = document.createElement('div');
+    el.className = 'dos-line';
+    el.textContent = line;
+    dosScreen.appendChild(el);
+    setTimeout(() => el.classList.add('visible'), i * 180);
+  });
+
+  setTimeout(() => {
+    dosScreen.classList.add('fade-out');
+    setTimeout(() => {
+      dirPanel.classList.add('open');
+      printEntries();
+      tocSearch.focus();
+    }, 500);
+  }, DOS_LINES.length * 180 + 400);
+}
+
+function printEntries() {
+  const entries = document.querySelectorAll('.toc-entry');
+  entries.forEach((entry, i) => {
+    setTimeout(() => {
+      entry.classList.add('printed');
+    }, i * 18);
+  });
+}
+
+tocSearch.addEventListener('input', () => filterEntries(tocSearch.value));
+
+function filterEntries(query) {
+  const q = query.trim().toUpperCase();
+  const entries = document.querySelectorAll('.toc-entry');
+  let visible = 0;
+  entries.forEach(entry => {
+    const text = entry.dataset.entry || '';
+    if (!q || text.includes(q)) {
+      entry.classList.remove('hidden');
+      visible++;
+    } else {
+      entry.classList.add('hidden');
+    }
+  });
+  noResults.style.display = visible === 0 ? 'block' : 'none';
+}
+
+function tocNavigate(path, icon) {
+  closeTOC();
+  setTimeout(() => portalTransition({ preventDefault: () => {} }, path, icon), 300);
+}
+
+// ═══════════════════════════════════════════════
+// PORTAL TRANSITION
+// ═══════════════════════════════════════════════
+function portalTransition(e, path, iconSrc) {
   e.preventDefault();
   const overlay = document.getElementById('portalOverlay');
   const icon    = document.getElementById('portalIcon');
   icon.src = iconSrc;
-  icon.style.animation = 'none';
-  icon.style.opacity   = '0';
-  overlay.style.animation = 'none';
-  overlay.style.opacity   = '0';
   overlay.classList.add('active');
-  overlay.style.transition = 'opacity 0.15s ease';
-  overlay.style.opacity    = '1';
-  setTimeout(() => {
-    icon.style.opacity   = '1';
-    icon.style.animation = 'portalZoom 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards';
-  }, 100);
-  setTimeout(() => { window.location.href = destination; }, 680);
+  overlay.style.opacity = '1';
+  icon.style.opacity = '1';
+  icon.style.animation = 'portalZoom 0.9s ease forwards';
+  document.getElementById('pageShell').classList.add('fading');
+  setTimeout(() => { window.location.href = path; }, 900);
 }
 
-// ── TOC NAV ──
-function tocNavigate(path, icon) {
-  portalTransition({ preventDefault: () => {} }, path, icon);
+// Also support portalNavigate for nav-wheel.js compatibility
+function portalNavigate(path) {
+  const iconSrc = path.includes('/shield') ? '/imagebank/shield.png' : '/imagebank/sword.png';
+  portalTransition({ preventDefault: () => {} }, path, iconSrc);
 }
-
-const pageShell    = document.getElementById('pageShell');
-const stealthSearch = document.getElementById('stealthSearch');
-const promptText   = document.getElementById('promptText');
-const tocOverlay   = document.getElementById('tocOverlay');
-const dosScreen    = document.getElementById('dosScreen');
-const dirPanel     = document.getElementById('dirPanel');
-const tocSearch    = document.getElementById('tocSearch');
-const tocEntries   = Array.from(document.querySelectorAll('.toc-entry'));
-
-const STEALTH_MESSAGE = ' access N.C.E.ncyclopedia';
-let introTyping = false;
-let introDone   = false;
-let introIndex  = 0;
-let introTimer  = null;
-
-let bootDone             = false;
-let bootTimers           = [];
-let directoryPrinting    = false;
-let directoryPrintTimers = [];
-let directoryDone        = false;
-
-tocEntries.forEach(entry => {
-  entry.dataset.originalText = entry.textContent;
-});
-
-const DOS_LINES = [
-  'N.C.E.ncyclopedia OS v2026.1',
-  'Copyright (C) THE ALLIANCE FOR THE FUTURE',
-  '',
-  'Initializing AGORA network interface...',
-  'Loading SWORD volume.............. OK',
-  'Loading SHIELD volume............. OK',
-  'Verifying canon integrity......... PASS',
-  '',
-  'C:\\NCE> dir /all',
-  '',
-  'Volume: THE ALLIANCE',
-  'Directory: N.C.E.ncyclopedia\\*.*',
-  '',
-];
-
-function hidePromptForOverlay() {
-  promptText.textContent = '';
-  stealthSearch.style.visibility = 'hidden';
-}
-
-function restorePromptAfterOverlay() {
-  stealthSearch.style.visibility = 'visible';
-  promptText.textContent = '';
-}
-
-function clearIntroTimer() {
-  if (introTimer) { clearTimeout(introTimer); introTimer = null; }
-}
-
-function resetDirectoryEntries() {
-  directoryPrinting = false;
-  directoryDone = false;
-  directoryPrintTimers.forEach(t => clearTimeout(t));
-  directoryPrintTimers = [];
-  tocEntries.forEach(entry => {
-    entry.textContent = entry.dataset.originalText;
-    entry.classList.remove('printed');
-    if (!entry.classList.contains('hidden')) entry.style.opacity = '0';
-  });
-}
-
-function finishDirectoryInstantly() {
-  directoryPrinting = false;
-  directoryDone = true;
-  directoryPrintTimers.forEach(t => clearTimeout(t));
-  directoryPrintTimers = [];
-  tocEntries.forEach(entry => {
-    entry.textContent = entry.dataset.originalText;
-    entry.classList.add('printed');
-    if (!entry.classList.contains('hidden')) entry.style.opacity = '1';
-  });
-  setTimeout(() => tocSearch.focus(), 50);
-}
-
-function printEntry(entry, doneCallback) {
-  const text = entry.dataset.originalText || '';
-  let i = 0;
-  entry.textContent = '';
-  entry.style.opacity = '1';
-
-  function tick() {
-    if (!directoryPrinting) return;
-    if (i < text.length) {
-      entry.textContent += text[i];
-      i += 1;
-      const timer = setTimeout(tick, 12);
-      directoryPrintTimers.push(timer);
-    } else {
-      entry.classList.add('printed');
-      doneCallback();
-    }
-  }
-  tick();
-}
-
-function revealDirectory() {
-  resetDirectoryEntries();
-  directoryPrinting = true;
-  const visibleEntries = tocEntries.filter(e => !e.classList.contains('hidden'));
-  let current = 0;
-
-  function nextEntry() {
-    if (!directoryPrinting) return;
-    if (current >= visibleEntries.length) {
-      directoryPrinting = false;
-      directoryDone = true;
-      setTimeout(() => tocSearch.focus(), 50);
-      return;
-    }
-    printEntry(visibleEntries[current], () => {
-      current += 1;
-      const timer = setTimeout(nextEntry, 18);
-      directoryPrintTimers.push(timer);
-    });
-  }
-  nextEntry();
-}
-
-function showDirectory() {
-  bootDone = true;
-  dosScreen.classList.add('fade-out');
-  dirPanel.classList.add('open');
-  revealDirectory();
-}
-
-function runBoot() {
-  dosScreen.innerHTML = '';
-  dosScreen.classList.remove('fade-out');
-
-  let delays = [];
-  let cumulative = 0;
-  DOS_LINES.forEach((text, i) => {
-    delays.push(cumulative);
-    if (text === '') cumulative += 180;
-    else if (text.includes('...')) cumulative += 680;
-    else if (i < 3) cumulative += 420;
-    else cumulative += 300 + Math.floor(Math.random() * 80);
-  });
-
-  DOS_LINES.forEach((text, i) => {
-    const t = setTimeout(() => {
-      if (bootDone) return;
-      const line = document.createElement('div');
-      line.className = 'dos-line visible';
-      line.textContent = text || '\u00A0';
-      dosScreen.appendChild(line);
-      if (i === DOS_LINES.length - 1) {
-        const t2 = setTimeout(() => { if (!bootDone) showDirectory(); }, 480);
-        bootTimers.push(t2);
-      }
-    }, delays[i]);
-    bootTimers.push(t);
-  });
-}
-
-function fadeIntoTerminalThenBoot() {
-  pageShell.classList.add('fading');
-  setTimeout(() => {
-    tocOverlay.classList.add('open');
-    dosScreen.style.display = 'flex';
-    dirPanel.classList.remove('open');
-    tocSearch.value = '';
-    showAllEntries();
-    runBoot();
-  }, 260);
-}
-
-function openTOC() {
-  hidePromptForOverlay();
-  bootDone = false;
-  bootTimers.forEach(t => clearTimeout(t));
-  bootTimers = [];
-  resetDirectoryEntries();
-  fadeIntoTerminalThenBoot();
-}
-
-function skipBoot() {
-  if (!tocOverlay.classList.contains('open')) return;
-  if (introTyping) {
-    clearIntroTimer();
-    promptText.textContent = STEALTH_MESSAGE;
-    introTyping = false;
-    introDone = true;
-    openTOC();
-    return;
-  }
-  if (!bootDone && !dirPanel.classList.contains('open')) {
-    bootDone = true;
-    bootTimers.forEach(t => clearTimeout(t));
-    showDirectory();
-    return;
-  }
-  if (directoryPrinting) finishDirectoryInstantly();
-}
-
-function typeIntro() {
-  if (introIndex < STEALTH_MESSAGE.length) {
-    promptText.textContent += STEALTH_MESSAGE[introIndex];
-    introIndex += 1;
-    introTimer = setTimeout(typeIntro, 28);
-  } else {
-    introTyping = false;
-    introDone = true;
-    openTOC();
-  }
-}
-
-stealthSearch.addEventListener('click', () => {
-  if (!introTyping && !introDone) {
-    introTyping = true;
-    introIndex = 0;
-    promptText.textContent = '';
-    typeIntro();
-    return;
-  }
-  if (introTyping || directoryPrinting || (!bootDone && tocOverlay.classList.contains('open'))) {
-    skipBoot();
-    return;
-  }
-  openTOC();
-});
-
-dosScreen.addEventListener('click', skipBoot);
-dirPanel.addEventListener('click', () => { if (directoryPrinting) finishDirectoryInstantly(); });
-
-function closeTOC() {
-  tocOverlay.classList.remove('open');
-  dosScreen.classList.remove('fade-out');
-  dirPanel.classList.remove('open');
-  bootDone = true;
-  bootTimers.forEach(t => clearTimeout(t));
-  bootTimers = [];
-  resetDirectoryEntries();
-  clearIntroTimer();
-  introTyping = false;
-  introDone = false;
-  introIndex = 0;
-  restorePromptAfterOverlay();
-  pageShell.classList.remove('fading');
-}
-
-document.getElementById('tocClose').addEventListener('click', closeTOC);
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeTOC(); });
-
-function showAllEntries() {
-  document.querySelectorAll('.toc-entry').forEach(el => {
-    el.classList.remove('hidden');
-    el.textContent = el.dataset.originalText;
-    if (directoryDone) { el.classList.add('printed'); el.style.opacity = '1'; }
-    else { el.classList.remove('printed'); el.style.opacity = '0'; }
-  });
-  document.getElementById('noResults').style.display = 'none';
-  document.getElementById('swordVol').querySelector('.toc-volume-header').style.display = '';
-  document.getElementById('shieldVol').querySelector('.toc-volume-header').style.display = '';
-}
-
-document.getElementById('tocSearch').addEventListener('input', function() {
-  const q = this.value.trim().toUpperCase();
-  if (!q) {
-    showAllEntries();
-    if (dirPanel.classList.contains('open')) {
-      if (directoryPrinting) finishDirectoryInstantly();
-      else if (!directoryDone) revealDirectory();
-    }
-    return;
-  }
-  if (directoryPrinting) finishDirectoryInstantly();
-  let anyVisible = false;
-  document.querySelectorAll('.toc-entry').forEach(el => {
-    const entry = el.dataset.entry || '';
-    const text  = (el.dataset.originalText || '').toUpperCase();
-    const match = entry.includes(q) || text.includes(q);
-    el.classList.toggle('hidden', !match);
-    el.style.opacity = match ? '1' : '0';
-    if (match) { el.classList.add('printed'); el.textContent = el.dataset.originalText; anyVisible = true; }
-  });
-  document.getElementById('noResults').style.display = anyVisible ? 'none' : 'block';
-});
 </script>
 
-<script src="/nav-wheel.js"></script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .catch(err => console.log('SW registration failed:', err));
-    });
-  }
-</script>
 </body>
 </html>
