@@ -1053,14 +1053,23 @@ function closeTOC() {
   setTimeout(() => {
     tocOverlay.style.display = 'none';
     tocOverlay.classList.remove('open');
-    // Full reset so reopen works cleanly
+
+    // Hard reset dosScreen — remove class AND inline styles
     dosScreen.classList.remove('fade-out');
-    dosScreen.style.opacity = '1';
-    dosScreen.style.pointerEvents = 'auto';
-    dirPanel.classList.remove('open');
+    dosScreen.removeAttribute('style');
     dosScreen.innerHTML = '';
+
+    // Hard reset dirPanel
+    dirPanel.classList.remove('open');
+    dirPanel.style.opacity = '0';
+    dirPanel.style.pointerEvents = 'none';
+    dirPanel.style.zIndex = '1';
+
+    // Reset search
     tocSearch.value = '';
     filterEntries('');
+
+    // Reset entries
     document.querySelectorAll('.toc-entry').forEach(e => {
       e.classList.remove('printed', 'hidden');
       e.style.opacity = '0';
