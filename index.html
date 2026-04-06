@@ -173,7 +173,7 @@ body {
   padding: 26px 20px 24px;
   position: relative;
   z-index: 1;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.42s ease, transform 0.42s ease, filter 0.42s ease;
 }
 
@@ -1051,25 +1051,24 @@ function openTOC() {
 function closeTOC() {
   tocOverlay.style.opacity = '0';
   setTimeout(() => {
+    // Hide overlay
     tocOverlay.style.display = 'none';
     tocOverlay.classList.remove('open');
 
-    // Hard reset dosScreen — remove class AND inline styles
+    // Reset DOS screen — class only, no inline style wipe
     dosScreen.classList.remove('fade-out');
-    dosScreen.removeAttribute('style');
+    dosScreen.style.opacity = '1';
+    dosScreen.style.pointerEvents = 'auto';
     dosScreen.innerHTML = '';
 
-    // Hard reset dirPanel
+    // Reset dir panel — class only
     dirPanel.classList.remove('open');
-    dirPanel.style.opacity = '0';
-    dirPanel.style.pointerEvents = 'none';
-    dirPanel.style.zIndex = '1';
 
-    // Reset search
+    // Reset search input
     tocSearch.value = '';
     filterEntries('');
 
-    // Reset entries
+    // Reset entries opacity and classes
     document.querySelectorAll('.toc-entry').forEach(e => {
       e.classList.remove('printed', 'hidden');
       e.style.opacity = '0';
