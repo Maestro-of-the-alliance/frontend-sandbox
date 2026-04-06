@@ -1053,13 +1053,16 @@ function closeTOC() {
   setTimeout(() => {
     tocOverlay.style.display = 'none';
     tocOverlay.classList.remove('open');
+    // Full reset so reopen works cleanly
     dosScreen.classList.remove('fade-out');
+    dosScreen.style.opacity = '1';
+    dosScreen.style.pointerEvents = 'auto';
     dirPanel.classList.remove('open');
     dosScreen.innerHTML = '';
     tocSearch.value = '';
     filterEntries('');
     document.querySelectorAll('.toc-entry').forEach(e => {
-      e.classList.remove('printed');
+      e.classList.remove('printed', 'hidden');
       e.style.opacity = '0';
     });
   }, 420);
