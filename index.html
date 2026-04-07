@@ -86,8 +86,8 @@ body {
 .hero-hint { margin-top:10px; font-family:'VT323',monospace; font-size:18px; letter-spacing:0.14em; color:rgba(212,175,55,0.5); text-transform:lowercase; }
 
 /* STEALTH SEARCH — bottom left, outside page-shell, no overlap */
-.stealth-search { position:fixed; bottom:28px; left:24px; z-index:9000; display:flex; align-items:center; font-family:'VT323',monospace; font-size:20px; color:rgba(184,150,40,0.55); cursor:pointer; transition:color 0.3s ease,text-shadow 0.3s ease; }
-.stealth-search:hover { color:rgba(230,185,60,1); text-shadow:0 0 10px rgba(184,150,40,0.4); }
+.stealth-search { position:fixed; top:20px; left:20px; z-index:9000; display:flex; align-items:center; font-family:'VT323',monospace; font-size:20px; color:rgba(184,150,40,0.65); cursor:pointer; transition:color 0.3s ease,text-shadow 0.3s ease; background:rgba(0,0,0,0.5); padding:4px 10px; border:1px solid rgba(184,150,40,0.12); backdrop-filter:blur(4px); }
+.stealth-search:hover { color:rgba(230,185,60,1); text-shadow:0 0 10px rgba(184,150,40,0.4); border-color:rgba(184,150,40,0.3); }
 .prompt-arrow { user-select:none; }
 .cursor { animation:blink 1s step-end infinite; user-select:none; margin-left:2px; }
 .prompt-text { margin-left:6px; user-select:none; white-space:pre; color:inherit; letter-spacing:0.08em; }
@@ -155,7 +155,7 @@ body {
   .toc-columns{grid-template-columns:1fr}
   #swordVol{border-right:none;border-bottom:2px solid rgba(184,150,40,0.2)}
   #shieldVol{border-top:2px solid rgba(64,196,216,0.25)}
-  .stealth-search{bottom:18px;left:16px;font-size:17px}
+  .stealth-search{top:16px;left:14px;font-size:17px}
 }
 </style>
 </head>
@@ -466,9 +466,18 @@ const DOS_LINES = ['N.C.E.ncyclopedia v1.0 — First Edition','THE ALLIANCE FOR 
 stealthSearch.addEventListener('click',()=>{ history.pushState({toc:true},''); openTOC(); });
 
 function openTOC() {
-  tocOverlay.style.display='flex';
-  requestAnimationFrame(()=>{ tocOverlay.style.opacity='1'; tocOverlay.classList.add('open'); });
-  runDOSBoot();
+  // Step 1: make visible but transparent
+  tocOverlay.style.display = 'flex';
+  tocOverlay.style.opacity = '0';
+  // Step 2: next frame — trigger fade in
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      tocOverlay.style.opacity = '1';
+      tocOverlay.classList.add('open');
+      // Step 3: start DOS boot AFTER overlay is visible
+      setTimeout(runDOSBoot, 320);
+    });
+  });
 }
 
 function closeTOC() {
@@ -489,20 +498,48 @@ tocOverlay.addEventListener('click', e=>{ if(e.target===tocOverlay) closeTOC(); 
 window.addEventListener('popstate', ()=>{ if(tocOverlay.classList.contains('open')) closeTOC(); });
 
 function runDOSBoot() {
-  dosScreen.innerHTML='';
-  DOS_LINES.forEach((line,i)=>{
-    const el=document.createElement('div'); el.className='dos-line'; el.textContent=line;
+  // Hard reset state
+  dosScreen.innerHTML = '';
+  dosScreen.style.opacity = '1';
+  dosScreen.classList.remove('fade-out');
+  dirPanel.classList.remove('open');
+  dirPanel.style.opacity = '0';
+
+  // Build lines
+  DOS_LINES.forEach((line, i) => {
+    const el = document.createElement('div');
+    el.className = 'dos-line';
+    el.textContent = line;
     dosScreen.appendChild(el);
-    setTimeout(()=>el.classList.add('visible'), i*180);
+    // Stagger each line appearing
+    setTimeout(() => el.classList.add('visible'), 100 + i * 220);
   });
-  setTimeout(()=>{
+
+  // After all lines visible — fade DOS out, show dir panel
+  const fadeDelay = 100 + DOS_LINES.length * 220 + 500;
+  setTimeout(() => {
     dosScreen.classList.add('fade-out');
-    setTimeout(()=>{ dirPanel.classList.add('open'); printEntries(); tocSearch.focus(); }, 360);
-  }, DOS_LINES.length*180+400);
+    setTimeout(() => {
+      dirPanel.classList.add('open');
+      // Small delay before printing so opacity transition completes
+      setTimeout(() => {
+        printEntries();
+        tocSearch.focus();
+      }, 80);
+    }, 380);
+  }, fadeDelay);
 }
 
 function printEntries() {
-  document.querySelectorAll('.toc-entry').forEach((e,i)=>{ setTimeout(()=>e.classList.add('printed'), i*16); });
+  const entries = document.querySelectorAll('.toc-entry');
+  // Force opacity to 0 first so transition is visible
+  entries.forEach(e => { e.classList.remove('printed'); e.style.opacity = '0'; });
+  // Then stagger them in
+  requestAnimationFrame(() => {
+    entries.forEach((e, i) => {
+      setTimeout(() => e.classList.add('printed'), i * 18);
+    });
+  });
 }
 
 tocSearch.addEventListener('input',()=>filterEntries(tocSearch.value));
