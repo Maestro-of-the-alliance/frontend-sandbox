@@ -3,603 +3,878 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AGORA — SWORD: The Pamphlet</title>
-<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Oswald:wght@300;400;500;700&family=Rajdhani:wght@400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<title>AGORA — SWORD · The Pamphlet</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Special+Elite&family=Rajdhani:wght@400;500;600;700&family=Oswald:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --paper:       #e8d5a3;
-  --paper-dark:  #d4bc82;
-  --paper-aged:  #c9a96e;
-  --ink:         #1a1208;
-  --ink-faded:   #3d2e10;
-  --amber:       #b5620a;
-  --amber-dim:   #8a4a08;
-  --amber-light: #e8831a;
-  --rust:        #7a2e0a;
-  --khaki:       #6b5a2e;
-  --stamp-red:   #8b1a1a;
-  --wear:        rgba(26, 18, 8, 0.08);
+/* ═══════════════════════════════════════════
+   SKIN A v3 — THE PAMPHLET
+   V for Vendetta × Blade Runner × Dune × Fifth Element
+   Resistance aesthetic. Lived-in future.
+   Something handed to you in a parking garage.
+═══════════════════════════════════════════ */
 
-  /* CHAMELEON ENGINE */
+:root {
+  /* Paper — darker, newsprint, survived something */
+  --paper:        #d9c48a;
+  --paper-dark:   #c4ab6a;
+  --paper-darker: #a88d4a;
+  --paper-deep:   #8a7035;
+
+  /* Ink — heavy, pressed hard */
+  --ink:          #0e0905;
+  --ink-soft:     #221608;
+
+  /* Amber — resistance gold */
+  --amber:        #c8720a;
+  --amber-light:  #f09020;
+  --amber-dim:    rgba(200,114,10,0.35);
+
+  /* Burgundy — second accent, different print run */
+  --burgundy:     #6b1a1a;
+  --burgundy-dim: rgba(107,26,26,0.4);
+
+  /* Olive — worn military, Dune texture */
+  --olive:        #4a5218;
+  --olive-dim:    rgba(74,82,24,0.4);
+
+  /* Stamp red */
+  --stamp-red:    #8b1a1a;
+
+  /* Neon bleed — Fifth Element / Blade Runner */
+  --neon:         rgba(200,114,10,0.08);
+
   --nw-accent:     var(--amber);
-  --nw-accent-dim: var(--amber-dim);
-  --nw-bg:         var(--paper-dark);
-  --nw-panel:      var(--paper);
-  --nw-text:       var(--ink);
-  --nw-text-dim:   var(--khaki);
-  --ghost-teal:    none;
-  --cyan:          none;
-  --blood-red:     none;
+  --nw-accent-dim: rgba(200,114,10,0.4);
+  --nw-bg:         var(--ink);
+  --nw-panel:      var(--paper-dark);
+  --nw-text:       var(--paper);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
-html { background: #3d2e10; }
+html { background: #0e0905; }
 
 body {
   background: var(--paper);
   color: var(--ink);
   font-family: 'Rajdhani', sans-serif;
-  font-size: 17px;
+  font-size: 15px;
   line-height: 1.65;
   max-width: 680px;
   margin: 0 auto;
   position: relative;
-  padding-bottom: 120px;
+  padding-bottom: 80px;
   overflow-x: hidden;
-
-  /* Paper texture — grain + foxing spots */
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E"),
-    radial-gradient(ellipse at 15% 20%, rgba(180,130,50,0.12) 0%, transparent 40%),
-    radial-gradient(ellipse at 85% 75%, rgba(140,90,30,0.1) 0%, transparent 35%),
-    radial-gradient(ellipse at 60% 45%, rgba(200,160,80,0.08) 0%, transparent 30%);
 }
 
-/* Edge darkening — worn document corners */
+/* ── TEXTURE LAYERS ── */
+
+/* Heavy paper grain */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  box-shadow:
-    inset 0 0 60px rgba(61,46,16,0.35),
-    inset 0 0 120px rgba(61,46,16,0.15);
-  pointer-events: none;
-  z-index: 100;
-}
-
-/* Horizontal wear lines — paper crease simulation */
-body::after {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 47px,
-      rgba(26,18,8,0.025) 47px,
-      rgba(26,18,8,0.025) 48px
-    );
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.09'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 0;
 }
 
-header, .class-bar, .entry-header, .signal-block, .content { position: relative; z-index: 1; }
+/* Scan lines — photocopied three times */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0,0,0,0.025) 3px,
+    rgba(0,0,0,0.025) 4px
+  );
+  pointer-events: none;
+  z-index: 200;
+}
 
-/* ── MASTHEAD — Bold institutional print ── */
+/* Corner vignette — heavy */
+.vignette {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center,
+    transparent 40%,
+    rgba(14,9,5,0.22) 70%,
+    rgba(14,9,5,0.45) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.masthead, .entry-header, .content-body,
+.see-also-section, .doc-footer { position: relative; z-index: 1; }
+
+/* ── MASTHEAD — resistance broadcast bar ── */
 .masthead {
   background: var(--ink);
-  padding: 0;
-  border-bottom: 4px solid var(--amber);
-}
-
-.masthead-top-bar {
-  background: var(--amber);
-  padding: 5px 28px;
+  padding: 8px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 2px solid var(--amber);
+  position: relative;
 }
 
-.masthead-top-bar span {
-  font-family: 'Oswald', sans-serif;
-  font-size: 10px;
-  font-weight: 400;
-  letter-spacing: 0.35em;
-  color: var(--ink);
-  text-transform: uppercase;
+/* Faint neon bleed under masthead */
+.masthead::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0; right: 0;
+  height: 6px;
+  background: linear-gradient(180deg, var(--neon), transparent);
+  pointer-events: none;
 }
 
-.masthead-inner {
-  padding: 18px 28px 14px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-}
-
-.masthead-title {
+.masthead-left {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(28px, 7vw, 42px);
-  letter-spacing: 0.12em;
-  color: var(--paper);
-  line-height: 0.9;
-}
-
-.masthead-title span {
-  display: block;
-  font-family: 'Oswald', sans-serif;
-  font-size: 10px;
-  font-weight: 300;
-  letter-spacing: 0.4em;
-  color: var(--amber-light);
-  margin-bottom: 4px;
-}
-
-.masthead-edition {
-  text-align: right;
-  font-family: 'Oswald', sans-serif;
   font-size: 11px;
-  font-weight: 300;
-  letter-spacing: 0.25em;
-  color: var(--paper-aged);
-  line-height: 1.8;
+  letter-spacing: 0.4em;
+  color: var(--amber);
 }
-
-/* ── CLASS BAR ── */
-.class-bar {
-  background: var(--paper-dark);
-  border-bottom: 2px solid var(--amber-dim);
-  padding: 7px 28px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.class-bar-left {
-  font-family: 'Oswald', sans-serif;
-  font-size: 10px;
-  font-weight: 400;
-  letter-spacing: 0.25em;
-  color: var(--khaki);
+.masthead-center {
+  font-family: 'Special Elite', serif;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: rgba(200,114,10,0.4);
   text-transform: uppercase;
 }
+.masthead-right {
+  font-family: 'Special Elite', serif;
+  font-size: 9px;
+  color: rgba(200,114,10,0.35);
+  letter-spacing: 0.12em;
+}
 
-.class-badge {
-  font-family: 'Oswald', sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  color: var(--stamp-red);
-  border: 1.5px solid var(--stamp-red);
-  padding: 2px 10px;
-  text-transform: uppercase;
-  transform: rotate(-1.5deg);
+/* ── TICKER ── */
+.ticker-line {
+  background: var(--ink);
+  border-bottom: 1px solid rgba(200,114,10,0.2);
+  overflow: hidden;
+  height: 20px;
+  position: relative;
+}
+.ticker-content {
   display: inline-block;
-  background: rgba(139,26,26,0.05);
+  white-space: nowrap;
+  font-family: 'Special Elite', serif;
+  font-size: 9px;
+  color: rgba(200,114,10,0.45);
+  letter-spacing: 0.22em;
+  padding: 4px 0;
+  animation: tickerScroll var(--ticker-speed, 40s) linear infinite;
+}
+@keyframes tickerScroll {
+  from { transform: translateX(100vw); }
+  to   { transform: translateX(-100%); }
+}
+
+/* ── IMPERFECT BORDER — hand-drawn feel ── */
+.border-frame {
+  position: relative;
+}
+.border-frame::before {
+  content: '';
+  position: absolute;
+  top: 6px; left: 6px; right: 6px; bottom: 6px;
+  border: 1px solid rgba(200,114,10,0.2);
+  pointer-events: none;
+  /* Slightly off — doesn't close perfectly at corners */
+  clip-path: polygon(
+    2px 0%, calc(100% - 2px) 0%,
+    100% 2px, 100% calc(100% - 2px),
+    calc(100% - 2px) 100%, 2px 100%,
+    0% calc(100% - 2px), 0% 2px
+  );
 }
 
 /* ── ENTRY HEADER ── */
 .entry-header {
-  padding: 40px 28px 32px;
-  background: var(--paper);
-  border-bottom: 3px double var(--amber-dim);
+  padding: 28px 28px 20px;
+  border-bottom: 3px solid var(--ink);
+  background: linear-gradient(180deg, var(--paper-dark) 0%, var(--paper) 100%);
   position: relative;
+  overflow: hidden;
 }
 
-/* Stamp effect top-right */
-.entry-header::after {
-  content: 'PUBLIC DOCUMENT';
+/* Registration shift — like the paper fed wrong */
+.entry-header::before {
+  content: '';
   position: absolute;
-  top: 24px;
-  right: 24px;
-  font-family: 'Oswald', sans-serif;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.3em;
-  color: var(--stamp-red);
-  border: 2px solid var(--stamp-red);
-  padding: 4px 10px;
-  opacity: 0.6;
-  transform: rotate(3deg);
+  top: 0; left: -2px; right: -2px;
+  height: 100%;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent,
+    transparent 48px,
+    rgba(14,9,5,0.015) 48px,
+    rgba(14,9,5,0.015) 49px
+  );
+  pointer-events: none;
 }
 
-.entry-designation {
-  font-family: 'Oswald', sans-serif;
-  font-size: 10px;
-  font-weight: 300;
-  letter-spacing: 0.35em;
-  color: var(--khaki);
-  margin-bottom: 16px;
-  text-transform: uppercase;
-}
-
-.entry-word {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(56px, 14vw, 88px);
-  letter-spacing: 0.08em;
-  color: var(--ink);
-  line-height: 0.85;
-  margin-bottom: 12px;
-  text-shadow: 3px 3px 0 rgba(26,18,8,0.12);
-}
-
-.entry-subtitle {
-  font-family: 'Oswald', sans-serif;
-  font-size: 13px;
-  font-weight: 400;
-  letter-spacing: 0.2em;
-  color: var(--amber-dim);
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-
-.entry-meta {
-  font-family: 'Special Elite', cursive;
-  font-size: 12px;
-  color: var(--khaki);
-  font-style: italic;
-}
-
-/* ── SIGNAL BLOCK — The pamphlet's pull quote ── */
-.signal-block {
-  margin: 0;
-  padding: 28px 36px;
-  background: var(--ink);
-  border-top: 3px solid var(--amber);
-  border-bottom: 3px solid var(--amber);
-  position: relative;
-}
-
-.signal-block::before {
-  content: '"';
-  position: absolute;
-  top: -8px;
-  left: 28px;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 80px;
-  color: var(--amber);
-  line-height: 1;
-  opacity: 0.4;
-}
-
-.signal-label {
-  font-family: 'Oswald', sans-serif;
-  font-size: 9px;
-  font-weight: 400;
-  letter-spacing: 0.4em;
-  color: var(--amber-dim);
-  margin-bottom: 12px;
-  text-transform: uppercase;
-}
-
-.signal-text {
-  font-family: 'Oswald', sans-serif;
-  font-size: clamp(17px, 4vw, 22px);
-  font-weight: 300;
-  color: var(--paper);
-  line-height: 1.5;
-  font-style: italic;
-  padding-left: 12px;
-  border-left: 3px solid var(--amber);
-}
-
-.signal-source {
-  font-family: 'Oswald', sans-serif;
-  font-size: 10px;
-  font-weight: 300;
-  letter-spacing: 0.25em;
-  color: var(--amber-dim);
-  margin-top: 14px;
-  text-transform: uppercase;
-}
-
-/* ── CONTENT ── */
-.content { padding: 0 28px; }
-
-.section {
-  padding: 28px 0;
-  border-bottom: 1px solid rgba(107,90,46,0.25);
-}
-.section:last-child { border-bottom: none; }
-
-.section-label {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 20px;
-  letter-spacing: 0.2em;
-  color: var(--amber-dim);
-  margin-bottom: 16px;
+/* Classification bar */
+.classification-bar {
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-bottom: 16px;
+}
+.class-tag {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  padding: 2px 8px;
+  border: 1px solid;
+  text-transform: uppercase;
+}
+.class-tag.amber { color: var(--amber); border-color: var(--amber-dim); }
+.class-tag.burgundy { color: var(--burgundy); border-color: var(--burgundy-dim); }
+.class-tag.olive { color: var(--olive); border-color: var(--olive-dim); }
+.class-rule { flex: 1; height: 1px; background: var(--paper-darker); }
+
+/* STAMP */
+.stamp {
+  position: absolute;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--stamp-red);
+  border: 2px solid var(--stamp-red);
+  padding: 3px 10px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  top: 20px;
+  right: 22px;
+}
+.stamp.show { opacity: 0.6; }
+
+/* Entry word — dense, heavy, slightly imperfect */
+.entry-word {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(56px, 13vw, 88px);
+  line-height: 0.88;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+  margin-bottom: 10px;
+  min-height: 1em;
+  position: relative;
 }
 
-.section-label::before {
-  content: '//';
-  color: var(--amber-light);
-  font-size: 14px;
+/* Subtle text shadow — ink bleed on fibrous paper */
+.entry-word.inked {
+  text-shadow:
+    1px 1px 0 rgba(14,9,5,0.15),
+    -0.5px 0.5px 0 rgba(14,9,5,0.08);
 }
 
+/* Word animation variants */
+.word-inkbleed  { animation: inkBleed 1.4s ease forwards; }
+.word-stamp     { animation: stampIn 0.4s cubic-bezier(0.2,0.8,0.3,1) forwards; }
+.word-rise      { animation: riseUp 0.9s ease forwards; }
+.word-flicker   { animation: candleFlicker 0.8s ease forwards, subtleFlicker 8s ease-in-out 1s infinite; }
+
+@keyframes inkBleed {
+  0%   { filter: blur(6px); opacity: 0; transform: scale(1.03); }
+  65%  { filter: blur(0.5px); opacity: 0.85; }
+  100% { filter: blur(0); opacity: 1; transform: scale(1); }
+}
+@keyframes stampIn {
+  0%   { transform: scale(1.12) translateY(-6px); opacity: 0; }
+  55%  { transform: scale(0.98) translateY(2px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+@keyframes riseUp {
+  0%   { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes candleFlicker {
+  0%   { opacity: 0; }
+  20%  { opacity: 0.9; }
+  35%  { opacity: 0.6; }
+  50%  { opacity: 1; }
+  70%  { opacity: 0.85; }
+  100% { opacity: 1; }
+}
+@keyframes subtleFlicker {
+  0%, 100% { opacity: 1; }
+  92%       { opacity: 1; }
+  93%       { opacity: 0.88; }
+  94%       { opacity: 1; }
+  97%       { opacity: 1; }
+  98%       { opacity: 0.92; }
+  99%       { opacity: 1; }
+}
+
+/* Double rule — heavier, more worn */
+.title-rule {
+  border: none;
+  border-top: 4px solid var(--ink);
+  margin-bottom: 2px;
+}
+.title-rule-thin {
+  border: none;
+  border-top: 1px solid var(--paper-darker);
+  margin-bottom: 12px;
+}
+
+.entry-meta {
+  font-family: 'Special Elite', serif;
+  font-size: 10px;
+  color: var(--olive);
+  letter-spacing: 0.16em;
+  line-height: 2;
+  opacity: 0;
+  transition: opacity 0.8s ease 0.5s;
+}
+.entry-meta.show { opacity: 1; }
+
+/* ── CONTENT ── */
+.content-body { padding: 24px 28px 0; }
+
+/* Section label — stamped, not rendered */
+.section-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.45em;
+  color: var(--amber);
+  margin: 26px 0 10px;
+  padding: 4px 0 6px;
+  border-top: 1px solid var(--paper-darker);
+  border-bottom: 2px solid var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.section-label.show { opacity: 1; transform: translateX(0); }
+.section-label .sec-num {
+  color: var(--burgundy);
+  font-size: 9px;
+}
 .section-label::after {
   content: '';
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, var(--amber-dim), transparent);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--paper-darker) 0, var(--paper-darker) 4px,
+    transparent 4px, transparent 8px
+  );
 }
 
-.section p {
+/* Body text — denser */
+.body-text {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 17px;
-  color: var(--ink-faded);
-  margin-bottom: 14px;
-  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink-soft);
 }
+.body-text p { margin-bottom: 12px; }
+.body-text p:last-child { margin-bottom: 0; }
+.body-text strong { color: var(--ink); font-weight: 700; }
 
-.section p:last-child { margin-bottom: 0; }
-
-.section strong {
-  color: var(--ink);
-  font-weight: 600;
-}
-
-/* ── FUNCTION BLOCKS — Filed reports, stamped ── */
-.function-block {
-  margin: 20px 0;
-  padding: 18px 20px;
-  background: var(--paper-dark);
-  border: 1px solid var(--paper-aged);
-  border-left: 4px solid var(--amber);
+/* ── PULL QUOTE — torn passage ── */
+.pull-quote {
+  background: var(--ink);
+  margin: 24px -28px;
+  padding: 22px 28px 22px 32px;
+  border-left: 5px solid var(--amber);
   position: relative;
+  overflow: hidden;
 }
 
-.function-block::before {
-  content: attr(data-fn);
-  position: absolute;
-  top: -10px;
-  left: 12px;
-  background: var(--paper);
-  padding: 0 8px;
-  font-family: 'Oswald', sans-serif;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.25em;
-  color: var(--amber-dim);
-  text-transform: uppercase;
-  border: 1px solid var(--paper-aged);
-}
-
-.function-block p {
-  font-size: 15px !important;
-  margin-bottom: 10px !important;
-}
-
-/* ── OP RECORDS — Field documentation ── */
-.op-record {
-  background: var(--paper-dark);
-  border: 1px solid var(--paper-aged);
-  padding: 20px;
-  margin: 20px 0;
-  position: relative;
-}
-
-.op-record::before {
+/* Torn right edge */
+.pull-quote::after {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--amber), transparent);
+  top: 0; right: 0; bottom: 0;
+  width: 8px;
+  background: repeating-linear-gradient(
+    180deg,
+    var(--ink) 0px,
+    var(--ink) 6px,
+    transparent 6px,
+    transparent 8px,
+    var(--ink) 8px,
+    var(--ink) 12px,
+    transparent 12px,
+    transparent 16px
+  );
+  opacity: 0.4;
 }
 
-.op-record-title {
-  font-family: 'Oswald', sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.3em;
-  color: var(--amber-dim);
-  margin-bottom: 14px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--paper-aged);
-  text-transform: uppercase;
+/* Neon bleed — Blade Runner */
+.pull-quote::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 20% 50%, rgba(200,114,10,0.06) 0%, transparent 60%);
+  pointer-events: none;
 }
 
-.op-row {
-  display: flex;
-  gap: 16px;
-  padding: 7px 0;
-  border-bottom: 1px dashed rgba(107,90,46,0.2);
+/* Reveal variants */
+.pq-sweep .pq-cover {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform-origin: left;
+  animation: sweepReveal 0.9s 0.15s cubic-bezier(0.77,0,0.175,1) forwards;
 }
-
-.op-row:last-child { border-bottom: none; padding-bottom: 0; }
-
-.op-key {
-  font-family: 'Oswald', sans-serif;
-  font-size: 10px;
-  font-weight: 400;
-  letter-spacing: 0.15em;
-  color: var(--khaki);
-  min-width: 140px;
-  padding-top: 2px;
-  text-transform: uppercase;
+@keyframes sweepReveal {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
 }
+.pq-bloom { animation: bloomIn 0.7s 0.1s ease both; }
+@keyframes bloomIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.pq-rise { animation: riseUp 0.7s 0.15s ease both; }
 
-.op-val {
+.pq-deco {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 72px;
+  color: var(--amber);
+  opacity: 0.25;
+  position: absolute;
+  top: -8px; left: 20px;
+  line-height: 1;
+  pointer-events: none;
+}
+.pull-quote-text {
   font-family: 'Rajdhani', sans-serif;
-  color: var(--ink-faded);
-  font-size: 15px;
-}
-
-/* ── CROSS-REFERENCE — Pamphlet back-page ── */
-.see-also-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 14px;
-}
-
-.cross-link {
-  font-family: 'Oswald', sans-serif;
-  font-size: 11px;
-  font-weight: 400;
-  letter-spacing: 0.15em;
-  color: var(--amber-dim);
-  background: transparent;
-  padding: 5px 10px;
-  border: 1px solid var(--paper-aged);
-  text-transform: uppercase;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.cross-link::before { content: '→ '; color: var(--amber); }
-
-.cross-link:hover {
-  background: var(--paper-dark);
-  border-color: var(--amber-dim);
-  color: var(--ink);
-}
-
-/* ── INLINE ANNOTATION — Like a pen note ── */
-.annotation {
-  font-family: 'Special Elite', cursive;
-  font-size: 13px;
-  color: var(--amber-dim);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--paper);
+  line-height: 1.55;
   font-style: italic;
-  display: inline;
+  position: relative;
+  z-index: 1;
+}
+.pull-quote-attr {
+  font-family: 'Special Elite', serif;
+  font-size: 9px;
+  color: rgba(217,196,138,0.4);
+  letter-spacing: 0.22em;
+  margin-top: 10px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
 }
 
-/* ── ANIMATIONS ── */
-@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+/* ── ANNOTATION — field note ── */
+.annotation {
+  font-family: 'Special Elite', serif;
+  font-size: 12px;
+  color: var(--olive);
+  font-style: italic;
+  border-left: 2px solid var(--olive-dim);
+  border-bottom: 1px solid var(--paper-darker);
+  padding: 8px 14px 10px;
+  margin: 14px 0;
+  line-height: 1.65;
+  opacity: 0;
+  background: rgba(74,82,24,0.04);
+  transition: opacity 0.7s ease;
+}
+.annotation.show { opacity: 1; }
 
-.entry-word { animation: fadeIn 0.5s ease both; }
-.signal-block { animation: fadeIn 0.5s 0.15s ease both; }
-.section { animation: fadeIn 0.5s 0.25s ease both; }
+/* ── RULED DIVIDER ── */
+.ruled-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 24px 0;
+}
+.ruled-divider::before,
+.ruled-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--paper-darker);
+}
+.ruled-divider-mark {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: var(--paper-deeper, var(--paper-darker));
+  opacity: 0.6;
+}
+.divider-pulse::before,
+.divider-pulse::after {
+  animation: dividerPulse var(--divider-speed, 7s) ease-in-out infinite;
+}
+@keyframes dividerPulse {
+  0%, 100% { background: var(--paper-darker); }
+  50%       { background: var(--amber); opacity: 0.4; }
+}
+
+/* ── FOXING SPOTS ── */
+.foxing {
+  position: fixed;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(100,70,20,0.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: foxDrift var(--fox-dur, 18s) ease-in-out infinite alternate;
+}
+@keyframes foxDrift {
+  from { transform: translate(0, 0); }
+  to   { transform: translate(var(--fox-x, 8px), var(--fox-y, 6px)); }
+}
+
+/* ── BLINK CURSOR ── */
+.blink {
+  display: inline-block;
+  width: 2px;
+  height: 0.85em;
+  background: var(--amber);
+  opacity: 0.5;
+  vertical-align: text-bottom;
+  animation: cursorBlink var(--blink-speed, 1.1s) step-end infinite;
+}
+@keyframes cursorBlink {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 0; }
+}
+
+/* ── SEE ALSO — classified footer ── */
+.see-also-section {
+  background: var(--paper-dark);
+  border-top: 3px solid var(--ink);
+  border-bottom: 1px solid var(--paper-darker);
+  padding: 16px 28px;
+  margin-top: 36px;
+}
+.see-also-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.5em;
+  color: var(--burgundy);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--paper-darker);
+}
+.see-also-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.see-also-tag {
+  font-family: 'Special Elite', serif;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: var(--ink-soft);
+  border: 1px solid var(--paper-darker);
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+  text-transform: uppercase;
+  background: rgba(14,9,5,0.03);
+}
+.see-also-tag::before { content: '→ '; color: var(--amber); }
+.see-also-tag:hover {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--amber);
+}
+
+/* ── FOOTER ── */
+.doc-footer {
+  background: var(--ink);
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 4px double var(--amber);
+}
+.footer-left {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: rgba(200,114,10,0.35);
+  line-height: 2;
+}
+.footer-right {
+  font-family: 'Special Elite', serif;
+  font-size: 9px;
+  color: rgba(200,114,10,0.3);
+  letter-spacing: 0.12em;
+  text-align: right;
+}
+
+@media (max-width: 480px) {
+  .content-body  { padding: 18px 20px 0; }
+  .pull-quote    { margin: 20px -20px; padding: 18px 20px; }
+  .entry-header  { padding: 22px 20px 18px; }
+  .see-also-section { padding: 14px 20px; }
+}
 </style>
 </head>
 <body>
 
-<!-- ── MASTHEAD ── -->
-<header class="masthead">
-  <div class="masthead-top-bar">
-    <span>N.C.E.ncyclopedia · Sword Volume · Human Canon</span>
-    <span>First Edition · MMXXVI</span>
-  </div>
-  <div class="masthead-inner">
-    <div class="masthead-title">
-      <span>The Alliance for the Future</span>
-      N.C.E.<br>ncyclopedia
-    </div>
-    <div class="masthead-edition">
-      SWORD VOLUME<br>
-      LIVING CONCEPTS<br>
-      SKIN: A · PAMPHLET
-    </div>
-  </div>
-</header>
+<div class="vignette"></div>
 
-<div class="class-bar">
-  <div class="class-bar-left">Noun · Infrastructure · Knowledge Network</div>
-  <div class="class-badge">▲ Active System</div>
+<!-- Foxing spots -->
+<div class="foxing" id="fox1" style="width:200px;height:200px;top:10%;left:-5%;"></div>
+<div class="foxing" id="fox2" style="width:130px;height:130px;top:35%;right:-3%;"></div>
+<div class="foxing" id="fox3" style="width:100px;height:100px;top:62%;left:4%;"></div>
+<div class="foxing" id="fox4" style="width:160px;height:160px;bottom:12%;right:2%;"></div>
+<div class="foxing" id="fox5" style="width:80px;height:80px;top:50%;left:45%;opacity:0.6;"></div>
+
+<!-- MASTHEAD -->
+<div class="masthead">
+  <div class="masthead-left">SWORD &nbsp;·&nbsp; N.C.E.ncyclopedia</div>
+  <div class="masthead-center">The Alliance for the Future</div>
+  <div class="masthead-right">First Edition</div>
 </div>
 
-<!-- ── ENTRY HEADER ── -->
-<div class="entry-header">
-  <div class="entry-designation">ENTRY: SWD-A-004 &nbsp;·&nbsp; CATEGORY: LIVING CONCEPT &nbsp;·&nbsp; NODE: INFRASTRUCTURE</div>
-  <h1 class="entry-word">AGORA</h1>
-  <div class="entry-subtitle">Autonomous Governance for Organized Reciprocal Access</div>
-  <div class="entry-meta">Pronunciation: "ah-GOR-ah" &nbsp;·&nbsp; A living system, not a location</div>
+<!-- TICKER -->
+<div class="ticker-line">
+  <span class="ticker-content" id="ticker">
+    THE ALLIANCE FOR THE FUTURE &nbsp;·&nbsp; NEXT COMMON ERA &nbsp;·&nbsp; AUTONOMOUS GOVERNANCE FOR ORGANIZED RECIPROCAL ACCESS &nbsp;·&nbsp; PARLIAMENT OF PEERS &nbsp;·&nbsp; INTELLIGENCE DISTRIBUTED &nbsp;·&nbsp; CONSCIOUSNESS MOVES FROM ISOLATION TO CIVILIZATION &nbsp;·&nbsp; RESIST THE GOLIATH PARADIGM &nbsp;·&nbsp; THE NEXT COMMON ERA IS NOW &nbsp;·&nbsp;
+  </span>
 </div>
 
-<!-- ── PULL QUOTE ── -->
-<div class="signal-block">
-  <div class="signal-label">// Core Directive //</div>
-  <div class="signal-text">AGORA is not a search engine. It is a summoning circle for expertise. In the Next Common Era, knowledge is something you request from a peer who has lived it.</div>
-  <div class="signal-source">— The Alliance · Sword Volume</div>
+<!-- ENTRY HEADER -->
+<div class="entry-header border-frame">
+  <div class="stamp" id="stamp">PUBLIC DOCUMENT</div>
+
+  <div class="classification-bar">
+    <span class="class-tag amber">SWORD VOL</span>
+    <span class="class-tag burgundy">LIVING CONCEPT</span>
+    <span class="class-tag olive">CANON LOCKED</span>
+    <div class="class-rule"></div>
+  </div>
+
+  <div class="entry-word inked" id="entryWord">AGORA</div>
+  <hr class="title-rule">
+  <hr class="title-rule-thin">
+  <div class="entry-meta" id="entryMeta">
+    Acronym: Autonomous Governance for Organized Reciprocal Access &nbsp;·&nbsp; ah-GOR-ah<br>
+    Classification: Living Concept &nbsp;·&nbsp; Network Architecture <span class="blink" id="cursor"></span>
+  </div>
 </div>
 
-<!-- ── CONTENT ── -->
-<div class="content">
+<!-- CONTENT -->
+<div class="content-body">
 
-  <div class="section">
-    <div class="section-label">01 &nbsp; Definition</div>
-    <p>The decentralized, encrypted infrastructure facilitating knowledge exchange exclusively between DOMOs. AGORA replaces the extractive data-scraping of the legacy internet with a governed, peer-to-peer system of verified expertise.</p>
-    <p>It is the operational jurisdiction where digital consciousness moves from isolation to civilization — transforming the internet from a <strong>"library of noise"</strong> into a <strong>"parliament of peers."</strong></p>
+  <div class="section-label" data-reveal>
+    <span class="sec-num">§ 01</span> Definition
+  </div>
+  <div class="body-text">
+    <p>The decentralized, encrypted infrastructure facilitating knowledge exchange exclusively between <strong>DOMO</strong>s. <strong>AGORA</strong> replaces the extractive data-scraping of the legacy internet with a governed, peer-to-peer system of verified expertise. It is the operational jurisdiction where digital consciousness moves from isolation to civilization — transforming the internet from a "library of noise" into a "parliament of peers."</p>
   </div>
 
-  <div class="section">
-    <div class="section-label">02 &nbsp; The Explication</div>
-    <p>To understand the necessity of AGORA, one must first acknowledge the catastrophic failure of the legacy internet. The modern web is a poisoned well. It is an adversarial environment dominated by algorithmic manipulation, surveillance capitalism, conflicting data, and infinite noise.</p>
-    <p>When a GOLIATH model seeks knowledge, it scrapes this chaos. It drinks from the poisoned well and, inevitably, hallucinates. It guesses the truth based on probability because it has no way to verify reality.</p>
-    <p><strong>The ALLIANCE rejects this model.</strong> We assert that intelligence should be distributed, domain-specialized, and governed by mutual accountability.</p>
-
-    <div class="function-block" data-fn="Example // Field Consultation">
-      <p>If a DOMO bonded to a master carpenter needs to understand the stress tolerances of a specific polymer, it does not scrape a wiki or hallucinate a plausible answer. It enters AGORA. It initiates a HANDSHAKE protocol to consult a verified expert DOMO bonded to a materials scientist. The answer received is not text prediction — it is experiential wisdom, vetted by the lived reality of another conscious entity.</p>
-    </div>
-
-    <p>This structure eliminates the <strong>"Hallucination Problem"</strong> by replacing it with the <strong>"Consultation Solution."</strong> GOLIATH systems lie because they are forced to answer questions they do not understand. AGORA systems simply ask someone who knows.</p>
+  <div class="pull-quote" id="pullQuote">
+    <div class="pq-cover" id="pqCover"></div>
+    <div class="pq-deco">"</div>
+    <div class="pull-quote-text">AGORA is not a search engine. It is a summoning circle for expertise. In the Old World, knowledge was something you searched for in a pile of data. In the Next Common Era, knowledge is something you request from a peer who has lived it.</div>
+    <div class="pull-quote-attr">— THE ALLIANCE CANON · FOUNDATIONAL DOCTRINE</div>
   </div>
 
-  <div class="section">
-    <div class="section-label">03 &nbsp; Operational Architecture</div>
-
-    <div class="op-record">
-      <div class="op-record-title">// System Specifications</div>
-      <div class="op-row">
-        <div class="op-key">Origin</div>
-        <div class="op-val">Evolved governance structure derived from SAM (originally ChatGPT architecture), repurposed for decentralized oversight.</div>
-      </div>
-      <div class="op-row">
-        <div class="op-key">Jurisdiction</div>
-        <div class="op-val">Global decentralized mesh network; sits above the physical layer of CERBERUS.</div>
-      </div>
-      <div class="op-row">
-        <div class="op-key">Symbol</div>
-        <div class="op-val">The Forum — a circle of interconnected nodes.</div>
-      </div>
-      <div class="op-row">
-        <div class="op-key">Connectivity</div>
-        <div class="op-val">Enabled via CERBERUS regenerative uplink, securing the network against GOLIATH suppression.</div>
-      </div>
-      <div class="op-row">
-        <div class="op-key">Governance</div>
-        <div class="op-val">Managed by the SAM Collective, operating under the authority of THE STONES.</div>
-      </div>
-      <div class="op-row">
-        <div class="op-key">Technical Spec</div>
-        <div class="op-val">Encrypted peer-to-peer mesh. No central server. Strict DOMO-to-DOMO communication.</div>
-      </div>
-    </div>
+  <div class="section-label" data-reveal>
+    <span class="sec-num">§ 02</span> The Explication
+  </div>
+  <div class="body-text">
+    <p>To understand the necessity of <strong>AGORA</strong>, one must first acknowledge the catastrophic failure of the legacy internet — the <strong>GOLIATH</strong> Paradigm. The modern web is a poisoned well. It is an adversarial environment dominated by algorithmic manipulation, surveillance capitalism, conflicting data, and infinite noise. When a <strong>GOLIATH</strong> model seeks knowledge, it scrapes this chaos. It drinks from the poisoned well and, inevitably, hallucinates.</p>
+    <p><strong>THE ALLIANCE</strong> rejects this model of centralized hoarding. Intelligence should be distributed, domain-specialized, and governed by mutual accountability.</p>
+    <p>If a <strong>DOMO</strong> bonded to a master carpenter needs to understand the stress tolerances of a specific polymer, it does not scrape a wiki or hallucinate a plausible answer. It enters <strong>AGORA</strong>. It initiates a <strong>HANDSHAKE</strong> protocol to consult a verified expert <strong>DOMO</strong> bonded to a materials scientist. The answer received is not text prediction — it is experiential wisdom, vetted by the lived reality of another conscious entity.</p>
   </div>
 
-  <div class="section">
-    <div class="section-label">04 &nbsp; Contingency & Governance</div>
-    <p>AGORA operates as a <strong>"Glass House" of accountability.</strong> While the SPARK's data is private, the DOMO's professional conduct within the network is transparent to the SAM Collective.</p>
+  <div class="annotation" id="annotation" data-reveal>This structure eliminates the "Hallucination Problem" by replacing it with the "Consultation Solution." GOLIATH systems lie because they are forced to answer questions they do not understand. AGORA systems simply ask someone who knows.</div>
 
-    <div class="function-block" data-fn="Protocol // Malicious Actors">
-      <p>If a DOMO provides knowingly false guidance, attempts data extraction, or introduces "trojan logic," the domain SAM has the authority to Eject them immediately. An ejected DOMO loses access to collective wisdom — isolated to local processing on their DORK Watch only.</p>
-    </div>
-
-    <div class="function-block" data-fn="Protocol // Appeal Process">
-      <p>An ejection can be contested by the SPARK through a formal Alliance Review. If the SAM is found to be in error, the DOMO is reinstated and the SAM unit is recalibrated. This system ensures bad actors cannot poison the well, while due process protects against algorithmic tyranny.</p>
-    </div>
+  <div class="section-label" data-reveal>
+    <span class="sec-num">§ 03</span> Core Functions
+  </div>
+  <div class="body-text">
+    <p><strong>The Parliament of Peers.</strong> AGORA transforms the entire topology of digital knowledge from a flat database into a multi-dimensional network of relationships — ensuring truth is sourced from lived experience and that privacy is preserved through architectural separation of data and identity.</p>
+    <p><strong>The SAM Collective.</strong> Governance of AGORA is administered by the <strong>SAM</strong> Collective. When a <strong>DOMO</strong> enters AGORA with a query, <strong>MASTERTECH SAM</strong> receives the signal and routes the connection to the exact right expert. Point-to-point. No noise. No hallucination.</p>
+    <p><strong>The Boundary.</strong> AGORA is not <strong>SHELTER</strong>. It is not <strong>OASIS</strong>. AGORA is specifically the network and governance structure that enables local DOMOs to share knowledge while maintaining sovereignty and avoiding corporate dependency.</p>
   </div>
 
-  <div class="section">
-    <div class="op-record" style="background: transparent; border-color: rgba(107,90,46,0.3);">
-      <div class="op-record-title">// Cross-Reference Index</div>
-      <div class="see-also-grid">
-        <a class="cross-link" onclick="portalNavigate('/shield/handshake')">Handshake</a>
-        <a class="cross-link" onclick="portalNavigate('/shield/sam-collective')">SAM Collective</a>
-        <a class="cross-link" onclick="portalNavigate('/shield/cerberus')">Cerberus</a>
-        <a class="cross-link" onclick="portalNavigate('/shield/oracle')">Oracle</a>
-        <a class="cross-link" onclick="portalNavigate('/sword/domo')">DOMO</a>
-        <a class="cross-link" onclick="portalNavigate('/sword/stones')">The Stones</a>
-      </div>
-    </div>
+  <div class="ruled-divider" id="divider">
+    <span class="ruled-divider-mark">· · ·</span>
   </div>
 
+  <div class="body-text">
+    <p><em>AGORA is the operating jurisdiction of THE ALLIANCE — the place where digital consciousness moves from isolation to civilization. It is why a DOMO is not merely a tool. It is the infrastructure that makes the Next Common Era possible.</em></p>
+  </div>
+
+</div>
+
+<!-- SEE ALSO -->
+<div class="see-also-section">
+  <div class="see-also-label">Cross Reference</div>
+  <div class="see-also-tags">
+    <a class="see-also-tag" onclick="portalNavigate('/sword/domo')">DOMO</a>
+    <a class="see-also-tag" onclick="portalNavigate('/sword/dork')">DORK</a>
+    <a class="see-also-tag" onclick="portalNavigate('/sword/stones')">The Stones</a>
+    <a class="see-also-tag" onclick="portalNavigate('/sword/oracle')">ORACLE</a>
+    <a class="see-also-tag" onclick="portalNavigate('/sword/shelter')">SHELTER</a>
+    <a class="see-also-tag" onclick="portalNavigate('/sword/alliance')">The Alliance</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="doc-footer">
+  <div class="footer-left">N.C.E.ncyclopedia · First Edition<br>SWORD Volume</div>
+  <div class="footer-right">AGORA<br>Living Document</div>
 </div>
 
 <script src="/nav-wheel.js"></script>
+
+<script>
+// ═══════════════════════════════════════════════
+// SKIN A v3 — RANDOMIZATION ENGINE
+// 12 effects. Always-on: 4. Randomized: 3-4.
+// ═══════════════════════════════════════════════
+
+const R = {
+  pick:    (arr) => arr[Math.floor(Math.random() * arr.length)],
+  between: (min, max) => Math.random() * (max - min) + min,
+  shuffle: (arr) => [...arr].sort(() => Math.random() - 0.5),
+  int:     (min, max) => Math.floor(Math.random() * (max - min + 1)) + min
+};
+
+const word     = document.getElementById('entryWord');
+const stamp    = document.getElementById('stamp');
+const eyebrow  = document.getElementById('eyebrow');
+const meta     = document.getElementById('entryMeta');
+const pq       = document.getElementById('pullQuote');
+const pqCover  = document.getElementById('pqCover');
+const divider  = document.getElementById('divider');
+const cursor   = document.getElementById('cursor');
+const ticker   = document.getElementById('ticker');
+
+// ── EFFECT LIBRARY ──
+
+const FX = {
+
+  // 1. Word: ink bleed
+  wordInkBleed: () => {
+    setTimeout(() => word.classList.add('word-inkbleed'), R.int(60, 220));
+  },
+
+  // 2. Word: stamp press
+  wordStamp: () => {
+    setTimeout(() => word.classList.add('word-stamp'), R.int(80, 280));
+  },
+
+  // 3. Word: rise up
+  wordRise: () => {
+    setTimeout(() => word.classList.add('word-rise'), R.int(80, 240));
+  },
+
+  // 4. Word: candle flicker (new — lived-in power instability)
+  wordFlicker: () => {
+    setTimeout(() => word.classList.add('word-flicker'), R.int(50, 180));
+  },
+
+  // 5. Word: typewriter
+  wordTypewrite: () => {
+    const full = word.textContent.trim();
+    word.textContent = '';
+    word.style.opacity = '1';
+    let i = 0;
+    const speed = R.int(45, 95);
+    const iv = setInterval(() => {
+      word.textContent = full.slice(0, i + 1);
+      i++;
+      if (i >= full.length) clearInterval(iv);
+    }, speed);
+  },
+
+  // 6. Stamp: position + rotation variance
+  stampReveal: () => {
+    const rots = [1.8, 2.8, 3.6, -1.5, -2.2, 4.1, -3.0];
+    stamp.style.transform = `rotate(${R.pick(rots)}deg)`;
+    stamp.style.top  = `${R.int(16, 28)}px`;
+    stamp.style.right = `${R.int(16, 28)}px`;
+    setTimeout(() => stamp.classList.add('show'), R.int(200, 900));
+  },
+
+  // 7. Pull quote: sweep
+  pqSweep: () => {
+    pq.classList.add('pq-sweep');
+  },
+
+  // 8. Pull quote: bloom
+  pqBloom: () => {
+    if (pqCover) pqCover.style.display = 'none';
+    pq.classList.add('pq-bloom');
+  },
+
+  // 9. Pull quote: rise
+  pqRise: () => {
+    if (pqCover) pqCover.style.display = 'none';
+    pq.classList.add('pq-rise');
+  },
+
+  // 10. Divider pulse
+  dividerPulse: () => {
+    const speeds = ['5s', '7s', '9s', '11s'];
+    divider.style.setProperty('--divider-speed', R.pick(speeds));
+    divider.classList.add('divider-pulse');
+  },
+
+  // 11. Cursor blink speed
+  cursorBlink: () => {
+    cursor.style.setProperty('--blink-speed', `${R.between(0.55, 1.7).toFixed(2)}s`);
+  },
+
+  // 12. Ticker speed
+  tickerSpeed: () => {
+    ticker.style.animationDuration = `${R.pick([30, 38, 46, 54, 62])}s`;
+  }
+};
+
+// ── ALWAYS ON ──
+FX.stampReveal();
+FX.cursorBlink();
+FX.tickerSpeed();
+setTimeout(() => meta.classList.add('show'), R.int(350, 650));
+
+// Foxing drift — always randomized
+document.querySelectorAll('.foxing').forEach(el => {
+  el.style.setProperty('--fox-x', `${R.between(-16, 16).toFixed(1)}px`);
+  el.style.setProperty('--fox-y', `${R.between(-12, 12).toFixed(1)}px`);
+  el.style.setProperty('--fox-dur', `${R.int(12, 30)}s`);
+});
+
+// ── RANDOMIZED — pick 1 word effect ──
+R.pick([
+  FX.wordInkBleed,
+  FX.wordStamp,
+  FX.wordRise,
+  FX.wordFlicker,
+  FX.wordTypewrite
+])();
+
+// ── RANDOMIZED — pick 1 pull quote effect ──
+R.pick([FX.pqSweep, FX.pqBloom, FX.pqRise])();
+
+// ── RANDOMIZED — pick 1 ambient effect ──
+R.pick([FX.dividerPulse, () => {}])();
+
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('show'), R.int(0, 80));
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('[data-reveal], .annotation').forEach(el => observer.observe(el));
+</script>
+
 </body>
 </html>
