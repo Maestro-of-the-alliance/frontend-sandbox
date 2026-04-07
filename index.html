@@ -604,11 +604,16 @@ body {
   opacity: 1;
   transition: opacity 0.35s ease;
   z-index: 2;
+  background: #000;
 }
 
 #dosScreen.fade-out {
   opacity: 0;
   pointer-events: none;
+}
+
+#dosScreen.hidden {
+  display: none !important;
 }
 
 .dos-line {
@@ -1239,7 +1244,7 @@ function resetTOCVisualState() {
   clearBootTimers();
   bootSkipped = false;
 
-  dosScreen.classList.remove('fade-out');
+  dosScreen.classList.remove('fade-out', 'hidden');
   dosScreen.style.opacity = '1';
   dosScreen.style.pointerEvents = 'auto';
   dosScreen.innerHTML = '';
@@ -1261,10 +1266,14 @@ function instantShowDirectory() {
   clearBootTimers();
   bootSkipped = true;
   dosScreen.classList.add('fade-out');
-  dirPanel.classList.add('open');
-  printEntries(0);
-  tocSearch.focus();
-  tocState = 'open';
+
+  addBootTimer(() => {
+    dosScreen.classList.add('hidden');
+    dirPanel.classList.add('open');
+    printEntries(0);
+    tocSearch.focus();
+    tocState = 'open';
+  }, 120);
 }
 
 function runDOSBoot() {
@@ -1284,10 +1293,13 @@ function runDOSBoot() {
 
   addBootTimer(() => {
     if (bootSkipped || tocState === 'closing' || tocState === 'closed') return;
+
     dosScreen.classList.add('fade-out');
 
     addBootTimer(() => {
       if (bootSkipped || tocState === 'closing' || tocState === 'closed') return;
+
+      dosScreen.classList.add('hidden');
       dirPanel.classList.add('open');
       printEntries();
       tocSearch.focus();
