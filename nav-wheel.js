@@ -648,4 +648,24 @@
     document.body.appendChild(bottomNav);
   }
 
+  // ── SAFE BACK NAVIGATION ─────────────────────────────────────────────────
+  // Intercept browser back button. If there's nowhere to go back to,
+  // navigate home instead of exiting the app.
+
+  // Push a state on load so there's always something to pop back to
+  if (window.history && window.history.pushState) {
+    history.pushState({ nwPage: true, path: window.location.pathname }, '');
+  }
+
+  window.addEventListener('popstate', (e) => {
+    // If no state or we're at the root, go home
+    if (!e.state || window.location.pathname === '/') {
+      // Already at home — do nothing, don't exit
+      if (window.location.pathname === '/') return;
+      portalNavigate('/');
+      return;
+    }
+    // Otherwise let normal back behavior proceed
+  });
+
 })();
