@@ -96,7 +96,7 @@ body {
 /* TOC OVERLAY */
 #tocOverlay { position:fixed; inset:0; z-index:8500; background:rgba(0,0,0,0.985); display:none; flex-direction:column; overflow:hidden; opacity:0; transition:opacity 0.3s ease; }
 #tocOverlay.open { display:flex; opacity:1; }
-#dosScreen { position:absolute; inset:0; display:flex; flex-direction:column; padding:28px 28px 0; overflow:hidden; cursor:pointer; opacity:1; transition:opacity 0.35s ease; z-index:2; background:#000; }
+#dosScreen { position:absolute; inset:0; display:flex; flex-direction:column; padding:60px 28px 0; overflow:hidden; cursor:pointer; opacity:1; transition:opacity 0.35s ease; z-index:2; background:#000; }
 #dosScreen.fade-out { opacity:0; pointer-events:none; }
 .dos-line { font-family:'VT323',monospace; font-size:clamp(14px,3.5vw,18px); color:rgba(184,150,40,0.85); letter-spacing:0.08em; line-height:1.8; white-space:pre; opacity:0; transition:opacity 0.18s ease; }
 .dos-line.visible { opacity:1; }
@@ -504,7 +504,7 @@ function runDOSBoot() {
   dosScreen.style.opacity = '1';
   dosScreen.classList.remove('fade-out');
   dirPanel.classList.remove('open');
-  dirPanel.style.opacity = '0';
+  // Do NOT set dirPanel.style.opacity inline — let CSS handle it
 
   // Build lines
   DOS_LINES.forEach((line, i) => {
