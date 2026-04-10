@@ -489,7 +489,10 @@ function closeTOC() {
     dosScreen.style.pointerEvents='auto'; dosScreen.innerHTML='';
     dirPanel.classList.remove('open');
     tocSearch.value=''; filterEntries('');
-    document.querySelectorAll('.toc-entry').forEach(e=>{ e.classList.remove('printed','hidden'); e.style.opacity='0'; });
+    document.querySelectorAll('.toc-entry').forEach(e => {
+      e.classList.remove('printed', 'hidden');
+      e.style.removeProperty('opacity');
+    });
   }, 320);
 }
 
@@ -533,12 +536,18 @@ function runDOSBoot() {
 
 function printEntries() {
   const entries = document.querySelectorAll('.toc-entry');
-  // Force opacity to 0 first so transition is visible
-  entries.forEach(e => { e.classList.remove('printed'); e.style.opacity = '0'; });
-  // Then stagger them in
+  // Clear any inline opacity so the CSS class can take effect
+  entries.forEach(e => {
+    e.classList.remove('printed');
+    e.style.removeProperty('opacity');
+  });
+  // Stagger them in
   requestAnimationFrame(() => {
     entries.forEach((e, i) => {
-      setTimeout(() => e.classList.add('printed'), i * 18);
+      setTimeout(() => {
+        e.style.removeProperty('opacity');
+        e.classList.add('printed');
+      }, i * 18);
     });
   });
 }
