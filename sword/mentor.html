@@ -604,41 +604,77 @@ em     { color:var(--cyan); font-style:normal; font-weight:500; }
   document.getElementById('quote-text').innerHTML = q.text;
   document.getElementById('quote-cite').textContent = q.cite;
 
-  // ── RANDANIME ENGINE — pure JS, requestAnimationFrame ──────
-  // 10 effects. Each animates opacity + one transform property.
-  // No @keyframes involved. Browser cannot suppress rAF.
+  // ── RANDANIME ENGINE — CATEGORICAL ───────────────────────────
+  // Like Skin A: independent picks per category.
+  // HEADER effect · PANEL effect · PQ effect · AMBIENT pool
+  // All rAF-driven. No @keyframes. Cannot be suppressed.
 
-  const EFFECTS = [
-    // 1: Fade up
-    (el, done) => {
+  const R = {
+    pick: (arr) => arr[Math.floor(Math.random() * arr.length)],
+    int:  (min, max) => Math.floor(Math.random() * (max - min + 1)) + min,
+    shuffle: (arr) => [...arr].sort(() => Math.random() - 0.5)
+  };
+
+  const done = (el) => { el.style.opacity = '1'; el.style.transform = ''; el.style.filter = ''; el.style.clipPath = ''; };
+
+  // ── EFFECT LIBRARY ──
+  const FX = {
+
+    // Header word effects — applied to ra-0 only
+    wordFadeUp: (el, cb) => {
       let t = 0; const D = 700;
       el.style.transform = 'translateY(14px)';
       const tick = now => {
         if (!t) t = now;
         const p = Math.min((now - t) / D, 1);
-        const e = 1 - Math.pow(1 - p, 3); // ease out cubic
-        el.style.opacity = e;
-        el.style.transform = `translateY(${14 * (1 - e)}px)`;
-        if (p < 1) requestAnimationFrame(tick); else done(el);
+        const e = 1 - Math.pow(1 - p, 3);
+        el.style.opacity = e; el.style.transform = `translateY(${14*(1-e)}px)`;
+        if (p < 1) requestAnimationFrame(tick); else (cb||done)(el);
       };
       requestAnimationFrame(tick);
     },
-    // 2: Fade left (light cycle)
-    (el, done) => {
+
+    wordLightCycle: (el, cb) => {
       let t = 0; const D = 750;
-      el.style.transform = 'translateX(-20px)';
+      el.style.transform = 'translateX(-24px)';
       const tick = now => {
         if (!t) t = now;
         const p = Math.min((now - t) / D, 1);
         const e = 1 - Math.pow(1 - p, 3);
-        el.style.opacity = e;
-        el.style.transform = `translateX(${-20 * (1 - e)}px)`;
-        if (p < 1) requestAnimationFrame(tick); else done(el);
+        el.style.opacity = e; el.style.transform = `translateX(${-24*(1-e)}px)`;
+        if (p < 1) requestAnimationFrame(tick); else (cb||done)(el);
       };
       requestAnimationFrame(tick);
     },
-    // 3: Scan wipe top to bottom (clip-path)
-    (el, done) => {
+
+    wordPowerOn: (el, cb) => {
+      let t = 0; const D = 1200;
+      const tick = now => {
+        if (!t) t = now;
+        const p = Math.min((now - t) / D, 1);
+        const e = 1 - Math.pow(1 - p, 2);
+        el.style.opacity = Math.min(p * 3, 1);
+        el.style.filter = `brightness(${3 - 2*e}) saturate(${e})`;
+        if (p < 1) requestAnimationFrame(tick); else (cb||done)(el);
+      };
+      requestAnimationFrame(tick);
+    },
+
+    wordDecrypt: (el, cb) => {
+      let t = 0; const D = 1100;
+      el.style.filter = 'blur(8px)';
+      const tick = now => {
+        if (!t) t = now;
+        const p = Math.min((now - t) / D, 1);
+        const e = 1 - Math.pow(1 - p, 2);
+        el.style.opacity = e; el.style.filter = `blur(${8*(1-e)}px)`;
+        if (p < 1) requestAnimationFrame(tick); else (cb||done)(el);
+      };
+      requestAnimationFrame(tick);
+    },
+
+    // Panel effects — applied to ra-1 through ra-5
+    panelScanWipe: (el, cb) => {
       let t = 0; const D = 800;
       el.style.clipPath = 'inset(0 0 100% 0)';
       const tick = now => {
@@ -646,68 +682,37 @@ em     { color:var(--cyan); font-style:normal; font-weight:500; }
         const p = Math.min((now - t) / D, 1);
         const e = 1 - Math.pow(1 - p, 2);
         el.style.opacity = 1;
-        el.style.clipPath = `inset(0 0 ${100 * (1 - e)}% 0)`;
-        if (p < 1) requestAnimationFrame(tick); else { el.style.clipPath = ''; done(el); }
+        el.style.clipPath = `inset(0 0 ${100*(1-e)}% 0)`;
+        if (p < 1) requestAnimationFrame(tick); else (cb||done)(el);
       };
       requestAnimationFrame(tick);
     },
-    // 4: Holo flicker
-    (el, done) => {
+
+    panelHoloFlicker: (el, cb) => {
       const seq = [0, 0.9, 0.05, 0.95, 0.1, 1, 0.6, 1];
       let i = 0;
       const step = () => {
-        if (i >= seq.length) { el.style.opacity = 1; done(el); return; }
+        if (i >= seq.length) { el.style.opacity = 1; (cb||done)(el); return; }
         el.style.opacity = seq[i++];
         setTimeout(step, 80);
       };
       step();
     },
-    // 5: Power on — brightness bloom
-    (el, done) => {
-      let t = 0; const D = 1200;
+
+    panelRiseUp: (el, cb) => {
+      let t = 0; const D = 800;
+      el.style.transform = 'translateY(20px)';
       const tick = now => {
         if (!t) t = now;
         const p = Math.min((now - t) / D, 1);
-        const e = 1 - Math.pow(1 - p, 2);
-        const brightness = 3 - 2 * e;
-        const sat = e;
-        el.style.opacity = Math.min(p * 3, 1);
-        el.style.filter = `brightness(${brightness}) saturate(${sat})`;
-        if (p < 1) requestAnimationFrame(tick); else { el.style.filter = ''; done(el); }
+        const e = 1 - Math.pow(1 - p, 4);
+        el.style.opacity = e; el.style.transform = `translateY(${20*(1-e)}px)`;
+        if (p < 1) requestAnimationFrame(tick); else (cb||done)(el);
       };
       requestAnimationFrame(tick);
     },
-    // 6: Blur in (decrypt)
-    (el, done) => {
-      let t = 0; const D = 1000;
-      el.style.filter = 'blur(8px)';
-      const tick = now => {
-        if (!t) t = now;
-        const p = Math.min((now - t) / D, 1);
-        const e = 1 - Math.pow(1 - p, 2);
-        el.style.opacity = e;
-        el.style.filter = `blur(${8 * (1 - e)}px)`;
-        if (p < 1) requestAnimationFrame(tick); else { el.style.filter = ''; done(el); }
-      };
-      requestAnimationFrame(tick);
-    },
-    // 7: Scale bloom
-    (el, done) => {
-      let t = 0; const D = 900;
-      el.style.transform = 'scale(1.03)';
-      const tick = now => {
-        if (!t) t = now;
-        const p = Math.min((now - t) / D, 1);
-        const e = 1 - Math.pow(1 - p, 3);
-        el.style.opacity = e;
-        el.style.transform = `scale(${1.03 - 0.03 * e})`;
-        if (p < 1) requestAnimationFrame(tick); else { el.style.transform = ''; done(el); }
-      };
-      requestAnimationFrame(tick);
-    },
-    // 8: Security sweep — light bar then reveal
-    (el, done) => {
-      // First half: stay invisible but add sweep bar
+
+    panelSecuritySweep: (el, cb) => {
       const bar = document.createElement('div');
       bar.style.cssText = 'position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:100;';
       const light = document.createElement('div');
@@ -719,64 +724,110 @@ em     { color:var(--cyan); font-style:normal; font-weight:500; }
       const tick = now => {
         if (!t) t = now;
         const p = Math.min((now - t) / D, 1);
-        light.style.left = `${-50 + 200 * p}%`;
+        light.style.left = `${-50 + 200*p}%`;
         el.style.opacity = p > 0.4 ? (p - 0.4) / 0.6 : 0;
-        if (p < 1) requestAnimationFrame(tick); else { bar.remove(); done(el); }
+        if (p < 1) requestAnimationFrame(tick); else { bar.remove(); (cb||done)(el); }
       };
       requestAnimationFrame(tick);
     },
-    // 9: Stutter (rapid opacity steps then settle)
-    (el, done) => {
-      const stutters = [0,1,0,1,0.3,1,0.7,1];
+
+    panelStutter: (el, cb) => {
+      const seq = [0,1,0,1,0.3,1,0.7,1];
       let i = 0;
       const step = () => {
-        if (i >= stutters.length) { el.style.opacity = 1; done(el); return; }
-        el.style.opacity = stutters[i++];
-        setTimeout(step, 60);
+        if (i >= seq.length) { el.style.opacity = 1; (cb||done)(el); return; }
+        el.style.opacity = seq[i++];
+        setTimeout(step, 65);
       };
       step();
     },
-    // 10: Rise from below with fade
-    (el, done) => {
-      let t = 0; const D = 800;
-      el.style.transform = 'translateY(24px)';
+
+    // PQ effects — applied to ra-3 (pull quote) independently
+    pqSweep: (el, cb) => {
+      let t = 0; const D = 850;
+      el.style.clipPath = 'inset(0 100% 0 0)';
+      el.style.opacity = 1;
       const tick = now => {
         if (!t) t = now;
         const p = Math.min((now - t) / D, 1);
-        const e = 1 - Math.pow(1 - p, 4); // ease out quart
-        el.style.opacity = e;
-        el.style.transform = `translateY(${24 * (1 - e)}px)`;
-        if (p < 1) requestAnimationFrame(tick); else { el.style.transform = ''; done(el); }
+        const e = 1 - Math.pow(1 - p, 2);
+        el.style.clipPath = `inset(0 ${100*(1-e)}% 0 0)`;
+        if (p < 1) requestAnimationFrame(tick); else (cb||done)(el);
+      };
+      requestAnimationFrame(tick);
+    },
+
+    pqPowerOn: (el, cb) => {
+      let t = 0; const D = 700;
+      const tick = now => {
+        if (!t) t = now;
+        const p = Math.min((now - t) / D, 1);
+        el.style.opacity = Math.min(p * 2.5, 1);
+        el.style.filter = `brightness(${1 + 2*(1-p)})`;
+        if (p < 1) requestAnimationFrame(tick); else (cb||done)(el);
+      };
+      requestAnimationFrame(tick);
+    },
+
+    pqRise: (el, cb) => {
+      let t = 0; const D = 600;
+      el.style.transform = 'translateY(12px)';
+      const tick = now => {
+        if (!t) t = now;
+        const p = Math.min((now - t) / D, 1);
+        const e = 1 - Math.pow(1 - p, 3);
+        el.style.opacity = e; el.style.transform = `translateY(${12*(1-e)}px)`;
+        if (p < 1) requestAnimationFrame(tick); else (cb||done)(el);
       };
       requestAnimationFrame(tick);
     }
-  ];
-
-  const chosenEffect = EFFECTS[Math.floor(Math.random() * EFFECTS.length)];
-
-  // Stagger targets
-  const targets = [
-    document.getElementById('ra-0'),
-    document.getElementById('ra-1'),
-    document.getElementById('ra-2'),
-    document.getElementById('ra-3'),
-    document.getElementById('ra-4'),
-    document.getElementById('ra-5'),
-    document.getElementById('ra-6'),
-    document.getElementById('ra-7'),
-  ].filter(Boolean);
-
-  const STAGGER = 160; // ms between each element
-
-  const done = (el) => {
-    el.style.opacity = '1';
-    el.style.transform = '';
   };
 
-  targets.forEach((el, i) => {
-    setTimeout(() => {
-      chosenEffect(el, done);
-    }, i * STAGGER);
+  // ── CATEGORICAL PICKS ──
+  const wordEffects  = [FX.wordFadeUp, FX.wordLightCycle, FX.wordPowerOn, FX.wordDecrypt];
+  const panelEffects = [FX.panelScanWipe, FX.panelHoloFlicker, FX.panelRiseUp, FX.panelSecuritySweep, FX.panelStutter];
+  const pqEffects    = [FX.pqSweep, FX.pqPowerOn, FX.pqRise];
+
+  const wordFX  = R.pick(wordEffects);
+  const panelFX = R.pick(panelEffects);
+  const pqFX    = R.pick(pqEffects);
+
+  // ── HEADER — immediate on load ──
+  const headerEl = document.getElementById('ra-0');
+  if (headerEl) wordFX(headerEl);
+
+  // ── PULL QUOTE — independent pick, slight delay ──
+  const pqEl = document.getElementById('ra-3');
+  if (pqEl) setTimeout(() => pqFX(pqEl), 300);
+
+  // ── PANEL TARGETS — staggered, same panel effect ──
+  const panelIds = ['ra-1','ra-2','ra-4','ra-5','ra-6','ra-7'];
+  const STAGGER = 150;
+  panelIds.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    setTimeout(() => panelFX(el), 80 + i * STAGGER);
+  });
+
+  // ── INTERSECTION OBSERVER — scroll reveal for below-fold sections ──
+  // Sections that load off-screen animate in as user scrolls to them
+  const scrollTargets = ['ra-5','ra-6','ra-7'];
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        // Only animate if still hidden (hasn't been triggered by load stagger)
+        if (parseFloat(el.style.opacity || 0) < 0.5) {
+          setTimeout(() => R.pick(panelEffects)(el), R.int(0, 80));
+        }
+        observer.unobserve(el);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  scrollTargets.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) observer.observe(el);
   });
 
   // ── CRT FLICKER ─────────────────────────────────────────────
