@@ -383,25 +383,23 @@ em     { color:var(--cyan); font-style:normal; font-weight:500; }
   box-shadow:0 0 6px var(--cyan),0 0 12px var(--cyan-glow);
 }
 
-/* ── PONG TRACER ─────────────────────────────────────────────── */
+/* ── TRACER TRACK ────────────────────────────────────────────── */
 #pong-track {
-  position:relative; height:20px;
+  position:relative; height:28px;
   background:var(--void-2);
   border-top:1px solid rgba(0,229,255,0.08);
   border-bottom:1px solid rgba(0,229,255,0.08);
   overflow:hidden;
 }
-#pong-ball {
-  position:absolute; top:50%; transform:translateY(-50%);
-  width:6px; height:6px; border-radius:50%;
-  background:var(--cyan);
-  box-shadow:0 0 8px var(--cyan),0 0 16px var(--cyan-glow);
+#tracer-canvas {
+  position:absolute; top:0; left:0;
+  width:100%; height:100%;
+  display:block;
 }
-/* Trail elements injected by JS */
-.pong-trail {
+/* dot elements for pong/mirror modes */
+.tracer-dot {
   position:absolute; top:50%; transform:translateY(-50%);
-  width:4px; height:4px; border-radius:50%;
-  background:var(--cyan); pointer-events:none;
+  border-radius:50%; background:var(--cyan); pointer-events:none;
 }
 
 /* ── RANDANIME TARGETS — start hidden, JS reveals ────────────── */
@@ -499,9 +497,9 @@ em     { color:var(--cyan); font-style:normal; font-weight:500; }
   <span class="chip active">LIMINAL OVERSIGHT</span>
 </div>
 
-<!-- PONG TRACER — signal line before the quote -->
+<!-- TRACER — signal line before the quote. Mode randomized each load. -->
 <div id="pong-track">
-  <div id="pong-ball"></div>
+  <canvas id="tracer-canvas"></canvas>
 </div>
 
 <!-- PULL QUOTE -->
@@ -908,49 +906,238 @@ em     { color:var(--cyan); font-style:normal; font-weight:500; }
   };
   ledTick();
 
-  // ── PONG TRACER ──────────────────────────────────────────────
-  const track  = document.getElementById('pong-track');
-  const ball   = document.getElementById('pong-ball');
-  const TRAIL_LENGTH = 8;
-  const trails = [];
+  // ── TRACER ENGINE — 3 modes, picked at random ────────────────
+  // Mode 1: PONG      — single ball, wall bounce with trail
+  // Mode 2: MIRROR    — two balls from opposite ends, collide center, reverse
+  // Mode 3: EKG       — flatline with random spike events
 
-  for (let i = 0; i < TRAIL_LENGTH; i++) {
-    const t = document.createElement('div');
-    t.className = 'pong-trail';
-    t.style.opacity = ((TRAIL_LENGTH - i) / TRAIL_LENGTH * 0.6).toFixed(2);
-    t.style.width = t.style.height = `${Math.max(2, 5 - i * 0.4)}px`;
-    track.appendChild(t);
-    trails.push({ el: t, x: -20 });
+  const trackerEl = document.getElementById('pong-track');
+  const canvas    = document.getElementById('tracer-canvas');
+  const ctx       = canvas.getContext('2d');
+
+  const TRACER_MODES = ['pong', 'mirror', 'ekg'];
+  const tracerMode  = R.pick(TRACER_MODES);
+
+  const CYAN      = '#00e5ff';
+  const CYAN_DIM  = 'rgba(0,229,255,0.25)';
+  const CYAN_GLOW = 'rgba(0,229,255,0.5)';
+
+  // Resize canvas to match element
+  const resizeCanvas = () => {
+    canvas.width  = trackerEl.offsetWidth;
+    canvas.height = trackerEl.offsetHeight;
+  };
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  const W = () => canvas.width;
+  const H = () => canvas.height;
+  const CY = () => H() / 2; // center Y
+
+  // ── SHARED: draw a glowing dot ──
+  const drawDot = (x, y, r, alpha) => {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, r * 2.5);
+    grad.addColorStop(0, CYAN);
+    grad.addColorStop(0.4, CYAN_GLOW);
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(x, y, r * 2.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = CYAN;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  };
+
+  // ── MODE 1: PONG ──────────────────────────────────────────────
+  if (tracerMode === 'pong') {
+    let bx = 0, dir = 1;
+    const SPEED = 2.4;
+    const TRAIL = 28;
+    const hist  = [];
+
+    const tick = () => {
+      bx += SPEED * dir;
+      if (bx >= W() - 4) { bx = W() - 4; dir = -1; }
+      if (bx <= 4)       { bx = 4;        dir =  1; }
+      hist.unshift(bx);
+      if (hist.length > TRAIL) hist.pop();
+
+      ctx.clearRect(0, 0, W(), H());
+
+      // Flatline
+      ctx.strokeStyle = CYAN_DIM;
+      ctx.lineWidth   = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, CY()); ctx.lineTo(W(), CY());
+      ctx.stroke();
+
+      // Trail
+      hist.forEach((x, i) => {
+        const alpha = (1 - i / TRAIL) * 0.5;
+        const r = Math.max(1, 3 - i * 0.08);
+        drawDot(x, CY(), r, alpha);
+      });
+
+      // Ball
+      drawDot(bx, CY(), 4, 1);
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
   }
 
-  let ballX = 0;
-  let ballDir = 1;
-  const BALL_SPEED = 2.2;
-  const history = [];
+  // ── MODE 2: MIRROR ────────────────────────────────────────────
+  else if (tracerMode === 'mirror') {
+    let ax = 4,        aDir = 1;
+    let bx2 = W() - 4, bDir = -1;
+    const SPEED = 2.2;
+    const TRAIL = 20;
+    const histA = [], histB = [];
+    let flash = 0;
 
-  const pongTick = () => {
-    const trackW = track.offsetWidth;
-    const ballW  = 6;
-    ballX += BALL_SPEED * ballDir;
-    if (ballX >= trackW - ballW) { ballX = trackW - ballW; ballDir = -1; }
-    if (ballX <= 0)              { ballX = 0;               ballDir =  1; }
+    const tick = () => {
+      ax  += SPEED * aDir;
+      bx2 += SPEED * bDir;
 
-    ball.style.left = ballX + 'px';
-    ball.style.boxShadow = `0 0 ${8 + Math.abs(ballDir) * 4}px var(--cyan), 0 0 ${16 + Math.abs(ballDir) * 8}px var(--cyan-glow)`;
+      // Bounce off walls
+      if (ax  >= W() - 4) { ax  = W() - 4; aDir = -1; }
+      if (ax  <= 4)        { ax  = 4;        aDir =  1; }
+      if (bx2 >= W() - 4) { bx2 = W() - 4;  bDir = -1; }
+      if (bx2 <= 4)        { bx2 = 4;         bDir =  1; }
 
-    // History trail
-    history.unshift(ballX);
-    if (history.length > TRAIL_LENGTH * 4) history.pop();
+      // Detect collision — when they cross the center
+      if (Math.abs(ax - bx2) < 6 && aDir !== bDir) {
+        aDir *= -1; bDir *= -1;
+        flash = 8; // frames of collision flash
+      }
 
-    trails.forEach((t, i) => {
-      const hx = history[i * 4] ?? ballX;
-      t.x = hx;
-      t.el.style.left = hx + 'px';
-    });
+      histA.unshift(ax);  if (histA.length > TRAIL) histA.pop();
+      histB.unshift(bx2); if (histB.length > TRAIL) histB.pop();
 
-    requestAnimationFrame(pongTick);
-  };
-  requestAnimationFrame(pongTick);
+      ctx.clearRect(0, 0, W(), H());
+
+      // Flatline
+      ctx.strokeStyle = CYAN_DIM;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, CY()); ctx.lineTo(W(), CY());
+      ctx.stroke();
+
+      // Collision flash
+      if (flash > 0) {
+        ctx.save();
+        ctx.globalAlpha = flash / 8 * 0.6;
+        const grd = ctx.createLinearGradient(W()*0.3, 0, W()*0.7, 0);
+        grd.addColorStop(0, 'transparent');
+        grd.addColorStop(0.5, CYAN);
+        grd.addColorStop(1, 'transparent');
+        ctx.fillStyle = grd;
+        ctx.fillRect(0, 0, W(), H());
+        ctx.restore();
+        flash--;
+      }
+
+      // Trails
+      histA.forEach((x, i) => drawDot(x, CY(), Math.max(1, 3 - i*0.12), (1 - i/TRAIL) * 0.45));
+      histB.forEach((x, i) => drawDot(x, CY(), Math.max(1, 3 - i*0.12), (1 - i/TRAIL) * 0.45));
+
+      // Balls
+      drawDot(ax,  CY(), 4, 1);
+      drawDot(bx2, CY(), 4, 1);
+
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  // ── MODE 3: EKG ───────────────────────────────────────────────
+  else if (tracerMode === 'ekg') {
+    const points = [];
+    const MAX_PTS = () => W() + 10;
+    let scanX   = 0;
+    let spikeCooldown = 0;
+    let spikeSeq    = null;
+    let spikeIdx    = 0;
+
+    // Initialize flatline
+    for (let i = 0; i < MAX_PTS(); i++) points.push(CY());
+
+    const triggerSpike = () => {
+      // QRS complex: sharp up, sharp down, recovery
+      const amp = H() * (0.25 + Math.random() * 0.3);
+      spikeSeq = [
+        CY(),
+        CY() - amp * 0.2,
+        CY() + amp * 0.15,
+        CY() - amp,          // peak
+        CY() + amp * 0.4,    // undershoot
+        CY() + amp * 0.1,
+        CY(),
+        CY()
+      ];
+      spikeIdx = 0;
+      spikeCooldown = 80 + Math.floor(Math.random() * 120);
+    };
+
+    const tick = () => {
+      // Advance scan position
+      scanX = (scanX + 1.8) % W();
+
+      // Get next Y value
+      let nextY = CY();
+      if (spikeSeq && spikeIdx < spikeSeq.length) {
+        nextY = spikeSeq[spikeIdx++];
+        if (spikeIdx >= spikeSeq.length) spikeSeq = null;
+      }
+
+      points.push(nextY);
+      if (points.length > MAX_PTS() + 20) points.shift();
+
+      // Cooldown
+      spikeCooldown--;
+      if (spikeCooldown <= 0) triggerSpike();
+
+      ctx.clearRect(0, 0, W(), H());
+
+      // Draw EKG line — oldest points on left, newest on right
+      const drawFrom = Math.max(0, points.length - W());
+      ctx.beginPath();
+      ctx.strokeStyle = CYAN;
+      ctx.lineWidth   = 1.5;
+      ctx.shadowColor = CYAN;
+      ctx.shadowBlur  = 6;
+
+      for (let i = 0; i < W() && drawFrom + i < points.length; i++) {
+        const y = points[drawFrom + i];
+        if (i === 0) ctx.moveTo(i, y);
+        else ctx.lineTo(i, y);
+      }
+      ctx.stroke();
+
+      // Scan head glow
+      const headX = (points.length - drawFrom) % W();
+      ctx.save();
+      ctx.globalAlpha = 0.3;
+      const scanGrad = ctx.createLinearGradient(headX - 20, 0, headX + 4, 0);
+      scanGrad.addColorStop(0, 'transparent');
+      scanGrad.addColorStop(1, CYAN);
+      ctx.fillStyle = scanGrad;
+      ctx.fillRect(headX - 20, 0, 24, H());
+      ctx.restore();
+
+      requestAnimationFrame(tick);
+    };
+
+    // Initial cooldown before first spike
+    spikeCooldown = 40;
+    requestAnimationFrame(tick);
+  }
+
+
 
   // ── STONE DOT SPEED VARIATION ────────────────────────────────
   const dot = document.getElementById('stone-dot');
