@@ -1054,95 +1054,149 @@ em     { color:var(--cyan); font-style:normal; font-weight:500; }
     requestAnimationFrame(tick);
   }
 
-  // ── MODE 3: EKG — submitted solution ─────────────────────────
+  // ── MODE 3: EKG — heartbeat monitor sweep ────────────────────
   else if (tracerMode === 'ekg') {
 
-    const CYCLE_MS = 1000;
+    const BPM = 72;
+    const BEAT_MS = 60000 / BPM;
+    const FADE_ALPHA = 0.055;
+    const LINE_WIDTH = 1.8;
 
-    function ekgY(x) {
-      const beatStart = 0.43;
-      const beatEnd   = 0.57;
-      if (x < beatStart || x > beatEnd) return 0;
-      const t = (x - beatStart) / (beatEnd - beatStart);
-      if (t < 0.12) {
-        return 0;
-      } else if (t < 0.22) {
-        const p = (t - 0.12) / 0.10;
-        return -Math.sin(p * Math.PI) * H() * 0.10;
-      } else if (t < 0.30) {
-        return 0;
-      } else if (t < 0.36) {
-        const q = (t - 0.30) / 0.06;
-        return q * H() * 0.18;
-      } else if (t < 0.43) {
-        const r = (t - 0.36) / 0.07;
-        return H() * 0.18 - r * H() * 0.78;
-      } else if (t < 0.50) {
-        const s = (t - 0.43) / 0.07;
-        return -H() * 0.60 + s * H() * 0.95;
-      } else if (t < 0.62) {
-        const rec = (t - 0.50) / 0.12;
-        return H() * 0.35 * (1 - rec);
-      } else if (t < 0.82) {
-        const tw = (t - 0.62) / 0.20;
-        return -Math.sin(tw * Math.PI) * H() * 0.16;
-      } else {
-        return 0;
+    let prevX = 0;
+    let prevY = CY();
+    let lastProgress = 0;
+    let beatStart = performance.now();
+
+    function ekgValue(progress) {
+      const A = H() * 0.38;
+      if (progress < 0.34) return 0;
+      if (progress < 0.39) {
+        const t = (progress - 0.34) / 0.05;
+        return -Math.sin(t * Math.PI) * A * 0.22;
       }
+      if (progress < 0.43) return 0;
+      if (progress < 0.445) {
+        const t = (progress - 0.43) / 0.015;
+        return t * A * 0.18;
+      }
+      if (progress < 0.458) {
+        const t = (progress - 0.445) / 0.013;
+        return A * 0.18 - t * A * 1.28;
+      }
+      if (progress < 0.474) {
+        const t = (progress - 0.458) / 0.016;
+        return -A * 1.10 + t * A * 1.22;
+      }
+      if (progress < 0.55) {
+        const t = (progress - 0.474) / 0.076;
+        return A * 0.12 * (1 - t);
+      }
+      if (progress < 0.64) {
+        const t = (progress - 0.55) / 0.09;
+        return -Math.sin(t * Math.PI) * A * 0.30;
+      }
+      return 0;
     }
 
-    function strokePath(points) {
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, points[0].y);
-      for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
-      ctx.stroke();
-    }
-
-    function drawGlowLine(points) {
+    function drawSegment(x1, y1, x2, y2) {
       ctx.save();
-      ctx.strokeStyle = CYAN;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.shadowColor = CYAN;
-      ctx.shadowBlur = 18;
-      ctx.lineWidth = 6;
-      strokePath(points);
-      ctx.shadowBlur = 10;
-      ctx.lineWidth = 3;
-      strokePath(points);
-      ctx.shadowBlur = 0;
-      ctx.lineWidth = 2;
-      strokePath(points);
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.strokeStyle = CYAN; ctx.shadowColor = CYAN;
+      ctx.shadowBlur = 8; ctx.lineWidth = 3.5;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      ctx.shadowBlur = 0; ctx.lineWidth = LINE_WIDTH;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
       ctx.restore();
     }
 
-    function drawFrame(now) {
-      ctx.clearRect(0, 0, W(), H());
+    function drawHead(x, y) {
+      ctx.save();
+      const glow = ctx.createRadialGradient(x, y, 0, x, y, 9);
+      glow.addColorStop(0, 'rgba(0,229,255,0.80)');
+      glow.addColorStop(0.45, 'rgba(0,229,255,0.22)');
+      glow.addColorStop(1, 'rgba(0,229,255,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath(); ctx.arc(x, y, 9, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(220,255,255,0.95)';
+      ctx.beginPath(); ctx.arc(x, y, 1.6, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }
+
+    // Lub-dub pattern:
+    // Full cycle = 2x BEAT_MS
+    // Beat 1 fires in first half, beat 2 fires shortly after,
+    // then long silence until cycle resets.
+    const CYCLE_MS = BEAT_MS * 2.8;    // full lub-dub cycle with long pause
+    const DUB_OFFSET = BEAT_MS * 1.15;  // dub fires cleanly after lub finishes
+
+    function ekgTick(now) {
+      const elapsed = (now - beatStart) % CYCLE_MS;
+      const cycleProgress = elapsed / CYCLE_MS; // 0→1 over full cycle
+
+      // Reset canvas at start of new cycle
+      if (cycleProgress < lastProgress) {
+        ctx.fillStyle = 'rgba(5,8,16,0.98)';
+        ctx.fillRect(0, 0, W(), H());
+        prevX = 0; prevY = CY();
+      }
+
+      // Fade trail
+      ctx.fillStyle = `rgba(5,8,16,${FADE_ALPHA})`;
+      ctx.fillRect(0, 0, W(), H());
+
+      // Centerline
       ctx.save();
       ctx.strokeStyle = 'rgba(0,229,255,0.08)';
       ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(0, CY()); ctx.lineTo(W(), CY());
-      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, CY()); ctx.lineTo(W(), CY()); ctx.stroke();
       ctx.restore();
 
-      const phase = (now % CYCLE_MS) / CYCLE_MS;
-      const samples = Math.max(240, Math.floor(W() / 2));
-      const points = [];
+      // Map elapsed time to two beat windows:
+      // LUB: 0 → BEAT_MS        mapped to progress 0→1 across left half of canvas
+      // DUB: DUB_OFFSET → DUB_OFFSET+BEAT_MS  mapped to progress 0→1 across right half
+      // Outside those windows = flatline
 
-      for (let i = 0; i <= samples; i++) {
-        const px = (i / samples) * W();
-        let waveformX = px / W();
-        waveformX = (waveformX + phase * 0.02) % 1;
-        const yOffset = ekgY(waveformX);
-        points.push({ x: px, y: CY() + yOffset });
+      const canvasHalf = W() / 2;
+      const gap = W() * 0.04; // small gap between lub and dub
+
+      let x, y;
+
+      if (elapsed < BEAT_MS) {
+        // LUB — draws across left half of canvas
+        const progress = elapsed / BEAT_MS;
+        x = progress * (canvasHalf - gap);
+        y = CY() + ekgValue(progress);
+      } else if (elapsed < DUB_OFFSET + BEAT_MS) {
+        // DUB — draws across right half, starts after gap
+        const dubElapsed = elapsed - DUB_OFFSET;
+        if (dubElapsed < 0) {
+          // In the gap between lub and dub — flatline
+          x = canvasHalf - gap + (elapsed - BEAT_MS) / (DUB_OFFSET - BEAT_MS) * gap * 2;
+          y = CY();
+        } else {
+          const progress = dubElapsed / BEAT_MS;
+          x = (canvasHalf + gap) + progress * (canvasHalf - gap);
+          y = CY() + ekgValue(progress);
+        }
+      } else {
+        // Silence — let the trail fade, head sits at right edge
+        x = prevX;
+        y = CY();
       }
 
-      drawGlowLine(points);
-      requestAnimationFrame(drawFrame);
+      if (x !== prevX) {
+        drawSegment(prevX, prevY, x, y);
+        drawHead(x, y);
+        prevX = x; prevY = y;
+      }
+
+      lastProgress = cycleProgress;
+      requestAnimationFrame(ekgTick);
     }
 
-    requestAnimationFrame(drawFrame);
+    ctx.fillStyle = 'rgba(5,8,16,1)';
+    ctx.fillRect(0, 0, W(), H());
+    requestAnimationFrame(ekgTick);
   }
 
 
