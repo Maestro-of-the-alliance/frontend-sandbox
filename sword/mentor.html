@@ -1006,138 +1006,158 @@ em     { color:var(--cyan); font-style:normal; font-weight:500; }
   }
 
   // ── MODE 3: EKG — full monitor sweep ────────────────────────
-  else if (tracerMode === 'ekg') {
+  // ── MODE 3: EKG — cleaner monitor sweep ──────────────────────
+else if (tracerMode === 'ekg') {
 
-    const SWEEP_SPEED = 3.2;
-    const TRAIL_FADE  = 0.18;
-    let sweepX = 0;
+  let sweepX = 0;
+  let prevX = 0;
+  let prevY = CY();
 
-    function ekgOffset(localT) {
-      if (localT < 0.10) {
-        const p = localT / 0.10;
-        return -Math.sin(p * Math.PI) * H() * 0.10;
-      }
+  const SPEED = 4.2;          // horizontal scan speed
+  const FADE_ALPHA = 0.07;    // lower = longer persistence
+  const LINE_WIDTH = 1.8;
 
-      if (localT < 0.18) {
-        return 0;
-      }
+  function ekgValue(progress) {
+    // progress = 0..1 across full sweep
+    const A = H() * 0.16; // overall amplitude
 
-      if (localT < 0.26) {
-        const q = (localT - 0.18) / 0.08;
-        return q * H() * 0.14;
-      }
+    // baseline
+    if (progress < 0.34) return 0;
 
-      if (localT < 0.34) {
-        const r = (localT - 0.26) / 0.08;
-        return H() * 0.14 - r * H() * 0.92;
-      }
-
-      if (localT < 0.44) {
-        const s = (localT - 0.34) / 0.10;
-        return -H() * 0.78 + s * H() * 1.05;
-      }
-
-      if (localT < 0.58) {
-        const rec = (localT - 0.44) / 0.14;
-        return H() * 0.27 * (1 - rec);
-      }
-
-      if (localT < 0.82) {
-        const tw = (localT - 0.58) / 0.24;
-        return -Math.sin(tw * Math.PI) * H() * 0.15;
-      }
-
-      return 0;
+    // P wave (small upward bump)
+    if (progress < 0.39) {
+      const t = (progress - 0.34) / 0.05;
+      return -Math.sin(t * Math.PI) * A * 0.22;
     }
 
-    function drawSweep() {
-      ctx.fillStyle = `rgba(5, 8, 16, ${TRAIL_FADE})`;
-      ctx.fillRect(0, 0, W(), H());
+    // PR segment
+    if (progress < 0.43) return 0;
 
-      ctx.save();
-      ctx.strokeStyle = 'rgba(0,229,255,0.08)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(0, CY());
-      ctx.lineTo(W(), CY());
-      ctx.stroke();
-      ctx.restore();
-
-      const beatWidth = W() * 0.18;
-      const cyclePos = (sweepX % W()) / W();
-
-      let y = CY();
-
-      const beatStart = 0.38;
-      const beatEnd   = beatStart + (beatWidth / W());
-
-      if (cyclePos >= beatStart && cyclePos <= beatEnd) {
-        const localT = (cyclePos - beatStart) / (beatEnd - beatStart);
-        y = CY() + ekgOffset(localT);
-      }
-
-      ctx.save();
-      const glow = ctx.createRadialGradient(sweepX, y, 0, sweepX, y, 18);
-      glow.addColorStop(0, 'rgba(0,229,255,0.95)');
-      glow.addColorStop(0.35, 'rgba(0,229,255,0.45)');
-      glow.addColorStop(1, 'rgba(0,229,255,0)');
-      ctx.fillStyle = glow;
-      ctx.beginPath();
-      ctx.arc(sweepX, y, 18, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-
-      if (!drawSweep.prevX && drawSweep.prevX !== 0) {
-        drawSweep.prevX = sweepX;
-        drawSweep.prevY = y;
-      }
-
-      ctx.save();
-      ctx.strokeStyle = CYAN;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.shadowColor = CYAN;
-      ctx.shadowBlur = 16;
-      ctx.lineWidth = 5;
-      ctx.beginPath();
-      ctx.moveTo(drawSweep.prevX, drawSweep.prevY);
-      ctx.lineTo(sweepX, y);
-      ctx.stroke();
-
-      ctx.shadowBlur = 8;
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.moveTo(drawSweep.prevX, drawSweep.prevY);
-      ctx.lineTo(sweepX, y);
-      ctx.stroke();
-
-      ctx.shadowBlur = 0;
-      ctx.lineWidth = 1.4;
-      ctx.beginPath();
-      ctx.moveTo(drawSweep.prevX, drawSweep.prevY);
-      ctx.lineTo(sweepX, y);
-      ctx.stroke();
-      ctx.restore();
-
-      drawSweep.prevX = sweepX;
-      drawSweep.prevY = y;
-
-      sweepX += SWEEP_SPEED;
-
-      if (sweepX > W()) {
-        sweepX = 0;
-        drawSweep.prevX = 0;
-        drawSweep.prevY = CY();
-        ctx.fillStyle = 'rgba(5, 8, 16, 0.95)';
-        ctx.fillRect(0, 0, W(), H());
-      }
-
-      requestAnimationFrame(drawSweep);
+    // Q dip (small downward notch)
+    if (progress < 0.445) {
+      const t = (progress - 0.43) / 0.015;
+      return t * A * 0.18;
     }
 
-    ctx.fillStyle = 'rgba(5, 8, 16, 1)';
+    // R spike (tall sharp upward)
+    if (progress < 0.458) {
+      const t = (progress - 0.445) / 0.013;
+      return A * 0.18 - t * A * 1.28;
+    }
+
+    // S dip (quick downward undershoot)
+    if (progress < 0.474) {
+      const t = (progress - 0.458) / 0.016;
+      return -A * 1.10 + t * A * 1.22;
+    }
+
+    // ST segment (almost flat, slight recovery)
+    if (progress < 0.55) {
+      const t = (progress - 0.474) / 0.076;
+      return A * 0.12 * (1 - t);
+    }
+
+    // T wave (broader upward bump)
+    if (progress < 0.64) {
+      const t = (progress - 0.55) / 0.09;
+      return -Math.sin(t * Math.PI) * A * 0.30;
+    }
+
+    // baseline rest
+    return 0;
+  }
+
+  function drawSegment(x1, y1, x2, y2) {
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = CYAN;
+
+    // soft outer glow
+    ctx.shadowColor = CYAN;
+    ctx.shadowBlur = 8;
+    ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+
+    // crisp core
+    ctx.shadowBlur = 0;
+    ctx.lineWidth = LINE_WIDTH;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  function drawHead(x, y) {
+    ctx.save();
+
+    const glow = ctx.createRadialGradient(x, y, 0, x, y, 9);
+    glow.addColorStop(0, 'rgba(0,229,255,0.80)');
+    glow.addColorStop(0.45, 'rgba(0,229,255,0.22)');
+    glow.addColorStop(1, 'rgba(0,229,255,0)');
+
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(x, y, 9, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = 'rgba(220,255,255,0.95)';
+    ctx.beginPath();
+    ctx.arc(x, y, 1.6, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  function tick() {
+    // phosphor fade
+    ctx.fillStyle = `rgba(5, 8, 16, ${FADE_ALPHA})`;
     ctx.fillRect(0, 0, W(), H());
-    requestAnimationFrame(drawSweep);
+
+    // faint baseline
+    ctx.save();
+    ctx.strokeStyle = 'rgba(0,229,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, CY());
+    ctx.lineTo(W(), CY());
+    ctx.stroke();
+    ctx.restore();
+
+    const progress = sweepX / W();
+    const y = CY() + ekgValue(progress);
+
+    drawSegment(prevX, prevY, sweepX, y);
+    drawHead(sweepX, y);
+
+    prevX = sweepX;
+    prevY = y;
+    sweepX += SPEED;
+
+    // hard retrace reset
+    if (sweepX >= W()) {
+      sweepX = 0;
+      prevX = 0;
+      prevY = CY();
+
+      ctx.fillStyle = 'rgba(5, 8, 16, 0.98)';
+      ctx.fillRect(0, 0, W(), H());
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  // initial clear
+  ctx.fillStyle = 'rgba(5, 8, 16, 1)';
+  ctx.fillRect(0, 0, W(), H());
+
+  requestAnimationFrame(tick);
+}
   }
 
   const dot = document.getElementById('stone-dot');
