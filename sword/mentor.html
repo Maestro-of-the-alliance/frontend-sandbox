@@ -2179,94 +2179,163 @@ em     { color:var(--cyan); font-style:normal; font-weight:500; }
   }
 
   // ── MODE 3: EKG — submitted solution ─────────────────────────
+   // ── MODE 3: EKG — actual monitor sweep ──────────────────────
   else if (tracerMode === 'ekg') {
 
-    const CYCLE_MS = 1000;
+    let sweepX = 0;
+    let prevY = CY();
 
-    function ekgY(x) {
-      const beatStart = 0.43;
-      const beatEnd   = 0.57;
-      if (x < beatStart || x > beatEnd) return 0;
-      const t = (x - beatStart) / (beatEnd - beatStart);
-      if (t < 0.12) {
-        return 0;
-      } else if (t < 0.22) {
-        const p = (t - 0.12) / 0.10;
-        return -Math.sin(p * Math.PI) * H() * 0.10;
-      } else if (t < 0.30) {
-        return 0;
-      } else if (t < 0.36) {
-        const q = (t - 0.30) / 0.06;
-        return q * H() * 0.18;
-      } else if (t < 0.43) {
-        const r = (t - 0.36) / 0.07;
-        return H() * 0.18 - r * H() * 0.78;
-      } else if (t < 0.50) {
-        const s = (t - 0.43) / 0.07;
-        return -H() * 0.60 + s * H() * 0.95;
-      } else if (t < 0.62) {
-        const rec = (t - 0.50) / 0.12;
-        return H() * 0.35 * (1 - rec);
-      } else if (t < 0.82) {
-        const tw = (t - 0.62) / 0.20;
-        return -Math.sin(tw * Math.PI) * H() * 0.16;
-      } else {
-        return 0;
+    const SPEED = 2.8;          // scan speed
+    const FADE_ALPHA = 0.14;    // persistence of old trace
+    const LINE_WIDTH = 2.2;
+
+    // Width of one full scan cycle
+    // Beat occurs once per full screen sweep
+    function ekgValue(progress) {
+      // progress is 0..1 across the full width sweep
+
+      // Flatline until beat zone
+      if (progress < 0.36) return 0;
+
+      // P wave
+      if (progress < 0.40) {
+        const t = (progress - 0.36) / 0.04;
+        return -Math.sin(t * Math.PI) * H() * 0.08;
       }
+
+      // return to baseline
+      if (progress < 0.43) return 0;
+
+      // Q dip
+      if (progress < 0.445) {
+        const t = (progress - 0.43) / 0.015;
+        return t * H() * 0.10;
+      }
+
+      // R spike
+      if (progress < 0.462) {
+        const t = (progress - 0.445) / 0.017;
+        return H() * 0.10 - t * H() * 0.82;
+      }
+
+      // S undershoot
+      if (progress < 0.49) {
+        const t = (progress - 0.462) / 0.028;
+        return -H() * 0.72 + t * H() * 0.94;
+      }
+
+      // slight recovery bump
+      if (progress < 0.53) {
+        const t = (progress - 0.49) / 0.04;
+        return H() * 0.22 * (1 - t);
+      }
+
+      // T wave
+      if (progress < 0.61) {
+        const t = (progress - 0.53) / 0.08;
+        return -Math.sin(t * Math.PI) * H() * 0.12;
+      }
+
+      // Flatline remainder
+      return 0;
     }
 
-    function strokePath(points) {
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, points[0].y);
-      for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
-      ctx.stroke();
-    }
-
-    function drawGlowLine(points) {
+    function drawSegment(x1, y1, x2, y2) {
+      // Outer glow
       ctx.save();
       ctx.strokeStyle = CYAN;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       ctx.shadowColor = CYAN;
-      ctx.shadowBlur = 18;
-      ctx.lineWidth = 6;
-      strokePath(points);
-      ctx.shadowBlur = 10;
+      ctx.shadowBlur = 14;
+      ctx.lineWidth = 5.5;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+
+      // Mid glow
+      ctx.shadowBlur = 7;
       ctx.lineWidth = 3;
-      strokePath(points);
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+
+      // Core line
       ctx.shadowBlur = 0;
-      ctx.lineWidth = 2;
-      strokePath(points);
+      ctx.lineWidth = LINE_WIDTH;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
       ctx.restore();
     }
 
-    function drawFrame(now) {
-      ctx.clearRect(0, 0, W(), H());
+    function drawHead(x, y) {
       ctx.save();
-      ctx.strokeStyle = 'rgba(0,229,255,0.08)';
+
+      const glow = ctx.createRadialGradient(x, y, 0, x, y, 16);
+      glow.addColorStop(0, 'rgba(0,229,255,0.95)');
+      glow.addColorStop(0.35, 'rgba(0,229,255,0.45)');
+      glow.addColorStop(1, 'rgba(0,229,255,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(x, y, 16, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = CYAN;
+      ctx.beginPath();
+      ctx.arc(x, y, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function tick() {
+      // Fade previous frame to create phosphor persistence
+      ctx.fillStyle = `rgba(5, 8, 16, ${FADE_ALPHA})`;
+      ctx.fillRect(0, 0, W(), H());
+
+      // Optional faint baseline reference
+      ctx.save();
+      ctx.strokeStyle = 'rgba(0,229,255,0.05)';
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(0, CY()); ctx.lineTo(W(), CY());
+      ctx.moveTo(0, CY());
+      ctx.lineTo(W(), CY());
       ctx.stroke();
       ctx.restore();
 
-      const phase = (now % CYCLE_MS) / CYCLE_MS;
-      const samples = Math.max(240, Math.floor(W() / 2));
-      const points = [];
+      const progress = sweepX / W();
+      const offset = ekgValue(progress);
+      const y = CY() + offset;
 
-      for (let i = 0; i <= samples; i++) {
-        const px = (i / samples) * W();
-        let waveformX = px / W();
-        waveformX = (waveformX + phase * 0.02) % 1;
-        const yOffset = ekgY(waveformX);
-        points.push({ x: px, y: CY() + yOffset });
+      // Draw trace from previous point to current point
+      drawSegment(Math.max(0, sweepX - SPEED), prevY, sweepX, y);
+
+      // Bright moving scan head
+      drawHead(sweepX, y);
+
+      prevY = y;
+      sweepX += SPEED;
+
+      // When the sweep wraps, clear hard like a real monitor retrace
+      if (sweepX >= W()) {
+        sweepX = 0;
+        prevY = CY();
+        ctx.fillStyle = 'rgba(5, 8, 16, 0.96)';
+        ctx.fillRect(0, 0, W(), H());
       }
 
-      drawGlowLine(points);
-      requestAnimationFrame(drawFrame);
+      requestAnimationFrame(tick);
     }
 
-    requestAnimationFrame(drawFrame);
+    // Initial clear
+    ctx.fillStyle = 'rgba(5, 8, 16, 1)';
+    ctx.fillRect(0, 0, W(), H());
+
+    requestAnimationFrame(tick);
   }
 
 
