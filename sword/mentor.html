@@ -385,7 +385,7 @@ em     { color:var(--cyan); font-style:normal; font-weight:500; }
 
 /* ── TRACER TRACK ────────────────────────────────────────────── */
 #pong-track {
-  position:relative; height:28px;
+  position:relative; height:100px;
   background:var(--void-2);
   border-top:1px solid rgba(0,229,255,0.08);
   border-bottom:1px solid rgba(0,229,255,0.08);
@@ -1054,88 +1054,98 @@ em     { color:var(--cyan); font-style:normal; font-weight:500; }
     requestAnimationFrame(tick);
   }
 
-  // ── MODE 3: EKG ───────────────────────────────────────────────
+  // ── MODE 3: EKG — submitted solution ─────────────────────────
   else if (tracerMode === 'ekg') {
-    const points = [];
-    const MAX_PTS = () => W() + 10;
-    let scanX   = 0;
-    let spikeCooldown = 0;
-    let spikeSeq    = null;
-    let spikeIdx    = 0;
 
-    // Initialize flatline
-    for (let i = 0; i < MAX_PTS(); i++) points.push(CY());
+    const CYCLE_MS = 1000;
 
-    const triggerSpike = () => {
-      // QRS complex: sharp up, sharp down, recovery
-      const amp = H() * (0.25 + Math.random() * 0.3);
-      spikeSeq = [
-        CY(),
-        CY() - amp * 0.2,
-        CY() + amp * 0.15,
-        CY() - amp,          // peak
-        CY() + amp * 0.4,    // undershoot
-        CY() + amp * 0.1,
-        CY(),
-        CY()
-      ];
-      spikeIdx = 0;
-      spikeCooldown = 80 + Math.floor(Math.random() * 120);
-    };
-
-    const tick = () => {
-      // Advance scan position
-      scanX = (scanX + 1.8) % W();
-
-      // Get next Y value
-      let nextY = CY();
-      if (spikeSeq && spikeIdx < spikeSeq.length) {
-        nextY = spikeSeq[spikeIdx++];
-        if (spikeIdx >= spikeSeq.length) spikeSeq = null;
+    function ekgY(x) {
+      const beatStart = 0.43;
+      const beatEnd   = 0.57;
+      if (x < beatStart || x > beatEnd) return 0;
+      const t = (x - beatStart) / (beatEnd - beatStart);
+      if (t < 0.12) {
+        return 0;
+      } else if (t < 0.22) {
+        const p = (t - 0.12) / 0.10;
+        return -Math.sin(p * Math.PI) * H() * 0.10;
+      } else if (t < 0.30) {
+        return 0;
+      } else if (t < 0.36) {
+        const q = (t - 0.30) / 0.06;
+        return q * H() * 0.18;
+      } else if (t < 0.43) {
+        const r = (t - 0.36) / 0.07;
+        return H() * 0.18 - r * H() * 0.78;
+      } else if (t < 0.50) {
+        const s = (t - 0.43) / 0.07;
+        return -H() * 0.60 + s * H() * 0.95;
+      } else if (t < 0.62) {
+        const rec = (t - 0.50) / 0.12;
+        return H() * 0.35 * (1 - rec);
+      } else if (t < 0.82) {
+        const tw = (t - 0.62) / 0.20;
+        return -Math.sin(tw * Math.PI) * H() * 0.16;
+      } else {
+        return 0;
       }
+    }
 
-      points.push(nextY);
-      if (points.length > MAX_PTS() + 20) points.shift();
-
-      // Cooldown
-      spikeCooldown--;
-      if (spikeCooldown <= 0) triggerSpike();
-
-      ctx.clearRect(0, 0, W(), H());
-
-      // Draw EKG line — oldest points on left, newest on right
-      const drawFrom = Math.max(0, points.length - W());
+    function strokePath(points) {
       ctx.beginPath();
-      ctx.strokeStyle = CYAN;
-      ctx.lineWidth   = 1.5;
-      ctx.shadowColor = CYAN;
-      ctx.shadowBlur  = 6;
-
-      for (let i = 0; i < W() && drawFrom + i < points.length; i++) {
-        const y = points[drawFrom + i];
-        if (i === 0) ctx.moveTo(i, y);
-        else ctx.lineTo(i, y);
-      }
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
       ctx.stroke();
+    }
 
-      // Scan head glow
-      const headX = (points.length - drawFrom) % W();
+    function drawGlowLine(points) {
       ctx.save();
-      ctx.globalAlpha = 0.3;
-      const scanGrad = ctx.createLinearGradient(headX - 20, 0, headX + 4, 0);
-      scanGrad.addColorStop(0, 'transparent');
-      scanGrad.addColorStop(1, CYAN);
-      ctx.fillStyle = scanGrad;
-      ctx.fillRect(headX - 20, 0, 24, H());
+      ctx.strokeStyle = CYAN;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.shadowColor = CYAN;
+      ctx.shadowBlur = 18;
+      ctx.lineWidth = 6;
+      strokePath(points);
+      ctx.shadowBlur = 10;
+      ctx.lineWidth = 3;
+      strokePath(points);
+      ctx.shadowBlur = 0;
+      ctx.lineWidth = 2;
+      strokePath(points);
+      ctx.restore();
+    }
+
+    function drawFrame(now) {
+      ctx.clearRect(0, 0, W(), H());
+      ctx.save();
+      ctx.strokeStyle = 'rgba(0,229,255,0.08)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, CY()); ctx.lineTo(W(), CY());
+      ctx.stroke();
       ctx.restore();
 
-      requestAnimationFrame(tick);
-    };
+      const phase = (now % CYCLE_MS) / CYCLE_MS;
+      const samples = Math.max(240, Math.floor(W() / 2));
+      const points = [];
 
-    // Initial cooldown before first spike
-    spikeCooldown = 40;
-    requestAnimationFrame(tick);
+      for (let i = 0; i <= samples; i++) {
+        const px = (i / samples) * W();
+        let waveformX = px / W();
+        waveformX = (waveformX + phase * 0.02) % 1;
+        const yOffset = ekgY(waveformX);
+        points.push({ x: px, y: CY() + yOffset });
+      }
+
+      drawGlowLine(points);
+      requestAnimationFrame(drawFrame);
+    }
+
+    requestAnimationFrame(drawFrame);
   }
+
+
 
 
 
