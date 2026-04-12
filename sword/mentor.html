@@ -1006,24 +1006,26 @@ em     { color:var(--cyan); font-style:normal; font-weight:500; }
   }
 
   // ── MODE 3: EKG — cleaner monitor sweep ──────────────────────
+// ── MODE 3: EKG — heartbeat-timed monitor sweep ──────────────────────
 else if (tracerMode === 'ekg') {
 
-  let sweepX = 0;
-  let prevX = 0;
-  let prevY = CY();
-
-  const SPEED = 4.2;          // horizontal scan speed
-  const FADE_ALPHA = 0.055;    // lower = longer persistence
+  const BPM = 72;                  // realistic resting heartbeat
+  const BEAT_MS = 60000 / BPM;     // ms per beat
+  const FADE_ALPHA = 0.055;        // lower = longer linger
   const LINE_WIDTH = 1.8;
 
+  let prevX = 0;
+  let prevY = CY();
+  let lastProgress = 0;
+  let beatStart = performance.now();
+
   function ekgValue(progress) {
-    // progress = 0..1 across full sweep
-    const A = H() * 0.16; // overall amplitude
+    const A = H() * 0.16;
 
     // baseline
     if (progress < 0.34) return 0;
 
-    // P wave (small upward bump)
+    // P wave
     if (progress < 0.39) {
       const t = (progress - 0.34) / 0.05;
       return -Math.sin(t * Math.PI) * A * 0.22;
@@ -1032,37 +1034,36 @@ else if (tracerMode === 'ekg') {
     // PR segment
     if (progress < 0.43) return 0;
 
-    // Q dip (small downward notch)
+    // Q dip
     if (progress < 0.445) {
       const t = (progress - 0.43) / 0.015;
       return t * A * 0.18;
     }
 
-    // R spike (tall sharp upward)
+    // R spike
     if (progress < 0.458) {
       const t = (progress - 0.445) / 0.013;
       return A * 0.18 - t * A * 1.28;
     }
 
-    // S dip (quick downward undershoot)
+    // S undershoot
     if (progress < 0.474) {
       const t = (progress - 0.458) / 0.016;
       return -A * 1.10 + t * A * 1.22;
     }
 
-    // ST segment (almost flat, slight recovery)
+    // ST segment
     if (progress < 0.55) {
       const t = (progress - 0.474) / 0.076;
       return A * 0.12 * (1 - t);
     }
 
-    // T wave (broader upward bump)
+    // T wave
     if (progress < 0.64) {
       const t = (progress - 0.55) / 0.09;
       return -Math.sin(t * Math.PI) * A * 0.30;
     }
 
-    // baseline rest
     return 0;
   }
 
@@ -1072,7 +1073,7 @@ else if (tracerMode === 'ekg') {
     ctx.lineJoin = 'round';
     ctx.strokeStyle = CYAN;
 
-    // soft outer glow
+    // soft glow
     ctx.shadowColor = CYAN;
     ctx.shadowBlur = 8;
     ctx.lineWidth = 3.5;
@@ -1081,7 +1082,7 @@ else if (tracerMode === 'ekg') {
     ctx.lineTo(x2, y2);
     ctx.stroke();
 
-    // crisp core
+    // core line
     ctx.shadowBlur = 0;
     ctx.lineWidth = LINE_WIDTH;
     ctx.beginPath();
@@ -1113,7 +1114,19 @@ else if (tracerMode === 'ekg') {
     ctx.restore();
   }
 
-  function tick() {
+  function tick(now) {
+    const elapsed = now - beatStart;
+    const progress = (elapsed % BEAT_MS) / BEAT_MS;
+
+    // when a new beat starts, hard retrace clear
+    if (progress < lastProgress) {
+      ctx.fillStyle = 'rgba(5, 8, 16, 0.98)';
+      ctx.fillRect(0, 0, W(), H());
+      prevX = 0;
+      prevY = CY();
+      beatStart = now - (elapsed % BEAT_MS);
+    }
+
     // phosphor fade
     ctx.fillStyle = `rgba(5, 8, 16, ${FADE_ALPHA})`;
     ctx.fillRect(0, 0, W(), H());
@@ -1128,27 +1141,25 @@ else if (tracerMode === 'ekg') {
     ctx.stroke();
     ctx.restore();
 
-    const progress = sweepX / W();
+    const x = progress * W();
     const y = CY() + ekgValue(progress);
 
-    drawSegment(prevX, prevY, sweepX, y);
-    drawHead(sweepX, y);
+    drawSegment(prevX, prevY, x, y);
+    drawHead(x, y);
 
-    prevX = sweepX;
+    prevX = x;
     prevY = y;
-    sweepX += SPEED;
-
-    // hard retrace reset
-    if (sweepX >= W()) {
-      sweepX = 0;
-      prevX = 0;
-      prevY = CY();
-
-      ctx.fillStyle = 'rgba(5, 8, 16, 0.98)';
-      ctx.fillRect(0, 0, W(), H());
-    }
+    lastProgress = progress;
 
     requestAnimationFrame(tick);
+  }
+
+  // initial clear
+  ctx.fillStyle = 'rgba(5, 8, 16, 1)';
+  ctx.fillRect(0, 0, W(), H());
+
+  requestAnimationFrame(tick);
+}
   }
 
   // initial clear
