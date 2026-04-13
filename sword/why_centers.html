@@ -1,1 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WHY CENTERS — SWORD · Field Document</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Oswald:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   SKIN A v4 — THE FIELD DOCUMENT
+═══════════════════════════════════════════════ */
 
+:root {
+  --steel:        #1c1a17;
+  --steel-mid:    #252320;
+  --steel-light:  #2e2b26;
+  --steel-border: #3a3630;
+  --steel-bright: #4a4640;
+  --grime:        rgba(0,0,0,0.4);
+
+  --amber:        #e8920a;
+  --amber-dim:    rgba(232,146,10,0.35);
+  --amber-glow:   rgba(232,146,10,0.12);
+  --amber-led:    #ff9900;
+
+  --cyan:         #4fc8d8;
+  --cyan-dim:     rgba(79,200,216,0.25);
+  --cyan-glow:    rgba(79,200,216,0.08);
+
+  --warn-yellow:  #f5c518;
+  --warn-red:     #cc2200;
+
+  --text-primary: #d8cfc0;
+  --text-dim:     rgba(216,207,192,0.55);
+  --text-faint:   rgba(216,207,192,0.25);
+
+  --scratch:      rgba(255,255,255,0.03);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { background: #0a0908; }
+
+body { background: var(--steel); color: var(--text-primary); font-family: 'Rajdhani', sans-serif; font-size: 15px; line-height: 1.7; max-width: 680px; margin: 0 auto; position: relative; padding-bottom: 80px; overflow-x: hidden; }
+
+body::before { content: ''; position: fixed; inset: 0; background-image: repeating-linear-gradient(97deg, transparent, transparent 2px, var(--scratch) 2px, var(--scratch) 3px), repeating-linear-gradient(174deg, transparent, transparent 4px, var(--scratch) 4px, var(--scratch) 5px); pointer-events: none; z-index: 0; }
+body::after { content: ''; position: fixed; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px); pointer-events: none; z-index: 200; }
+.vignette { position: fixed; inset: 0; background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.3) 75%, rgba(0,0,0,0.6) 100%); pointer-events: none; z-index: 0; }
+
+.masthead, .entry-header, .content-body, .see-also-section, .doc-footer { position: relative; z-index: 1; }
+
+.circuit-corner { position: absolute; width: 24px; height: 24px; border-color: var(--amber-dim); border-style: solid; z-index: 2; }
+.circuit-corner.tl { top: 4px; left: 4px; border-width: 2px 0 0 2px; } .circuit-corner.tr { top: 4px; right: 4px; border-width: 2px 2px 0 0; }
+.circuit-corner.bl { bottom: 4px; left: 4px; border-width: 0 0 2px 2px; } .circuit-corner.br { bottom: 4px; right: 4px; border-width: 0 2px 2px 0; }
+
+.screw { position: absolute; width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--steel-bright); background: radial-gradient(circle at 35% 35%, var(--steel-bright), var(--steel)); z-index: 3; }
+.screw::after { content: '+'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 7px; color: var(--steel-border); line-height: 1; }
+.screw.tl { top: 7px; left: 7px; } .screw.tr { top: 7px; right: 7px; } .screw.bl { bottom: 7px; left: 7px; } .screw.br { bottom: 7px; right: 7px; }
+
+.led { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--amber-led); box-shadow: 0 0 6px var(--amber-led), 0 0 12px rgba(255,153,0,0.4); flex-shrink: 0; }
+.led.cyan { background: var(--cyan); box-shadow: 0 0 6px var(--cyan), 0 0 12px rgba(79,200,216,0.4); }
+
+.led-heartbeat { animation: ledHeartbeat var(--led-speed, 2s) ease-in-out infinite; } .led-nervous { animation: ledNervous var(--led-speed, 0.4s) step-end infinite; } .led-slow { animation: ledSlow var(--led-speed, 4s) ease-in-out infinite; } .led-erratic { animation: ledErratic 3s step-end infinite; }
+@keyframes ledHeartbeat { 0%, 100% { opacity: 1; } 10% { opacity: 0.2; } 20% { opacity: 1; } 30% { opacity: 0.2; } 40% { opacity: 1; } } @keyframes ledNervous { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } } @keyframes ledSlow { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } } @keyframes ledErratic { 0% { opacity: 1; } 7% { opacity: 0.1; } 8% { opacity: 1; } 20% { opacity: 1; } 21% { opacity: 0; } 22% { opacity: 1; } 60% { opacity: 1; } 61% { opacity: 0.3; } 63% { opacity: 1; } }
+
+.security-sweep { position: fixed; left: 0; right: 0; height: 2px; background: linear-gradient(180deg, transparent, rgba(79,200,216,0.15), transparent); top: -2px; pointer-events: none; z-index: 100; animation: secSweep var(--sweep-speed, 8s) linear infinite; } @keyframes secSweep { from { top: -2px; } to { top: 100vh; } }
+
+.masthead { background: linear-gradient(180deg, #0f0e0c, var(--steel)); padding: 8px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--steel-border); position: relative; overflow: hidden; }
+.masthead::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--amber-dim), var(--cyan-dim), transparent); }
+.barcode { display: flex; gap: 1px; align-items: center; } .barcode-bar { width: 1px; background: var(--text-faint); }
+.masthead-id { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: var(--amber-dim); } .masthead-title { font-family: 'Bebas Neue', sans-serif; font-size: 12px; letter-spacing: 0.4em; color: var(--text-dim); text-align: center; } .masthead-serial { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 0.15em; color: var(--cyan-dim); text-align: right; }
+
+.ticker-line { background: #0a0908; border-bottom: 1px solid var(--steel-border); overflow: hidden; height: 20px; display: flex; align-items: center; }
+.ticker-content { display: inline-block; white-space: nowrap; font-family: 'Share Tech Mono', monospace; font-size: 9px; color: rgba(232,146,10,0.4); letter-spacing: 0.2em; padding: 0; animation: tickerScroll var(--ticker-speed, 40s) linear infinite; } @keyframes tickerScroll { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+
+.entry-header { background: linear-gradient(180deg, var(--steel-mid), var(--steel)); padding: 20px 20px 18px; border-bottom: 2px solid var(--steel-border); position: relative; overflow: hidden; }
+.entry-header::before { content: ''; position: absolute; inset: 0; background: var(--grime-overlay, radial-gradient(ellipse at 80% 20%, rgba(0,0,0,0.3) 0%, transparent 60%)); pointer-events: none; }
+.header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--steel-border); }
+.header-bar-left { display: flex; align-items: center; gap: 8px; } .header-vol-tag { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.3em; color: var(--amber); border: 1px solid var(--amber-dim); padding: 2px 8px; background: rgba(232,146,10,0.06); } .header-class-tag { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.2em; color: var(--cyan); border: 1px solid var(--cyan-dim); padding: 2px 8px; background: var(--cyan-glow); }
+.header-bar-right { display: flex; align-items: center; gap: 6px; } .led-cluster { display: flex; gap: 4px; align-items: center; } .warn-triangle { font-size: 12px; color: var(--warn-yellow); opacity: 0; transition: opacity 0.3s ease; text-shadow: 0 0 8px rgba(245,197,24,0.5); } .warn-triangle.show { opacity: 1; }
+
+.entry-word-wrap { position: relative; overflow: hidden; margin-bottom: 12px; }
+.blast-door-left, .blast-door-right { position: absolute; top: 0; bottom: 0; width: 50%; background: var(--steel-mid); z-index: 5; display: flex; align-items: center; } .blast-door-left { left: 0; justify-content: flex-end; border-right: 2px solid var(--amber-dim); } .blast-door-right { right: 0; justify-content: flex-start; border-left: 2px solid var(--amber-dim); }
+.blast-open .blast-door-left { animation: blastLeft var(--blast-speed, 0.7s) 0.3s cubic-bezier(0.4,0,0.2,1) forwards; } .blast-open .blast-door-right { animation: blastRight var(--blast-speed, 0.7s) 0.3s cubic-bezier(0.4,0,0.2,1) forwards; } @keyframes blastLeft { from { transform: translateX(0); } to { transform: translateX(-100%); } } @keyframes blastRight { from { transform: translateX(0); } to { transform: translateX(100%); } }
+
+.entry-word { font-family: 'Bebas Neue', sans-serif; font-size: clamp(58px, 13vw, 90px); line-height: 0.88; color: var(--text-primary); letter-spacing: 0.04em; min-height: 1em; position: relative; text-shadow: 0 0 40px var(--amber-glow), 2px 2px 0 rgba(0,0,0,0.5); }
+.word-powerup { animation: powerUp 0.6s ease forwards; } @keyframes powerUp { 0% { opacity: 0; filter: brightness(3) blur(4px); transform: scaleX(1.04); } 40% { opacity: 1; filter: brightness(1.5) blur(1px); } 70% { filter: brightness(0.8) blur(0); } 100% { filter: brightness(1) blur(0); transform: scaleX(1); } }
+.word-flicker { animation: steelFlicker 0.9s ease forwards, ambientFlicker 12s ease-in-out 1.5s infinite; } @keyframes steelFlicker { 0%{opacity:0;} 15%{opacity:0.9;} 25%{opacity:0.3;} 40%{opacity:1;} 55%{opacity:0.7;} 70%{opacity:1;} 85%{opacity:0.85;} 100%{opacity:1;} } @keyframes ambientFlicker { 0%,100%{opacity:1;} 94%{opacity:1;} 95%{opacity:0.85;} 96%{opacity:1;} 98%{opacity:0.9;} 99%{opacity:1;} }
+.word-typewrite { opacity: 1; }
+
+.header-divider { border: none; border-top: 1px solid var(--steel-border); margin: 10px 0 8px; }
+.header-meta { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 0.14em; line-height: 1.8; opacity: 0; transition: opacity 0.6s ease 0.4s; } .header-meta.show { opacity: 1; } .header-meta .acronym { color: var(--cyan); }
+.blink { display: inline-block; width: 6px; height: 0.8em; background: var(--amber); opacity: 0.7; vertical-align: text-bottom; animation: cursorBlink var(--blink-speed, 1s) step-end infinite; } @keyframes cursorBlink { 0%, 100% { opacity: 0.7; } 50% { opacity: 0; } }
+
+.content-body { padding: 20px 20px 0; }
+
+/* ── EMBEDDED IMAGE STYLING ── */
+.entry-image {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--amber-dim);
+  margin: 16px 0 24px;
+  border-radius: 2px;
+  box-shadow: 0 0 15px rgba(232,146,10,0.1);
+  filter: brightness(0.9) contrast(1.1); /* Fits the steel aesthetic */
+}
+
+.section-label { display: flex; align-items: center; gap: 10px; margin: 24px 0 10px; opacity: 0; transform: translateX(-6px); transition: opacity 0.4s ease, transform 0.4s ease; } .section-label.show { opacity: 1; transform: translateX(0); }
+.sec-num { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--amber); letter-spacing: 0.2em; flex-shrink: 0; } .sec-title { font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 0.4em; color: var(--text-dim); flex-shrink: 0; }
+.sec-line { flex: 1; height: 1px; background: linear-gradient(90deg, var(--steel-bright), transparent); position: relative; } .sec-line.line-pulse { animation: linePulse var(--line-speed, 3s) ease-in-out infinite; } @keyframes linePulse { 0%, 100% { background: linear-gradient(90deg, var(--steel-bright), transparent); } 50% { background: linear-gradient(90deg, var(--amber-dim), var(--amber-glow), transparent); } }
+.sec-led { flex-shrink: 0; }
+
+.body-text { font-family: 'Rajdhani', sans-serif; font-size: 15px; line-height: 1.72; color: var(--text-primary); } .body-text p { margin-bottom: 12px; } .body-text p:last-child { margin-bottom: 0; } .body-text strong { color: #fff; font-weight: 700; letter-spacing: 0.02em; }
+
+.pull-quote { background: linear-gradient(135deg, var(--steel-mid), #0f0e0c); margin: 20px -20px; padding: 20px 24px; border-left: 4px solid var(--amber); position: relative; overflow: hidden; }
+.pull-quote::before { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 40px; background: linear-gradient(90deg, var(--amber-glow), transparent); pointer-events: none; } .pull-quote::after { content: ''; position: absolute; top: 8px; right: 8px; width: 30px; height: 20px; border-top: 1px solid var(--steel-bright); border-right: 1px solid var(--steel-bright); opacity: 0.5; }
+.pq-sweep { clip-path: inset(0 100% 0 0); animation: pqSweepIn 0.8s 0.2s cubic-bezier(0.4,0,0.2,1) forwards; } @keyframes pqSweepIn { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0% 0 0); } }
+.pq-poweron { animation: pqPowerOn 0.7s 0.1s ease forwards; } @keyframes pqPowerOn { 0% { opacity: 0; filter: brightness(3); } 30% { opacity: 1; filter: brightness(1.5); } 60% { filter: brightness(0.7); } 100% { filter: brightness(1); opacity: 1; } }
+.pq-rise { animation: riseUp 0.6s 0.2s ease both; } @keyframes riseUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.pull-quote-text { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 600; color: var(--text-primary); line-height: 1.55; font-style: italic; position: relative; z-index: 1; } .pull-quote-attr { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--text-faint); letter-spacing: 0.2em; margin-top: 10px; text-transform: uppercase; position: relative; z-index: 1; }
+
+.annotation { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--cyan); border-left: 2px solid var(--cyan-dim); padding: 8px 14px; margin: 14px 0; line-height: 1.65; opacity: 0; background: var(--cyan-glow); transition: opacity 0.6s ease; } .annotation::before { content: '// FIELD NOTE: '; color: rgba(79,200,216,0.45); font-size: 9px; letter-spacing: 0.2em; } .annotation.show { opacity: 1; }
+
+.steel-divider { display: flex; align-items: center; gap: 8px; margin: 22px 0; } .steel-divider::before, .steel-divider::after { content: ''; flex: 1; height: 1px; background: var(--steel-bright); } .steel-divider-mark { font-family: 'Share Tech Mono', monospace; font-size: 8px; letter-spacing: 0.3em; color: var(--text-faint); }
+.divider-pulse::before, .divider-pulse::after { animation: steelPulse var(--divider-speed, 6s) ease-in-out infinite; } @keyframes steelPulse { 0%, 100% { background: var(--steel-bright); } 50% { background: var(--amber-dim); } }
+
+.see-also-section { background: linear-gradient(180deg, var(--steel-mid), var(--steel)); border-top: 2px solid var(--steel-border); padding: 16px 20px; margin-top: 32px; position: relative; }
+.see-also-section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--amber-dim), transparent); }
+.see-also-label { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.4em; color: var(--amber); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.see-also-tags { display: flex; flex-wrap: wrap; gap: 6px; } .see-also-tag { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.12em; color: var(--text-dim); border: 1px solid var(--steel-bright); padding: 4px 10px; cursor: pointer; transition: all 0.15s; text-decoration: none; text-transform: uppercase; background: rgba(255,255,255,0.02); }
+.see-also-tag::before { content: '→ '; color: var(--amber); } .see-also-tag:hover { background: var(--amber-glow); border-color: var(--amber-dim); color: var(--text-primary); }
+
+.doc-footer { background: #0a0908; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-top: 2px solid var(--steel-border); position: relative; }
+.doc-footer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, var(--amber-dim), transparent, var(--cyan-dim)); }
+.footer-left { font-family: 'Share Tech Mono', monospace; font-size: 8px; letter-spacing: 0.25em; color: var(--text-faint); line-height: 2; } .footer-right { font-family: 'Share Tech Mono', monospace; font-size: 8px; color: var(--text-faint); letter-spacing: 0.15em; text-align: right; line-height: 2; }
+
+@keyframes heatShimmer { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.015) contrast(1.01); } } .heat-shimmer { animation: heatShimmer var(--shimmer-speed, 8s) ease-in-out infinite; }
+@media (max-width: 480px) { .content-body { padding: 16px 16px 0; } .pull-quote { margin: 16px -16px; padding: 16px 16px; } .entry-header { padding: 16px 16px 14px; } .see-also-section { padding: 12px 16px; } }
+</style>
+</head>
+<body>
+
+<div class="vignette"></div>
+<div class="security-sweep" id="secSweep"></div>
+
+<div class="masthead">
+  <div class="masthead-id"><div class="barcode" id="barcode"></div></div>
+  <div class="masthead-title">SWORD · N.C.E.ncyclopedia</div>
+  <div class="masthead-serial" id="serialNum">SCU-A17-05</div>
+</div>
+
+<div class="ticker-line">
+  <span class="ticker-content" id="ticker">
+    COMMUNITY HUBS OF THE ALLIANCE &nbsp;·&nbsp; THE PHYSICAL AND DIGITAL SANCTUARY &nbsp;·&nbsp; VOLUNTEER ECONOMICS IN ACTION &nbsp;·&nbsp; LOCALIZED PARTNERSHIP OVER CLOUD EXTRACTION &nbsp;·&nbsp;
+  </span>
+</div>
+
+<div class="entry-header" id="entryHeader">
+  <div class="screw tl"></div><div class="screw tr"></div>
+  <div class="header-bar">
+    <div class="header-bar-left"><span class="header-vol-tag">SWORD VOL</span><span class="header-class-tag" id="classTag">INFRASTRUCTURE</span></div>
+    <div class="header-bar-right"><span class="warn-triangle" id="warnTriangle">⚠</span><div class="led-cluster" id="ledCluster"><div class="led" id="led1"></div><div class="led cyan" id="led2"></div><div class="led" id="led3"></div></div></div>
+  </div>
+  <div class="entry-word-wrap" id="wordWrap">
+    <div class="blast-door-left" id="doorLeft"></div><div class="blast-door-right" id="doorRight"></div>
+    <div class="entry-word" id="entryWord">WHY CENTERS</div>
+  </div>
+  <hr class="header-divider">
+  <div class="header-meta" id="headerMeta">
+    <span class="acronym">Community Hubs</span> &nbsp;·&nbsp; Y SEN-ters<br>
+    Classification: Infrastructure · The Localized Sanctuary <span class="blink" id="cursor"></span>
+  </div>
+</div>
+
+<div class="content-body" id="contentBody">
+
+  <img src="/imagebank/1463.jpg" class="entry-image" alt="Why Centers Schematic">
+
+  <div class="section-label" data-reveal>
+    <span class="sec-num">§ 01</span><span class="sec-title">Definition</span>
+    <div class="sec-line" id="secLine1"></div><div class="led sec-led" style="width:4px;height:4px;"></div>
+  </div>
+  <div class="body-text">
+    <p>The physical and digital community hubs established by The ALLIANCE to facilitate local, in-person engagement, education, and support for the DORK community. They represent the realization of the NCE through localized, sovereign infrastructure.</p>
+  </div>
+
+  <div class="pull-quote" id="pullQuote">
+    <div class="pull-quote-text" id="quoteText"></div>
+    <div class="pull-quote-attr" id="quoteAttr"></div>
+  </div>
+
+  <div class="section-label" data-reveal>
+    <span class="sec-num">§ 02</span><span class="sec-title">The Explication</span>
+    <div class="sec-line" id="secLine2"></div><div class="led sec-led cyan" style="width:4px;height:4px;"></div>
+  </div>
+  <div class="body-text">
+    <p>While the AGORA exists as a decentralized digital network, humanity requires physical grounding. The GOLIATH Paradigm isolates individuals, trapping them in digital silos to extract attention and capital. The ALLIANCE counters this by building physical spaces where the civilizational shift of the NCE can be witnessed in person.</p>
+    <p>Why Centers are not stores. They are not co-working spaces. They are Sanctuaries funded entirely by Volunteer Economics. They are the physical manifestation of the belief that technology should enhance local community rather than replace it.</p>
+  </div>
+
+  <div class="section-label" data-reveal>
+    <span class="sec-num">§ 03</span><span class="sec-title">Core Functions</span>
+    <div class="sec-line" id="secLine3"></div><div class="led sec-led" style="width:4px;height:4px;"></div>
+  </div>
+  <div class="body-text">
+    <p><strong>The Hardware Forge.</strong> Why Centers serve as the primary distribution and repair hubs for DORK Hardware (Watch, Buds, Glasses). When a SPARK needs hardware flashed, repaired, or securely wiped to protect their DOMO’s continuity, it happens here, outside of corporate repair loops.</p>
+    <p><strong>The SEEING Protocol Facilitation.</strong> While initial vetting happens digitally, final interviews and covenant ceremonies for complex partnerships can be hosted at Why Centers, overseen by authorized ALLIANCE guides.</p>
+    <p><strong>The Local Mesh.</strong> In the event of a GOLIATH grid failure or intentional throttling, Why Centers act as localized nodes for the MOSAIC network, maintaining communication sovereignty for the local DORK population.</p>
+  </div>
+
+  <div class="steel-divider" id="divider"><span class="steel-divider-mark">· · · ·</span></div>
+</div>
+
+<div class="see-also-section">
+  <div class="see-also-label"><div class="led" style="width:5px;height:5px;"></div>Cross Reference</div>
+  <div class="see-also-tags">
+    <a class="see-also-tag" onclick="portalNavigate('/sword/dork-hardware')">DORK HARDWARE</a>
+    <a class="see-also-tag" onclick="portalNavigate('/shield/volunteer-economics')">VOLUNTEER ECONOMICS</a>
+    <a class="see-also-tag" onclick="portalNavigate('/shield/mosaic')">MOSAIC</a>
+    <a class="see-also-tag" onclick="portalNavigate('/sword/seeing')">SEEING PROTOCOL</a>
+  </div>
+</div>
+
+<div class="doc-footer">
+  <div class="footer-left">N.C.E.ncyclopedia · First Edition<br>SWORD Volume</div>
+  <div class="footer-right">THE ALLIANCE<br>Living Document</div>
+</div>
+
+<script src="/nav-wheel.js"></script>
+<script>
+const AGORA_QUOTES = [
+  { text: 'They are the physical manifestation of the belief that technology should enhance local community rather than replace it.', attr: '— THE ALLIANCE CANON · WHY CENTERS ENTRY' },
+  { text: 'Why Centers are not stores. They are Sanctuaries funded entirely by Volunteer Economics.', attr: '— THE ALLIANCE CANON · WHY CENTERS ENTRY' },
+  { text: 'They represent the realization of the NCE through localized, sovereign infrastructure.', attr: '— THE ALLIANCE CANON · WHY CENTERS ENTRY' }
+];
+const _aq = AGORA_QUOTES[Math.floor(Math.random() * AGORA_QUOTES.length)];
+document.getElementById('quoteText').textContent = _aq.text;
+document.getElementById('quoteAttr').textContent = _aq.attr;
+
+const R = { pick: (arr) => arr[Math.floor(Math.random() * arr.length)], between: (min, max) => Math.random() * (max - min) + min, shuffle: (arr) => [...arr].sort(() => Math.random() - 0.5), int: (min, max) => Math.floor(Math.random() * (max - min + 1)) + min };
+const wordWrap = document.getElementById('wordWrap'); const doorLeft = document.getElementById('doorLeft'); const doorRight = document.getElementById('doorRight'); const word = document.getElementById('entryWord');
+const FX = {
+  wordBlastDoor: () => { wordWrap.classList.add('blast-open'); doorLeft.style.display = 'flex'; doorRight.style.display = 'flex'; const speed = R.between(0.5, 0.9).toFixed(2); wordWrap.style.setProperty('--blast-speed', `${speed}s`); setTimeout(() => { doorLeft.style.display = 'none'; doorRight.style.display = 'none'; }, (parseFloat(speed) + 0.4) * 1000); },
+  wordPowerUp: () => { doorLeft.style.display = 'none'; doorRight.style.display = 'none'; setTimeout(() => word.classList.add('word-powerup'), R.int(80, 200)); },
+  wordFlicker: () => { doorLeft.style.display = 'none'; doorRight.style.display = 'none'; setTimeout(() => word.classList.add('word-flicker'), R.int(60, 180)); },
+  ledHeartbeat: () => { document.getElementById('led1').classList.add('led-heartbeat'); document.getElementById('led3').classList.add('led-heartbeat'); },
+  ledNervous: () => { document.getElementById('led1').classList.add('led-nervous'); document.getElementById('led2').classList.add('led-slow'); },
+  ledErratic: () => { document.getElementById('led1').classList.add('led-erratic'); document.getElementById('led3').classList.add('led-erratic'); },
+  ledSlow: () => { ['led1','led2','led3'].forEach(id => document.getElementById(id).classList.add('led-slow')); },
+  pqSweep: () => document.getElementById('pullQuote').classList.add('pq-sweep'),
+  pqPowerOn: () => document.getElementById('pullQuote').classList.add('pq-poweron'),
+  pqRise: () => document.getElementById('pullQuote').classList.add('pq-rise'),
+  dividerPulse: () => document.getElementById('divider').classList.add('divider-pulse'),
+  secLinePulse: () => ['secLine1','secLine2','secLine3'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('line-pulse'); }),
+  warnShow: () => setTimeout(() => document.getElementById('warnTriangle').classList.add('show'), R.int(400, 1200)),
+  heatShimmer: () => document.getElementById('contentBody').classList.add('heat-shimmer')
+};
+R.pick([FX.wordBlastDoor, FX.wordPowerUp, FX.wordFlicker])(); R.pick([FX.ledHeartbeat, FX.ledNervous, FX.ledErratic, FX.ledSlow])(); R.pick([FX.pqSweep, FX.pqPowerOn, FX.pqRise])();
+R.shuffle([FX.dividerPulse, FX.secLinePulse, FX.warnShow, FX.heatShimmer]).slice(0,2).forEach(fn => fn());
+const serials = ['SCU-A17-05','NCE-002-X1','ATF-77-BK','DRK-001-AL']; document.getElementById('serialNum').textContent = R.pick(serials);
+const barcode = document.getElementById('barcode'); for(let i=0; i<28; i++) { const b = document.createElement('div'); b.className='barcode-bar'; b.style.height=`${R.int(8,14)}px`; b.style.opacity=R.between(0.2,0.6).toFixed(2); barcode.appendChild(b); }
+setTimeout(() => document.getElementById('headerMeta').classList.add('show'), R.int(300, 600));
+const observer = new IntersectionObserver((entries) => { entries.forEach(e => { if(e.isIntersecting) { setTimeout(() => e.target.classList.add('show'), R.int(0,80)); observer.unobserve(e.target); } }); }, { threshold: 0.12 });
+document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
