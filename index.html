@@ -577,6 +577,20 @@ function filterEntries(q) {
 
 function tocNavigate(path,icon) { closeTOC(); setTimeout(()=>portalTransition({preventDefault:()=>{}},path,icon),300); }
 
+
+// ── RESET ON BACK NAVIGATION ──
+window.addEventListener('pageshow', function(e) {
+  const shell = document.getElementById('pageShell');
+  if (shell) { shell.classList.remove('fading'); shell.style.opacity=''; shell.style.transform=''; shell.style.filter=''; }
+  const toc = document.getElementById('tocOverlay');
+  if (toc) toc.classList.remove('open');
+  const portal = document.getElementById('portalOverlay');
+  if (portal) { portal.classList.remove('active'); portal.style.opacity='0'; }
+  const icon = document.getElementById('portalIcon');
+  if (icon) { icon.style.animation='none'; icon.style.opacity='0'; }
+  stealthSearch.style.visibility='visible';
+});
+
 function portalTransition(e,path,iconSrc) {
   e.preventDefault();
   const ov=document.getElementById('portalOverlay'), ic=document.getElementById('portalIcon');
