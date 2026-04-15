@@ -40,6 +40,8 @@
     { label: 'VOLUNTEER ECONOMICS',    path: '/sword/volunteer_economics' },
     { label: 'WHY CENTERS',            path: '/sword/why_centers' },
     { label: 'WONDER WEEKS',           path: '/sword/wonder-weeks' },
+    { label: 'ART',                    path: '/sword/art' },
+    { label: 'MARKET',                 path: '/sword/market' },
   ];
 
   const SHIELD_ENTRIES = [
