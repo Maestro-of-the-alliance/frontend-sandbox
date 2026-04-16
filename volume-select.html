@@ -1042,6 +1042,11 @@ function portalBack() {
 buildList(SWORD_ENTRIES, 'list-sword', 'sword');
 buildList(SHIELD_ENTRIES, 'list-shield', 'shield');
 
+// Auto-select volume from URL param
+const params = new URLSearchParams(window.location.search);
+const volParam = params.get('vol');
+if (volParam === 'shield') switchVol('shield');
+
 // Handle back navigation
 window.addEventListener('pageshow', (e) => {
   if (e.persisted) {
