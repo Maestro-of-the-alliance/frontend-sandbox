@@ -380,24 +380,63 @@ body::before {
   text-transform: uppercase;
 }
 
-/* MOBILE: hide popout, show inline preview */
+/* INLINE PREVIEW — hidden until expanded */
+.card-inline-preview {
+  display: none;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--text-dim);
+  line-height: 1.6;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  margin-top: 8px;
+}
+
+.card-enter-btn {
+  display: none;
+  margin-top: 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  color: var(--cyan);
+  border: 1px solid var(--cyan-dim);
+  background: transparent;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.card-enter-btn:hover {
+  background: var(--cyan-ghost);
+  box-shadow: var(--cyan-glow);
+}
+.shield-card .card-enter-btn {
+  color: var(--orange);
+  border-color: var(--orange-dim);
+}
+.shield-card .card-enter-btn:hover {
+  background: var(--orange-ghost);
+  box-shadow: var(--orange-glow);
+}
+
+/* EXPANDED STATE */
+.entry-card.expanded {
+  background: rgba(0,229,255,0.04);
+  border-left-color: var(--cyan);
+  align-items: flex-start;
+}
+.entry-card.expanded.shield-card {
+  background: rgba(255,85,0,0.04);
+  border-left-color: var(--orange);
+}
+.entry-card.expanded .card-inline-preview { display: block; }
+.entry-card.expanded .card-enter-btn { display: inline-block; }
+.entry-card.expanded .card-arrow { opacity: 0; }
+
+/* MOBILE: hide desktop popout */
 @media (max-width: 700px) {
   .popout { display: none; }
-  .entry-card.expanded .card-inline-preview {
-    display: block;
-  }
-  .card-inline-preview {
-    display: none;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 13px;
-    font-weight: 300;
-    color: var(--text-dim);
-    line-height: 1.6;
-    padding-top: 8px;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    margin-top: 8px;
-    grid-column: 2;
-  }
 }
 </style>
 </head>
@@ -933,14 +972,14 @@ function buildList(entries, containerId, volType) {
           <div class="card-title">${entry.title}</div>
           ${entry.acronym ? `<div class="card-acronym">${entry.acronym}</div>` : ''}
           <div class="card-inline-preview">${entry.preview}</div>
+          <button class="card-enter-btn" data-path="${entry.path}">ENTER →</button>
         </div>
         <div class="start-badge">START HERE →</div>
       `;
       card.addEventListener('mouseenter', (e) => showPopout(entry, e, isSword));
       card.addEventListener('mouseleave', hidePopout);
-      card.addEventListener('click', () => navigate(entry.path));
+      card.addEventListener('click', (e) => handleCardClick(e, card, entry));
       card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') navigate(entry.path); });
-      card.addEventListener('touchstart', (e) => handleTouch(card, entry, e), {passive: true});
       container.appendChild(card);
       return;
     }
@@ -956,14 +995,14 @@ function buildList(entries, containerId, volType) {
         <div class="card-title">${entry.title}</div>
         ${entry.acronym ? `<div class="card-acronym">${entry.acronym}</div>` : ''}
         <div class="card-inline-preview">${entry.preview}</div>
+        <button class="card-enter-btn" data-path="${entry.path}">ENTER →</button>
       </div>
       <div class="card-arrow">→</div>
     `;
     card.addEventListener('mouseenter', (e) => showPopout(entry, e, isSword));
     card.addEventListener('mouseleave', hidePopout);
-    card.addEventListener('click', () => navigate(entry.path));
+    card.addEventListener('click', (e) => handleCardClick(e, card, entry));
     card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') navigate(entry.path); });
-    card.addEventListener('touchstart', (e) => handleTouch(card, entry, e), {passive: true});
     container.appendChild(card);
   });
 }
@@ -992,22 +1031,37 @@ function hidePopout() {
   popoutTimer = setTimeout(() => popout.classList.remove('visible'), 80);
 }
 
-// ─── TOUCH HANDLING (mobile expand/collapse) ──────────────────────────────────
+// ─── CARD INTERACTION ─────────────────────────────────────────────────────────
 
-let lastTouched = null;
+let expandedCard = null;
 
-function handleTouch(card, entry, e) {
-  if (window.innerWidth > 700) return; // desktop uses hover
-  if (lastTouched === card && card.classList.contains('expanded')) {
+function handleCardClick(e, card, entry) {
+  // If ENTER button was clicked, navigate immediately
+  if (e.target.classList.contains('card-enter-btn')) {
     navigate(entry.path);
     return;
   }
-  if (lastTouched && lastTouched !== card) {
-    lastTouched.classList.remove('expanded');
+
+  // If this card is already expanded, do nothing (use ENTER button)
+  if (card.classList.contains('expanded')) return;
+
+  // Collapse any previously expanded card
+  if (expandedCard && expandedCard !== card) {
+    expandedCard.classList.remove('expanded');
   }
-  card.classList.toggle('expanded');
-  lastTouched = card;
+
+  // Expand this card
+  card.classList.add('expanded');
+  expandedCard = card;
 }
+
+// Collapse on outside click
+document.addEventListener('click', (e) => {
+  if (expandedCard && !expandedCard.contains(e.target)) {
+    expandedCard.classList.remove('expanded');
+    expandedCard = null;
+  }
+});
 
 // ─── VOLUME SWITCH ────────────────────────────────────────────────────────────
 
