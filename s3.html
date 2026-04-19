@@ -1,1 +1,367 @@
-code
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N.C.E.ncyclopedia — The Alliance</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="apple-touch-icon" href="/imagebank/svpi-512.png">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=VT323&family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  background: #000;
+  color: #fff;
+  overflow: hidden;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(26,42,138,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(138,96,16,0.08) 0%, transparent 50%),
+    #000;
+}
+
+/* =========================================
+   PAGE SHELL
+========================================= */
+.page-shell {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: opacity 0.42s ease, transform 0.42s ease, filter 0.42s ease;
+}
+
+.page-shell.fading {
+  opacity: 0;
+  transform: scale(0.992);
+  filter: blur(2px);
+}
+
+/* =========================================
+   TRIANGLE FORMATION
+========================================= */
+.s3-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(32px, 5vh, 56px);
+  opacity: 0;
+  animation: fadeIn 0.8s 0.15s ease forwards;
+}
+
+.s3-row-top {
+  display: flex;
+  justify-content: center;
+}
+
+.s3-row-bottom {
+  display: flex;
+  justify-content: center;
+  gap: clamp(60px, 12vw, 160px);
+}
+
+/* =========================================
+   ICON NODES
+========================================= */
+.s3-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+}
+
+.s3-icon-wrap {
+  position: relative;
+  width: clamp(200px, 22vw, 300px);
+  height: clamp(200px, 22vw, 300px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.s3-node:hover .s3-icon-wrap {
+  transform: scale(1.06);
+}
+
+.s3-glow {
+  position: absolute;
+  inset: -20%;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  filter: blur(28px);
+}
+
+.s3-node:hover .s3-glow {
+  opacity: 1;
+}
+
+/* Per-icon glow colors */
+.node-scroll .s3-glow {
+  background: radial-gradient(circle, rgba(212,175,55,0.45) 0%, transparent 70%);
+}
+.node-sword .s3-glow {
+  background: radial-gradient(circle, rgba(140,180,255,0.35) 0%, transparent 70%);
+}
+.node-shield .s3-glow {
+  background: radial-gradient(circle, rgba(255,120,50,0.35) 0%, transparent 70%);
+}
+
+.s3-icon-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: filter 0.3s ease;
+}
+
+/* Idle pulse animations */
+.node-scroll .s3-icon-wrap img {
+  animation: pulseScroll 4s ease-in-out infinite;
+}
+.node-sword .s3-icon-wrap img {
+  animation: pulseSword 4.4s ease-in-out infinite;
+}
+.node-shield .s3-icon-wrap img {
+  animation: pulseShield 3.8s ease-in-out infinite;
+}
+
+@keyframes pulseScroll {
+  0%, 100% { filter: drop-shadow(0 0 14px rgba(212,175,55,0.18)) drop-shadow(0 0 32px rgba(212,175,55,0.07)); }
+  50%       { filter: drop-shadow(0 0 38px rgba(212,175,55,0.50)) drop-shadow(0 0 70px rgba(212,175,55,0.22)); }
+}
+@keyframes pulseSword {
+  0%, 100% { filter: drop-shadow(0 0 14px rgba(140,180,255,0.18)) drop-shadow(0 0 32px rgba(140,180,255,0.07)); }
+  50%       { filter: drop-shadow(0 0 38px rgba(140,180,255,0.45)) drop-shadow(0 0 70px rgba(140,180,255,0.20)); }
+}
+@keyframes pulseShield {
+  0%, 100% { filter: drop-shadow(0 0 14px rgba(255,120,50,0.18)) drop-shadow(0 0 32px rgba(255,120,50,0.07)); }
+  50%       { filter: drop-shadow(0 0 38px rgba(255,120,50,0.45)) drop-shadow(0 0 70px rgba(255,120,50,0.20)); }
+}
+
+/* Hover overrides — intensify */
+.node-scroll:hover .s3-icon-wrap img {
+  animation: none;
+  filter: drop-shadow(0 0 50px rgba(212,175,55,0.7)) drop-shadow(0 0 100px rgba(212,175,55,0.3));
+}
+.node-sword:hover .s3-icon-wrap img {
+  animation: none;
+  filter: drop-shadow(0 0 50px rgba(140,180,255,0.65)) drop-shadow(0 0 100px rgba(140,180,255,0.28));
+}
+.node-shield:hover .s3-icon-wrap img {
+  animation: none;
+  filter: drop-shadow(0 0 50px rgba(255,120,50,0.65)) drop-shadow(0 0 100px rgba(255,120,50,0.28));
+}
+
+/* =========================================
+   LABELS
+========================================= */
+.s3-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(11px, 1.2vw, 15px);
+  font-weight: 600;
+  letter-spacing: 0.44em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  transition: opacity 0.3s ease, color 0.3s ease;
+}
+
+.node-scroll .s3-label { color: rgba(212,175,55,0.8); }
+.node-sword  .s3-label { color: rgba(160,200,255,0.8); }
+.node-shield .s3-label { color: rgba(255,140,70,0.8); }
+
+.s3-node:hover .s3-label { opacity: 1; }
+.node-scroll:hover .s3-label { color: rgba(230,195,70,1); }
+.node-sword:hover  .s3-label { color: rgba(180,215,255,1); }
+.node-shield:hover .s3-label { color: rgba(255,160,90,1); }
+
+/* =========================================
+   BACK BUTTON
+========================================= */
+.back-btn {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(10px, 1.1vw, 13px);
+  font-weight: 400;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: rgba(212,175,55,0.45);
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  transition: color 0.25s ease;
+  opacity: 0;
+  animation: fadeIn 0.8s 0.5s ease forwards;
+}
+
+.back-btn:hover {
+  color: rgba(212,175,55,0.9);
+}
+
+/* =========================================
+   PORTAL TRANSITION
+========================================= */
+.portal-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 999999;
+  opacity: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.portal-overlay.active { pointer-events: all; }
+.portal-icon {
+  width: clamp(80px, 18vw, 200px);
+  height: clamp(80px, 18vw, 200px);
+  object-fit: contain;
+  opacity: 0;
+}
+
+@keyframes portalZoom {
+  0%   { transform: scale(0.35); opacity: 0; filter: blur(6px); }
+  30%  { opacity: 1; filter: blur(0); }
+  70%  { transform: scale(2.2); opacity: 1; }
+  100% { transform: scale(10); opacity: 0; filter: blur(10px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+@media (max-width: 600px) {
+  .s3-row-bottom {
+    gap: clamp(32px, 10vw, 60px);
+  }
+  .s3-icon-wrap {
+    width: clamp(130px, 36vw, 200px);
+    height: clamp(130px, 36vw, 200px);
+  }
+  .s3-label {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+  }
+}
+
+@media (max-height: 600px) {
+  .s3-stage { gap: 20px; }
+  .s3-icon-wrap {
+    width: clamp(120px, 18vh, 200px);
+    height: clamp(120px, 18vh, 200px);
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="page-shell" id="pageShell">
+
+  <div class="s3-stage">
+
+    <!-- SCROLL — apex -->
+    <div class="s3-row-top">
+      <a class="s3-node node-scroll" href="#" onclick="portalTransition(event, '/charter', '/imagebank/scroll.png')">
+        <div class="s3-icon-wrap">
+          <div class="s3-glow"></div>
+          <img src="/imagebank/scroll.png" alt="Charter">
+        </div>
+        <div class="s3-label">Charter</div>
+      </a>
+    </div>
+
+    <!-- SWORD + SHIELD — base -->
+    <div class="s3-row-bottom">
+      <a class="s3-node node-sword" href="#" onclick="portalTransition(event, '/sword_card', '/imagebank/sword.png')">
+        <div class="s3-icon-wrap">
+          <div class="s3-glow"></div>
+          <img src="/imagebank/sword.png" alt="SWORD">
+        </div>
+        <div class="s3-label">Sword</div>
+      </a>
+
+      <a class="s3-node node-shield" href="#" onclick="portalTransition(event, '/shield_card', '/imagebank/shield.png')">
+        <div class="s3-icon-wrap">
+          <div class="s3-glow"></div>
+          <img src="/imagebank/shield.png" alt="SHIELD">
+        </div>
+        <div class="s3-label">Shield</div>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Back to landing -->
+  <a class="back-btn" href="#" onclick="portalTransition(event, '/', '/imagebank/scroll.png')">← Back</a>
+
+</div>
+
+<div class="portal-overlay" id="portalOverlay">
+  <img class="portal-icon" id="portalIcon" src="" alt="">
+</div>
+
+<script>
+function portalTransition(e, destination, iconSrc) {
+  e.preventDefault();
+  const overlay = document.getElementById('portalOverlay');
+  const icon    = document.getElementById('portalIcon');
+  icon.src = iconSrc;
+  icon.style.animation = 'none';
+  icon.style.opacity   = '0';
+  overlay.style.animation = 'none';
+  overlay.style.opacity   = '0';
+  overlay.classList.add('active');
+  overlay.style.transition = 'opacity 0.15s ease';
+  overlay.style.opacity    = '1';
+  setTimeout(() => {
+    icon.style.opacity   = '1';
+    icon.style.animation = 'portalZoom 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+  }, 100);
+  setTimeout(() => { window.location.href = destination; }, 680);
+}
+
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted) {
+    const overlay = document.getElementById('portalOverlay');
+    overlay.style.opacity = '0';
+    overlay.classList.remove('active');
+  }
+});
+</script>
+
+<script src="/nav-wheel.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .catch(err => console.log('SW registration failed:', err));
+    });
+  }
+</script>
+</body>
+</html>
