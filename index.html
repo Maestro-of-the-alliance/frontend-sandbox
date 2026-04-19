@@ -343,31 +343,25 @@ body {
 .stealth-search {
   position: fixed;
   bottom: 24px;
-  left: 28px;
+  left: 18px;
   z-index: 9000;
   display: flex;
   align-items: center;
   font-family: 'VT323', monospace;
-  font-size: 22px;
-  color: rgba(184,150,40,0.62);
+  font-size: 20px;
+  color: rgba(184,150,40,0.4);
   cursor: pointer;
-  transition: color 0.3s ease, opacity 0.3s ease;
+  transition: color 0.3s ease;
 }
 
 .stealth-search:hover {
-  color: rgba(230,185,60,1);
+  color: rgba(230,185,60,0.9);
   text-shadow: 0 0 10px rgba(184,150,40,0.4);
 }
 
 .prompt-arrow { user-select: none; }
 .cursor { animation: blink 1s step-end infinite; user-select: none; margin-left: 2px; }
-.prompt-text {
-  margin-left: 6px;
-  user-select: none;
-  white-space: pre;
-  color: inherit;
-  letter-spacing: 0.08em;
-}
+.prompt-text { display: none; }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
 /* =========================================
@@ -1043,24 +1037,11 @@ runBroadcast();
 // GLITCH TYPER
 // ═══════════════════════════════════════════════
 const NOISE = '!#$%&*@?/\\|[]{}~^<>';
-const TARGET = ' transmit query';
+const TARGET = ' access N.C.E.ncyclopedia';
 
 function glitchTypePrompt() {
-  const el = document.getElementById('promptText');
   const stealthEl = document.getElementById('stealthSearch');
   stealthEl.style.visibility = 'visible';
-  let i = 0;
-  function typeNext() {
-    if (i >= TARGET.length) return;
-    let noise = NOISE[Math.floor(Math.random()*NOISE.length)];
-    el.textContent = TARGET.slice(0,i) + noise;
-    setTimeout(() => {
-      el.textContent = TARGET.slice(0,i+1);
-      i++;
-      setTimeout(typeNext, 28 + Math.random()*18);
-    }, 40);
-  }
-  typeNext();
 }
 </script>
 
@@ -1099,7 +1080,7 @@ const dirPanel      = document.getElementById('dirPanel');
 const tocSearch     = document.getElementById('tocSearch');
 const tocEntries    = Array.from(document.querySelectorAll('.toc-entry'));
 
-const STEALTH_MESSAGE = 'transmit query';
+const STEALTH_MESSAGE = ' access N.C.E.ncyclopedia';
 let introTyping = false;
 let introDone   = false;
 let introIndex  = 0;
