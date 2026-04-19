@@ -431,6 +431,15 @@ function portalBack() { navigate('/s3'); }
 buildList(SHIELD_ENTRIES);
 window.scrollTo(0, 0);
 
+// Push a history entry so phone back button lands here, not landing page
+history.pushState({ page: 'shield_card' }, '', window.location.href);
+
+window.addEventListener('popstate', (e) => {
+  // Phone back button — go to S3 with shield icon
+  document.getElementById('portal-flash').classList.add('active');
+  setTimeout(() => { window.location.href = '/s3'; }, 480);
+});
+
 window.addEventListener('pageshow', (e) => {
   if (e.persisted) document.getElementById('portal-flash').classList.remove('active');
   window.scrollTo(0, 0);
