@@ -557,6 +557,138 @@ body {
   z-index: 10000 !important;
 }
 
+/* =========================================
+   BROADCAST INTERRUPTION SEQUENCE
+========================================= */
+#broadcast {
+  position: fixed;
+  inset: 0;
+  z-index: 999998;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+#broadcast.done { display: none; }
+
+#colorBars {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.bar { flex: 1; height: 100%; }
+
+#errorScreen {
+  position: absolute;
+  inset: 0;
+  background: #111;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.05s, filter 0.05s;
+  font-family: 'VT323', monospace;
+  text-align: center;
+  padding: 20px;
+}
+.error-eyebrow {
+  font-size: clamp(10px, 2vw, 14px);
+  letter-spacing: 0.4em;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 32px;
+  text-transform: uppercase;
+}
+.error-symbol {
+  font-size: clamp(50px, 10vw, 90px);
+  color: rgba(255,255,255,0.07);
+  line-height: 1;
+  margin-bottom: 20px;
+  font-family: 'Cinzel', serif;
+}
+#errMsg {
+  font-size: clamp(18px, 4vw, 30px);
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+#errSub {
+  font-size: clamp(11px, 2.2vw, 15px);
+  color: rgba(255,255,255,0.18);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+#errCode {
+  margin-top: 44px;
+  font-size: clamp(9px, 1.6vw, 12px);
+  color: rgba(255,255,255,0.12);
+  letter-spacing: 0.14em;
+}
+
+#glitchLayer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.04s;
+}
+.glitch-noise {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+.tear {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: rgba(212,175,55,0.6);
+  box-shadow: 0 0 8px rgba(212,175,55,0.4);
+  opacity: 0;
+  transition: opacity 0.04s;
+}
+#scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 3px,
+    rgba(0,0,0,0.1) 3px, rgba(0,0,0,0.1) 4px
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+#signalText {
+  position: absolute;
+  bottom: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'VT323', monospace;
+  font-size: clamp(13px, 2.5vw, 18px);
+  letter-spacing: 0.3em;
+  color: rgba(212,175,55,0);
+  white-space: nowrap;
+  transition: color 0.15s;
+  text-transform: uppercase;
+}
+
+/* VPI glitch-in animation */
+@keyframes vpiGlitch {
+  0%   { opacity: 0; filter: brightness(3) saturate(0); transform: translateX(-4px); }
+  20%  { opacity: 1; filter: brightness(2) saturate(0.3); transform: translateX(3px); }
+  40%  { filter: brightness(1.5) hue-rotate(15deg); transform: translateX(-2px); }
+  70%  { filter: brightness(1.1); transform: translateX(0); }
+  100% { opacity: 1; filter: none; transform: none; }
+}
+.vpi-glitch {
+  animation: vpiGlitch 0.45s ease forwards !important;
+}
+
 /* Portal transition */
 .portal-overlay {
   position: fixed;
@@ -616,9 +748,40 @@ body {
 </head>
 <body>
 
+<!-- BROADCAST INTERRUPTION SEQUENCE -->
+<div id="broadcast">
+  <div id="colorBars">
+    <div class="bar" style="background:#fff"></div>
+    <div class="bar" style="background:#ff0"></div>
+    <div class="bar" style="background:#0ff"></div>
+    <div class="bar" style="background:#0f0"></div>
+    <div class="bar" style="background:#f0f"></div>
+    <div class="bar" style="background:#f00"></div>
+    <div class="bar" style="background:#00f"></div>
+    <div class="bar" style="background:#000"></div>
+  </div>
+  <div id="errorScreen">
+    <div class="error-eyebrow">Channel 7 · Broadcast Network</div>
+    <div class="error-symbol">◈</div>
+    <div id="errMsg">Signal Interrupted</div>
+    <div id="errSub">This channel is temporarily unavailable</div>
+    <div id="errCode">ERR · 0x4A4C · CARRIER LOST · RETRY PENDING</div>
+  </div>
+  <div id="glitchLayer">
+    <div class="glitch-noise"></div>
+    <div class="tear"></div>
+    <div class="tear"></div>
+    <div class="tear"></div>
+    <div class="tear"></div>
+    <div class="tear"></div>
+  </div>
+  <div id="scanlines"></div>
+  <div id="signalText">· · · THE ALLIANCE · SIGNAL ACQUIRED · · ·</div>
+</div>
+
 <div class="page-shell" id="pageShell">
   <!-- Stealth command prompt -->
-  <div class="stealth-search" id="stealthSearch" aria-label="Open Table of Contents">
+  <div class="stealth-search" id="stealthSearch" aria-label="Open Table of Contents" style="visibility:hidden;">
     <span class="prompt-arrow">&gt;</span>
     <span class="prompt-text" id="promptText"></span>
     <span class="cursor">_</span>
@@ -772,6 +935,134 @@ body {
 <div class="portal-overlay" id="portalOverlay">
   <img class="portal-icon" id="portalIcon" src="" alt="">
 </div>
+
+<script>
+// ═══════════════════════════════════════════════
+// BROADCAST INTERRUPTION ENGINE
+// ═══════════════════════════════════════════════
+const isMobile    = window.innerWidth < 768;
+const broadcast   = document.getElementById('broadcast');
+const colorBars   = document.getElementById('colorBars');
+const errorScreen = document.getElementById('errorScreen');
+const glitchLayer = document.getElementById('glitchLayer');
+const signalText  = document.getElementById('signalText');
+const scanlines   = document.getElementById('scanlines');
+
+const errorVariants = [
+  { msg:'Signal Interrupted',    sub:'This channel is temporarily unavailable',     code:'ERR · 0x4A4C · CARRIER LOST' },
+  { msg:'Broadcast Suspended',   sub:'Please stand by',                             code:'ERR · 0x7F3B · NO SIGNAL DETECTED' },
+  { msg:'Connection Refused',    sub:'Access to this channel has been restricted',  code:'ERR · 0x2D19 · UNAUTHORIZED FREQUENCY' },
+  { msg:'Channel Unavailable',   sub:'Scheduled maintenance in progress',           code:'ERR · 0xA8C2 · SYSTEM OFFLINE' },
+];
+const v = errorVariants[Math.floor(Math.random() * errorVariants.length)];
+document.getElementById('errMsg').textContent  = v.msg;
+document.getElementById('errSub').textContent  = v.sub;
+document.getElementById('errCode').textContent = v.code;
+
+const totalDur     = isMobile ? Math.random()*1000+3500 : Math.random()*1500+4500;
+const glitchN      = isMobile ? 2 : Math.floor(Math.random()*2)+2;
+const glitchStart  = isMobile ? 1200 : 1800;
+const glitchWindow = totalDur - glitchStart - 1000;
+
+function runBroadcast() {
+  // Phase 1: color bars flash
+  colorBars.style.opacity = '1';
+  setTimeout(() => { colorBars.style.opacity = '0'; }, 180);
+
+  // Phase 2: error screen fades in
+  setTimeout(() => { errorScreen.style.opacity = '1'; }, 300);
+
+  // Phase 3: glitch attempts — signal fighting through
+  for (let a = 0; a < glitchN; a++) {
+    const aD  = glitchStart + (glitchWindow / glitchN) * a + Math.random()*200;
+    const aL  = isMobile ? 120 : Math.random()*150+120;
+    setTimeout(() => {
+      errorScreen.style.transform = `translateX(${(Math.random()-.5)*12}px) skewX(${(Math.random()-.5)*2}deg)`;
+      errorScreen.style.filter    = `brightness(${Math.random()*.5+.8}) hue-rotate(${Math.random()*30}deg)`;
+      glitchLayer.style.opacity   = '1';
+      document.querySelectorAll('.tear').forEach(t => {
+        t.style.top    = `${Math.random()*100}%`;
+        t.style.opacity = `${Math.random()*.8+.2}`;
+        t.style.height = `${Math.random()*3+1}px`;
+        t.style.background = Math.random()>.5 ? 'rgba(212,175,55,0.7)' : 'rgba(255,255,255,0.4)';
+      });
+      if (a === glitchN-1) signalText.style.color = `rgba(212,175,55,${Math.random()*.6+.3})`;
+    }, aD);
+    setTimeout(() => {
+      errorScreen.style.transform = '';
+      errorScreen.style.filter    = '';
+      glitchLayer.style.opacity   = '0';
+      document.querySelectorAll('.tear').forEach(t => t.style.opacity='0');
+      if (a < glitchN-1) signalText.style.color = 'rgba(212,175,55,0)';
+    }, aD+aL);
+  }
+
+  // Phase 4: final breakthrough
+  const bkD = totalDur - 800;
+  setTimeout(() => {
+    errorScreen.style.transform = `translateX(${(Math.random()-.5)*20}px)`;
+    errorScreen.style.filter    = 'brightness(2) saturate(0)';
+    glitchLayer.style.opacity   = '1';
+    scanlines.style.opacity     = '1';
+    signalText.style.color      = 'rgba(212,175,55,0.9)';
+    document.querySelectorAll('.tear').forEach(t => {
+      t.style.top    = `${Math.random()*100}%`;
+      t.style.opacity = '1';
+      t.style.height = `${Math.random()*4+2}px`;
+      t.style.background = 'rgba(212,175,55,0.9)';
+    });
+  }, bkD);
+
+  setTimeout(() => {
+    errorScreen.style.opacity   = '0';
+    glitchLayer.style.opacity   = '0';
+    scanlines.style.opacity     = '0';
+    broadcast.style.background  = '#000';
+  }, bkD+300);
+
+  // Phase 5: landing page assembles
+  setTimeout(() => {
+    broadcast.classList.add('done');
+    if (!isMobile) {
+      const sh = document.getElementById('pageShell');
+      sh.style.filter    = 'brightness(1.25) saturate(0.4)';
+      sh.style.transform = `translateX(${(Math.random()-.5)*5}px)`;
+      setTimeout(() => {
+        sh.style.transition = 'filter 0.4s ease, transform 0.3s ease';
+        sh.style.filter    = '';
+        sh.style.transform = '';
+      }, 140);
+    }
+    setTimeout(glitchTypePrompt, 700);
+  }, totalDur);
+}
+
+runBroadcast();
+
+// ═══════════════════════════════════════════════
+// GLITCH TYPER
+// ═══════════════════════════════════════════════
+const NOISE = '!#$%&*@?/\\|[]{}~^<>';
+const TARGET = ' access N.C.E.ncyclopedia';
+
+function glitchTypePrompt() {
+  const el = document.getElementById('promptText');
+  const stealthEl = document.getElementById('stealthSearch');
+  stealthEl.style.visibility = 'visible';
+  let i = 0;
+  function typeNext() {
+    if (i >= TARGET.length) return;
+    let noise = NOISE[Math.floor(Math.random()*NOISE.length)];
+    el.textContent = TARGET.slice(0,i) + noise;
+    setTimeout(() => {
+      el.textContent = TARGET.slice(0,i+1);
+      i++;
+      setTimeout(typeNext, 28 + Math.random()*18);
+    }, 40);
+  }
+  typeNext();
+}
+</script>
 
 <script>
 // ── PORTAL TRANSITION ──
