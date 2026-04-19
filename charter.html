@@ -678,7 +678,6 @@ const QUOTES = [
 ];
 
 let currentQuote = 0;
-let quoteInterval = null;
 
 function buildDots() {
   const dotsEl = document.getElementById('quoteDots');
@@ -717,7 +716,6 @@ function setQuote(index, animate) {
 }
 
 function goToQuote(index) {
-  resetInterval();
   setQuote(index, true);
 }
 
@@ -726,16 +724,16 @@ function nextQuote() {
   setQuote(next, true);
 }
 
-function resetInterval() {
-  clearInterval(quoteInterval);
-  quoteInterval = setInterval(nextQuote, 6000);
-}
-
 // Init quote randomizer with random starting quote
 currentQuote = Math.floor(Math.random() * QUOTES.length);
 buildDots();
 setQuote(currentQuote, false);
-resetInterval();
+
+// Click anywhere on quote stage to advance
+document.querySelector('.quote-stage').addEventListener('click', () => {
+  const next = (currentQuote + 1) % QUOTES.length;
+  setQuote(next, true);
+});
 
 // ── SCROLL FADE-IN ──
 const observer = new IntersectionObserver((entries) => {
