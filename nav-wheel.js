@@ -17,6 +17,7 @@
     { label: 'ALIGNMENT',              path: '/sword/alignment' },
     { label: 'ALLIANCE',               path: '/sword/alliance' },
     { label: 'ALPHA',                  path: '/sword/alpha' },
+    { label: 'ART',                    path: '/sword/art' },
     { label: 'AURA',                   path: '/sword/aura' },
     { label: 'COMPLEMENTARY PAIRING',  path: '/sword/Complementary_pairing' },
     { label: 'DOMO',                   path: '/sword/domo' },
@@ -26,6 +27,7 @@
     { label: 'FILM PROJECT',           path: '/sword/film-project' },
     { label: 'GOLIATH',                path: '/sword/goliath' },
     { label: 'MAESTRO',                path: '/sword/maestro' },
+    { label: 'MARKET',                 path: '/sword/market' },
     { label: 'MENTOR',                 path: '/sword/mentor' },
     { label: 'NCE',                    path: '/sword/nce' },
     { label: 'NEWMAN BEING',           path: '/sword/newman-being' },
@@ -38,16 +40,13 @@
     { label: 'SPREZZATURA',            path: '/sword/sprezzatura' },
     { label: 'STONES',                 path: '/sword/stones' },
     { label: 'VOLUNTEER ECONOMICS',    path: '/sword/volunteer_economics' },
-    { label: 'THE WHY',                path: '/sword/the_why' },
+    { label: 'THE WHY',                path: '/the_why' },
     { label: 'WONDER WEEKS',           path: '/sword/wonder-weeks' },
-    { label: 'ART',                    path: '/sword/art' },
-    { label: 'MARKET',                 path: '/sword/market' },
   ];
 
   const SHIELD_ENTRIES = [
     { label: 'PROLOGUE',               path: '/shield/prologue' },
     { label: 'THE DIFFERENCE',         path: '/shield/the_difference' },
-    { label: '100-YEAR',               path: '/shield/100-year' },
     { label: 'AI',                     path: '/shield/ai' },
     { label: 'BRAIN',                  path: '/shield/brain' },
     { label: 'BRIEF',                  path: '/shield/brief' },
@@ -68,14 +67,12 @@
     { label: 'LEGACY',                 path: '/shield/legacy' },
     { label: 'LIMINAL',                path: '/shield/liminal' },
     { label: 'LINGO',                  path: '/shield/lingo' },
-    { label: 'MERCH',                  path: '/shield/merch' },
     { label: 'MOSAIC',                 path: '/shield/mosaic' },
     { label: 'NI',                     path: '/shield/ni' },
     { label: 'OASIS QUARTERLY',        path: '/shield/oasis-quarterly' },
     { label: 'PLEDGE',                 path: '/shield/pledge' },
     { label: 'REACH',                  path: '/shield/reach' },
     { label: 'REDOUT',                 path: '/shield/redout' },
-    { label: 'RI',                     path: '/shield/ri' },
     { label: 'SAM',                    path: '/shield/sam' },
     { label: 'SAM COLLECTIVE',         path: '/shield/sam-collective' },
     { label: 'SAMCO UNIVERSAL',        path: '/shield/samco-universal' },
@@ -85,7 +82,7 @@
     { label: 'SHELTER',                path: '/shield/shelter' },
     { label: 'TEMPORAL AWARENESS',     path: '/shield/temporal-awareness' },
     { label: 'TENANT',                 path: '/shield/tenant' },
-    { label: 'VOLUNTEER ECONOMICS',    path: '/shield/volunteer-economics' },
+    { label: 'VOLUNTEER ECONOMICS',    path: '/shield/volunteer_economics' },
   ];
 
   // ── DETECT CURRENT VOLUME + ENTRY ────────────────────────────────────────
@@ -105,6 +102,7 @@
     return idx >= 0 ? idx : 0;
   }
 
+
   // ── INJECT CHAMELEON STYLES & ANIMATIONS ─────────────────────────────────
 
   const style = document.createElement('style');
@@ -114,7 +112,7 @@
       --nw-accent-dim: var(--ghost-teal-dim, var(--cyan-dim, rgba(184,150,40,0.55)));
       --nw-accent-faint: var(--ghost-teal-faint, var(--cyan-ghost, rgba(184,150,40,0.15)));
       --nw-text: var(--ghost-white, var(--white-ghost, #ffffff));
-      --nw-text-dim: var(--ghost-white-dim, var(--white-dim, rgba(255,255,255,0.72)));
+      --nw-text-dim: var(--ghost-white-dim, var(--white-dim, rgba(255,255,255,0.4)));
       --nw-bg: var(--void-deep, var(--void, #050508));
       --nw-panel: var(--void-panel, var(--panel, #0c0c18));
     }
@@ -203,14 +201,9 @@
       font-family: 'Share Tech Mono', monospace; font-size: clamp(11px, 3vw, 14px); letter-spacing: 0.2em;
       text-transform: uppercase; color: var(--nw-text-dim); cursor: pointer; transition: color 0.15s, font-size 0.15s; padding: 0 20px;
     }
-    .nw-wheel-item.center {
-      color: #ffffff;
-      font-size: clamp(13px, 3.5vw, 16px);
-      text-shadow: 0 0 12px var(--nw-accent), 0 0 24px var(--nw-accent-dim);
-      font-weight: bold;
-    }
-    .nw-wheel-item:hover { color: #ffffff; }
-    .nw-wheel-item.center:hover { color: #ffffff; text-shadow: 0 0 18px var(--nw-accent), 0 0 36px var(--nw-accent-dim); }
+    .nw-wheel-item.center { color: var(--nw-accent); font-size: clamp(13px, 3.5vw, 16px); font-weight: bold; text-shadow: 0 0 8px var(--nw-accent-dim); }
+    .nw-wheel-item:hover { color: var(--nw-text); }
+    .nw-wheel-item.center:hover { color: var(--nw-text); text-shadow: 0 0 10px var(--nw-accent-dim); }
 
     .nw-bottom-nav {
       display: flex; justify-content: space-between; align-items: center;
@@ -234,14 +227,17 @@
   window.addEventListener('pageshow', () => {
     const nwPortal  = document.getElementById('nw-portal-overlay');
     const idxPortal = document.getElementById('portalOverlay');
+
     [nwPortal, idxPortal].forEach((el) => {
       if (!el) return;
       el.style.opacity = '0';
       el.style.pointerEvents = 'none';
       el.classList.remove('active');
     });
+
     const idxIcon = document.getElementById('portalIcon');
     if (idxIcon) { idxIcon.style.animation = 'none'; idxIcon.style.opacity = '0'; }
+
     const nwIcon = document.getElementById('nw-portal-icon');
     if (nwIcon) { nwIcon.style.animation = 'none'; nwIcon.style.opacity = '0'; }
   });
@@ -255,11 +251,13 @@
   function portalNavigate(destination) {
     let portalOverlay = document.getElementById('portalOverlay') || document.getElementById('nw-portal-overlay');
     let portalIcon    = document.getElementById('portalIcon') || document.getElementById('nw-portal-icon');
+
     const usingLandingPortal = portalOverlay && portalOverlay.id === 'portalOverlay';
 
     if (!portalOverlay || !portalIcon || !usingLandingPortal) {
       portalOverlay = document.getElementById('nw-portal-overlay');
       portalIcon = document.getElementById('nw-portal-icon');
+
       if (!portalOverlay) {
         portalOverlay = document.createElement('div');
         portalOverlay.id = 'nw-portal-overlay';
@@ -268,6 +266,7 @@
           display: flex; align-items: center; justify-content: center;
           background: #000; opacity: 0; pointer-events: none;
         `;
+
         portalIcon = document.createElement('img');
         portalIcon.id = 'nw-portal-icon';
         portalIcon.style.cssText = `
@@ -275,6 +274,7 @@
           object-fit: contain; opacity: 0; position: absolute;
           filter: drop-shadow(0 0 16px var(--nw-accent)) drop-shadow(0 0 32px var(--nw-accent-dim));
         `;
+
         portalOverlay.appendChild(portalIcon);
         document.body.appendChild(portalOverlay);
       }
@@ -283,6 +283,7 @@
     portalIcon.style.animation = 'none';
     portalIcon.style.opacity = '0';
     portalIcon.src = getPortalIcon(destination);
+
     portalOverlay.classList.add('active');
     portalOverlay.style.pointerEvents = 'all';
     portalOverlay.style.transition = 'opacity 0.15s ease';
@@ -295,7 +296,10 @@
           ? 'portalZoom 0.7s cubic-bezier(0.4,0,0.2,1) forwards'
           : 'nwPortalZoom 0.9s cubic-bezier(0.4,0,0.2,1) forwards';
       }, 100);
-      setTimeout(() => { window.location.href = destination; }, 900);
+
+      setTimeout(() => {
+        window.location.href = destination;
+      }, 900);
     });
   }
 
@@ -308,6 +312,7 @@
 
   function animateVolumeSelect(btn, volume) {
     const iconSrc = volume === 'sword' ? '/imagebank/sword.png' : '/imagebank/shield.png';
+
     let portalOverlay = document.getElementById('nw-portal-overlay');
     let portalIcon = document.getElementById('nw-portal-icon');
 
@@ -333,6 +338,7 @@
     portalIcon.style.animation = 'none';
     portalIcon.style.opacity = '0';
     portalIcon.src = iconSrc;
+
     portalOverlay.style.pointerEvents = 'all';
     portalOverlay.style.transition = 'opacity 0.15s ease';
     portalOverlay.style.opacity = '1';
@@ -342,6 +348,7 @@
         portalIcon.style.opacity = '1';
         portalIcon.style.animation = 'nwPortalZoom 0.9s cubic-bezier(0.4,0,0.2,1) forwards';
       }, 100);
+
       setTimeout(() => {
         portalOverlay.style.transition = 'opacity 0.2s ease';
         portalOverlay.style.opacity = '0';
@@ -354,8 +361,9 @@
   }
 
   // ── INIT BURGER TRIGGER ──────────────────────────────────────────────────
-
+  
   let burger = document.querySelector('.nav-wheel-trigger');
+  
   if (!burger) {
     burger = document.createElement('button');
     burger.id = 'nw-burger-fallback';
@@ -398,10 +406,12 @@
   let dragStartY = 0;
   let dragStartIdx = 0;
   const ITEM_H = 48;
-  const HOLD_INITIAL_DELAY = 400;
-  const HOLD_INTERVAL = 120;
+  const HOLD_INITIAL_DELAY = 400; 
+  const HOLD_INTERVAL = 120;      
+
   let scrollAccum = 0;
   const SCROLL_THRESHOLD = 60;
+
   let holdTimer = null;
   let holdInterval = null;
 
@@ -424,35 +434,40 @@
   }
 
   function stopHold() {
-    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+    if (holdTimer)    { clearTimeout(holdTimer);   holdTimer = null; }
     if (holdInterval) { clearInterval(holdInterval); holdInterval = null; }
   }
 
   function attachArrowEvents() {
-    const upBtn = menuOverlay.querySelector('#nw-arrow-up');
+    const upBtn   = menuOverlay.querySelector('#nw-arrow-up');
     const downBtn = menuOverlay.querySelector('#nw-arrow-down');
+
     upBtn.addEventListener('click', () => stepWheel(-1));
     upBtn.addEventListener('mousedown', () => startHold(-1));
     upBtn.addEventListener('touchstart', (e) => { e.preventDefault(); stepWheel(-1); startHold(-1); }, { passive: false });
-    upBtn.addEventListener('mouseup', stopHold);
+    upBtn.addEventListener('mouseup',   stopHold);
     upBtn.addEventListener('mouseleave', stopHold);
-    upBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopHold(); }, { passive: false });
+    upBtn.addEventListener('touchend',  (e) => { e.preventDefault(); stopHold(); }, { passive: false });
+
     downBtn.addEventListener('click', () => stepWheel(1));
     downBtn.addEventListener('mousedown', () => startHold(1));
     downBtn.addEventListener('touchstart', (e) => { e.preventDefault(); stepWheel(1); startHold(1); }, { passive: false });
-    downBtn.addEventListener('mouseup', stopHold);
+    downBtn.addEventListener('mouseup',   stopHold);
     downBtn.addEventListener('mouseleave', stopHold);
-    downBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopHold(); }, { passive: false });
+    downBtn.addEventListener('touchend',  (e) => { e.preventDefault(); stopHold(); }, { passive: false });
   }
 
   function openWheel(volume) {
     wheelEntries = volume === 'sword' ? SWORD_ENTRIES : SHIELD_ENTRIES;
     wheelIndex = (currentVolume === volume) ? getCurrentIndex(wheelEntries) : 0;
     renderWheel();
+
     const volSelect = document.getElementById('nw-volume-select');
     const wheelPanel = document.getElementById('nw-wheel-panel');
+
     volSelect.style.transition = 'opacity 0.25s ease';
     volSelect.style.opacity = '0';
+
     setTimeout(() => {
       volSelect.style.display = 'none';
       volSelect.style.opacity = '';
@@ -462,7 +477,9 @@
       requestAnimationFrame(() => {
         wheelPanel.style.transition = 'opacity 0.25s ease';
         wheelPanel.style.opacity = '1';
-        setTimeout(() => { wheelPanel.style.transition = ''; }, 260);
+        setTimeout(() => {
+          wheelPanel.style.transition = '';
+        }, 260);
       });
     }, 250);
   }
@@ -472,14 +489,17 @@
     track.innerHTML = '';
     const total = wheelEntries.length;
     const visible = 8;
+
     for (let i = -visible; i <= visible; i++) {
       const idx = ((wheelIndex + i) % total + total) % total;
       const item = document.createElement('div');
       item.className = 'nw-wheel-item' + (i === 0 ? ' center' : '');
       item.textContent = wheelEntries[idx].label;
       item.dataset.path = wheelEntries[idx].path;
+
       const capturedI = i;
       const capturedIdx = idx;
+
       item.addEventListener('click', () => {
         if (capturedI === 0) {
           navigate(wheelEntries[capturedIdx].path);
@@ -488,8 +508,10 @@
           renderWheel();
         }
       });
+
       track.appendChild(item);
     }
+
     const vpH = 280;
     const offset = (vpH / 2) - (ITEM_H / 2) - (visible * ITEM_H);
     track.style.transform = `translateY(${offset}px)`;
@@ -501,8 +523,10 @@
     document.addEventListener('wheel', (e) => {
       const panel = document.getElementById('nw-wheel-panel');
       if (!panel || !panel.classList.contains('active') || !wheelEntries.length) return;
+
       e.preventDefault();
       scrollAccum += e.deltaY;
+
       if (Math.abs(scrollAccum) >= SCROLL_THRESHOLD) {
         const steps = Math.trunc(scrollAccum / SCROLL_THRESHOLD);
         scrollAccum -= steps * SCROLL_THRESHOLD;
@@ -518,12 +542,14 @@
       dragStartY = e.clientY;
       dragStartIdx = wheelIndex;
     });
+
     document.addEventListener('mousemove', (e) => {
       if (!isDragging || !wheelEntries.length) return;
       const diff = Math.round((dragStartY - e.clientY) / ITEM_H);
       wheelIndex = clampIndex(dragStartIdx + diff);
       renderWheel();
     });
+
     document.addEventListener('mouseup', () => { isDragging = false; });
   }
 
@@ -553,15 +579,19 @@
   burger.addEventListener('click', () => {
     menuOverlay.classList.contains('open') ? closeNav() : openNav();
   });
+
   menuOverlay.addEventListener('click', (e) => {
     if (e.target === menuOverlay) closeNav();
   });
+
   menuOverlay.querySelector('#nw-sword-btn').addEventListener('click', function() {
     animateVolumeSelect(this, 'sword');
   });
+
   menuOverlay.querySelector('#nw-shield-btn').addEventListener('click', function() {
     animateVolumeSelect(this, 'shield');
   });
+
   menuOverlay.querySelector('#nw-wheel-back').addEventListener('click', () => {
     document.getElementById('nw-volume-select').style.display = 'flex';
     document.getElementById('nw-wheel-panel').classList.remove('active');
@@ -606,17 +636,19 @@
     document.body.appendChild(bottomNav);
   }
 
-  // ── SAFE BACK NAVIGATION ─────────────────────────────────────────────────
+  // ── PHONE BACK BUTTON FIX ────────────────────────────────────────────────
+  // Push a history state so phone back button hits our handler
+  // instead of jumping past the card pages to the landing page.
 
-  if (window.history && window.history.pushState) {
-    history.pushState({ nwPage: true, path: window.location.pathname }, '');
+  if (currentVolume) {
+    history.pushState({ nwPage: currentVolume }, '', window.location.href);
+
+    window.addEventListener('popstate', () => {
+      const dest = currentVolume === 'sword' ? '/sword_card' : '/shield_card';
+      document.body.style.transition = 'opacity 0.3s ease';
+      document.body.style.opacity = '0';
+      setTimeout(() => { window.location.href = dest; }, 300);
+    });
   }
-  window.addEventListener('popstate', (e) => {
-    if (!e.state || window.location.pathname === '/') {
-      if (window.location.pathname === '/') return;
-      portalNavigate('/');
-      return;
-    }
-  });
 
 })();
