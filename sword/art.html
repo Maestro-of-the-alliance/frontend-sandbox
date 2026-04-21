@@ -364,17 +364,29 @@
 
   .lightbox-close {
     position: absolute;
-    top: 24px;
-    right: 32px;
+    top: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    color: rgba(255,255,255,0.3);
-    letter-spacing: 0.3em;
+    font-size: 18px;
+    color: rgba(255,255,255,0.5);
     cursor: pointer;
     transition: color 0.2s;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: color 0.2s, opacity 0.3s;
   }
-
-  .lightbox-close:hover { color: var(--cyan); }
+  .lightbox.open .lightbox-close {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .lightbox-close:hover { color: var(--cyan); border-color: var(--cyan); }
 
   /* ── COUNTER ── */
   .counter {
@@ -400,7 +412,40 @@
     z-index: 10;
   }
 
-  /* ── FADE ANIMATIONS ── */
+  /* ── BOTTOM ENTRY NAV ── */
+  .entry-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+    z-index: 50;
+    pointer-events: none;
+  }
+  .entry-nav a {
+    pointer-events: all;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(0,229,255,0.4);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    transition: color 0.2s;
+    cursor: pointer;
+  }
+  .entry-nav a:hover { color: rgba(0,229,255,0.9); }
+  .entry-nav-home {
+    font-size: 16px !important;
+    letter-spacing: 0 !important;
+  }
   @keyframes posterIn {
     from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -464,9 +509,16 @@
 
 </div>
 
+<!-- Bottom entry nav -->
+<div class="entry-nav">
+  <a onclick="portalNavigate('/sword/alliance')">◄ ALLIANCE</a>
+  <a class="entry-nav-home" onclick="portalNavigate('/')">⌂</a>
+  <a onclick="portalNavigate('/sword/aura')">AURA ►</a>
+</div>
+
 <!-- Lightbox -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <div class="lightbox-close">[ ESC TO CLOSE ]</div>
+  <div class="lightbox-close" onclick="event.stopPropagation(); closeLightbox()">✕</div>
   <img class="lightbox-img" id="lightboxImg" src="" alt="">
 </div>
 
@@ -595,5 +647,6 @@ document.addEventListener('touchend', e => {
 buildDots();
 showPoster(0, true);
 </script>
+<script src="/nav-wheel.js"></script>
 </body>
 </html>
