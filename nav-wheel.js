@@ -185,7 +185,11 @@ window.portalNavigate = function(destination) {
     }
     #nw-overlay.open { opacity: 1; pointer-events: all; }
 
-    #nw-volume-select { display: flex; gap: clamp(40px, 12vw, 100px); align-items: center; justify-content: center; }
+    #nw-volume-select { display: flex; flex-direction: column; gap: 24px; align-items: center; justify-content: center; }
+    .nw-vol-row { display: flex; gap: clamp(40px, 12vw, 100px); align-items: center; justify-content: center; }
+    .nw-home-btn { opacity: 0.7; transition: opacity 0.25s ease, transform 0.25s ease !important; }
+    .nw-home-btn:hover { opacity: 1; transform: scale(1.08) translateY(-4px) !important; }
+    .nw-home-btn img { width: 60px !important; height: 60px !important; min-width: 60px !important; min-height: 60px !important; filter: drop-shadow(0 0 12px var(--nw-accent-dim)) !important; }
     .nw-vol-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; transition: transform 0.25s ease; padding: 12px; }
     .nw-vol-btn:hover { transform: scale(1.08) translateY(-4px); }
     .nw-vol-btn img {
@@ -406,12 +410,17 @@ window.portalNavigate = function(destination) {
   menuOverlay.id = 'nw-overlay';
   menuOverlay.innerHTML = `
     <div id="nw-volume-select">
-      <button class="nw-vol-btn" id="nw-sword-btn" type="button" aria-label="Open SWORD entries">
-        <img src="/imagebank/sword.png" alt="SWORD">
+      <button class="nw-vol-btn nw-home-btn" id="nw-home-btn" type="button" aria-label="Go home">
+        <img src="/imagebank/svpi-white.png" alt="Home">
       </button>
-      <button class="nw-vol-btn" id="nw-shield-btn" type="button" aria-label="Open SHIELD entries">
-        <img src="/imagebank/shield.png" alt="SHIELD">
-      </button>
+      <div class="nw-vol-row">
+        <button class="nw-vol-btn" id="nw-sword-btn" type="button" aria-label="Open SWORD entries">
+          <img src="/imagebank/sword.png" alt="SWORD">
+        </button>
+        <button class="nw-vol-btn" id="nw-shield-btn" type="button" aria-label="Open SHIELD entries">
+          <img src="/imagebank/shield.png" alt="SHIELD">
+        </button>
+      </div>
     </div>
     <div id="nw-wheel-panel">
       <button class="nw-wheel-back" id="nw-wheel-back" type="button">← back</button>
@@ -609,6 +618,11 @@ window.portalNavigate = function(destination) {
 
   menuOverlay.addEventListener('click', (e) => {
     if (e.target === menuOverlay) closeNav();
+  });
+
+  menuOverlay.querySelector('#nw-home-btn').addEventListener('click', function() {
+    closeNav();
+    setTimeout(() => portalNavigate('/'), 50);
   });
 
   menuOverlay.querySelector('#nw-sword-btn').addEventListener('click', function() {
