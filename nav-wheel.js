@@ -622,7 +622,30 @@ window.portalNavigate = function(destination) {
 
   menuOverlay.querySelector('#nw-home-btn').addEventListener('click', function() {
     closeNav();
-    setTimeout(() => portalNavigate('/'), 50);
+    // Use svpi-white for the home portal transition
+    var overlay = document.getElementById('nw-portal-overlay');
+    var icon = document.getElementById('nw-portal-icon');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'nw-portal-overlay';
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:#000;opacity:0;pointer-events:none;';
+      icon = document.createElement('img');
+      icon.id = 'nw-portal-icon';
+      icon.style.cssText = 'width:90px;height:90px;object-fit:contain;opacity:0;position:absolute;';
+      overlay.appendChild(icon);
+      document.body.appendChild(overlay);
+    }
+    icon.style.animation = 'none';
+    icon.style.opacity = '0';
+    icon.src = '/imagebank/svpi-white.png';
+    overlay.style.pointerEvents = 'all';
+    overlay.style.transition = 'opacity 0.15s ease';
+    overlay.style.opacity = '1';
+    setTimeout(function() {
+      icon.style.opacity = '1';
+      icon.style.animation = 'nwPortalZoom 0.9s cubic-bezier(0.4,0,0.2,1) forwards';
+    }, 100);
+    setTimeout(function() { window.location.href = '/'; }, 900);
   });
 
   menuOverlay.querySelector('#nw-sword-btn').addEventListener('click', function() {
