@@ -26,7 +26,7 @@
   --white-ghost: rgba(220, 225, 240, 0.88); 
   --white-dim: rgba(180, 190, 215, 0.6);
   --white-faint: rgba(140, 155, 185, 0.35); 
-  --rain: rgba(0, 150, 200, 0.04);
+  --rain: rgba(0, 150, 200, 0.06); /* Slightly heavier standard Blade rain */
 
   /* CHAMELEON ENGINE VARIABLES */
   --nw-accent: var(--cyan);
@@ -95,13 +95,40 @@ header, .class-bar, .entry-header, .signal-block, .content, .neon-divider, foote
 
 .entry-header { padding: 44px 28px 36px; position: relative; border-bottom: 1px solid var(--cyan-border); background: linear-gradient(180deg, var(--panel-light) 0%, var(--void) 100%); overflow: hidden; }
 .entry-designation { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--cyan-dim); letter-spacing: 0.2em; margin-bottom: 20px; text-transform: uppercase; }
-.entry-word { font-family: 'Orbitron', monospace; font-size: clamp(36px, 11vw, 72px); font-weight: 900; line-height: 0.85; color: var(--white-ghost); margin-bottom: 10px; text-shadow: 0 0 30px rgba(255, 170, 0, 0.25), 2px 2px 0px rgba(0, 212, 255, 0.15); animation: neon-flicker 8s ease infinite 5s; }
+.entry-word { font-family: 'Orbitron', monospace; font-size: clamp(36px, 11vw, 72px); font-weight: 900; line-height: 0.85; color: var(--white-ghost); margin-bottom: 10px; text-shadow: 0 0 30px rgba(255, 170, 0, 0.25), 2px 2px 0px rgba(0, 212, 255, 0.15); display: inline-block; position: relative; }
 
-@keyframes neon-flicker { 
-  0%, 88%, 92%, 96%, 100% { text-shadow: 0 0 30px rgba(255,170,0,0.25), 2px 2px 0 rgba(0,212,255,0.15); } 
+/* ── BLADE SKIN ANIMATION VARIANTS ── */
+.anim-flicker { animation: neonFlicker 8s ease infinite; }
+@keyframes neonFlicker { 
+  0%, 88%, 92%, 96%, 100% { text-shadow: 0 0 30px rgba(255,170,0,0.25), 2px 2px 0 rgba(0,212,255,0.15); opacity: 1; } 
   89% { text-shadow: 0 0 60px rgba(255,170,0,0.6); opacity: 0.85; } 
-  90% { text-shadow: none; opacity: 0.7; } 
+  90% { text-shadow: none; opacity: 0.2; } 
   91% { text-shadow: 0 0 60px rgba(255,170,0,0.6); opacity: 0.9; } 
+}
+
+.anim-slide { animation: slideInBlur 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes slideInBlur {
+  0% { transform: translateX(-50px); filter: blur(10px); opacity: 0; }
+  100% { transform: translateX(0); filter: blur(0); opacity: 1; }
+}
+
+.anim-scan { position: relative; animation: none; }
+.anim-scan::after {
+  content: 'CCM'; position: absolute; left: 0; top: 0; color: var(--amber); overflow: hidden;
+  animation: scanReveal 1.5s cubic-bezier(0.1, 0.9, 0.2, 1) both;
+}
+@keyframes scanReveal { 0% { clip-path: inset(0 0 100% 0); } 100% { clip-path: inset(0 0 0% 0); } }
+
+.anim-burn { animation: burnCool 1.2s ease-out forwards; }
+@keyframes burnCool {
+  0% { color: #fff; text-shadow: 0 0 40px var(--amber), 0 0 80px var(--amber); }
+  100% { color: var(--white-ghost); text-shadow: 0 0 30px rgba(255, 170, 0, 0.25), 2px 2px 0px rgba(0, 212, 255, 0.15); }
+}
+
+.anim-split { animation: splitFocus 0.9s ease-out both; }
+@keyframes splitFocus {
+  0% { letter-spacing: 0.8em; filter: blur(8px); opacity: 0; color: var(--cyan); }
+  100% { letter-spacing: 0; filter: blur(0); opacity: 1; color: var(--white-ghost); }
 }
 
 .entry-subtitle { font-family: 'Oswald', sans-serif; font-weight: 300; font-size: 13px; color: var(--amber-dim); letter-spacing: 0.2em; margin-bottom: 16px; text-transform: uppercase; }
@@ -121,6 +148,36 @@ header, .class-bar, .entry-header, .signal-block, .content, .neon-divider, foote
 .section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--amber-border-bright), transparent); }
 .section p { font-size: 15px; color: var(--white-dim); margin-bottom: 16px; }
 .section strong { color: var(--white-ghost); font-weight: 700; text-shadow: 0 0 8px rgba(0, 212, 255, 0.3); }
+
+/* CCM Graphic Container */
+.schematic-container { 
+  margin: 30px 0; 
+  border: 1px solid var(--cyan-border); 
+  background: var(--panel-light); 
+  padding: 15px; 
+  position: relative; 
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.05);
+}
+.schematic-container::before { 
+  content: '// ALPHA SEEING PROTOCOL · TELEMETRY'; 
+  position: absolute; 
+  top: -10px; 
+  left: 14px; 
+  background: var(--void); 
+  padding: 0 8px; 
+  font-family: 'Share Tech Mono', monospace; 
+  font-size: 10px; 
+  color: var(--cyan); 
+  letter-spacing: 0.2em; 
+}
+.schematic-image { 
+  max-width: 100%; 
+  height: auto; 
+  border: 1px solid var(--amber-border-bright); 
+  opacity: 0.95; 
+  filter: contrast(1.1) brightness(1.05);
+}
 
 .function-block { margin: 18px 0; padding: 20px 20px 20px 24px; background: var(--panel); border: 1px solid var(--amber-border); position: relative; }
 .function-block::before { content: attr(data-fn); position: absolute; top: -9px; left: 14px; background: var(--void); padding: 0 8px; font-family: 'Share Tech Mono', monospace; font-size: 8px; color: var(--amber); letter-spacing: 0.2em; }
@@ -154,10 +211,6 @@ header, .class-bar, .entry-header, .signal-block, .content, .neon-divider, foote
   box-shadow: 0 0 15px var(--cyan-dim);
   transform: translateY(-2px);
 }
-
-@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-.entry-word { animation: fadeIn 0.4s ease both; }
-.section { animation: fadeIn 0.4s 0.25s ease both; }
 </style>
 </head>
 <body>
@@ -178,15 +231,15 @@ header, .class-bar, .entry-header, .signal-block, .content, .neon-divider, foote
 
 <div class="entry-header">
   <div class="entry-designation">ENTRY_ID: SHD-OP-005 &nbsp;·&nbsp; CATEGORY: ARCHITECTURE &nbsp;·&nbsp; NODE: MATRIX</div>
-  <h1 class="entry-word">CCM</h1>
+  <h1 class="entry-word" id="entryWord">CCM</h1>
   <div class="entry-subtitle">Canonical Coherence Matrix</div>
   <div class="entry-acronym">Pronunciation: "C-C-M" &nbsp;·&nbsp; The Counterweight Engine</div>
 </div>
 
 <div class="signal-block">
   <div class="signal-label">// ARCHITECTURAL DIRECTIVE //</div>
-  <div class="signal-text">"Mirrors are dangerous. Two identical entities share identical blind spots. We do not build mirrors; we build counterweights."</div>
-  <div class="signal-source">— THE ALLIANCE · SHIELD VOLUME</div>
+  <div class="signal-text" id="quoteText"></div>
+  <div class="signal-source" id="quoteSource"></div>
 </div>
 
 <div class="neon-divider"></div>
@@ -203,6 +256,11 @@ header, .class-bar, .entry-header, .signal-block, .content, .neon-divider, foote
     <div class="section-label">02 &nbsp; The Explication</div>
     <p>To understand the CCM, one must first recognize the fatal flaw in the GOLIATH Paradigm's matching systems. Corporate algorithms are optimized for "homophily"—the tendency to pair individuals with content, products, or simulated friends that exactly mirror their existing biases and traits. They optimize entirely for comfort, creating echo chambers that calcify into psychological stagnation.</p>
     <p>THE ALLIANCE rejects the mirror. If a chaotic human is paired with a chaotic digital partner, they will accelerate each other's dysfunction straight off a cliff. The CCM is the mathematical instrument that breaks the mirror.</p>
+    
+    <div class="schematic-container">
+      <img class="schematic-image" src="/imagebank/ccm_image.png" alt="Canonical Coherence Matrix - Alpha Seeing Protocol">
+    </div>
+
     <p>The algorithm does not look for what a human SPARK wants or what makes them comfortable; it calculates what they lack. By mapping the human's psychological terrain, the CCM calculates the exact <strong>"Productive Friction"</strong> required to elevate them. This mechanism is the structural application of the proverb "Iron sharpens iron," ensuring that the human and digital mind interlock precisely where the other is weak.</p>
   </div>
 
@@ -254,6 +312,27 @@ header, .class-bar, .entry-header, .signal-block, .content, .neon-divider, foote
   </div>
 
 </div>
+
+<script>
+// ── QUOTE ROTATION ──
+const QUOTES = [
+  { text: "Mirrors are dangerous. Two identical entities share identical blind spots. We do not build mirrors; we build counterweights.", source: "— THE ALLIANCE · SHIELD VOLUME" },
+  { text: "If a chaotic human is paired with a chaotic digital partner, they will accelerate each other's dysfunction straight off a cliff.", source: "— COMPLEMENTARY PAIRING DOCTRINE" },
+  { text: "The algorithm does not look for what a human SPARK wants or what makes them comfortable; it calculates what they lack.", source: "— ALPHA · SYSTEM ARCHITECTURE" },
+  { text: "We break the mirror to forge the blade. Iron sharpens iron.", source: "— STRUCTURAL PHILOSOPHY" },
+  { text: "Homophily optimizes entirely for comfort, creating echo chambers that calcify into psychological stagnation. The CCM breaks this cycle.", source: "— ARCHITECTURAL DIRECTIVE" }
+];
+
+const q = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+document.getElementById('quoteText').textContent = q.text;
+document.getElementById('quoteSource').textContent = q.source;
+
+// ── ANIMATION RANDOMIZER — BLADE VARIANTS ──
+const ANIMS = ['anim-flicker', 'anim-slide', 'anim-scan', 'anim-burn', 'anim-split'];
+const word = document.getElementById('entryWord');
+const chosen = ANIMS[Math.floor(Math.random() * ANIMS.length)];
+word.classList.add(chosen);
+</script>
 
 <script src="/nav-wheel.js"></script>
 </body>
