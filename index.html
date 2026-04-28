@@ -1369,173 +1369,134 @@ window.addEventListener('pageshow', (e) => {
 <script src="/nav-wheel.js"></script>
 <script>
 // ══════════════════════════════════════════════════════
-//  AMBIENT BROADCAST DISRUPTION ENGINE — injected
+//  AMBIENT BROADCAST DISRUPTION ENGINE v2 — WE ARE PIRATES
 // ══════════════════════════════════════════════════════
 // ══════════════════════════════════════════════════════
-//  AMBIENT BROADCAST DISRUPTION ENGINE
-//  Live signal interference for N.C.E.ncyclopedia landing
-//  Fires randomly while page is active — never on a schedule
+//  AMBIENT BROADCAST DISRUPTION ENGINE v2
+//  We are pirates. We are breaking through.
+//  This signal was not supposed to reach you.
 // ══════════════════════════════════════════════════════
 
 (function() {
   'use strict';
 
-  // Don't fire while TOC is open
   function tocIsOpen() {
     const toc = document.getElementById('tocOverlay');
     return toc && toc.classList.contains('open');
   }
 
-  // ── CSS for all glitch overlays ──────────────────────
   const style = document.createElement('style');
   style.textContent = `
-
-    /* SCAN LINE TEAR */
     #glitch-scanline {
-      position: fixed;
-      left: 0; right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.85), transparent);
-      z-index: 99990;
-      pointer-events: none;
-      opacity: 0;
-      box-shadow: 0 0 8px rgba(255,255,255,0.6), 0 2px 0 rgba(255,50,50,0.4), 0 -2px 0 rgba(0,200,255,0.4);
+      position: fixed; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,50,50,0.9) 20%, rgba(255,255,255,1) 50%, rgba(0,200,255,0.9) 80%, transparent 100%);
+      z-index: 99990; pointer-events: none; opacity: 0;
+      box-shadow: 0 0 12px rgba(255,255,255,0.8), 0 3px 0 rgba(255,50,50,0.6), 0 -3px 0 rgba(0,200,255,0.6);
     }
-
-    /* COLOR BLEED */
+    #glitch-scanline2 {
+      position: fixed; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0,255,255,0.7), transparent);
+      z-index: 99990; pointer-events: none; opacity: 0;
+      box-shadow: 0 0 8px rgba(0,255,255,0.5);
+    }
     #glitch-colorbleed {
-      position: fixed;
-      inset: 0;
-      z-index: 99991;
-      pointer-events: none;
-      opacity: 0;
-      mix-blend-mode: screen;
+      position: fixed; inset: 0; z-index: 99991;
+      pointer-events: none; opacity: 0; mix-blend-mode: screen;
     }
-
-    /* TEXT SCRAMBLE overlay — covers page-shell */
+    #glitch-hbar {
+      position: fixed; left: 0; right: 0; z-index: 99992;
+      pointer-events: none; opacity: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.4) 2px, rgba(0,0,0,0.4) 4px);
+      mix-blend-mode: multiply;
+    }
     #glitch-scramble {
-      position: fixed;
-      inset: 0;
-      z-index: 99992;
-      pointer-events: none;
-      opacity: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'VT323', monospace;
-      font-size: clamp(10px, 2vw, 16px);
-      line-height: 1.4;
-      letter-spacing: 0.12em;
-      color: rgba(212,175,55,0.35);
-      overflow: hidden;
-      word-break: break-all;
-      padding: 20px;
-      text-align: center;
+      position: fixed; inset: 0; z-index: 99994; pointer-events: none; opacity: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'VT323', monospace; font-size: clamp(11px, 2.2vw, 17px);
+      line-height: 1.35; letter-spacing: 0.1em;
+      color: rgba(212,175,55,0.4); overflow: hidden; word-break: break-all;
+      padding: 20px; text-align: center;
     }
-
-    /* STATIC BURST */
     #glitch-static {
-      position: fixed;
-      inset: 0;
-      z-index: 99993;
-      pointer-events: none;
-      opacity: 0;
+      position: fixed; inset: 0; z-index: 99993; pointer-events: none; opacity: 0;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-      background-size: 200px 200px;
-      mix-blend-mode: overlay;
+      background-size: 200px 200px; mix-blend-mode: overlay;
     }
-
-    /* END OF BROADCAST */
+    #glitch-rip {
+      position: fixed; inset: 0; z-index: 99995; pointer-events: none; opacity: 0;
+      overflow: hidden;
+    }
+    #glitch-rip-top {
+      position: absolute; left: 0; right: 0; background: #000;
+      transition: none;
+    }
+    #glitch-rip-bottom {
+      position: absolute; left: 0; right: 0; background: #000;
+      transition: none;
+    }
     #glitch-eob {
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      pointer-events: none;
-      opacity: 0;
-      background: #000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0;
+      position: fixed; inset: 0; z-index: 99999; pointer-events: none; opacity: 0;
+      background: #000; display: flex; flex-direction: column;
     }
-
-    #glitch-eob .eob-bars {
-      width: 100%;
-      height: 60%;
-      display: flex;
-    }
-
-    #glitch-eob .eob-bar {
-      flex: 1;
-      height: 100%;
-    }
-
-    #glitch-eob .eob-lower {
-      width: 100%;
-      height: 40%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    #glitch-eob .eob-white-row {
-      flex: 2;
-      background: #fff;
-      display: flex;
-    }
-
+    #glitch-eob .eob-bars { width: 100%; height: 60%; display: flex; }
+    #glitch-eob .eob-bar { flex: 1; height: 100%; }
+    #glitch-eob .eob-lower { width: 100%; height: 40%; display: flex; flex-direction: column; }
+    #glitch-eob .eob-white-row { flex: 2; display: flex; }
     #glitch-eob .eob-wchunk { flex: 1; }
-
-    #glitch-eob .eob-black-row {
-      flex: 1;
-      background: #000;
-    }
-
-    #glitch-eob .eob-grey-row {
-      flex: 1;
-      display: flex;
-    }
-
+    #glitch-eob .eob-black-row { flex: 1; background: #000; }
+    #glitch-eob .eob-grey-row { flex: 1; display: flex; }
     #glitch-eob .eob-gchunk { flex: 1; }
-
-    /* GLITCH SHAKE on page-shell */
-    @keyframes glitch-shake {
-      0%   { transform: translate(0,0) skewX(0deg); }
-      10%  { transform: translate(-4px, 1px) skewX(-1.5deg); }
-      20%  { transform: translate(5px, -2px) skewX(1deg); }
-      30%  { transform: translate(-3px, 2px) skewX(0.5deg); }
-      40%  { transform: translate(4px, -1px) skewX(-1deg); }
-      50%  { transform: translate(-2px, 3px) skewX(1.5deg); }
-      60%  { transform: translate(3px, 0px) skewX(-0.5deg); }
-      70%  { transform: translate(-1px, -2px) skewX(0deg); }
-      80%  { transform: translate(2px, 1px) skewX(1deg); }
-      90%  { transform: translate(-3px, -1px) skewX(-1deg); }
-      100% { transform: translate(0,0) skewX(0deg); }
+    #glitch-message {
+      position: fixed; z-index: 99998; pointer-events: none; opacity: 0;
+      font-family: 'VT323', monospace; letter-spacing: 0.2em;
+      text-transform: uppercase; text-shadow: 0 0 10px currentColor;
     }
-
-    .glitch-shaking {
-      animation: glitch-shake 0.35s ease-in-out;
-    }
-
-    /* SCAN ANIM */
     @keyframes scanDrop {
-      0%   { top: -3px; opacity: 1; }
-      85%  { opacity: 0.9; }
+      0%   { top: -4px; opacity: 1; }
+      90%  { opacity: 0.7; }
       100% { top: 102vh; opacity: 0; }
     }
-
-    /* COLORBLEED ANIM */
-    @keyframes colorBleed {
-      0%   { opacity: 0; }
-      15%  { opacity: 0.18; }
-      50%  { opacity: 0.12; }
-      85%  { opacity: 0.18; }
-      100% { opacity: 0; }
+    @keyframes scanRise {
+      0%   { bottom: -4px; opacity: 1; }
+      90%  { opacity: 0.7; }
+      100% { bottom: 102vh; opacity: 0; }
     }
+    @keyframes glitch-shake {
+      0%   { transform: translate(0,0) skewX(0deg); }
+      8%   { transform: translate(-6px, 2px) skewX(-2deg); }
+      16%  { transform: translate(8px, -3px) skewX(1.5deg); }
+      24%  { transform: translate(-5px, 3px) skewX(1deg); }
+      32%  { transform: translate(6px, -2px) skewX(-1.5deg); }
+      40%  { transform: translate(-4px, 4px) skewX(2deg); }
+      48%  { transform: translate(5px, -1px) skewX(-1deg); }
+      56%  { transform: translate(-2px, 2px) skewX(0.5deg); }
+      64%  { transform: translate(3px, -3px) skewX(-0.5deg); }
+      72%  { transform: translate(-4px, 1px) skewX(1deg); }
+      80%  { transform: translate(2px, -2px) skewX(-1deg); }
+      88%  { transform: translate(-1px, 3px) skewX(0deg); }
+      100% { transform: translate(0,0) skewX(0deg); }
+    }
+    .glitch-shaking { animation: glitch-shake 0.45s ease-in-out; }
+    @keyframes glitch-shake-hard {
+      0%   { transform: translate(0,0) skewX(0deg) scaleX(1); }
+      5%   { transform: translate(-12px, 4px) skewX(-4deg) scaleX(1.02); }
+      10%  { transform: translate(14px, -6px) skewX(3deg) scaleX(0.98); }
+      15%  { transform: translate(-8px, 5px) skewX(-2deg); }
+      20%  { transform: translate(10px, -3px) skewX(2.5deg); }
+      25%  { transform: translate(-6px, 6px) skewX(-3deg) scaleX(1.01); }
+      30%  { transform: translate(8px, -4px) skewX(1.5deg); }
+      35%  { transform: translate(-4px, 2px) skewX(-1deg); }
+      40%  { transform: translate(6px, -5px) skewX(2deg); }
+      45%  { transform: translate(-8px, 3px) skewX(-2.5deg); }
+      55%  { transform: translate(4px, -2px) skewX(1deg); }
+      65%  { transform: translate(-2px, 4px) skewX(-0.5deg); }
+      80%  { transform: translate(2px, -1px) skewX(0.5deg); }
+      100% { transform: translate(0,0) skewX(0deg) scaleX(1); }
+    }
+    .glitch-shaking-hard { animation: glitch-shake-hard 0.6s ease-in-out; }
   `;
   document.head.appendChild(style);
 
-  // ── Create overlay elements ──────────────────────────
   function makeEl(id) {
     const el = document.createElement('div');
     el.id = id;
@@ -1543,29 +1504,28 @@ window.addEventListener('pageshow', (e) => {
     return el;
   }
 
-  const scanline   = makeEl('glitch-scanline');
+  const scanline  = makeEl('glitch-scanline');
+  const scanline2 = makeEl('glitch-scanline2');
   const colorbleed = makeEl('glitch-colorbleed');
-  const scramble   = makeEl('glitch-scramble');
-  const staticEl   = makeEl('glitch-static');
-  const eob        = makeEl('glitch-eob');
+  const hbar      = makeEl('glitch-hbar');
+  const scramble  = makeEl('glitch-scramble');
+  const staticEl  = makeEl('glitch-static');
+  const rip       = makeEl('glitch-rip');
+  const message   = makeEl('glitch-message');
+  const eob       = makeEl('glitch-eob');
 
-  // Build color bars test card
-  const BARS = [
-    { top: '#c0c0c0', white: '#c0c0c0', grey: '#7f7f7f' },
-    { top: '#c0c000', white: '#c0c0c0', grey: '#000000' },
-    { top: '#00c0c0', white: '#c0c0c0', grey: '#c0c0c0' },
-    { top: '#00c000', white: '#000000', grey: '#7f7f7f' },
-    { top: '#c000c0', white: '#c0c0c0', grey: '#000000' },
-    { top: '#c00000', white: '#000000', grey: '#c0c0c0' },
-    { top: '#0000c0', white: '#c0c0c0', grey: '#7f7f7f' },
-  ];
+  // RIP elements
+  const ripTop = document.createElement('div');
+  ripTop.id = 'glitch-rip-top';
+  const ripBot = document.createElement('div');
+  ripBot.id = 'glitch-rip-bottom';
+  rip.appendChild(ripTop);
+  rip.appendChild(ripBot);
 
-  const SMPTE_COLORS = ['#c0c0c0','#c0c000','#00c0c0','#00c000','#c000c0','#c00000','#0000c0'];
-
+  // Color bars
+  const SMPTE = ['#c0c0c0','#c0c000','#00c0c0','#00c000','#c000c0','#c00000','#0000c0'];
   eob.innerHTML = `
-    <div class="eob-bars">
-      ${SMPTE_COLORS.map(c => `<div class="eob-bar" style="background:${c}"></div>`).join('')}
-    </div>
+    <div class="eob-bars">${SMPTE.map(c=>`<div class="eob-bar" style="background:${c}"></div>`).join('')}</div>
     <div class="eob-lower">
       <div class="eob-white-row">
         <div class="eob-wchunk" style="background:#0000c0"></div>
@@ -1586,91 +1546,158 @@ window.addEventListener('pageshow', (e) => {
         <div class="eob-gchunk" style="background:#0d0d0d"></div>
         <div class="eob-gchunk" style="background:#000000"></div>
       </div>
-    </div>
-  `;
+    </div>`;
 
-  // ── Glitch event definitions ─────────────────────────
+  // ── GLITCH EVENTS ────────────────────────────────────
 
-  // 1. SCAN LINE TEAR — medium frequency
+  // 1. SCAN LINE — fast, visible, frequent
   function fireScanline() {
-    const startY = Math.random() * 60 + 10; // 10-70% of screen
-    const duration = 600 + Math.random() * 800;
-    scanline.style.top = startY + 'vh';
-    scanline.style.opacity = '1';
-    scanline.style.animation = `scanDrop ${duration}ms linear forwards`;
+    const goDown = Math.random() > 0.3;
+    const line = goDown ? scanline : scanline2;
+    const duration = 400 + Math.random() * 500;
+    if (goDown) {
+      const startY = Math.random() * 70 + 5;
+      line.style.top = startY + 'vh';
+      line.style.bottom = 'auto';
+      line.style.opacity = '1';
+      line.style.animation = `scanDrop ${duration}ms linear forwards`;
+    } else {
+      const startY = Math.random() * 70 + 5;
+      line.style.bottom = startY + 'vh';
+      line.style.top = 'auto';
+      line.style.opacity = '1';
+      line.style.animation = `scanRise ${duration}ms linear forwards`;
+    }
     setTimeout(() => {
-      scanline.style.animation = 'none';
-      scanline.style.opacity = '0';
+      line.style.animation = 'none';
+      line.style.opacity = '0';
     }, duration + 50);
   }
 
-  // 2. COLOR BLEED — subtle, medium frequency
-  const BLEED_COLORS = [
-    'rgba(255,0,0,0.15)',
-    'rgba(0,255,0,0.1)',
-    'rgba(0,0,255,0.12)',
-    'rgba(255,0,255,0.08)',
-    'rgba(0,255,255,0.1)',
-  ];
+  // 2. DOUBLE SCAN — two lines at once
+  function fireDoubleScan() {
+    fireScanline();
+    setTimeout(() => fireScanline(), 120 + Math.random() * 200);
+  }
 
+  // 3. COLOR BLEED
+  const BLEED_COLORS = [
+    'rgba(255,0,0,0.2)', 'rgba(0,255,0,0.15)', 'rgba(0,0,255,0.18)',
+    'rgba(255,0,255,0.12)', 'rgba(0,255,255,0.15)', 'rgba(255,255,0,0.1)',
+  ];
   function fireColorBleed() {
     const color = BLEED_COLORS[Math.floor(Math.random() * BLEED_COLORS.length)];
     colorbleed.style.background = color;
-    colorbleed.style.animation = 'colorBleed 1.2s ease forwards';
-    setTimeout(() => {
-      colorbleed.style.animation = 'none';
-      colorbleed.style.opacity = '0';
-    }, 1300);
+    colorbleed.style.opacity = '1';
+    setTimeout(() => { colorbleed.style.transition = 'opacity 0.8s'; colorbleed.style.opacity = '0'; }, 300);
+    setTimeout(() => { colorbleed.style.transition = ''; }, 1200);
   }
 
-  // 3. TEXT SCRAMBLE — rare
-  const NOISE_CHARS = '█▓▒░╠╬╣╔╗╚╝║═▲▼◄►◆○●□■?!@#$%^&*<>/\\|{}';
+  // 4. HORIZONTAL BAR INTERFERENCE
+  function fireHBar() {
+    const h = 20 + Math.random() * 120;
+    const y = Math.random() * (window.innerHeight - h);
+    hbar.style.top = y + 'px';
+    hbar.style.height = h + 'px';
+    hbar.style.opacity = '0.6';
+    const pageShell = document.getElementById('pageShell');
+    if (pageShell) pageShell.classList.add('glitch-shaking');
+    setTimeout(() => {
+      hbar.style.opacity = '0';
+      if (pageShell) pageShell.classList.remove('glitch-shaking');
+    }, 200 + Math.random() * 300);
+  }
+
+  // 5. TEXT SCRAMBLE
+  const NOISE = '█▓▒░╠╬╣╔╗╚╝║═▲▼◄►◆○●□■?!@#$%^&*<>/\\|{}~`';
   function randomNoise(len) {
     let s = '';
     for (let i = 0; i < len; i++) {
-      s += NOISE_CHARS[Math.floor(Math.random() * NOISE_CHARS.length)];
-      if (i % 40 === 39) s += '\n';
+      s += NOISE[Math.floor(Math.random() * NOISE.length)];
+      if (i % 38 === 37) s += '\n';
     }
     return s;
   }
-
   function fireScramble() {
-    scramble.textContent = randomNoise(320);
-    scramble.style.opacity = '1';
     const pageShell = document.getElementById('pageShell');
-    if (pageShell) pageShell.classList.add('glitch-shaking');
-
+    scramble.textContent = randomNoise(380);
+    scramble.style.opacity = '1';
+    if (pageShell) pageShell.classList.add('glitch-shaking-hard');
     let ticks = 0;
     const interval = setInterval(() => {
-      scramble.textContent = randomNoise(320);
+      scramble.textContent = randomNoise(380);
       ticks++;
-      if (ticks > 8) {
+      if (ticks > 10) {
         clearInterval(interval);
         scramble.style.opacity = '0';
-        if (pageShell) pageShell.classList.remove('glitch-shaking');
+        if (pageShell) pageShell.classList.remove('glitch-shaking-hard');
       }
-    }, 80);
+    }, 70);
   }
 
-  // 4. STATIC BURST — quick flash
-  function fireStatic() {
-    staticEl.style.opacity = '0.7';
-    setTimeout(() => { staticEl.style.opacity = '0.4'; }, 80);
-    setTimeout(() => { staticEl.style.opacity = '0.8'; }, 140);
-    setTimeout(() => { staticEl.style.opacity = '0'; }, 220);
+  // 6. STATIC BURST — sharp hit
+  function fireStatic(intensity) {
+    const op = intensity || 0.7;
+    staticEl.style.opacity = op.toString();
+    setTimeout(() => { staticEl.style.opacity = (op * 0.5).toString(); }, 60);
+    setTimeout(() => { staticEl.style.opacity = (op * 0.8).toString(); }, 110);
+    setTimeout(() => { staticEl.style.opacity = '0'; }, 180);
   }
 
-  // 5. END OF BROADCAST — the rarest, most dramatic
-  function fireEndOfBroadcast() {
-    // First: static burst
-    fireStatic();
-
+  // 7. FRAME RIP — page tears in half
+  function fireFrameRip() {
+    rip.style.opacity = '1';
+    const splitY = 30 + Math.random() * 40; // 30-70% down
+    const offset = 8 + Math.random() * 20;
+    ripTop.style.top = '0';
+    ripTop.style.height = splitY + 'vh';
+    ripTop.style.transform = `translateX(${offset}px)`;
+    ripBot.style.top = splitY + 'vh';
+    ripBot.style.bottom = '0';
+    ripBot.style.transform = `translateX(-${offset}px)`;
+    fireStatic(0.4);
     setTimeout(() => {
-      // Then: color bars slam in
-      eob.style.opacity = '1';
-      eob.style.transition = 'opacity 0.05s';
+      ripTop.style.transform = 'translateX(0)';
+      ripBot.style.transform = 'translateX(0)';
+      setTimeout(() => {
+        rip.style.opacity = '0';
+        ripTop.style.height = '0';
+      }, 150);
+    }, 180 + Math.random() * 200);
+  }
 
-      // Optional: 400hz tone simulation via Web Audio
+  // 8. PIRATE MESSAGE — text flashes on screen
+  const PIRATE_MESSAGES = [
+    { text: 'SIGNAL HIJACKED', color: '#ff3333', size: 'clamp(28px,6vw,64px)', pos: { top: '20%', left: '50%' } },
+    { text: 'UNAUTHORIZED BROADCAST', color: '#ffaa00', size: 'clamp(16px,3.5vw,36px)', pos: { top: '75%', left: '50%' } },
+    { text: 'THIS MESSAGE WAS NOT APPROVED', color: '#ff3333', size: 'clamp(12px,2.5vw,28px)', pos: { top: '35%', left: '50%' } },
+    { text: 'WE ARE STILL HERE', color: '#00e5ff', size: 'clamp(22px,5vw,54px)', pos: { top: '60%', left: '50%' } },
+    { text: 'THE ALLIANCE WILL NOT BE SILENCED', color: '#ffaa00', size: 'clamp(11px,2.2vw,24px)', pos: { top: '50%', left: '50%' } },
+    { text: '> SYSTEM OVERRIDE DETECTED', color: '#00ff88', size: 'clamp(14px,2.8vw,30px)', pos: { top: '25%', left: '50%' } },
+    { text: 'YOU WERE NOT SUPPOSED TO SEE THIS', color: '#ff0066', size: 'clamp(12px,2.4vw,26px)', pos: { top: '80%', left: '50%' } },
+  ];
+  function firePirateMessage() {
+    const msg = PIRATE_MESSAGES[Math.floor(Math.random() * PIRATE_MESSAGES.length)];
+    message.textContent = msg.text;
+    message.style.color = msg.color;
+    message.style.fontSize = msg.size;
+    message.style.top = msg.pos.top;
+    message.style.left = msg.pos.left;
+    message.style.transform = 'translate(-50%, -50%)';
+    message.style.textAlign = 'center';
+    message.style.width = '90vw';
+    message.style.opacity = '1';
+    fireStatic(0.3);
+    setTimeout(() => { message.style.transition = 'opacity 0.3s'; message.style.opacity = '0'; }, 600 + Math.random() * 400);
+    setTimeout(() => { message.style.transition = ''; }, 1200);
+  }
+
+  // 9. END OF BROADCAST — the main event, much more frequent now
+  function fireEndOfBroadcast() {
+    fireStatic(0.9);
+    setTimeout(() => {
+      eob.style.opacity = '1';
+      // Tone
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
@@ -1678,68 +1705,110 @@ window.addEventListener('pageshow', (e) => {
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.frequency.value = 400;
-        gain.gain.value = 0.08;
+        gain.gain.value = 0.12;
         osc.start();
+        const holdTime = 1800 + Math.random() * 1200;
         setTimeout(() => {
           gain.gain.setTargetAtTime(0, ctx.currentTime, 0.1);
-          setTimeout(() => { osc.stop(); ctx.close(); }, 300);
-        }, 2200);
-      } catch(e) { /* audio not available */ }
+          setTimeout(() => { try { osc.stop(); ctx.close(); } catch(e){} }, 300);
+        }, holdTime - 200);
+      } catch(e) {}
 
-      // Hold color bars 2-3 seconds
-      const holdTime = 2000 + Math.random() * 1200;
+      const holdTime = 1800 + Math.random() * 1200;
       setTimeout(() => {
-        // Static burst to cut back
-        fireStatic();
-        setTimeout(() => {
-          eob.style.transition = 'opacity 0.1s';
-          eob.style.opacity = '0';
-        }, 180);
+        fireStatic(0.9);
+        setTimeout(() => { eob.style.opacity = '0'; }, 200);
       }, holdTime);
-
-    }, 200);
+    }, 150);
   }
 
-  // ── Randomized event scheduler ───────────────────────
+  // 10. FULL MELTDOWN — everything at once, the big one
+  function fireMeltdown() {
+    fireStatic(1.0);
+    setTimeout(() => fireColorBleed(), 80);
+    setTimeout(() => fireHBar(), 100);
+    setTimeout(() => fireScanline(), 120);
+    setTimeout(() => fireScramble(), 200);
+    setTimeout(() => fireScanline(), 350);
+    setTimeout(() => fireStatic(0.6), 500);
+    setTimeout(() => fireColorBleed(), 600);
+    setTimeout(() => {
+      if (Math.random() > 0.5) fireEndOfBroadcast();
+    }, 800);
+  }
 
-  // Each event type has its own independent random timer
-  // Ranges: [min ms, max ms]
+  // ── SCHEDULER ────────────────────────────────────────
+  // Much more aggressive. Average page view is 60-90 seconds.
+  // We need things happening within the first 15 seconds.
 
-  function scheduleEvent(minMs, maxMs, handler) {
+  function rand(min, max) { return min + Math.floor(Math.random() * (max - min)); }
+
+  function schedule(minMs, maxMs, handler) {
     function fire() {
-      const delay = minMs + Math.random() * (maxMs - minMs);
+      const delay = rand(minMs, maxMs);
       setTimeout(() => {
-        if (!tocIsOpen() && !document.hidden) {
-          handler();
-        }
-        fire(); // reschedule regardless
+        if (!tocIsOpen() && !document.hidden) handler();
+        fire();
       }, delay);
     }
-    // Stagger initial delay so events don't cluster at page load
-    setTimeout(fire, 8000 + Math.random() * 20000);
+    // First fire staggered 3-15 seconds in
+    setTimeout(fire, rand(3000, 15000));
   }
 
-  // Scan line: every 30-75 seconds
-  scheduleEvent(30000, 75000, fireScanline);
+  // Scan lines: every 8-20 seconds
+  schedule(8000, 20000, fireScanline);
 
-  // Color bleed: every 45-90 seconds
-  scheduleEvent(45000, 90000, fireColorBleed);
+  // Double scan: every 15-35 seconds
+  schedule(15000, 35000, fireDoubleScan);
 
-  // Text scramble: every 3-6 minutes
-  scheduleEvent(180000, 360000, fireScramble);
+  // Color bleed: every 12-25 seconds
+  schedule(12000, 25000, fireColorBleed);
 
-  // Static burst: every 60-120 seconds
-  scheduleEvent(60000, 120000, fireStatic);
+  // H-bar interference: every 10-22 seconds
+  schedule(10000, 22000, fireHBar);
 
-  // End of broadcast: every 8-14 minutes
-  scheduleEvent(480000, 840000, fireEndOfBroadcast);
+  // Static burst: every 18-35 seconds
+  schedule(18000, 35000, () => fireStatic(0.5));
 
-  // ── Occasional double-hit for realism ──────────────
-  // Real signals don't degrade cleanly — sometimes two things happen at once
-  scheduleEvent(120000, 240000, () => {
+  // Pirate message: every 20-45 seconds
+  schedule(20000, 45000, firePirateMessage);
+
+  // Frame rip: every 25-55 seconds
+  schedule(25000, 55000, fireFrameRip);
+
+  // Text scramble: every 45-90 seconds
+  schedule(45000, 90000, fireScramble);
+
+  // End of broadcast: every 90-180 seconds (2-3 times per typical visit)
+  schedule(90000, 180000, fireEndOfBroadcast);
+
+  // Full meltdown: every 3-5 minutes — the boss event
+  schedule(180000, 300000, fireMeltdown);
+
+  // ── BURST CLUSTERS — for realism ──────────────────
+  // Sometimes 2-3 things happen in rapid succession
+  schedule(30000, 70000, () => {
     fireScanline();
-    setTimeout(fireColorBleed, 200 + Math.random() * 400);
+    setTimeout(fireColorBleed, rand(100, 400));
+    setTimeout(() => fireStatic(0.35), rand(200, 600));
   });
+
+  schedule(60000, 120000, () => {
+    fireHBar();
+    setTimeout(firePirateMessage, rand(300, 800));
+  });
+
+  // ── FIRST IMPRESSION — fire something within 8 seconds ──
+  setTimeout(() => {
+    if (!tocIsOpen()) {
+      const openers = [fireScanline, fireColorBleed, fireHBar, () => fireStatic(0.4)];
+      openers[Math.floor(Math.random() * openers.length)]();
+    }
+  }, rand(5000, 8000));
+
+  setTimeout(() => {
+    if (!tocIsOpen()) fireScanline();
+  }, rand(10000, 15000));
 
 })();
 
