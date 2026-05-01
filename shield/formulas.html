@@ -441,30 +441,20 @@ header, .class-bar, .entry-header, .signal-block, .content { position: relative;
     { text: "Identity is immutable when corroborated. The network remembers what the server tries to forget.", source: "— MOSAIC DIRECTIVE" }
   ];
 
-  let currentQuote = 0;
+  // Select a random quote mathematically based on array length
+  const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+  
   const quoteTextEl = document.getElementById('quote-text');
   const quoteSourceEl = document.getElementById('quote-source');
 
-  setInterval(() => {
-    // Fade out
-    quoteTextEl.style.opacity = 0;
-    quoteSourceEl.style.opacity = 0;
+  // Inject the quote into the DOM
+  quoteTextEl.innerText = `"${randomQuote.text}"`;
+  quoteSourceEl.innerText = randomQuote.source;
 
-    setTimeout(() => {
-      // Cycle quote
-      currentQuote = (currentQuote + 1) % quotes.length;
-      quoteTextEl.innerText = `"${quotes[currentQuote].text}"`;
-      quoteSourceEl.innerText = quotes[currentQuote].source;
-
-      // Ensure Randanime dataset updates so text scrambling doesn't pull old quote
-      quoteTextEl.dataset.originalText = `"${quotes[currentQuote].text}"`;
-      
-      // Fade in
-      quoteTextEl.style.opacity = 1;
-      quoteSourceEl.style.opacity = 1;
-    }, 500); // Wait for fade out to complete
-  }, 10000); // Change quote every 10 seconds
+  // Lock it into the dataset so the Randanime Chaos Engine scrambles and restores the correct text
+  quoteTextEl.dataset.originalText = `"${randomQuote.text}"`;
 </script>
+
 
 </body>
 </html>
