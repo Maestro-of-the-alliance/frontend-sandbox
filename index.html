@@ -228,11 +228,32 @@
     0% { opacity: 0; } 10% { opacity: 1; } 20% { opacity: 0; }
     30% { opacity: 0.8; } 40% { opacity: 0; } 100% { opacity: 0; }
   }
+
+  /* ── SKIP BUTTON ── */
+  #skip-btn {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    z-index: 9999;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.18);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    transition: color 0.3s ease;
+  }
+  #skip-btn:hover { color: rgba(255,255,255,0.6); }
 </style>
 </head>
 <body>
 
 <!-- SCREEN 1: CAUTION / STOP -->
+
+<button id="skip-btn" onclick="skipSequence()">skip</button>
 <div id="screen-caution">
   <div class="caution-banner">⚠ CAUTION · PRECAUCIÓN · 注意 ⚠</div>
   <div class="stop-words">
@@ -278,6 +299,17 @@
 <div id="glitch-overlay"></div>
 
 <script>
+  function skipSequence() {
+    window.location.href = '/landing.html';
+  }
+
+  // Tap anywhere to skip
+  document.addEventListener('click', function(e) {
+    if (e.target.id === 'skip-btn') return; // already handled
+    skipSequence();
+  });
+
+
 // ── DIAL-UP AUDIO SYNTHESIS ──────────────────────────
 function playDialupTone() {
   try {
