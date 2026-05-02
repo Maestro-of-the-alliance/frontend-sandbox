@@ -737,12 +737,35 @@ body {
   .toc-volume:last-child { border-bottom: none; }
   .enter-btn { font-size: 13px; letter-spacing: 0.36em; padding: 12px 36px; }
 }
+
+/* =========================================
+   SKIP INTRO BUTTON
+========================================= */
+#skipIntro {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  z-index: 999999;
+  font-family: 'VT323', monospace;
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  color: rgba(212,175,55,0.22);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  transition: color 0.3s ease;
+  display: none;
+}
+#skipIntro:hover { color: rgba(212,175,55,0.7); }
 </style>
 </head>
 <body>
 
 <!-- BROADCAST INTERRUPTION SEQUENCE -->
 <div id="broadcast">
+  <button id="skipIntro" onclick="skipIntroNow()" aria-label="Skip intro">skip</button>
   <div id="colorBars">
     <div class="bar" style="background:#fff"></div>
     <div class="bar" style="background:#ff0"></div>
@@ -1031,6 +1054,18 @@ function runBroadcast() {
 }
 
 runBroadcast();
+
+// Show skip button after 1.5s — barely visible, always there
+setTimeout(() => {
+  const skipBtn = document.getElementById('skipIntro');
+  if (skipBtn) skipBtn.style.display = 'block';
+}, 1500);
+
+function skipIntroNow() {
+  broadcast.classList.add('done');
+  document.getElementById('skipIntro').style.display = 'none';
+  setTimeout(glitchTypePrompt, 100);
+}
 
 // ═══════════════════════════════════════════════
 // GLITCH TYPER
@@ -1696,23 +1731,6 @@ window.addEventListener('pageshow', (e) => {
     fireStatic(0.9);
     setTimeout(() => {
       eob.style.opacity = '1';
-      // Tone
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.frequency.value = 400;
-        gain.gain.value = 0.12;
-        osc.start();
-        const holdTime = 1800 + Math.random() * 1200;
-        setTimeout(() => {
-          gain.gain.setTargetAtTime(0, ctx.currentTime, 0.1);
-          setTimeout(() => { try { osc.stop(); ctx.close(); } catch(e){} }, 300);
-        }, holdTime - 200);
-      } catch(e) {}
-
       const holdTime = 1800 + Math.random() * 1200;
       setTimeout(() => {
         fireStatic(0.9);
