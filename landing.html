@@ -136,15 +136,30 @@ body {
   aspect-ratio: 1 / 1;
 }
 
+/* =========================================
+   THE ECLIPSE GLOW (DONUT HOLE)
+========================================= */
 .medallion-glow {
   position: absolute;
+  /* Kept oversized so the light can reach far out into the void */
   width: 135%;
   height: 135%;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(212,175,55,0.38) 0%, rgba(212,175,55,0.18) 26%, rgba(212,175,55,0.06) 48%, rgba(0,0,0,0) 72%);
-  filter: blur(26px);
+  
+  /* THE DONUT MATH */
+  background: radial-gradient(circle, 
+    transparent 0%,           /* Dead center: Pure dark */
+    transparent 45%,          /* Inner window: Pure dark */
+    rgba(212,175,55,0.45) 52%, /* Inner edge of Gold Ring: Light ignites */
+    rgba(212,175,55,0.15) 65%, /* Outer edge of Gold Ring: Fading */
+    transparent 80%           /* Deep void: Pure dark */
+  );
+  
+  /* Reduced blur slightly so the light doesn't accidentally bleed back into the center hole */
+  filter: blur(12px); 
+  
   z-index: 1;
   pointer-events: none;
   animation: glowPulse 4s ease-in-out infinite;
@@ -170,7 +185,7 @@ body {
   border-radius: 50%; 
   background: url('/imagebank/galaxy-bg.png') center center / cover no-repeat;
   
-  opacity: 1.5; 
+  opacity: 1.; 
   z-index: 2;
   pointer-events: none;
   
