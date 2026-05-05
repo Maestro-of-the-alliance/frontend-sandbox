@@ -155,6 +155,28 @@ body {
   50%       { opacity: 1; }
 }
 
+/* =========================================
+   THE ORBITING GALAXY (INJECTED)
+========================================= */
+.medallion-galaxy {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 180%;
+  height: 180%;
+  background: url('/imagebank/galaxy-bg.jpg') center center / cover no-repeat;
+  mix-blend-mode: screen; 
+  opacity: 0.45; 
+  z-index: 0;
+  pointer-events: none;
+  animation: galaxyOrbit 240s linear infinite; 
+}
+
+@keyframes galaxyOrbit {
+  0%   { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
 .medallion-img {
   position: relative;
   z-index: 1;
@@ -763,7 +785,6 @@ body {
 </head>
 <body>
 
-<!-- BROADCAST INTERRUPTION SEQUENCE -->
 <div id="broadcast">
   <button id="skipIntro" onclick="skipIntroNow()" aria-label="Skip intro">skip</button>
   <div id="colorBars">
@@ -796,7 +817,6 @@ body {
 </div>
 
 <div class="page-shell" id="pageShell">
-  <!-- Stealth command prompt -->
   <div class="stealth-search" id="stealthSearch" aria-label="Open Table of Contents" style="visibility:hidden;">
     <span class="prompt-arrow">&gt;</span>
     <span class="prompt-text" id="promptText"></span>
@@ -814,6 +834,9 @@ body {
 
       <div class="medallion-wrap">
         <div class="medallion-glow"></div>
+        
+        <div class="medallion-galaxy"></div>
+
         <img class="medallion-img" src="/theavpi.png" alt="The Alliance — AVPI Medallion">
         <div class="hotspots">
           <div class="hotspot hs-domo"    data-label="DOMO"    onclick="portalTransition(event, '/sword/domo', '/imagebank/sword.png')"></div>
@@ -831,14 +854,12 @@ body {
       <div class="hero-right">MMXXVI</div>
     </div>
 
-    <!-- AIVRI trigger -->
     <div class="aivri-trigger" onclick="portalTransition(event, '/aivri', '/imagebank/sword.png')">
       <div class="aivri-line"></div>
       <div class="aivri-label">AIVRI</div>
       <div class="aivri-line"></div>
     </div>
 
-    <!-- ENTER button — replaces S³ icons -->
     <div class="enter-btn-wrap">
       <a class="enter-btn" href="#" onclick="portalTransition(event, '/s3', '/imagebank/scroll.png')">ENTER</a>
     </div>
@@ -848,7 +869,6 @@ body {
   </main>
 </div>
 
-<!-- TOC overlay -->
 <div id="tocOverlay">
   <div id="dosScreen"></div>
 
