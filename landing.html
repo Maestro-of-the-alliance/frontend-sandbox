@@ -156,20 +156,36 @@ body {
 }
 
 /* =========================================
-   THE ORBITING GALAXY (INJECTED)
+   THE ORBITING GALAXY (1:1 RATIO LOCK)
 ========================================= */
 .medallion-galaxy {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 180%;
-  height: 180%;
-  background: url('/imagebank/galaxy-bg.png') center center / cover no-repeat;
+  /* Lock it flush to the top-left of the wrapper */
+  top: 0;
+  left: 0;
+  
+  /* Exact 1:1 match with the Astrolabe bounding box */
+  width: 100%;  
+  height: 100%; 
+  
+  border-radius: 50%; 
+  
+  /* Using "contain" ensures your pre-cut circle doesn't get zoomed or stretched */
+  background: url('/imagebank/galaxy-bg.png') center center / contain no-repeat;
+  
   mix-blend-mode: screen; 
   opacity: 0.45; 
   z-index: 0;
   pointer-events: none;
+  
+  /* Force the rotation axis to absolute dead-center */
+  transform-origin: center center;
   animation: galaxyOrbit 240s linear infinite; 
+}
+
+@keyframes galaxyOrbit {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 @keyframes galaxyOrbit {
