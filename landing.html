@@ -156,35 +156,34 @@ body {
 }
 
 /* =========================================
-   THE ORBITING GALAXY (1:1 RATIO LOCK)
+   THE ORBITING GALAXY (BULLETPROOF CENTER)
 ========================================= */
 .medallion-galaxy {
   position: absolute;
-  /* Lock it flush to the top-left of the wrapper */
-  top: 0;
-  left: 0;
+  top: 50%;
+  left: 50%;
   
-  /* Exact 1:1 match with the Astrolabe bounding box */
-  width: 100%;  
-  height: 100%; 
+  /* Shrunk to 65% so it only fills the inner Vitruvian ring, preventing outer edge bleeding */
+  width: 65%;  
+  height: 65%; 
   
   border-radius: 50%; 
-  
-  /* Using "contain" ensures your pre-cut circle doesn't get zoomed or stretched */
-  background: url('/imagebank/galaxy-bg.png') center center / contain no-repeat;
+  background: url('/imagebank/galaxy-bg.png') center center / cover no-repeat;
   
   opacity: 0.9; 
   z-index: 2;
   pointer-events: none;
   
-  /* Force the rotation axis to absolute dead-center */
-  transform-origin: center center;
+  /* The anchor that keeps it from flying away */
+  transform: translate(-50%, -50%);
+  
   animation: galaxyOrbit 240s linear infinite; 
 }
 
+/* FUSING THE MATH: Translate + Rotate together */
 @keyframes galaxyOrbit {
-  0%   { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0%   { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 .medallion-img {
