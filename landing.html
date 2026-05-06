@@ -198,30 +198,27 @@ body {
 }
 
 /* =========================================
-   THE ORBITING GALAXY (BULLETPROOF CENTER)
+   THE ORBITING GALAXY (WITH BLACK BUFFER)
 ========================================= */
 .medallion-galaxy {
   position: absolute;
   top: 50%;
   left: 50%;
-  
-  /* Shrunk to 65% so it only fills the inner Vitruvian ring, preventing outer edge bleeding */
   width: 65%;  
   height: 65%; 
-  
   border-radius: 50%; 
-  background: url('/imagebank/galaxy-bg.png') center center / cover no-repeat;
   
-  opacity: 1.; 
+  /* THE BUFFER: #000 paints a solid black wall behind the galaxy image */
+  background: #000 url('/imagebank/galaxy-bg.png') center center / cover no-repeat;
+  
+  /* Absolute maximum brightness */
+  opacity: 1; 
+  
   z-index: 2;
   pointer-events: none;
-  
-  /* The anchor that keeps it from flying away */
   transform: translate(-50%, -50%);
-  
   animation: galaxyOrbit 240s linear infinite; 
 }
-
 /* FUSING THE MATH: Translate + Rotate together */
 @keyframes galaxyOrbit {
   0%   { transform: translate(-50%, -50%) rotate(0deg); }
