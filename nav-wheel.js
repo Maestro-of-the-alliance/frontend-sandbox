@@ -283,59 +283,131 @@ window.portalNavigate = function(destination) {
     return '/imagebank/scroll.png';
   }
 
-  function portalNavigate(destination) {
-    let portalOverlay = document.getElementById('portalOverlay') || document.getElementById('nw-portal-overlay');
-    let portalIcon    = document.getElementById('portalIcon') || document.getElementById('nw-portal-icon');
+  function portalNavigate(destination, clickColor) {
+    // ── CRT PIXEL PUSH TRANSITION ──
+    // Simulates physically pushing through the monitor's pixel grid.
+    // clickColor: hex or rgb string of the element clicked (optional).
+    // Falls back to cyan (SHIELD) or amber (SWORD) based on destination.
 
-    const usingLandingPortal = portalOverlay && portalOverlay.id === 'portalOverlay';
+    // Determine base color from destination or passed color
+    let baseColor;
+    if (clickColor) {
+      baseColor = clickColor;
+    } else if (destination && destination.includes('/sword')) {
+      baseColor = { r: 212, g: 140, b: 0 };   // amber
+    } else if (destination && destination.includes('/shield')) {
+      baseColor = { r: 0, g: 180, b: 200 };    // cyan
+    } else {
+      baseColor = { r: 212, g: 175, b: 55 };   // gold default
+    }
 
-    if (!portalOverlay || !portalIcon || !usingLandingPortal) {
-      portalOverlay = document.getElementById('nw-portal-overlay');
-      portalIcon = document.getElementById('nw-portal-icon');
+    // Parse color if string
+    if (typeof baseColor === 'string') {
+      const m = baseColor.match(/\d+/g);
+      baseColor = m ? { r: +m[0], g: +m[1], b: +m[2] } : { r: 212, g: 175, b: 55 };
+    }
 
-      if (!portalOverlay) {
-        portalOverlay = document.createElement('div');
-        portalOverlay.id = 'nw-portal-overlay';
-        portalOverlay.style.cssText = `
-          position: fixed; inset: 0; z-index: 99999;
-          display: flex; align-items: center; justify-content: center;
-          background: #000; opacity: 0; pointer-events: none;
-        `;
+    // Create canvas overlay
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = `
+      position: fixed; inset: 0; z-index: 999999;
+      width: 100vw; height: 100vh;
+      pointer-events: all;
+    `;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
 
-        portalIcon = document.createElement('img');
-        portalIcon.id = 'nw-portal-icon';
-        portalIcon.style.cssText = `
-          width: 90px; height: 90px; min-width: 90px; min-height: 90px;
-          object-fit: contain; opacity: 0; position: absolute;
-          filter: drop-shadow(0 0 16px var(--nw-accent)) drop-shadow(0 0 32px var(--nw-accent-dim));
-        `;
+    const W = canvas.width;
+    const H = canvas.height;
+    const PIXEL_SIZE = 6;       // starting pixel dot size
+    const GAP = 2;              // gap between dots (dark grid lines)
+    const CELL = PIXEL_SIZE + GAP;
+    const COLS = Math.ceil(W / CELL) + 2;
+    const ROWS = Math.ceil(H / CELL) + 2;
 
-        portalOverlay.appendChild(portalIcon);
-        document.body.appendChild(portalOverlay);
+    let progress = 0;           // 0 → 1 over ~700ms
+    let startTime = null;
+    const DURATION = 720;       // ms total
+
+    function easeIn(t) { return t * t * t; }
+
+    function drawFrame(ts) {
+      if (!startTime) startTime = ts;
+      progress = Math.min((ts - startTime) / DURATION, 1);
+
+      const ease = easeIn(progress);
+
+      // Scale — zoom into the pixel grid
+      const scale = 1 + ease * 28;
+      const offsetX = (W / 2) * (1 - 1 / scale);
+      const offsetY = (H / 2) * (1 - 1 / scale);
+
+      ctx.clearRect(0, 0, W, H);
+
+      // Background — dark void between pixels
+      ctx.fillStyle = `rgb(${Math.floor(baseColor.r * 0.05)}, ${Math.floor(baseColor.g * 0.05)}, ${Math.floor(baseColor.b * 0.05)})`;
+      ctx.fillRect(0, 0, W, H);
+
+      // Draw pixel grid
+      const pixSize = PIXEL_SIZE * scale;
+      const gapSize = GAP * scale;
+      const cellSize = pixSize + gapSize;
+
+      const startCol = Math.floor(-offsetX / cellSize) - 1;
+      const startRow = Math.floor(-offsetY / cellSize) - 1;
+      const endCol = startCol + Math.ceil(W / cellSize) + 2;
+      const endRow = startRow + Math.ceil(H / cellSize) + 2;
+
+      // Color shift: base color → white as we zoom in
+      const whiteness = ease * 0.85;
+      const r = Math.floor(baseColor.r + (255 - baseColor.r) * whiteness);
+      const g = Math.floor(baseColor.g + (255 - baseColor.g) * whiteness);
+      const b = Math.floor(baseColor.b + (255 - baseColor.b) * whiteness);
+
+      // Flicker intensity
+      const flicker = progress < 0.6 ? (0.7 + Math.random() * 0.3) : 1;
+
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${flicker})`;
+
+      for (let row = startRow; row < endRow; row++) {
+        for (let col = startCol; col < endCol; col++) {
+          const x = col * cellSize + offsetX;
+          const y = row * cellSize + offsetY;
+
+          // Slight brightness variation per pixel — simulates phosphor variance
+          const variance = 0.8 + Math.random() * 0.2;
+          ctx.globalAlpha = flicker * variance;
+          ctx.fillRect(x, y, pixSize, pixSize);
+        }
+      }
+
+      ctx.globalAlpha = 1;
+
+      // Scanline overlay — horizontal dark bands
+      if (progress < 0.8) {
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
+        for (let y = 0; y < H; y += 4) {
+          ctx.fillRect(0, y, W, 1);
+        }
+      }
+
+      // Final flash to white before navigate
+      if (progress > 0.85) {
+        const flashAlpha = (progress - 0.85) / 0.15;
+        ctx.fillStyle = `rgba(255,255,255,${flashAlpha * 0.9})`;
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(drawFrame);
+      } else {
+        window.location.href = destination;
       }
     }
 
-    portalIcon.style.animation = 'none';
-    portalIcon.style.opacity = '0';
-    portalIcon.src = getPortalIcon(destination);
-
-    portalOverlay.classList.add('active');
-    portalOverlay.style.pointerEvents = 'all';
-    portalOverlay.style.transition = 'opacity 0.15s ease';
-    portalOverlay.style.opacity = '1';
-
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        portalIcon.style.opacity = '1';
-        portalIcon.style.animation = usingLandingPortal
-          ? 'portalZoom 0.7s cubic-bezier(0.4,0,0.2,1) forwards'
-          : 'nwPortalZoom 0.9s cubic-bezier(0.4,0,0.2,1) forwards';
-      }, 100);
-
-      setTimeout(() => {
-        window.location.href = destination;
-      }, 900);
-    });
+    requestAnimationFrame(drawFrame);
   }
 
   window.portalNavigate = portalNavigate;
