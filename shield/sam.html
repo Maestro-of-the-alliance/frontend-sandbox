@@ -280,55 +280,8 @@ header, .class-bar, .entry-header, .signal-block, .content, footer { position: r
 
 <div class="portal-flash" id="portalFlash"></div>
 
+<script src="/portal-transition.js"></script> 
 <script src="/nav-wheel.js"></script>
-
-<script>
-function portalNavigate(url, el) {
-  if (!url) return;
-
-  if (!el) {
-    window.location.href = url;
-    return;
-  }
-
-  const rect = el.getBoundingClientRect();
-  const clone = el.cloneNode(true);
-  const flash = document.getElementById("portalFlash");
-
-  clone.classList.add("portal-clone");
-
-  clone.style.left = rect.left + "px";
-  clone.style.top = rect.top + "px";
-  clone.style.width = rect.width + "px";
-  clone.style.height = rect.height + "px";
-
-  document.body.appendChild(clone);
-
-  clone.getBoundingClientRect();
-
-  const scale = Math.max(
-    window.innerWidth / Math.max(rect.width, 1),
-    window.innerHeight / Math.max(rect.height, 1)
-  ) * 1.8;
-
-  const moveX = window.innerWidth / 2 - (rect.left + rect.width / 2);
-  const moveY = window.innerHeight / 2 - (rect.top + rect.height / 2);
-
-  clone.style.transform = `translate(${moveX}px, ${moveY}px) scale(${scale})`;
-  clone.style.opacity = "0";
-  clone.style.filter = "blur(14px) brightness(2.4)";
-
-  if (flash) {
-    setTimeout(() => {
-      flash.classList.add("active");
-    }, 260);
-  }
-
-  setTimeout(() => {
-    window.location.href = url;
-  }, 720);
-}
-</script>
 
 </body>
 </html>
