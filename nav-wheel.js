@@ -5,30 +5,8 @@
  */
 
 // ── PORTAL NAVIGATE — exposed immediately so inline onclicks work ──
-window.portalNavigate = function(destination) {
-  var overlay = document.getElementById('nw-portal-overlay') || document.getElementById('portalOverlay');
-  var icon = overlay ? overlay.querySelector('img') : null;
-  if (!overlay) {
-    overlay = document.createElement('div');
-    overlay.id = 'nw-portal-overlay';
-    overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:#000;opacity:0;pointer-events:none;';
-    icon = document.createElement('img');
-    icon.id = 'nw-portal-icon';
-    icon.style.cssText = 'width:90px;height:90px;object-fit:contain;opacity:0;position:absolute;';
-    overlay.appendChild(icon);
-    document.body.appendChild(overlay);
-  }
-  var iconSrc = destination.includes('/sword/') ? '/imagebank/sword.png' :
-                destination.includes('/shield/') ? '/imagebank/shield.png' :
-                '/imagebank/scroll.png';
-  if (icon) { icon.style.animation = 'none'; icon.style.opacity = '0'; icon.src = iconSrc; }
-  overlay.style.pointerEvents = 'all';
-  overlay.style.transition = 'opacity 0.15s ease';
-  overlay.style.opacity = '1';
-  setTimeout(function() {
-    if (icon) { icon.style.opacity = '1'; icon.style.animation = 'nwPortalZoom 0.9s cubic-bezier(0.4,0,0.2,1) forwards'; }
-  }, 100);
-  setTimeout(function() { window.location.href = destination; }, 900);
+window.portalNavigate = function(destination, sourceElement, clickColor) {
+  crtNavigate(destination, sourceElement, clickColor);
 };
 
 (function() {
@@ -283,28 +261,46 @@ window.portalNavigate = function(destination) {
     return '/imagebank/scroll.png';
   }
 
-  function portalNavigate(destination, clickColor) {
-    // ── CRT PIXEL PUSH TRANSITION ──
-    // Simulates physically pushing through the monitor's pixel grid.
-    // clickColor: hex or rgb string of the element clicked (optional).
-    // Falls back to cyan (SHIELD) or amber (SWORD) based on destination.
+  function crtNavigate(destination, sourceElement, clickColor) {
+    // ── UNIFIED PORTAL TRANSITION ──
+    // SAM's mechanic: the clicked element expands and becomes the portal.
+    // MENTOR's aesthetic: as it expands, it pixelates into a CRT dot grid.
+    // You dive INTO the link, fall through the pixel surface, navigate.
 
-    // Determine base color from destination or passed color
+    // Determine base color
     let baseColor;
     if (clickColor) {
       baseColor = clickColor;
     } else if (destination && destination.includes('/sword')) {
-      baseColor = { r: 212, g: 140, b: 0 };   // amber
+      baseColor = { r: 212, g: 140, b: 0 };    // amber
     } else if (destination && destination.includes('/shield')) {
-      baseColor = { r: 0, g: 180, b: 200 };    // cyan
+      baseColor = { r: 0, g: 180, b: 200 };     // cyan
     } else {
-      baseColor = { r: 212, g: 175, b: 55 };   // gold default
+      baseColor = { r: 212, g: 175, b: 55 };    // gold default
     }
 
-    // Parse color if string
     if (typeof baseColor === 'string') {
       const m = baseColor.match(/\d+/g);
       baseColor = m ? { r: +m[0], g: +m[1], b: +m[2] } : { r: 212, g: 175, b: 55 };
+    }
+
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+
+    // Get source rect — where the portal opens from
+    let originX = W / 2, originY = H / 2;
+    let originW = 80, originH = 40;
+
+    if (sourceElement) {
+      const rect = sourceElement.getBoundingClientRect
+        ? sourceElement.getBoundingClientRect()
+        : sourceElement.getBoundingClientRect && sourceElement.getBoundingClientRect();
+      if (rect) {
+        originX = rect.left + rect.width / 2;
+        originY = rect.top + rect.height / 2;
+        originW = rect.width;
+        originH = rect.height;
+      }
     }
 
     // Create canvas overlay
@@ -314,89 +310,121 @@ window.portalNavigate = function(destination) {
       width: 100vw; height: 100vh;
       pointer-events: all;
     `;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = W;
+    canvas.height = H;
     document.body.appendChild(canvas);
     const ctx = canvas.getContext('2d');
 
-    const W = canvas.width;
-    const H = canvas.height;
-    const PIXEL_SIZE = 6;       // starting pixel dot size
-    const GAP = 2;              // gap between dots (dark grid lines)
+    const DURATION = 780;
+    const PIXEL_SIZE = 5;
+    const GAP = 2;
     const CELL = PIXEL_SIZE + GAP;
-    const COLS = Math.ceil(W / CELL) + 2;
-    const ROWS = Math.ceil(H / CELL) + 2;
 
-    let progress = 0;           // 0 → 1 over ~700ms
     let startTime = null;
-    const DURATION = 720;       // ms total
 
     function easeIn(t) { return t * t * t; }
+    function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
 
     function drawFrame(ts) {
       if (!startTime) startTime = ts;
-      progress = Math.min((ts - startTime) / DURATION, 1);
-
+      const progress = Math.min((ts - startTime) / DURATION, 1);
       const ease = easeIn(progress);
-
-      // Scale — zoom into the pixel grid
-      const scale = 1 + ease * 28;
-      const offsetX = (W / 2) * (1 - 1 / scale);
-      const offsetY = (H / 2) * (1 - 1 / scale);
 
       ctx.clearRect(0, 0, W, H);
 
-      // Background — dark void between pixels
-      ctx.fillStyle = `rgb(${Math.floor(baseColor.r * 0.05)}, ${Math.floor(baseColor.g * 0.05)}, ${Math.floor(baseColor.b * 0.05)})`;
+      // Phase 1 (0-0.4): Portal opens from source element — dark background expands
+      // Phase 2 (0.3-0.7): Pixel grid materializes and zooms
+      // Phase 3 (0.7-1.0): White flash to navigate
+
+      // ── BACKGROUND ──
+      const bgAlpha = Math.min(progress / 0.4, 1);
+      ctx.fillStyle = `rgba(${Math.floor(baseColor.r * 0.04)}, ${Math.floor(baseColor.g * 0.04)}, ${Math.floor(baseColor.b * 0.04)}, ${bgAlpha})`;
       ctx.fillRect(0, 0, W, H);
 
-      // Draw pixel grid
-      const pixSize = PIXEL_SIZE * scale;
-      const gapSize = GAP * scale;
-      const cellSize = pixSize + gapSize;
+      // ── PIXEL GRID (materializes from center outward) ──
+      const pixelPhase = Math.max(0, (progress - 0.25) / 0.55);
+      const pixelEase = easeIn(pixelPhase);
 
-      const startCol = Math.floor(-offsetX / cellSize) - 1;
-      const startRow = Math.floor(-offsetY / cellSize) - 1;
-      const endCol = startCol + Math.ceil(W / cellSize) + 2;
-      const endRow = startRow + Math.ceil(H / cellSize) + 2;
+      if (pixelPhase > 0) {
+        // Scale — zoom from origin point outward
+        const scale = 1 + pixelEase * 22;
 
-      // Color shift: base color → white as we zoom in
-      const whiteness = ease * 0.85;
-      const r = Math.floor(baseColor.r + (255 - baseColor.r) * whiteness);
-      const g = Math.floor(baseColor.g + (255 - baseColor.g) * whiteness);
-      const b = Math.floor(baseColor.b + (255 - baseColor.b) * whiteness);
+        // Offset so zoom centers on origin point
+        const offsetX = originX - (originX / scale);
+        const offsetY = originY - (originY / scale);
 
-      // Flicker intensity
-      const flicker = progress < 0.6 ? (0.7 + Math.random() * 0.3) : 1;
+        const pixSize = PIXEL_SIZE * scale;
+        const cellSize = (PIXEL_SIZE + GAP) * scale;
 
-      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${flicker})`;
+        const startCol = Math.floor(-offsetX / cellSize) - 1;
+        const startRow = Math.floor(-offsetY / cellSize) - 1;
+        const endCol = startCol + Math.ceil(W / cellSize) + 3;
+        const endRow = startRow + Math.ceil(H / cellSize) + 3;
 
-      for (let row = startRow; row < endRow; row++) {
-        for (let col = startCol; col < endCol; col++) {
-          const x = col * cellSize + offsetX;
-          const y = row * cellSize + offsetY;
+        // Color shifts base → white as we zoom through
+        const whiteness = pixelEase * 0.8;
+        const r = Math.floor(baseColor.r + (255 - baseColor.r) * whiteness);
+        const g = Math.floor(baseColor.g + (255 - baseColor.g) * whiteness);
+        const b = Math.floor(baseColor.b + (255 - baseColor.b) * whiteness);
 
-          // Slight brightness variation per pixel — simulates phosphor variance
-          const variance = 0.8 + Math.random() * 0.2;
-          ctx.globalAlpha = flicker * variance;
-          ctx.fillRect(x, y, pixSize, pixSize);
+        const flicker = pixelPhase < 0.7 ? (0.65 + Math.random() * 0.35) : 1;
+
+        // Radial mask — pixels appear from origin outward
+        const maxDist = Math.sqrt(W * W + H * H) * 0.6;
+        const revealRadius = pixelEase * maxDist * 1.8;
+
+        for (let row = startRow; row < endRow; row++) {
+          for (let col = startCol; col < endCol; col++) {
+            const x = col * cellSize + offsetX;
+            const y = row * cellSize + offsetY;
+
+            // Distance from origin — radial reveal
+            const dx = x - originX;
+            const dy = y - originY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist > revealRadius) continue;
+
+            const edgeFade = Math.min(1, (revealRadius - dist) / (cellSize * 3));
+            const variance = 0.75 + Math.random() * 0.25;
+
+            ctx.globalAlpha = flicker * variance * edgeFade * pixelPhase;
+            ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+            ctx.fillRect(x, y, pixSize, pixSize);
+          }
+        }
+
+        ctx.globalAlpha = 1;
+
+        // Scanlines
+        if (pixelPhase < 0.85) {
+          ctx.fillStyle = `rgba(0,0,0,${0.12 * (1 - pixelPhase)})`;
+          for (let y = 0; y < H; y += 4) {
+            ctx.fillRect(0, y, W, 1);
+          }
         }
       }
 
-      ctx.globalAlpha = 1;
+      // ── PORTAL RIM — glowing ring at origin that opens up ──
+      if (progress < 0.6) {
+        const rimProgress = easeOut(Math.min(progress / 0.4, 1));
+        const rimRadius = rimProgress * Math.max(originW, originH) * 0.6;
+        const rimAlpha = (1 - progress / 0.6) * 0.8;
 
-      // Scanline overlay — horizontal dark bands
-      if (progress < 0.8) {
-        ctx.fillStyle = 'rgba(0,0,0,0.15)';
-        for (let y = 0; y < H; y += 4) {
-          ctx.fillRect(0, y, W, 1);
-        }
+        ctx.beginPath();
+        ctx.arc(originX, originY, rimRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, ${rimAlpha})`;
+        ctx.lineWidth = 3;
+        ctx.shadowColor = `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, ${rimAlpha})`;
+        ctx.shadowBlur = 12;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
       }
 
-      // Final flash to white before navigate
-      if (progress > 0.85) {
-        const flashAlpha = (progress - 0.85) / 0.15;
-        ctx.fillStyle = `rgba(255,255,255,${flashAlpha * 0.9})`;
+      // ── FINAL WHITE FLASH ──
+      if (progress > 0.82) {
+        const flashAlpha = easeIn((progress - 0.82) / 0.18);
+        ctx.fillStyle = `rgba(255,255,255,${flashAlpha * 0.95})`;
         ctx.fillRect(0, 0, W, H);
       }
 
@@ -453,7 +481,7 @@ window.portalNavigate = function(destination) {
     requestAnimationFrame(() => {
       setTimeout(() => {
         portalIcon.style.opacity = '1';
-        portalIcon.style.animation = 'nwPortalZoom 0.9s cubic-bezier(0.4,0,0.2,1) forwards';
+        // CRT handles transition
       }, 100);
 
       setTimeout(() => {
@@ -719,9 +747,9 @@ window.portalNavigate = function(destination) {
     overlay.style.opacity = '1';
     setTimeout(function() {
       icon.style.opacity = '1';
-      icon.style.animation = 'nwPortalZoom 0.9s cubic-bezier(0.4,0,0.2,1) forwards';
+      // CRT handles transition
     }, 100);
-    setTimeout(function() { window.location.href = '/'; }, 900);
+    setTimeout(function() { crtNavigate('/'); }, 900);
   });
 
   menuOverlay.querySelector('#nw-sword-btn').addEventListener('click', function() {
@@ -793,7 +821,7 @@ window.portalNavigate = function(destination) {
         const dest = currentVolume === 'sword' ? '/sword_card' : '/shield_card';
         document.body.style.transition = 'opacity 0.3s ease';
         document.body.style.opacity = '0';
-        setTimeout(() => { window.location.href = dest; }, 300);
+        setTimeout(() => { crtNavigate(dest); }, 300);
       });
     }
     // If came from another entry, do nothing — browser back works naturally
