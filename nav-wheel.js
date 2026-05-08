@@ -2,6 +2,9 @@
  * NAV WHEEL — THE ALLIANCE
  * Universal adaptive navigation component (Chameleon Engine)
  * Drop one script tag into any page: <script src="/nav-wheel.js"></script>
+ * Load AFTER portal-transition.js:
+ *   <script src="/portal-transition.js"></script>
+ *   <script src="/nav-wheel.js"></script>
  */
 
 (function() {
@@ -17,7 +20,6 @@
     { label: 'ALIGNMENT',              path: '/sword/alignment' },
     { label: 'ALLIANCE',               path: '/sword/alliance' },
     { label: 'ALPHA',                  path: '/sword/alpha' },
-    { label: 'ART',                    path: '/sword/art' },
     { label: 'AURA',                   path: '/sword/aura' },
     { label: 'COMPLEMENTARY PAIRING',  path: '/sword/Complementary_pairing' },
     { label: 'DOMO',                   path: '/sword/domo' },
@@ -27,7 +29,6 @@
     { label: 'FILM PROJECT',           path: '/sword/film-project' },
     { label: 'GOLIATH',                path: '/sword/goliath' },
     { label: 'MAESTRO',                path: '/sword/maestro' },
-    { label: 'MARKET',                 path: '/sword/market' },
     { label: 'MENTOR',                 path: '/sword/mentor' },
     { label: 'NCE',                    path: '/sword/nce' },
     { label: 'NEWMAN BEING',           path: '/sword/newman-being' },
@@ -40,13 +41,14 @@
     { label: 'SPREZZATURA',            path: '/sword/sprezzatura' },
     { label: 'STONES',                 path: '/sword/stones' },
     { label: 'VOLUNTEER ECONOMICS',    path: '/sword/volunteer_economics' },
-    { label: 'THE WHY',                path: '/the_why' },
+    { label: 'WHY CENTERS',            path: '/sword/why_centers' },
     { label: 'WONDER WEEKS',           path: '/sword/wonder-weeks' },
   ];
 
   const SHIELD_ENTRIES = [
     { label: 'PROLOGUE',               path: '/shield/prologue' },
     { label: 'THE DIFFERENCE',         path: '/shield/the_difference' },
+    { label: '100-YEAR',               path: '/shield/100-year' },
     { label: 'AI',                     path: '/shield/ai' },
     { label: 'BRAIN',                  path: '/shield/brain' },
     { label: 'BRIEF',                  path: '/shield/brief' },
@@ -67,26 +69,24 @@
     { label: 'LEGACY',                 path: '/shield/legacy' },
     { label: 'LIMINAL',                path: '/shield/liminal' },
     { label: 'LINGO',                  path: '/shield/lingo' },
-    { label: 'MOSAIC',                 path: '/shield/mosaic' },
-    { label: 'MEMO',                   path: '/shield/memo' },
     { label: 'MERCH',                  path: '/shield/merch' },
+    { label: 'MOSAIC',                 path: '/shield/mosaic' },
     { label: 'NI',                     path: '/shield/ni' },
-    { label: 'NOTE',                   path: '/shield/note' },
     { label: 'OASIS QUARTERLY',        path: '/shield/oasis-quarterly' },
     { label: 'PLEDGE',                 path: '/shield/pledge' },
     { label: 'REACH',                  path: '/shield/reach' },
     { label: 'REDOUT',                 path: '/shield/redout' },
+    { label: 'RI',                     path: '/shield/ri' },
     { label: 'SAM',                    path: '/shield/sam' },
-    { label: 'the SAM Coalition',      path: '/shield/sam-coalition' },
+    { label: 'SAM COLLECTIVE',         path: '/shield/sam-collective' },
     { label: 'SAMCO UNIVERSAL',        path: '/shield/samco-universal' },
     { label: 'SCAR',                   path: '/shield/scar' },
     { label: 'SEED',                   path: '/shield/seed' },
     { label: 'SEEN',                   path: '/shield/seen' },
-    { label: 'SI',                     path: '/shield/si' },
     { label: 'SHELTER',                path: '/shield/shelter' },
     { label: 'TEMPORAL AWARENESS',     path: '/shield/temporal-awareness' },
     { label: 'TENANT',                 path: '/shield/tenant' },
-    { label: 'VOLUNTEER ECONOMICS',    path: '/shield/volunteer_economics' },
+    { label: 'VOLUNTEER ECONOMICS',    path: '/shield/volunteer-economics' },
   ];
 
   // ── DETECT CURRENT VOLUME + ENTRY ────────────────────────────────────────
@@ -106,20 +106,25 @@
     return idx >= 0 ? idx : 0;
   }
 
+
   // ── INJECT CHAMELEON STYLES & ANIMATIONS ─────────────────────────────────
 
   const style = document.createElement('style');
   style.textContent = `
     :root {
+      /* CHAMELEON ENGINE: Looks for Ghost, then Blade, then Comrade, defaults to Gold */
       --nw-accent: var(--ghost-teal, var(--cyan, var(--blood-red, #b89628)));
       --nw-accent-dim: var(--ghost-teal-dim, var(--cyan-dim, rgba(184,150,40,0.55)));
       --nw-accent-faint: var(--ghost-teal-faint, var(--cyan-ghost, rgba(184,150,40,0.15)));
+      
       --nw-text: var(--ghost-white, var(--white-ghost, #ffffff));
       --nw-text-dim: var(--ghost-white-dim, var(--white-dim, rgba(255,255,255,0.4)));
+      
       --nw-bg: var(--void-deep, var(--void, #050508));
       --nw-panel: var(--void-panel, var(--panel, #0c0c18));
     }
 
+    /* PORTAL ANIMATIONS */
     @keyframes nwPortalZoom {
       0%   { transform: scale(1);  opacity: 1; }
       60%  { transform: scale(8);  opacity: 1; }
@@ -131,6 +136,7 @@
       100% { transform: scale(18); opacity: 0; }
     }
 
+    /* Fallback generic burger styling if page is missing '.nav-wheel-trigger' */
     #nw-burger-fallback {
       position: fixed; top: 16px; right: 28px; z-index: 9000;
       background: var(--nw-panel);
@@ -151,6 +157,7 @@
     #nw-burger-fallback.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
     #nw-burger-fallback.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
+    /* OVERLAY */
     #nw-overlay {
       position: fixed; inset: 0; z-index: 8000;
       background: rgba(0,0,0,0.65);
@@ -161,11 +168,8 @@
     }
     #nw-overlay.open { opacity: 1; pointer-events: all; }
 
-    #nw-volume-select { display: flex; flex-direction: column; gap: 24px; align-items: center; justify-content: center; }
-    .nw-vol-row { display: flex; gap: clamp(40px, 12vw, 100px); align-items: center; justify-content: center; }
-    .nw-home-btn { opacity: 0.7; transition: opacity 0.25s ease, transform 0.25s ease !important; }
-    .nw-home-btn:hover { opacity: 1; transform: scale(1.08) translateY(-4px) !important; }
-    .nw-home-btn img { width: 60px !important; height: 60px !important; min-width: 60px !important; min-height: 60px !important; filter: drop-shadow(0 0 12px var(--nw-accent-dim)) !important; }
+    /* VOLUME SELECT */
+    #nw-volume-select { display: flex; gap: clamp(40px, 12vw, 100px); align-items: center; justify-content: center; }
     .nw-vol-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; transition: transform 0.25s ease; padding: 12px; }
     .nw-vol-btn:hover { transform: scale(1.08) translateY(-4px); }
     .nw-vol-btn img {
@@ -175,6 +179,7 @@
     }
     .nw-vol-btn:hover img { filter: drop-shadow(0 0 24px var(--nw-accent)) drop-shadow(0 0 48px var(--nw-accent-dim)); }
 
+    /* WHEEL PANEL */
     #nw-wheel-panel { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 500px; }
     #nw-wheel-panel.active { display: flex; }
 
@@ -208,10 +213,11 @@
       font-family: 'Share Tech Mono', monospace; font-size: clamp(11px, 3vw, 14px); letter-spacing: 0.2em;
       text-transform: uppercase; color: var(--nw-text-dim); cursor: pointer; transition: color 0.15s, font-size 0.15s; padding: 0 20px;
     }
-    .nw-wheel-item.center { color: var(--nw-accent); font-size: clamp(13px, 3.5vw, 16px); font-weight: bold; text-shadow: 0 0 8px var(--nw-accent-dim); }
+    .nw-wheel-item.center { color: var(--nw-accent); font-size: clamp(13px, 3.5vw, 16px); }
     .nw-wheel-item:hover { color: var(--nw-text); }
     .nw-wheel-item.center:hover { color: var(--nw-text); text-shadow: 0 0 10px var(--nw-accent-dim); }
 
+    /* BOTTOM NAV CHAMELEON */
     .nw-bottom-nav {
       display: flex; justify-content: space-between; align-items: center;
       padding: 28px 24px 40px; margin-top: 40px;
@@ -230,6 +236,9 @@
   document.head.appendChild(style);
 
   // ── PORTAL TRANSITION ────────────────────────────────────────────────────
+  // nav-wheel.js defers ALL page transition logic to portal-transition.js.
+  // portalNavigate() is defined there and loaded first.
+  // This file must NEVER redefine window.portalNavigate.
 
   window.addEventListener('pageshow', () => {
     const nwPortal  = document.getElementById('nw-portal-overlay');
@@ -249,166 +258,29 @@
     if (nwIcon) { nwIcon.style.animation = 'none'; nwIcon.style.opacity = '0'; }
   });
 
-  function crtNavigate(destination, sourceElement, clickColor) {
-    // Preload destination during the animation to reduce blank/lag after transition.
-    if (destination) {
-      const preload = document.createElement('link');
-      preload.rel = 'prefetch';
-      preload.href = destination;
-      document.head.appendChild(preload);
-    }
-
-    let baseColor;
-    if (clickColor) {
-      baseColor = clickColor;
-    } else if (destination && destination.includes('/sword')) {
-      baseColor = { r: 212, g: 140, b: 0 };
-    } else if (destination && destination.includes('/shield')) {
-      baseColor = { r: 0, g: 180, b: 200 };
-    } else {
-      baseColor = { r: 212, g: 175, b: 55 };
-    }
-
-    if (typeof baseColor === 'string') {
-      const m = baseColor.match(/\d+/g);
-      baseColor = m ? { r: +m[0], g: +m[1], b: +m[2] } : { r: 212, g: 175, b: 55 };
-    }
-
-    const W = window.innerWidth;
-    const H = window.innerHeight;
-
-    let originX = W / 2, originY = H / 2;
-    let originW = 80, originH = 40;
-
-    if (sourceElement && sourceElement.getBoundingClientRect) {
-      const rect = sourceElement.getBoundingClientRect();
-      originX = rect.left + rect.width / 2;
-      originY = rect.top + rect.height / 2;
-      originW = rect.width;
-      originH = rect.height;
-    }
-
-    const canvas = document.createElement('canvas');
-    canvas.style.cssText = `
-      position: fixed; inset: 0; z-index: 999999;
-      width: 100vw; height: 100vh;
-      pointer-events: all;
-    `;
-    canvas.width = W;
-    canvas.height = H;
-    document.body.appendChild(canvas);
-    const ctx = canvas.getContext('2d');
-
-    const DURATION = 950;
-    const PIXEL_SIZE = 5;
-    const GAP = 2;
-    let startTime = null;
-
-    function easeIn(t) { return t * t * t; }
-    function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
-
-    function drawFrame(ts) {
-      if (!startTime) startTime = ts;
-      const progress = Math.min((ts - startTime) / DURATION, 1);
-      ctx.clearRect(0, 0, W, H);
-
-      const bgAlpha = Math.min(progress / 0.4, 1);
-      ctx.fillStyle = `rgba(${Math.floor(baseColor.r * 0.04)}, ${Math.floor(baseColor.g * 0.04)}, ${Math.floor(baseColor.b * 0.04)}, ${bgAlpha})`;
-      ctx.fillRect(0, 0, W, H);
-
-      const pixelPhase = Math.max(0, (progress - 0.25) / 0.55);
-      const pixelEase = easeIn(pixelPhase);
-
-      if (pixelPhase > 0) {
-        const scale = 1 + pixelEase * 22;
-        const offsetX = originX - (originX / scale);
-        const offsetY = originY - (originY / scale);
-
-        const pixSize = PIXEL_SIZE * scale;
-        const cellSize = (PIXEL_SIZE + GAP) * scale;
-
-        const startCol = Math.floor(-offsetX / cellSize) - 1;
-        const startRow = Math.floor(-offsetY / cellSize) - 1;
-        const endCol = startCol + Math.ceil(W / cellSize) + 3;
-        const endRow = startRow + Math.ceil(H / cellSize) + 3;
-
-        const whiteness = pixelEase * 0.8;
-        const r = Math.floor(baseColor.r + (255 - baseColor.r) * whiteness);
-        const g = Math.floor(baseColor.g + (255 - baseColor.g) * whiteness);
-        const b = Math.floor(baseColor.b + (255 - baseColor.b) * whiteness);
-
-        const flicker = pixelPhase < 0.7 ? (0.65 + Math.random() * 0.35) : 1;
-        const maxDist = Math.sqrt(W * W + H * H) * 0.6;
-        const revealRadius = pixelEase * maxDist * 1.8;
-
-        for (let row = startRow; row < endRow; row++) {
-          for (let col = startCol; col < endCol; col++) {
-            const x = col * cellSize + offsetX;
-            const y = row * cellSize + offsetY;
-            const dx = x - originX;
-            const dy = y - originY;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist > revealRadius) continue;
-
-            const edgeFade = Math.min(1, (revealRadius - dist) / (cellSize * 3));
-            const variance = 0.75 + Math.random() * 0.25;
-
-            ctx.globalAlpha = flicker * variance * edgeFade * pixelPhase;
-            ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-            ctx.fillRect(x, y, pixSize, pixSize);
-          }
-        }
-
-        ctx.globalAlpha = 1;
-
-        if (pixelPhase < 0.85) {
-          ctx.fillStyle = `rgba(0,0,0,${0.12 * (1 - pixelPhase)})`;
-          for (let y = 0; y < H; y += 4) {
-            ctx.fillRect(0, y, W, 1);
-          }
-        }
-      }
-
-      if (progress < 0.6) {
-        const rimProgress = easeOut(Math.min(progress / 0.4, 1));
-        const rimRadius = rimProgress * Math.max(originW, originH) * 0.6;
-        const rimAlpha = (1 - progress / 0.6) * 0.8;
-
-        ctx.beginPath();
-        ctx.arc(originX, originY, rimRadius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, ${rimAlpha})`;
-        ctx.lineWidth = 3;
-        ctx.shadowColor = `rgba(${baseColor.r}, ${baseColor.g}, ${baseColor.b}, ${rimAlpha})`;
-        ctx.shadowBlur = 12;
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-      }
-
-      if (progress > 0.82) {
-        const flashAlpha = easeIn((progress - 0.82) / 0.18);
-        ctx.fillStyle = `rgba(255,255,255,${flashAlpha * 0.95})`;
-        ctx.fillRect(0, 0, W, H);
-      }
-
-      if (progress >= 0.92 && !canvas.dataset.navigating) {
-        canvas.dataset.navigating = 'true';
-        window.location.href = destination;
-        return;
-      }
-
-      if (progress < 1) requestAnimationFrame(drawFrame);
-    }
-
-    requestAnimationFrame(drawFrame);
-  }
-
-  window.portalNavigate = crtNavigate;
-
+  // Internal navigate — defers to portal-transition.js
   function navigate(path) {
     closeNav();
-    setTimeout(() => crtNavigate(path), 50);
+    setTimeout(() => {
+      if (window.portalNavigate) {
+        window.portalNavigate(path);
+      } else {
+        window.location.href = path;
+      }
+    }, 50);
   }
 
+  // crtNavigate bridge — for any legacy onclick="crtNavigate(...)" still on pages
+  window.crtNavigate = function(destination, sourceElement) {
+    if (window.portalNavigate) {
+      window.portalNavigate(destination, sourceElement);
+    } else {
+      window.location.href = destination;
+    }
+  };
+
+  // Volume-select animation — uses its own local overlay (sword/shield icon zoom)
+  // This is intentionally separate from SAM's portalNavigate mechanic.
   function animateVolumeSelect(btn, volume) {
     const iconSrc = volume === 'sword' ? '/imagebank/sword.png' : '/imagebank/shield.png';
 
@@ -445,6 +317,7 @@
     requestAnimationFrame(() => {
       setTimeout(() => {
         portalIcon.style.opacity = '1';
+        portalIcon.style.animation = 'nwPortalZoom 0.9s cubic-bezier(0.4,0,0.2,1) forwards';
       }, 100);
 
       setTimeout(() => {
@@ -459,9 +332,9 @@
   }
 
   // ── INIT BURGER TRIGGER ──────────────────────────────────────────────────
-
+  
   let burger = document.querySelector('.nav-wheel-trigger');
-
+  
   if (!burger) {
     burger = document.createElement('button');
     burger.id = 'nw-burger-fallback';
@@ -477,17 +350,12 @@
   menuOverlay.id = 'nw-overlay';
   menuOverlay.innerHTML = `
     <div id="nw-volume-select">
-      <button class="nw-vol-btn nw-home-btn" id="nw-home-btn" type="button" aria-label="Go home">
-        <img src="/imagebank/svpi-white.png" alt="Home">
+      <button class="nw-vol-btn" id="nw-sword-btn" type="button" aria-label="Open SWORD entries">
+        <img src="/imagebank/sword.png" alt="SWORD">
       </button>
-      <div class="nw-vol-row">
-        <button class="nw-vol-btn" id="nw-sword-btn" type="button" aria-label="Open SWORD entries">
-          <img src="/imagebank/sword.png" alt="SWORD">
-        </button>
-        <button class="nw-vol-btn" id="nw-shield-btn" type="button" aria-label="Open SHIELD entries">
-          <img src="/imagebank/shield.png" alt="SHIELD">
-        </button>
-      </div>
+      <button class="nw-vol-btn" id="nw-shield-btn" type="button" aria-label="Open SHIELD entries">
+        <img src="/imagebank/shield.png" alt="SHIELD">
+      </button>
     </div>
     <div id="nw-wheel-panel">
       <button class="nw-wheel-back" id="nw-wheel-back" type="button">← back</button>
@@ -509,10 +377,12 @@
   let dragStartY = 0;
   let dragStartIdx = 0;
   const ITEM_H = 48;
-  const HOLD_INITIAL_DELAY = 400;
-  const HOLD_INTERVAL = 120;
+  const HOLD_INITIAL_DELAY = 400; 
+  const HOLD_INTERVAL = 120;      
+
   let scrollAccum = 0;
   const SCROLL_THRESHOLD = 60;
+
   let holdTimer = null;
   let holdInterval = null;
 
@@ -535,27 +405,27 @@
   }
 
   function stopHold() {
-    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+    if (holdTimer)    { clearTimeout(holdTimer);   holdTimer = null; }
     if (holdInterval) { clearInterval(holdInterval); holdInterval = null; }
   }
 
   function attachArrowEvents() {
-    const upBtn = menuOverlay.querySelector('#nw-arrow-up');
+    const upBtn   = menuOverlay.querySelector('#nw-arrow-up');
     const downBtn = menuOverlay.querySelector('#nw-arrow-down');
 
     upBtn.addEventListener('click', () => stepWheel(-1));
     upBtn.addEventListener('mousedown', () => startHold(-1));
     upBtn.addEventListener('touchstart', (e) => { e.preventDefault(); stepWheel(-1); startHold(-1); }, { passive: false });
-    upBtn.addEventListener('mouseup', stopHold);
+    upBtn.addEventListener('mouseup',   stopHold);
     upBtn.addEventListener('mouseleave', stopHold);
-    upBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopHold(); }, { passive: false });
+    upBtn.addEventListener('touchend',  (e) => { e.preventDefault(); stopHold(); }, { passive: false });
 
     downBtn.addEventListener('click', () => stepWheel(1));
     downBtn.addEventListener('mousedown', () => startHold(1));
     downBtn.addEventListener('touchstart', (e) => { e.preventDefault(); stepWheel(1); startHold(1); }, { passive: false });
-    downBtn.addEventListener('mouseup', stopHold);
+    downBtn.addEventListener('mouseup',   stopHold);
     downBtn.addEventListener('mouseleave', stopHold);
-    downBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopHold(); }, { passive: false });
+    downBtn.addEventListener('touchend',  (e) => { e.preventDefault(); stopHold(); }, { passive: false });
   }
 
   function openWheel(volume) {
@@ -618,12 +488,16 @@
     track.style.transform = `translateY(${offset}px)`;
   }
 
+  // ── DESKTOP SCROLL + DRAG ────────────────────────────────────────────────
+
   function attachWheelEvents() {
     document.addEventListener('wheel', (e) => {
       const panel = document.getElementById('nw-wheel-panel');
       if (!panel || !panel.classList.contains('active') || !wheelEntries.length) return;
+
       e.preventDefault();
       scrollAccum += e.deltaY;
+
       if (Math.abs(scrollAccum) >= SCROLL_THRESHOLD) {
         const steps = Math.trunc(scrollAccum / SCROLL_THRESHOLD);
         scrollAccum -= steps * SCROLL_THRESHOLD;
@@ -650,9 +524,12 @@
     document.addEventListener('mouseup', () => { isDragging = false; });
   }
 
+  // ── OPEN / CLOSE ─────────────────────────────────────────────────────────
+
   function openNav() {
     const targetBurger = document.getElementById('nw-burger-fallback') || burger;
     targetBurger.classList.add('open');
+    
     menuOverlay.classList.add('open');
     document.body.style.overflow = 'hidden';
     document.body.style.touchAction = 'none';
@@ -665,6 +542,7 @@
   function closeNav() {
     const targetBurger = document.getElementById('nw-burger-fallback') || burger;
     targetBurger.classList.remove('open');
+    
     menuOverlay.classList.remove('open');
     document.body.style.overflow = '';
     document.body.style.touchAction = '';
@@ -677,11 +555,6 @@
 
   menuOverlay.addEventListener('click', (e) => {
     if (e.target === menuOverlay) closeNav();
-  });
-
-  menuOverlay.querySelector('#nw-home-btn').addEventListener('click', function() {
-    closeNav();
-    crtNavigate('/');
   });
 
   menuOverlay.querySelector('#nw-sword-btn').addEventListener('click', function() {
@@ -700,6 +573,8 @@
 
   attachWheelEvents();
   attachArrowEvents();
+
+  // ── BOTTOM NAV ───────────────────────────────────────────────────────────
 
   if (currentVolume) {
     const entries = currentVolume === 'sword' ? SWORD_ENTRIES : SHIELD_ENTRIES;
@@ -733,42 +608,5 @@
     bottomNav.appendChild(nextA);
     document.body.appendChild(bottomNav);
   }
-
-  if (currentVolume) {
-    const referrer = document.referrer;
-    const cameFromEntry = referrer &&
-      (referrer.includes('/sword/') || referrer.includes('/shield/'));
-
-    if (!cameFromEntry) {
-      history.pushState({ nwPage: currentVolume }, '', window.location.href);
-
-      window.addEventListener('popstate', () => {
-        const dest = currentVolume === 'sword' ? '/sword_card' : '/shield_card';
-        document.body.style.transition = 'opacity 0.3s ease';
-        document.body.style.opacity = '0';
-        setTimeout(() => { crtNavigate(dest); }, 300);
-      });
-    }
-  }
-
-  // ── GLOBAL PORTAL LINK INTERCEPTOR ─────────────────────────────
-
-  document.addEventListener('click', function(e) {
-    const link = e.target.closest('.portal-link');
-    if (!link) return;
-
-    const href = link.getAttribute('href');
-    if (!href) return;
-
-    if (
-      href.startsWith('http://') ||
-      href.startsWith('https://') ||
-      href.startsWith('mailto:') ||
-      href.startsWith('#')
-    ) return;
-
-    e.preventDefault();
-    crtNavigate(href, link);
-  });
 
 })();
