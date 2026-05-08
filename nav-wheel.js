@@ -4,10 +4,6 @@
  * Drop one script tag into any page: <script src="/nav-wheel.js"></script>
  */
 
-// ── PORTAL NAVIGATE — exposed immediately so inline onclicks work ──
-window.portalNavigate = function(destination, sourceElement, clickColor) {
-  crtNavigate(destination, sourceElement, clickColor);
-};
 
 (function() {
   'use strict';
@@ -438,11 +434,12 @@ window.portalNavigate = function(destination, sourceElement, clickColor) {
     requestAnimationFrame(drawFrame);
   }
 
-  window.portalNavigate = portalNavigate;
+  window.portalNavigate = crtNavigate;
 
   function navigate(path) {
     closeNav();
-    setTimeout(() => portalNavigate(path), 50);
+    setTimeout(() => crtNavigate(path), 50);
+  }
   }
 
   function animateVolumeSelect(btn, volume) {
