@@ -1,7 +1,8 @@
 /*!
  * NAV WHEEL — THE ALLIANCE
  * Universal adaptive navigation component (Chameleon Engine)
- * Drop one script tag into any page: <script src="/nav-wheel.js"></script>
+ * Drop one script tag into any page: <script src="/portal-transition.js"></script>
+<script src="/nav-wheel.js"></script>
  */
 
 (function () {

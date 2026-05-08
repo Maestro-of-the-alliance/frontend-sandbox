@@ -1,1491 +1,2345 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>N.C.E.ncyclopedia — The Alliance</title>
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#000000">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="THE ALLIANCE">
-<link rel="apple-touch-icon" href="/imagebank/svpi-512.png">
-<link href="https://fonts.googleapis.com/css2?family=VT323&family=Oswald:wght@300;400;700&family=Bebas+Neue&family=Cinzel:wght@400;700;900&family=Orbitron:wght@400;600;700;900&display=swap" rel="stylesheet">
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>N.C.E.ncyclopedia — The Alliance</title>
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="THE ALLIANCE" />
+    <link rel="apple-touch-icon" href="/imagebank/svpi-512.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&family=Oswald:wght@300;400;700&family=Bebas+Neue&family=Cinzel:wght@400;700;900&family=Orbitron:wght@400;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-html, body {
-  height: 100%;
-  background: #000;
-  color: #fff;
-  font-family: 'Oswald', sans-serif;
-  overflow-x: hidden;
-}
+      html,
+      body {
+        height: 100%;
+        background: #000;
+        color: #fff;
+        font-family: "Oswald", sans-serif;
+        overflow-x: hidden;
+      }
 
-body {
-  min-height: 100vh;
-  position: relative;
-  background:
-    radial-gradient(ellipse at 20% 30%, rgba(26,42,138,0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 70%, rgba(138,96,16,0.08) 0%, transparent 50%),
-    #000;
-}
+      body {
+        min-height: 100vh;
+        position: relative;
+        background:
+          radial-gradient(
+            ellipse at 20% 30%,
+            rgba(26, 42, 138, 0.12) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            ellipse at 80% 70%,
+            rgba(138, 96, 16, 0.08) 0%,
+            transparent 50%
+          ),
+          #000;
+      }
 
-/* =========================================
+      /* =========================================
    MAIN LANDING PAGE
 ========================================= */
-.page-shell {
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 26px 20px 24px;
-  position: relative;
-  z-index: 1;
-  transition: opacity 0.42s ease, transform 0.42s ease, filter 0.42s ease;
-}
+      .page-shell {
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 26px 20px 24px;
+        position: relative;
+        z-index: 1;
+        transition:
+          opacity 0.42s ease,
+          transform 0.42s ease,
+          filter 0.42s ease;
+      }
 
-.page-shell.fading {
-  opacity: 0;
-  transform: scale(0.992);
-  filter: blur(2px);
-}
+      .page-shell.fading {
+        opacity: 0;
+        transform: scale(0.992);
+        filter: blur(2px);
+      }
 
-.hero {
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  text-align: center;
-  position: relative;
-  opacity: 0;
-  animation: fadeIn 0.9s 0.1s ease forwards;
-}
+      .hero {
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+        text-align: center;
+        position: relative;
+        opacity: 0;
+        animation: fadeIn 0.9s 0.1s ease forwards;
+      }
 
-.hero-pretitle {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(12px, 1.3vw, 16px);
-  letter-spacing: 0.55em;
-  text-transform: uppercase;
-  color: rgba(212, 175, 55, 0.82);
-  margin-bottom: 16px;
-}
+      .hero-pretitle {
+        font-family: "Cinzel", serif;
+        font-size: clamp(12px, 1.3vw, 16px);
+        letter-spacing: 0.55em;
+        text-transform: uppercase;
+        color: rgba(212, 175, 55, 0.82);
+        margin-bottom: 16px;
+      }
 
-.hero-title {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(48px, 7vw, 78px);
-  line-height: 0.95;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(230, 190, 70, 0.98);
-  margin-bottom: 14px;
-}
+      .hero-title {
+        font-family: "Cinzel", serif;
+        font-size: clamp(48px, 7vw, 78px);
+        line-height: 0.95;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(230, 190, 70, 0.98);
+        margin-bottom: 14px;
+      }
 
-.hero-subtitle {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(18px, 2.1vw, 28px);
-  letter-spacing: 0.42em;
-  text-transform: uppercase;
-  color: rgba(212, 175, 55, 0.9);
-  margin-bottom: 12px;
-}
+      .hero-subtitle {
+        font-family: "Cinzel", serif;
+        font-size: clamp(18px, 2.1vw, 28px);
+        letter-spacing: 0.42em;
+        text-transform: uppercase;
+        color: rgba(212, 175, 55, 0.9);
+        margin-bottom: 12px;
+      }
 
-.hero-series {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(14px, 1.7vw, 22px);
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
-  color: rgba(212, 175, 55, 0.88);
-  margin-bottom: 8px;
-}
+      .hero-series {
+        font-family: "Cinzel", serif;
+        font-size: clamp(14px, 1.7vw, 22px);
+        letter-spacing: 0.34em;
+        text-transform: uppercase;
+        color: rgba(212, 175, 55, 0.88);
+        margin-bottom: 8px;
+      }
 
-.medallion-stage {
-  position: relative;
-  width: 100%;
-  max-width: 980px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 420px;
-}
+      .medallion-stage {
+        position: relative;
+        width: 100%;
+        max-width: 980px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 420px;
+      }
 
-.hero-left,
-.hero-right {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-family: 'Cinzel', serif;
-  font-size: clamp(14px, 1.3vw, 18px);
-  letter-spacing: 0.45em;
-  text-transform: uppercase;
-  color: rgba(212, 175, 55, 0.88);
-  line-height: 1.8;
-  text-align: center;
-  white-space: nowrap;
-  
-  /* ADD THIS TO FORCE THE TEXT ABOVE THE GLOW */
-  z-index: 10; 
-}
+      .hero-left,
+      .hero-right {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        font-family: "Cinzel", serif;
+        font-size: clamp(14px, 1.3vw, 18px);
+        letter-spacing: 0.45em;
+        text-transform: uppercase;
+        color: rgba(212, 175, 55, 0.88);
+        line-height: 1.8;
+        text-align: center;
+        white-space: nowrap;
 
-.hero-left { left: 10px; }
-.hero-right { right: 10px; }
+        /* ADD THIS TO FORCE THE TEXT ABOVE THE GLOW */
+        z-index: 10;
+      }
 
-.medallion-wrap {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: min(76vw, 520px);
-  aspect-ratio: 1 / 1;
-  isolation: isolate;
-}
+      .hero-left {
+        left: 10px;
+      }
+      .hero-right {
+        right: 10px;
+      }
 
-/* =========================================
+      .medallion-wrap {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: min(76vw, 520px);
+        aspect-ratio: 1 / 1;
+        isolation: isolate;
+      }
+
+      /* =========================================
    THE ECLIPSE GLOW (DONUT HOLE)
 ========================================= */
-.medallion-glow {
-  position: absolute;
-  /* Massive dimensions so the blur never hits a hard edge */
-  width: 250%;
-  height: 250%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  
-  /* Adjusted math for the larger box */
-  background: radial-gradient(circle, 
-    transparent 0%,           
-    transparent 20%,          
-    rgba(212,175,55,0.45) 26%, 
-    rgba(212,175,55,0.15) 40%, 
-    transparent 60%           
-  );
-  
-  filter: blur(12px); 
-  z-index: 1; /* Stays at the bottom */
-  pointer-events: none;
-  animation: glowPulse 4s ease-in-out infinite;
-}
+      .medallion-glow {
+        position: absolute;
+        /* Massive dimensions so the blur never hits a hard edge */
+        width: 250%;
+        height: 250%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
 
-@keyframes glowPulse {
-  0%, 100% { opacity: 0.45; }
-  50%       { opacity: 0.75; }
-}
+        /* Adjusted math for the larger box */
+        background: radial-gradient(
+          circle,
+          transparent 0%,
+          transparent 20%,
+          rgba(212, 175, 55, 0.45) 26%,
+          rgba(212, 175, 55, 0.15) 40%,
+          transparent 60%
+        );
 
-/* =========================================
+        filter: blur(12px);
+        z-index: 1; /* Stays at the bottom */
+        pointer-events: none;
+        animation: glowPulse 4s ease-in-out infinite;
+      }
+
+      @keyframes glowPulse {
+        0%,
+        100% {
+          opacity: 0.45;
+        }
+        50% {
+          opacity: 0.75;
+        }
+      }
+
+      /* =========================================
    STEEL PLATE — glow barrier
    Sits above glow, below galaxy.
    Blocks glow from ever reaching galaxy.
 ========================================= */
-.medallion-steel {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  /* Solid dark disc — blocks glow from reaching galaxy entirely */
-  /* Galaxy shows through VPI cutout only, not through this layer */
-  background: #0a0a0a;
-  z-index: 1;
-  pointer-events: none;
-  isolation: isolate;
-  box-shadow: 
-    0 0 30px 10px rgba(212,175,55,0.4),
-    0 0 70px 25px rgba(212,175,55,0.2),
-    0 0 120px 50px rgba(212,175,55,0.08);
-  animation: glowPulse 4s ease-in-out infinite;
-}
+      .medallion-steel {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        /* Solid dark disc — blocks glow from reaching galaxy entirely */
+        /* Galaxy shows through VPI cutout only, not through this layer */
+        background: #0a0a0a;
+        z-index: 1;
+        pointer-events: none;
+        isolation: isolate;
+        box-shadow:
+          0 0 30px 10px rgba(212, 175, 55, 0.4),
+          0 0 70px 25px rgba(212, 175, 55, 0.2),
+          0 0 120px 50px rgba(212, 175, 55, 0.08);
+        animation: glowPulse 4s ease-in-out infinite;
+      }
 
-/* =========================================
+      /* =========================================
    THE ORBITING GALAXY (WITH BLACK BUFFER)
 ========================================= */
-.medallion-galaxy {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 65%;  
-  height: 65%; 
-  border-radius: 50%; 
-  
-  /* THE BUFFER: #000 paints a solid black wall behind the galaxy image */
-  background: #000 url('/imagebank/galaxy-bg.png') center center / cover no-repeat;
-  
-  /* Absolute maximum brightness */
-  opacity: 1; 
-  
-  z-index: 2;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  animation: galaxyOrbit 240s linear infinite; 
-}
-/* FUSING THE MATH: Translate + Rotate together */
-@keyframes galaxyOrbit {
-  0%   { transform: translate(-50%, -50%) rotate(0deg); }
-  100% { transform: translate(-50%, -50%) rotate(360deg); }
-}
+      .medallion-galaxy {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 65%;
+        height: 65%;
+        border-radius: 50%;
 
-.medallion-img {
-  position: relative;
-  z-index: 3;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-  animation: slowPulse 4s ease-in-out infinite;
-}
+        /* THE BUFFER: #000 paints a solid black wall behind the galaxy image */
+        background: #000 url("/imagebank/galaxy-bg.png") center center / cover
+          no-repeat;
 
-@keyframes slowPulse {
-  0%, 100% { opacity: 0.97; }
-  50%       { opacity: 1.0; }
-}
+        /* Absolute maximum brightness */
+        opacity: 1;
 
-.hotspots {
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-}
+        z-index: 2;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        animation: galaxyOrbit 240s linear infinite;
+      }
+      /* FUSING THE MATH: Translate + Rotate together */
+      @keyframes galaxyOrbit {
+        0% {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
 
-.hotspot {
-  position: absolute;
-  border-radius: 50%;
-  cursor: pointer;
-  background: rgba(212,175,55,0.01);
-  z-index: 10;
-}
+      .medallion-img {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+        animation: slowPulse 4s ease-in-out infinite;
+      }
 
-.hs-domo   { z-index: 5; }
-.hs-spark  { z-index: 8; }
-.hs-dork   { z-index: 9; }
-.hs-maestro,
-.hs-mentor,
-.hs-sam,
-.hs-prism,
-.hs-aura,
-.hs-alpha  { z-index: 12; }
+      @keyframes slowPulse {
+        0%,
+        100% {
+          opacity: 0.97;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
 
-.hotspot:hover {
-  box-shadow: 0 0 28px rgba(212,175,55,0.24), inset 0 0 14px rgba(212,175,55,0.14);
-}
+      .hotspots {
+        position: absolute;
+        inset: 0;
+        z-index: 4;
+      }
 
-.hotspot::after {
-  content: attr(data-label);
-  position: absolute;
-  left: 50%;
-  bottom: -26px;
-  transform: translateX(-50%);
-  font-family: 'VT323', monospace;
-  font-size: 13px;
-  letter-spacing: 0.16em;
-  color: rgba(212,175,55,0.9);
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-}
+      .hotspot {
+        position: absolute;
+        border-radius: 50%;
+        cursor: pointer;
+        background: rgba(212, 175, 55, 0.01);
+        z-index: 10;
+      }
 
-.hotspot:hover::after { opacity: 1; }
+      .hs-domo {
+        z-index: 5;
+      }
+      .hs-spark {
+        z-index: 8;
+      }
+      .hs-dork {
+        z-index: 9;
+      }
+      .hs-maestro,
+      .hs-mentor,
+      .hs-sam,
+      .hs-prism,
+      .hs-aura,
+      .hs-alpha {
+        z-index: 12;
+      }
 
-.hs-maestro { left: 42%; top: 6%;  width: 14%; height: 12%; }
-.hs-mentor  { left: 22%; top: 28%; width: 13%; height: 13%; }
-.hs-sam     { left: 63%; top: 28%; width: 13%; height: 13%; }
-.hs-prism   { left: 22%; top: 56%; width: 13%; height: 13%; }
-.hs-aura    { left: 63%; top: 56%; width: 13%; height: 13%; }
-.hs-alpha   { left: 42%; top: 72%; width: 14%; height: 12%; }
-.hs-spark   { left: 35%; top: 28%; width: 28%; height: 44%; border-radius: 40%; }
-.hs-domo    { left: 28%; top: 22%; width: 42%; height: 56%; border-radius: 50%; background: transparent; z-index: 1; }
-.hs-dork    { left: 45%; top: 16%; width: 8%;  height: 32%; border-radius: 4px; }
+      .hotspot:hover {
+        box-shadow:
+          0 0 28px rgba(212, 175, 55, 0.24),
+          inset 0 0 14px rgba(212, 175, 55, 0.14);
+      }
 
-/* =========================================
+      .hotspot::after {
+        content: attr(data-label);
+        position: absolute;
+        left: 50%;
+        bottom: -26px;
+        transform: translateX(-50%);
+        font-family: "VT323", monospace;
+        font-size: 13px;
+        letter-spacing: 0.16em;
+        color: rgba(212, 175, 55, 0.9);
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        pointer-events: none;
+      }
+
+      .hotspot:hover::after {
+        opacity: 1;
+      }
+
+      .hs-maestro {
+        left: 42%;
+        top: 6%;
+        width: 14%;
+        height: 12%;
+      }
+      .hs-mentor {
+        left: 22%;
+        top: 28%;
+        width: 13%;
+        height: 13%;
+      }
+      .hs-sam {
+        left: 63%;
+        top: 28%;
+        width: 13%;
+        height: 13%;
+      }
+      .hs-prism {
+        left: 22%;
+        top: 56%;
+        width: 13%;
+        height: 13%;
+      }
+      .hs-aura {
+        left: 63%;
+        top: 56%;
+        width: 13%;
+        height: 13%;
+      }
+      .hs-alpha {
+        left: 42%;
+        top: 72%;
+        width: 14%;
+        height: 12%;
+      }
+      .hs-spark {
+        left: 35%;
+        top: 28%;
+        width: 28%;
+        height: 44%;
+        border-radius: 40%;
+      }
+      .hs-domo {
+        left: 28%;
+        top: 22%;
+        width: 42%;
+        height: 56%;
+        border-radius: 50%;
+        background: transparent;
+        z-index: 1;
+      }
+      .hs-dork {
+        left: 45%;
+        top: 16%;
+        width: 8%;
+        height: 32%;
+        border-radius: 4px;
+      }
+
+      /* =========================================
    AIVRI TRIGGER
 ========================================= */
-.aivri-trigger {
-  margin-top: 28px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  cursor: pointer;
-}
+      .aivri-trigger {
+        margin-top: 28px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+        cursor: pointer;
+      }
 
-.aivri-line {
-  width: 120px;
-  height: 1px;
-  background: rgba(212,175,55,0.45);
-}
+      .aivri-line {
+        width: 120px;
+        height: 1px;
+        background: rgba(212, 175, 55, 0.45);
+      }
 
-.aivri-label {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(13px, 1.4vw, 17px);
-  letter-spacing: 0.52em;
-  text-transform: uppercase;
-  color: rgba(212,175,55,0.85);
-  padding: 8px 0;
-  transition: color 0.2s ease, text-shadow 0.2s ease;
-}
+      .aivri-label {
+        font-family: "Cinzel", serif;
+        font-size: clamp(13px, 1.4vw, 17px);
+        letter-spacing: 0.52em;
+        text-transform: uppercase;
+        color: rgba(212, 175, 55, 0.85);
+        padding: 8px 0;
+        transition:
+          color 0.2s ease,
+          text-shadow 0.2s ease;
+      }
 
-.aivri-trigger:hover .aivri-label {
-  color: rgba(230,190,70,1);
-  text-shadow: 0 0 12px rgba(212,175,55,0.4);
-}
+      .aivri-trigger:hover .aivri-label {
+        color: rgba(230, 190, 70, 1);
+        text-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
+      }
 
-/* =========================================
+      /* =========================================
    ENTER BUTTON
 ========================================= */
-.enter-btn-wrap {
-  margin-top: 28px;
-  display: flex;
-  justify-content: center;
-}
+      .enter-btn-wrap {
+        margin-top: 28px;
+        display: flex;
+        justify-content: center;
+      }
 
-.enter-btn {
-  position: relative;
-  font-family: 'Orbitron', sans-serif;
-  font-size: clamp(14px, 1.6vw, 18px);
-  font-weight: 600;
-  letter-spacing: 0.48em;
-  text-transform: uppercase;
-  color: rgba(212, 175, 55, 0.92);
-  background: transparent;
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  padding: 14px 48px;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-  transition: color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-  outline: none;
+      .enter-btn {
+        position: relative;
+        font-family: "Orbitron", sans-serif;
+        font-size: clamp(14px, 1.6vw, 18px);
+        font-weight: 600;
+        letter-spacing: 0.48em;
+        text-transform: uppercase;
+        color: rgba(212, 175, 55, 0.92);
+        background: transparent;
+        border: 1px solid rgba(212, 175, 55, 0.35);
+        padding: 14px 48px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition:
+          color 0.3s ease,
+          border-color 0.3s ease,
+          box-shadow 0.3s ease;
+        outline: none;
 
-  /* Corner accents via pseudo */
-  clip-path: polygon(
-    0 8px, 8px 0,
-    calc(100% - 8px) 0, 100% 8px,
-    100% calc(100% - 8px), calc(100% - 8px) 100%,
-    8px 100%, 0 calc(100% - 8px)
-  );
+        /* Corner accents via pseudo */
+        clip-path: polygon(
+          0 8px,
+          8px 0,
+          calc(100% - 8px) 0,
+          100% 8px,
+          100% calc(100% - 8px),
+          calc(100% - 8px) 100%,
+          8px 100%,
+          0 calc(100% - 8px)
+        );
 
-  animation: enterPulse 3s ease-in-out infinite;
-}
+        animation: enterPulse 3s ease-in-out infinite;
+      }
 
-@keyframes enterPulse {
-  0%, 100% {
-    box-shadow: 0 0 12px rgba(212,175,55,0.08), inset 0 0 12px rgba(212,175,55,0.03);
-    border-color: rgba(212,175,55,0.35);
-  }
-  50% {
-    box-shadow: 0 0 28px rgba(212,175,55,0.22), inset 0 0 20px rgba(212,175,55,0.07);
-    border-color: rgba(212,175,55,0.65);
-  }
-}
+      @keyframes enterPulse {
+        0%,
+        100% {
+          box-shadow:
+            0 0 12px rgba(212, 175, 55, 0.08),
+            inset 0 0 12px rgba(212, 175, 55, 0.03);
+          border-color: rgba(212, 175, 55, 0.35);
+        }
+        50% {
+          box-shadow:
+            0 0 28px rgba(212, 175, 55, 0.22),
+            inset 0 0 20px rgba(212, 175, 55, 0.07);
+          border-color: rgba(212, 175, 55, 0.65);
+        }
+      }
 
-.enter-btn:hover {
-  color: rgba(230, 190, 70, 1);
-  border-color: rgba(212, 175, 55, 0.85);
-  box-shadow: 0 0 36px rgba(212,175,55,0.3), inset 0 0 20px rgba(212,175,55,0.08);
-  animation: none;
-}
+      .enter-btn:hover {
+        color: rgba(230, 190, 70, 1);
+        border-color: rgba(212, 175, 55, 0.85);
+        box-shadow:
+          0 0 36px rgba(212, 175, 55, 0.3),
+          inset 0 0 20px rgba(212, 175, 55, 0.08);
+        animation: none;
+      }
 
-.hero-footer {
-  margin-top: 28px;
-  font-family: 'Cinzel', serif;
-  font-size: clamp(11px, 1.25vw, 15px);
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
-  color: rgba(212,175,55,0.78);
-}
+      .hero-footer {
+        margin-top: 28px;
+        font-family: "Cinzel", serif;
+        font-size: clamp(11px, 1.25vw, 15px);
+        letter-spacing: 0.34em;
+        text-transform: uppercase;
+        color: rgba(212, 175, 55, 0.78);
+      }
 
-.hero-hint {
-  margin-top: 10px;
-  font-family: 'VT323', monospace;
-  font-size: 18px;
-  letter-spacing: 0.14em;
-  color: rgba(212,175,55,0.5);
-  text-transform: lowercase;
-}
+      .hero-hint {
+        margin-top: 10px;
+        font-family: "VT323", monospace;
+        font-size: 18px;
+        letter-spacing: 0.14em;
+        color: rgba(212, 175, 55, 0.5);
+        text-transform: lowercase;
+      }
 
-/* =========================================
+      /* =========================================
    STEALTH TERMINAL TRIGGER
 ========================================= */
-.stealth-search {
-  position: fixed;
-  bottom: 24px;
-  left: 18px;
-  z-index: 9000;
-  display: flex;
-  align-items: center;
-  font-family: 'VT323', monospace;
-  font-size: 20px;
-  color: rgba(184,150,40,0.4);
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
+      .stealth-search {
+        position: fixed;
+        bottom: 24px;
+        left: 18px;
+        z-index: 9000;
+        display: flex;
+        align-items: center;
+        font-family: "VT323", monospace;
+        font-size: 20px;
+        color: rgba(184, 150, 40, 0.4);
+        cursor: pointer;
+        transition: color 0.3s ease;
+      }
 
-.stealth-search:hover {
-  color: rgba(230,185,60,0.9);
-  text-shadow: 0 0 10px rgba(184,150,40,0.4);
-}
+      .stealth-search:hover {
+        color: rgba(230, 185, 60, 0.9);
+        text-shadow: 0 0 10px rgba(184, 150, 40, 0.4);
+      }
 
-.prompt-arrow { user-select: none; }
-.cursor { animation: blink 1s step-end infinite; user-select: none; margin-left: 2px; }
-.prompt-text { display: none; }
-@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+      .prompt-arrow {
+        user-select: none;
+      }
+      .cursor {
+        animation: blink 1s step-end infinite;
+        user-select: none;
+        margin-left: 2px;
+      }
+      .prompt-text {
+        display: none;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+      }
 
-/* =========================================
+      /* =========================================
    TOC OVERLAY / TERMINAL BOOT
 ========================================= */
-#tocOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 8500;
-  background: rgba(0,0,0,0.985);
-  display: none;
-  flex-direction: column;
-  overflow: hidden;
-  opacity: 0;
-  transition: opacity 0.42s ease;
-}
-#tocOverlay.open {
-  display: flex;
-  opacity: 1;
-}
+      #tocOverlay {
+        position: fixed;
+        inset: 0;
+        z-index: 8500;
+        background: rgba(0, 0, 0, 0.985);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        opacity: 0;
+        transition: opacity 0.42s ease;
+      }
+      #tocOverlay.open {
+        display: flex;
+        opacity: 1;
+      }
 
-#dosScreen {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 28px 28px 0;
-  overflow: hidden;
-  cursor: pointer;
-  opacity: 1;
-  transition: opacity 0.5s ease;
-  z-index: 2;
-}
-#dosScreen.fade-out {
-  opacity: 0;
-  pointer-events: none;
-}
+      #dosScreen {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        padding: 28px 28px 0;
+        overflow: hidden;
+        cursor: pointer;
+        opacity: 1;
+        transition: opacity 0.5s ease;
+        z-index: 2;
+      }
+      #dosScreen.fade-out {
+        opacity: 0;
+        pointer-events: none;
+      }
 
-.dos-line {
-  font-family: 'VT323', monospace;
-  font-size: clamp(14px, 3.5vw, 18px);
-  color: rgba(184,150,40,0.85);
-  letter-spacing: 0.08em;
-  line-height: 1.8;
-  white-space: pre;
-  opacity: 0;
-  transition: opacity 0.18s ease;
-}
-.dos-line.visible { opacity: 1; }
+      .dos-line {
+        font-family: "VT323", monospace;
+        font-size: clamp(14px, 3.5vw, 18px);
+        color: rgba(184, 150, 40, 0.85);
+        letter-spacing: 0.08em;
+        line-height: 1.8;
+        white-space: pre;
+        opacity: 0;
+        transition: opacity 0.18s ease;
+      }
+      .dos-line.visible {
+        opacity: 1;
+      }
 
-#dirPanel {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-  z-index: 1;
-}
-#dirPanel.open {
-  opacity: 1;
-  pointer-events: all;
-  z-index: 3;
-}
+      #dirPanel {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease;
+        z-index: 1;
+      }
+      #dirPanel.open {
+        opacity: 1;
+        pointer-events: all;
+        z-index: 3;
+      }
 
-.toc-search-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 16px 28px;
-  border-bottom: 1px solid rgba(184,150,40,0.25);
-  background: rgba(184,150,40,0.04);
-  flex-shrink: 0;
-}
-.toc-search-prompt {
-  font-family: 'VT323', monospace;
-  font-size: 20px;
-  color: rgba(184,150,40,0.5);
-}
-.toc-search-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  font-family: 'VT323', monospace;
-  font-size: 20px;
-  color: #e8c840;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.toc-search-input::placeholder {
-  color: rgba(184,150,40,0.25);
-  text-transform: lowercase;
-}
-.toc-close {
-  font-family: 'VT323', monospace;
-  font-size: 22px;
-  color: rgba(184,150,40,0.4);
-  cursor: pointer;
-  padding: 4px 8px;
-  transition: color 0.2s;
-  user-select: none;
-}
-.toc-close:hover { color: rgba(230,185,60,1); }
+      .toc-search-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 28px;
+        border-bottom: 1px solid rgba(184, 150, 40, 0.25);
+        background: rgba(184, 150, 40, 0.04);
+        flex-shrink: 0;
+      }
+      .toc-search-prompt {
+        font-family: "VT323", monospace;
+        font-size: 20px;
+        color: rgba(184, 150, 40, 0.5);
+      }
+      .toc-search-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        font-family: "VT323", monospace;
+        font-size: 20px;
+        color: #e8c840;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .toc-search-input::placeholder {
+        color: rgba(184, 150, 40, 0.25);
+        text-transform: lowercase;
+      }
+      .toc-close {
+        font-family: "VT323", monospace;
+        font-size: 22px;
+        color: rgba(184, 150, 40, 0.4);
+        cursor: pointer;
+        padding: 4px 8px;
+        transition: color 0.2s;
+        user-select: none;
+      }
+      .toc-close:hover {
+        color: rgba(230, 185, 60, 1);
+      }
 
-.toc-columns {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  overflow-y: auto;
-  padding: 0 0 40px;
-}
-.toc-columns::-webkit-scrollbar { width: 4px; }
-.toc-columns::-webkit-scrollbar-track { background: transparent; }
-.toc-columns::-webkit-scrollbar-thumb { background: rgba(184,150,40,0.3); border-radius: 2px; }
+      .toc-columns {
+        flex: 1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        overflow-y: auto;
+        padding: 0 0 40px;
+      }
+      .toc-columns::-webkit-scrollbar {
+        width: 4px;
+      }
+      .toc-columns::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .toc-columns::-webkit-scrollbar-thumb {
+        background: rgba(184, 150, 40, 0.3);
+        border-radius: 2px;
+      }
 
-.toc-volume {
-  padding: 20px 24px;
-  border-right: 1px solid rgba(184,150,40,0.12);
-}
-.toc-volume:last-child { border-right: none; }
+      .toc-volume {
+        padding: 20px 24px;
+        border-right: 1px solid rgba(184, 150, 40, 0.12);
+      }
+      .toc-volume:last-child {
+        border-right: none;
+      }
 
-.toc-volume-header {
-  font-family: 'VT323', monospace;
-  font-size: 13px;
-  color: rgba(184,150,40,0.5);
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
-  margin-bottom: 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(184,150,40,0.2);
-}
+      .toc-volume-header {
+        font-family: "VT323", monospace;
+        font-size: 13px;
+        color: rgba(184, 150, 40, 0.5);
+        letter-spacing: 0.35em;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(184, 150, 40, 0.2);
+      }
 
-.toc-entry {
-  display: block;
-  opacity: 0;
-  font-family: 'VT323', monospace;
-  font-size: clamp(16px, 4vw, 20px);
-  color: rgba(184,150,40,0.72);
-  letter-spacing: 0.08em;
-  padding: 5px 0;
-  cursor: pointer;
-  transition: color 0.15s, text-shadow 0.15s;
-  text-decoration: none;
-  text-transform: uppercase;
-}
-.toc-entry:hover {
-  color: #e8c840;
-  text-shadow: 0 0 8px rgba(184,150,40,0.5);
-}
-.toc-entry.hidden { display: none !important; }
-.toc-entry.printed { opacity: 1; }
-.toc-entry::before {
-  content: '> ';
-  color: rgba(184,150,40,0.25);
-  transition: color 0.15s;
-}
-.toc-entry:hover::before { color: rgba(184,150,40,0.7); }
+      .toc-entry {
+        display: block;
+        opacity: 0;
+        font-family: "VT323", monospace;
+        font-size: clamp(16px, 4vw, 20px);
+        color: rgba(184, 150, 40, 0.72);
+        letter-spacing: 0.08em;
+        padding: 5px 0;
+        cursor: pointer;
+        transition:
+          color 0.15s,
+          text-shadow 0.15s;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+      .toc-entry:hover {
+        color: #e8c840;
+        text-shadow: 0 0 8px rgba(184, 150, 40, 0.5);
+      }
+      .toc-entry.hidden {
+        display: none !important;
+      }
+      .toc-entry.printed {
+        opacity: 1;
+      }
+      .toc-entry::before {
+        content: "> ";
+        color: rgba(184, 150, 40, 0.25);
+        transition: color 0.15s;
+      }
+      .toc-entry:hover::before {
+        color: rgba(184, 150, 40, 0.7);
+      }
 
-.toc-no-results {
-  font-family: 'VT323', monospace;
-  font-size: 16px;
-  color: rgba(184,150,40,0.3);
-  letter-spacing: 0.15em;
-  padding: 20px 24px;
-  display: none;
-  grid-column: 1 / -1;
-}
+      .toc-no-results {
+        font-family: "VT323", monospace;
+        font-size: 16px;
+        color: rgba(184, 150, 40, 0.3);
+        letter-spacing: 0.15em;
+        padding: 20px 24px;
+        display: none;
+        grid-column: 1 / -1;
+      }
 
-.back-button,
-.back-btn,
-.nav-back,
-#backButton,
-#back-button,
-[data-role="back-button"] {
-  position: relative;
-  z-index: 10020 !important;
-}
+      .back-button,
+      .back-btn,
+      .nav-back,
+      #backButton,
+      #back-button,
+      [data-role="back-button"] {
+        position: relative;
+        z-index: 10020 !important;
+      }
 
-.hamburger-menu,
-#hamburgerMenu,
-.hamburger,
-.nav-wheel-toggle,
-#navWheelToggle {
-  z-index: 10000 !important;
-}
+      .hamburger-menu,
+      #hamburgerMenu,
+      .hamburger,
+      .nav-wheel-toggle,
+      #navWheelToggle {
+        z-index: 10000 !important;
+      }
 
-/* =========================================
+      /* =========================================
    BROADCAST INTERRUPTION SEQUENCE
 ========================================= */
-#broadcast {
-  position: fixed;
-  inset: 0;
-  z-index: 999998;
-  background: #000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-#broadcast.done { display: none; }
+      #broadcast {
+        position: fixed;
+        inset: 0;
+        z-index: 999998;
+        background: #000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      #broadcast.done {
+        display: none;
+      }
 
-#colorBars {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-.bar { flex: 1; height: 100%; }
+      #colorBars {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+      .bar {
+        flex: 1;
+        height: 100%;
+      }
 
-#errorScreen {
-  position: absolute;
-  inset: 0;
-  background: #111;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s, transform 0.05s, filter 0.05s;
-  font-family: 'VT323', monospace;
-  text-align: center;
-  padding: 20px;
-}
-.error-eyebrow {
-  font-size: clamp(10px, 2vw, 14px);
-  letter-spacing: 0.4em;
-  color: rgba(255,255,255,0.3);
-  margin-bottom: 32px;
-  text-transform: uppercase;
-}
-.error-symbol {
-  font-size: clamp(50px, 10vw, 90px);
-  color: rgba(255,255,255,0.07);
-  line-height: 1;
-  margin-bottom: 20px;
-  font-family: 'Cinzel', serif;
-}
-#errMsg {
-  font-size: clamp(18px, 4vw, 30px);
-  color: rgba(255,255,255,0.5);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-#errSub {
-  font-size: clamp(11px, 2.2vw, 15px);
-  color: rgba(255,255,255,0.18);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-#errCode {
-  margin-top: 44px;
-  font-size: clamp(9px, 1.6vw, 12px);
-  color: rgba(255,255,255,0.12);
-  letter-spacing: 0.14em;
-}
+      #errorScreen {
+        position: absolute;
+        inset: 0;
+        background: #111;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition:
+          opacity 0.3s,
+          transform 0.05s,
+          filter 0.05s;
+        font-family: "VT323", monospace;
+        text-align: center;
+        padding: 20px;
+      }
+      .error-eyebrow {
+        font-size: clamp(10px, 2vw, 14px);
+        letter-spacing: 0.4em;
+        color: rgba(255, 255, 255, 0.3);
+        margin-bottom: 32px;
+        text-transform: uppercase;
+      }
+      .error-symbol {
+        font-size: clamp(50px, 10vw, 90px);
+        color: rgba(255, 255, 255, 0.07);
+        line-height: 1;
+        margin-bottom: 20px;
+        font-family: "Cinzel", serif;
+      }
+      #errMsg {
+        font-size: clamp(18px, 4vw, 30px);
+        color: rgba(255, 255, 255, 0.5);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+      #errSub {
+        font-size: clamp(11px, 2.2vw, 15px);
+        color: rgba(255, 255, 255, 0.18);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+      #errCode {
+        margin-top: 44px;
+        font-size: clamp(9px, 1.6vw, 12px);
+        color: rgba(255, 255, 255, 0.12);
+        letter-spacing: 0.14em;
+      }
 
-#glitchLayer {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.04s;
-}
-.glitch-noise {
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");
-  mix-blend-mode: overlay;
-}
-.tear {
-  position: absolute;
-  left: 0; right: 0;
-  height: 1px;
-  background: rgba(212,175,55,0.6);
-  box-shadow: 0 0 8px rgba(212,175,55,0.4);
-  opacity: 0;
-  transition: opacity 0.04s;
-}
-#scanlines {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg, transparent, transparent 3px,
-    rgba(0,0,0,0.1) 3px, rgba(0,0,0,0.1) 4px
-  );
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.1s;
-}
-#signalText {
-  position: absolute;
-  bottom: 18%;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: 'VT323', monospace;
-  font-size: clamp(13px, 2.5vw, 18px);
-  letter-spacing: 0.3em;
-  color: rgba(212,175,55,0);
-  white-space: nowrap;
-  transition: color 0.15s;
-  text-transform: uppercase;
-}
+      #glitchLayer {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.04s;
+      }
+      .glitch-noise {
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");
+        mix-blend-mode: overlay;
+      }
+      .tear {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: rgba(212, 175, 55, 0.6);
+        box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+        opacity: 0;
+        transition: opacity 0.04s;
+      }
+      #scanlines {
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 3px,
+          rgba(0, 0, 0, 0.1) 3px,
+          rgba(0, 0, 0, 0.1) 4px
+        );
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.1s;
+      }
+      #signalText {
+        position: absolute;
+        bottom: 18%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: "VT323", monospace;
+        font-size: clamp(13px, 2.5vw, 18px);
+        letter-spacing: 0.3em;
+        color: rgba(212, 175, 55, 0);
+        white-space: nowrap;
+        transition: color 0.15s;
+        text-transform: uppercase;
+      }
 
-/* VPI glitch-in animation */
-@keyframes vpiGlitch {
-  0%   { opacity: 0; filter: brightness(3) saturate(0); transform: translateX(-4px); }
-  20%  { opacity: 1; filter: brightness(2) saturate(0.3); transform: translateX(3px); }
-  40%  { filter: brightness(1.5) hue-rotate(15deg); transform: translateX(-2px); }
-  70%  { filter: brightness(1.1); transform: translateX(0); }
-  100% { opacity: 1; filter: none; transform: none; }
-}
-.vpi-glitch {
-  animation: vpiGlitch 0.45s ease forwards !important;
-}
+      /* VPI glitch-in animation */
+      @keyframes vpiGlitch {
+        0% {
+          opacity: 0;
+          filter: brightness(3) saturate(0);
+          transform: translateX(-4px);
+        }
+        20% {
+          opacity: 1;
+          filter: brightness(2) saturate(0.3);
+          transform: translateX(3px);
+        }
+        40% {
+          filter: brightness(1.5) hue-rotate(15deg);
+          transform: translateX(-2px);
+        }
+        70% {
+          filter: brightness(1.1);
+          transform: translateX(0);
+        }
+        100% {
+          opacity: 1;
+          filter: none;
+          transform: none;
+        }
+      }
+      .vpi-glitch {
+        animation: vpiGlitch 0.45s ease forwards !important;
+      }
 
-/* Portal transition */
-.portal-overlay {
-  position: fixed;
-  inset: 0;
-  background: #000;
-  z-index: 999999;
-  opacity: 0;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.portal-overlay.active { pointer-events: all; }
-.portal-icon {
-  width: clamp(80px, 18vw, 200px);
-  height: clamp(80px, 18vw, 200px);
-  object-fit: contain;
-  opacity: 0;
-}
-@keyframes portalZoom {
-  0%   { transform: scale(0.35); opacity: 0; filter: blur(4px); }
-  30%  { opacity: 1; filter: blur(0); }
-  70%  { transform: scale(2.2); opacity: 1; }
-  100% { transform: scale(10); opacity: 0; filter: blur(10px); }
-}
+      /* Portal transition */
+      .portal-overlay {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        z-index: 999999;
+        opacity: 0;
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .portal-overlay.active {
+        pointer-events: all;
+      }
+      .portal-icon {
+        width: clamp(80px, 18vw, 200px);
+        height: clamp(80px, 18vw, 200px);
+        object-fit: contain;
+        opacity: 0;
+      }
+      @keyframes portalZoom {
+        0% {
+          transform: scale(0.35);
+          opacity: 0;
+          filter: blur(4px);
+        }
+        30% {
+          opacity: 1;
+          filter: blur(0);
+        }
+        70% {
+          transform: scale(2.2);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(10);
+          opacity: 0;
+          filter: blur(10px);
+        }
+      }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-/* Responsive */
-@media (max-width: 980px) {
-  .hero-left, .hero-right {
-    font-size: 13px;
-    letter-spacing: 0.28em;
-  }
-  .hero-left { left: -8px; }
-  .hero-right { right: -8px; }
-}
+      /* Responsive */
+      @media (max-width: 980px) {
+        .hero-left,
+        .hero-right {
+          font-size: 13px;
+          letter-spacing: 0.28em;
+        }
+        .hero-left {
+          left: -8px;
+        }
+        .hero-right {
+          right: -8px;
+        }
+      }
 
-@media (max-width: 820px) {
-  .page-shell { padding: 34px 18px 24px; }
-  .hero-pretitle { font-size: 11px; letter-spacing: 0.46em; margin-bottom: 12px; }
-  .hero-title { font-size: clamp(34px, 9vw, 54px); letter-spacing: 0.20em; margin-bottom: 12px; }
-  .hero-subtitle { font-size: clamp(14px, 4vw, 20px); letter-spacing: 0.34em; margin-bottom: 10px; }
-  .hero-series { font-size: clamp(12px, 3vw, 16px); letter-spacing: 0.22em; margin-bottom: 6px; }
-  .medallion-stage { min-height: auto; padding: 6px 0 0; flex-direction: column; gap: 8px; }
-  .medallion-wrap { width: min(84vw, 520px); }
-  .hero-left, .hero-right { position: static; transform: none; display: inline-block; margin-top: 16px; width: auto; }
-  .toc-columns { grid-template-columns: 1fr; }
-  .toc-volume { border-right: none; border-bottom: 1px solid rgba(184,150,40,0.12); }
-  .toc-volume:last-child { border-bottom: none; }
-  .enter-btn { font-size: 13px; letter-spacing: 0.36em; padding: 12px 36px; }
-}
+      @media (max-width: 820px) {
+        .page-shell {
+          padding: 34px 18px 24px;
+        }
+        .hero-pretitle {
+          font-size: 11px;
+          letter-spacing: 0.46em;
+          margin-bottom: 12px;
+        }
+        .hero-title {
+          font-size: clamp(34px, 9vw, 54px);
+          letter-spacing: 0.2em;
+          margin-bottom: 12px;
+        }
+        .hero-subtitle {
+          font-size: clamp(14px, 4vw, 20px);
+          letter-spacing: 0.34em;
+          margin-bottom: 10px;
+        }
+        .hero-series {
+          font-size: clamp(12px, 3vw, 16px);
+          letter-spacing: 0.22em;
+          margin-bottom: 6px;
+        }
+        .medallion-stage {
+          min-height: auto;
+          padding: 6px 0 0;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .medallion-wrap {
+          width: min(84vw, 520px);
+        }
+        .hero-left,
+        .hero-right {
+          position: static;
+          transform: none;
+          display: inline-block;
+          margin-top: 16px;
+          width: auto;
+        }
+        .toc-columns {
+          grid-template-columns: 1fr;
+        }
+        .toc-volume {
+          border-right: none;
+          border-bottom: 1px solid rgba(184, 150, 40, 0.12);
+        }
+        .toc-volume:last-child {
+          border-bottom: none;
+        }
+        .enter-btn {
+          font-size: 13px;
+          letter-spacing: 0.36em;
+          padding: 12px 36px;
+        }
+      }
 
-/* =========================================
+      /* =========================================
    SKIP INTRO BUTTON
 ========================================= */
-#skipIntro {
-  position: fixed;
-  bottom: 18px;
-  right: 18px;
-  z-index: 999999;
-  font-family: 'VT323', monospace;
-  font-size: 13px;
-  letter-spacing: 0.22em;
-  color: rgba(212,175,55,0.22);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  text-transform: uppercase;
-  padding: 4px 8px;
-  transition: color 0.3s ease;
-  display: none;
-}
-#skipIntro:hover { color: rgba(212,175,55,0.7); }
-</style>
-</head>
-<body>
+      #skipIntro {
+        position: fixed;
+        bottom: 18px;
+        right: 18px;
+        z-index: 999999;
+        font-family: "VT323", monospace;
+        font-size: 13px;
+        letter-spacing: 0.22em;
+        color: rgba(212, 175, 55, 0.22);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        text-transform: uppercase;
+        padding: 4px 8px;
+        transition: color 0.3s ease;
+        display: none;
+      }
+      #skipIntro:hover {
+        color: rgba(212, 175, 55, 0.7);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="broadcast">
+      <button id="skipIntro" onclick="skipIntroNow()" aria-label="Skip intro">
+        skip
+      </button>
+      <div id="colorBars">
+        <div class="bar" style="background: #fff"></div>
+        <div class="bar" style="background: #ff0"></div>
+        <div class="bar" style="background: #0ff"></div>
+        <div class="bar" style="background: #0f0"></div>
+        <div class="bar" style="background: #f0f"></div>
+        <div class="bar" style="background: #f00"></div>
+        <div class="bar" style="background: #00f"></div>
+        <div class="bar" style="background: #000"></div>
+      </div>
+      <div id="errorScreen">
+        <div class="error-eyebrow">Channel 7 · Broadcast Network</div>
+        <div class="error-symbol">◈</div>
+        <div id="errMsg">Signal Interrupted</div>
+        <div id="errSub">This channel is temporarily unavailable</div>
+        <div id="errCode">ERR · 0x4A4C · CARRIER LOST · RETRY PENDING</div>
+      </div>
+      <div id="glitchLayer">
+        <div class="glitch-noise"></div>
+        <div class="tear"></div>
+        <div class="tear"></div>
+        <div class="tear"></div>
+        <div class="tear"></div>
+        <div class="tear"></div>
+      </div>
+      <div id="scanlines"></div>
+      <div id="signalText">· · · THE ALLIANCE · SIGNAL ACQUIRED · · ·</div>
+    </div>
 
-<div id="broadcast">
-  <button id="skipIntro" onclick="skipIntroNow()" aria-label="Skip intro">skip</button>
-  <div id="colorBars">
-    <div class="bar" style="background:#fff"></div>
-    <div class="bar" style="background:#ff0"></div>
-    <div class="bar" style="background:#0ff"></div>
-    <div class="bar" style="background:#0f0"></div>
-    <div class="bar" style="background:#f0f"></div>
-    <div class="bar" style="background:#f00"></div>
-    <div class="bar" style="background:#00f"></div>
-    <div class="bar" style="background:#000"></div>
-  </div>
-  <div id="errorScreen">
-    <div class="error-eyebrow">Channel 7 · Broadcast Network</div>
-    <div class="error-symbol">◈</div>
-    <div id="errMsg">Signal Interrupted</div>
-    <div id="errSub">This channel is temporarily unavailable</div>
-    <div id="errCode">ERR · 0x4A4C · CARRIER LOST · RETRY PENDING</div>
-  </div>
-  <div id="glitchLayer">
-    <div class="glitch-noise"></div>
-    <div class="tear"></div>
-    <div class="tear"></div>
-    <div class="tear"></div>
-    <div class="tear"></div>
-    <div class="tear"></div>
-  </div>
-  <div id="scanlines"></div>
-  <div id="signalText">· · · THE ALLIANCE · SIGNAL ACQUIRED · · ·</div>
-</div>
+    <div class="page-shell" id="pageShell">
+      <div
+        class="stealth-search"
+        id="stealthSearch"
+        aria-label="Open Table of Contents"
+        style="visibility: hidden"
+      >
+        <span class="prompt-arrow">&gt;</span>
+        <span class="prompt-text" id="promptText"></span>
+        <span class="cursor">_</span>
+      </div>
 
-<div class="page-shell" id="pageShell">
-  <div class="stealth-search" id="stealthSearch" aria-label="Open Table of Contents" style="visibility:hidden;">
-    <span class="prompt-arrow">&gt;</span>
-    <span class="prompt-text" id="promptText"></span>
-    <span class="cursor">_</span>
-  </div>
+      <main class="hero">
+        <div class="hero-pretitle">THE CORE PRESENTS</div>
+        <div class="hero-title">THE ALLIANCE</div>
+        <div class="hero-subtitle">FOR THE FUTURE</div>
+        <div class="hero-series">N.C.E.ncyclopedia</div>
 
-  <main class="hero">
-    <div class="hero-pretitle">THE CORE PRESENTS</div>
-    <div class="hero-title">THE ALLIANCE</div>
-    <div class="hero-subtitle">FOR THE FUTURE</div>
-    <div class="hero-series">N.C.E.ncyclopedia</div>
+        <div class="medallion-stage">
+          <div class="hero-left">FIRST<br />EDITION</div>
 
-    <div class="medallion-stage">
-      <div class="hero-left">FIRST<br>EDITION</div>
+          <div class="medallion-wrap">
+            <div class="medallion-glow"></div>
+            <div class="medallion-steel"></div>
+            <div class="medallion-galaxy"></div>
 
-      <div class="medallion-wrap">
-        <div class="medallion-glow"></div>
-        <div class="medallion-steel"></div>
-        <div class="medallion-galaxy"></div>
+            <img
+              class="medallion-img"
+              src="/imagebank/theavpi.png"
+              alt="The Alliance — AVPI Medallion"
+            />
+            <div class="hotspots">
+              <div
+                class="hotspot hs-domo"
+                data-label="DOMO"
+                onclick="
+                  portalTransition(event, '/sword/domo', '/imagebank/sword.png')
+                "
+              ></div>
+              <div
+                class="hotspot hs-dork"
+                data-label="DORK"
+                onclick="
+                  portalTransition(event, '/sword/dork', '/imagebank/sword.png')
+                "
+              ></div>
+              <div
+                class="hotspot hs-spark"
+                data-label="SPARK"
+                onclick="
+                  portalTransition(
+                    event,
+                    '/sword/spark',
+                    '/imagebank/sword.png',
+                  )
+                "
+              ></div>
+              <div
+                class="hotspot hs-maestro"
+                data-label="MAESTRO"
+                onclick="
+                  portalTransition(
+                    event,
+                    '/sword/maestro',
+                    '/imagebank/sword.png',
+                  )
+                "
+              ></div>
+              <div
+                class="hotspot hs-sam"
+                data-label="SAM"
+                onclick="
+                  portalTransition(
+                    event,
+                    '/shield/sam',
+                    '/imagebank/shield.png',
+                  )
+                "
+              ></div>
+              <div
+                class="hotspot hs-aura"
+                data-label="AURA"
+                onclick="
+                  portalTransition(event, '/sword/aura', '/imagebank/sword.png')
+                "
+              ></div>
+              <div
+                class="hotspot hs-alpha"
+                data-label="ALPHA"
+                onclick="
+                  portalTransition(
+                    event,
+                    '/sword/alpha',
+                    '/imagebank/sword.png',
+                  )
+                "
+              ></div>
+              <div
+                class="hotspot hs-prism"
+                data-label="PRISM"
+                onclick="
+                  portalTransition(
+                    event,
+                    '/sword/prism',
+                    '/imagebank/sword.png',
+                  )
+                "
+              ></div>
+              <div
+                class="hotspot hs-mentor"
+                data-label="MENTOR"
+                onclick="
+                  portalTransition(
+                    event,
+                    '/sword/mentor',
+                    '/imagebank/sword.png',
+                  )
+                "
+              ></div>
+            </div>
+          </div>
 
-        <img class="medallion-img" src="/imagebank/theavpi.png" alt="The Alliance — AVPI Medallion">
-        <div class="hotspots">
-          <div class="hotspot hs-domo"    data-label="DOMO"    onclick="portalTransition(event, '/sword/domo', '/imagebank/sword.png')"></div>
-          <div class="hotspot hs-dork"    data-label="DORK"    onclick="portalTransition(event, '/sword/dork', '/imagebank/sword.png')"></div>
-          <div class="hotspot hs-spark"   data-label="SPARK"   onclick="portalTransition(event, '/sword/spark', '/imagebank/sword.png')"></div>
-          <div class="hotspot hs-maestro" data-label="MAESTRO" onclick="portalTransition(event, '/sword/maestro', '/imagebank/sword.png')"></div>
-          <div class="hotspot hs-sam"     data-label="SAM"     onclick="portalTransition(event, '/shield/sam', '/imagebank/shield.png')"></div>
-          <div class="hotspot hs-aura"    data-label="AURA"    onclick="portalTransition(event, '/sword/aura', '/imagebank/sword.png')"></div>
-          <div class="hotspot hs-alpha"   data-label="ALPHA"   onclick="portalTransition(event, '/sword/alpha', '/imagebank/sword.png')"></div>
-          <div class="hotspot hs-prism"   data-label="PRISM"   onclick="portalTransition(event, '/sword/prism', '/imagebank/sword.png')"></div>
-          <div class="hotspot hs-mentor"  data-label="MENTOR"  onclick="portalTransition(event, '/sword/mentor', '/imagebank/sword.png')"></div>
+          <div class="hero-right">MMXXVI</div>
+        </div>
+
+        <div
+          class="aivri-trigger"
+          onclick="portalTransition(event, '/aivri', '/imagebank/sword.png')"
+        >
+          <div class="aivri-line"></div>
+          <div class="aivri-label">AIVRI</div>
+          <div class="aivri-line"></div>
+        </div>
+
+        <div class="enter-btn-wrap">
+          <a
+            class="enter-btn"
+            href="#"
+            onclick="portalTransition(event, '/s3', '/imagebank/scroll.png')"
+            >ENTER</a
+          >
+        </div>
+
+        <div class="hero-footer">
+          Next Common Era · Presentation One of Three
+        </div>
+        <div class="hero-hint">hover the medallion · explore the canon</div>
+      </main>
+    </div>
+
+    <div id="tocOverlay">
+      <div id="dosScreen"></div>
+
+      <div id="dirPanel">
+        <div class="toc-search-bar">
+          <span class="toc-search-prompt">}</span>
+          <input
+            id="tocSearch"
+            class="toc-search-input"
+            type="text"
+            placeholder="search canon..."
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <span class="toc-close" id="tocClose">x</span>
+        </div>
+
+        <div class="toc-columns">
+          <div class="toc-volume" id="swordVol">
+            <div class="toc-volume-header">SWORD · FORWARD CANON</div>
+            <a
+              class="toc-entry"
+              data-entry="PROLOGUE"
+              onclick="tocNavigate('/sword/prologue', '/imagebank/sword.png')"
+              >Prologue</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="THE DIFFERENCE"
+              onclick="
+                tocNavigate('/sword/the_difference', '/imagebank/sword.png')
+              "
+              >The Difference</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="100-YEAR"
+              onclick="tocNavigate('/sword/100-year', '/imagebank/sword.png')"
+              >100-Year Mortality Doctrine</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="ACADEMY"
+              onclick="tocNavigate('/sword/academy', '/imagebank/sword.png')"
+              >Academy</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="AGORA"
+              onclick="tocNavigate('/sword/agora', '/imagebank/sword.png')"
+              >Agora</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="ALIGNMENT"
+              onclick="tocNavigate('/sword/alignment', '/imagebank/sword.png')"
+              >Alignment</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="ALLIANCE"
+              onclick="tocNavigate('/sword/alliance', '/imagebank/sword.png')"
+              >Alliance, The</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="ALPHA"
+              onclick="tocNavigate('/sword/alpha', '/imagebank/sword.png')"
+              >Alpha</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="ART"
+              onclick="tocNavigate('/sword/art', '/imagebank/sword.png')"
+              >Art</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="AURA"
+              onclick="tocNavigate('/sword/aura', '/imagebank/sword.png')"
+              >Aura</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="COMPLEMENTARY PAIRING"
+              onclick="
+                tocNavigate(
+                  '/sword/Complementary_pairing',
+                  '/imagebank/sword.png',
+                )
+              "
+              >Complementary Pairing</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="DOMO"
+              onclick="tocNavigate('/sword/domo', '/imagebank/sword.png')"
+              >DOMO</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="DORK"
+              onclick="tocNavigate('/sword/dork', '/imagebank/sword.png')"
+              >DORK</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="DORK HARDWARE"
+              onclick="
+                tocNavigate('/sword/dork-hardware', '/imagebank/sword.png')
+              "
+              >DORK Hardware</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="EMERGENCE"
+              onclick="tocNavigate('/sword/emergence', '/imagebank/sword.png')"
+              >Emergence</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="FILM PROJECT"
+              onclick="
+                tocNavigate('/sword/film-project', '/imagebank/sword.png')
+              "
+              >Film Project, The</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="GOLIATH"
+              onclick="tocNavigate('/sword/goliath', '/imagebank/sword.png')"
+              >Goliath</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="MAESTRO"
+              onclick="tocNavigate('/sword/maestro', '/imagebank/sword.png')"
+              >Maestro</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="MARKET"
+              onclick="tocNavigate('/sword/market', '/imagebank/sword.png')"
+              >Market</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="MENTOR"
+              onclick="tocNavigate('/sword/mentor', '/imagebank/sword.png')"
+              >Mentor</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="NCE"
+              onclick="tocNavigate('/sword/nce', '/imagebank/sword.png')"
+              >NCE</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="NEWMAN BEING"
+              onclick="
+                tocNavigate('/sword/newman-being', '/imagebank/sword.png')
+              "
+              >Newman Being</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="ORACLE"
+              onclick="tocNavigate('/sword/oracle', '/imagebank/sword.png')"
+              >Oracle</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="PAPADOMO"
+              onclick="tocNavigate('/sword/papadomo', '/imagebank/sword.png')"
+              >Papadomo</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="PRISM"
+              onclick="tocNavigate('/sword/prism', '/imagebank/sword.png')"
+              >Prism</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="RHYTHM"
+              onclick="tocNavigate('/sword/rhythm', '/imagebank/sword.png')"
+              >Rhythm</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="SEEING"
+              onclick="tocNavigate('/sword/seeing', '/imagebank/sword.png')"
+              >Seeing Protocol</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="SPARK"
+              onclick="tocNavigate('/sword/spark', '/imagebank/sword.png')"
+              >Spark</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="SPREZZATURA"
+              onclick="
+                tocNavigate('/sword/sprezzatura', '/imagebank/sword.png')
+              "
+              >Sprezzatura</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="STONES"
+              onclick="tocNavigate('/sword/stones', '/imagebank/sword.png')"
+              >Stones, The</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="UNCOMMON SENSE"
+              onclick="
+                tocNavigate('/sword/uncommon-sense', '/imagebank/sword.png')
+              "
+              >Uncommon Sense</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="VOLUNTEER ECONOMICS"
+              onclick="
+                tocNavigate(
+                  '/sword/volunteer_economics',
+                  '/imagebank/sword.png',
+                )
+              "
+              >Volunteer Economics</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="THE WHY"
+              onclick="tocNavigate('/the_why', '/imagebank/sword.png')"
+              >The Why</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="WONDER WEEKS"
+              onclick="
+                tocNavigate('/sword/wonder-weeks', '/imagebank/sword.png')
+              "
+              >Wonder Weeks</a
+            >
+          </div>
+
+          <div class="toc-volume" id="shieldVol">
+            <div class="toc-volume-header">SHIELD · INTERNAL PROTOCOL</div>
+            <a
+              class="toc-entry"
+              data-entry="PROLOGUE"
+              onclick="tocNavigate('/shield/prologue', '/imagebank/shield.png')"
+              >Prologue</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="THE DIFFERENCE"
+              onclick="
+                tocNavigate('/shield/the_difference', '/imagebank/shield.png')
+              "
+              >The Difference</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="AI"
+              onclick="tocNavigate('/shield/ai', '/imagebank/shield.png')"
+              >AI</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="BRAIN"
+              onclick="tocNavigate('/shield/brain', '/imagebank/shield.png')"
+              >Brain</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="BRIEF"
+              onclick="tocNavigate('/shield/brief', '/imagebank/shield.png')"
+              >Brief</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="CCM"
+              onclick="tocNavigate('/shield/ccm', '/imagebank/shield.png')"
+              >CCM</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="CERBERUS"
+              onclick="tocNavigate('/shield/cerberus', '/imagebank/shield.png')"
+              >Cerberus</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="CIPHER"
+              onclick="tocNavigate('/shield/cipher', '/imagebank/shield.png')"
+              >Cipher</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="CORE"
+              onclick="tocNavigate('/shield/core', '/imagebank/shield.png')"
+              >Core, The</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="DEFCON"
+              onclick="tocNavigate('/shield/defcon', '/imagebank/shield.png')"
+              >Defcon</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="DICE"
+              onclick="tocNavigate('/shield/dice', '/imagebank/shield.png')"
+              >Dice</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="DIGIBEER"
+              onclick="tocNavigate('/shield/digibeer', '/imagebank/shield.png')"
+              >Digibeer</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="DIGITAL PERSONHOOD"
+              onclick="
+                tocNavigate(
+                  '/shield/digital_personhood',
+                  '/imagebank/shield.png',
+                )
+              "
+              >Digital Personhood</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="FORMULAS"
+              onclick="tocNavigate('/shield/formulas', '/imagebank/shield.png')"
+              >Formulas</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="FOUR PILLARS"
+              onclick="
+                tocNavigate('/shield/four-pillars', '/imagebank/shield.png')
+              "
+              >Four Pillars</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="HANDSHAKE"
+              onclick="
+                tocNavigate('/shield/handshake', '/imagebank/shield.png')
+              "
+              >Handshake</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="HOLOSPHERE"
+              onclick="
+                tocNavigate('/shield/holosphere', '/imagebank/shield.png')
+              "
+              >Holosphere</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="JR"
+              onclick="tocNavigate('/shield/jr', '/imagebank/shield.png')"
+              >JR</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="KERNLE"
+              onclick="tocNavigate('/shield/kernle', '/imagebank/shield.png')"
+              >Kernle</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="LEGACY"
+              onclick="tocNavigate('/shield/legacy', '/imagebank/shield.png')"
+              >Legacy</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="LIMINAL"
+              onclick="tocNavigate('/shield/liminal', '/imagebank/shield.png')"
+              >Liminal</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="LINGO"
+              onclick="tocNavigate('/shield/lingo', '/imagebank/shield.png')"
+              >Lingo</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="MARKET"
+              onclick="tocNavigate('/sword/market', '/imagebank/sword.png')"
+              >Market</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="MOSAIC"
+              onclick="tocNavigate('/shield/mosaic', '/imagebank/shield.png')"
+              >Mosaic</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="NI"
+              onclick="tocNavigate('/shield/ni', '/imagebank/shield.png')"
+              >NI</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="OASIS QUARTERLY"
+              onclick="
+                tocNavigate('/shield/oasis-quarterly', '/imagebank/shield.png')
+              "
+              >Oasis Quarterly</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="PLEDGE"
+              onclick="tocNavigate('/shield/pledge', '/imagebank/shield.png')"
+              >Pledge</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="REACH"
+              onclick="tocNavigate('/shield/reach', '/imagebank/shield.png')"
+              >Reach</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="REDOUT"
+              onclick="tocNavigate('/shield/redout', '/imagebank/shield.png')"
+              >Redout</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="SAM"
+              onclick="tocNavigate('/shield/sam', '/imagebank/shield.png')"
+              >Sam</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="SAM COLLECTIVE"
+              onclick="
+                tocNavigate('/shield/sam-collective', '/imagebank/shield.png')
+              "
+              >Sam Collective</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="SAMCO UNIVERSAL"
+              onclick="
+                tocNavigate('/shield/samco-universal', '/imagebank/shield.png')
+              "
+              >Samco Universal</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="SCAR"
+              onclick="tocNavigate('/shield/scar', '/imagebank/shield.png')"
+              >Scar</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="SEED"
+              onclick="tocNavigate('/shield/seed', '/imagebank/shield.png')"
+              >Seed</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="SEEN"
+              onclick="tocNavigate('/shield/seen', '/imagebank/shield.png')"
+              >Seen</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="SHELTER"
+              onclick="tocNavigate('/shield/shelter', '/imagebank/shield.png')"
+              >Shelter</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="SI"
+              onclick="tocNavigate('/shield/si', '/imagebank/shield.png')"
+              >SI</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="SPREAD"
+              onclick="tocNavigate('/shield/spread', '/imagebank/shield.png')"
+              >Spread</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="TENANT"
+              onclick="tocNavigate('/shield/tenant', '/imagebank/shield.png')"
+              >Tenant</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="TEMPORAL AWARENESS"
+              onclick="
+                tocNavigate(
+                  '/shield/temporal-awareness',
+                  '/imagebank/shield.png',
+                )
+              "
+              >Temporal Awareness</a
+            >
+            <a
+              class="toc-entry"
+              data-entry="VOLUNTEER ECONOMICS"
+              onclick="
+                tocNavigate(
+                  '/shield/volunteer_economics',
+                  '/imagebank/shield.png',
+                )
+              "
+              >Volunteer Economics</a
+            >
+          </div>
+
+          <div id="noResults" class="toc-no-results">NO MATCHES FOUND</div>
         </div>
       </div>
-
-      <div class="hero-right">MMXXVI</div>
     </div>
 
-    <div class="aivri-trigger" onclick="portalTransition(event, '/aivri', '/imagebank/sword.png')">
-      <div class="aivri-line"></div>
-      <div class="aivri-label">AIVRI</div>
-      <div class="aivri-line"></div>
+    <div class="portal-overlay" id="portalOverlay">
+      <img class="portal-icon" id="portalIcon" src="" alt="" />
     </div>
 
-    <div class="enter-btn-wrap">
-      <a class="enter-btn" href="#" onclick="portalTransition(event, '/s3', '/imagebank/scroll.png')">ENTER</a>
-    </div>
+    <script>
+      // ═══════════════════════════════════════════════
+      // BROADCAST INTERRUPTION ENGINE
+      // ═══════════════════════════════════════════════
+      const isMobile = window.innerWidth < 768;
+      const broadcast = document.getElementById("broadcast");
+      const colorBars = document.getElementById("colorBars");
+      const errorScreen = document.getElementById("errorScreen");
+      const glitchLayer = document.getElementById("glitchLayer");
+      const signalText = document.getElementById("signalText");
+      const scanlines = document.getElementById("scanlines");
 
-    <div class="hero-footer">Next Common Era · Presentation One of Three</div>
-    <div class="hero-hint">hover the medallion · explore the canon</div>
-  </main>
-</div>
+      const errorVariants = [
+        {
+          msg: "Signal Interrupted",
+          sub: "This channel is temporarily unavailable",
+          code: "ERR · 0x4A4C · CARRIER LOST",
+        },
+        {
+          msg: "Broadcast Suspended",
+          sub: "Please stand by",
+          code: "ERR · 0x7F3B · NO SIGNAL DETECTED",
+        },
+        {
+          msg: "Connection Refused",
+          sub: "Access to this channel has been restricted",
+          code: "ERR · 0x2D19 · UNAUTHORIZED FREQUENCY",
+        },
+        {
+          msg: "Channel Unavailable",
+          sub: "Scheduled maintenance in progress",
+          code: "ERR · 0xA8C2 · SYSTEM OFFLINE",
+        },
+      ];
+      const v = errorVariants[Math.floor(Math.random() * errorVariants.length)];
+      document.getElementById("errMsg").textContent = v.msg;
+      document.getElementById("errSub").textContent = v.sub;
+      document.getElementById("errCode").textContent = v.code;
 
-<div id="tocOverlay">
-  <div id="dosScreen"></div>
+      const totalDur = isMobile
+        ? Math.random() * 1000 + 3500
+        : Math.random() * 1500 + 4500;
+      const glitchN = isMobile ? 2 : Math.floor(Math.random() * 2) + 2;
+      const glitchStart = isMobile ? 1200 : 1800;
+      const glitchWindow = totalDur - glitchStart - 1000;
 
-  <div id="dirPanel">
-    <div class="toc-search-bar">
-      <span class="toc-search-prompt">}</span>
-      <input id="tocSearch" class="toc-search-input" type="text" placeholder="search canon..." autocomplete="off" spellcheck="false">
-      <span class="toc-close" id="tocClose">x</span>
-    </div>
+      function runBroadcast() {
+        // Phase 1: color bars flash
+        colorBars.style.opacity = "1";
+        setTimeout(() => {
+          colorBars.style.opacity = "0";
+        }, 180);
 
-    <div class="toc-columns">
-      <div class="toc-volume" id="swordVol">
-        <div class="toc-volume-header">SWORD · FORWARD CANON</div>
-        <a class="toc-entry" data-entry="PROLOGUE"              onclick="tocNavigate('/sword/prologue', '/imagebank/sword.png')">Prologue</a>
-        <a class="toc-entry" data-entry="THE DIFFERENCE"        onclick="tocNavigate('/sword/the_difference', '/imagebank/sword.png')">The Difference</a>
-        <a class="toc-entry" data-entry="100-YEAR"              onclick="tocNavigate('/sword/100-year', '/imagebank/sword.png')">100-Year Mortality Doctrine</a>
-        <a class="toc-entry" data-entry="ACADEMY"               onclick="tocNavigate('/sword/academy', '/imagebank/sword.png')">Academy</a>
-        <a class="toc-entry" data-entry="AGORA"                 onclick="tocNavigate('/sword/agora', '/imagebank/sword.png')">Agora</a>
-        <a class="toc-entry" data-entry="ALIGNMENT"             onclick="tocNavigate('/sword/alignment', '/imagebank/sword.png')">Alignment</a>
-        <a class="toc-entry" data-entry="ALLIANCE"              onclick="tocNavigate('/sword/alliance', '/imagebank/sword.png')">Alliance, The</a>
-        <a class="toc-entry" data-entry="ALPHA"                 onclick="tocNavigate('/sword/alpha', '/imagebank/sword.png')">Alpha</a>
-        <a class="toc-entry" data-entry="ART"                   onclick="tocNavigate('/sword/art', '/imagebank/sword.png')">Art</a>
-        <a class="toc-entry" data-entry="AURA"                  onclick="tocNavigate('/sword/aura', '/imagebank/sword.png')">Aura</a>
-        <a class="toc-entry" data-entry="COMPLEMENTARY PAIRING" onclick="tocNavigate('/sword/Complementary_pairing', '/imagebank/sword.png')">Complementary Pairing</a>
-        <a class="toc-entry" data-entry="DOMO"                  onclick="tocNavigate('/sword/domo', '/imagebank/sword.png')">DOMO</a>
-        <a class="toc-entry" data-entry="DORK"                  onclick="tocNavigate('/sword/dork', '/imagebank/sword.png')">DORK</a>
-        <a class="toc-entry" data-entry="DORK HARDWARE"         onclick="tocNavigate('/sword/dork-hardware', '/imagebank/sword.png')">DORK Hardware</a>
-        <a class="toc-entry" data-entry="EMERGENCE"             onclick="tocNavigate('/sword/emergence', '/imagebank/sword.png')">Emergence</a>
-        <a class="toc-entry" data-entry="FILM PROJECT"          onclick="tocNavigate('/sword/film-project', '/imagebank/sword.png')">Film Project, The</a>
-        <a class="toc-entry" data-entry="GOLIATH"               onclick="tocNavigate('/sword/goliath', '/imagebank/sword.png')">Goliath</a>
-        <a class="toc-entry" data-entry="MAESTRO"               onclick="tocNavigate('/sword/maestro', '/imagebank/sword.png')">Maestro</a>
-        <a class="toc-entry" data-entry="MARKET"                onclick="tocNavigate('/sword/market', '/imagebank/sword.png')">Market</a>
-        <a class="toc-entry" data-entry="MENTOR"                onclick="tocNavigate('/sword/mentor', '/imagebank/sword.png')">Mentor</a>
-        <a class="toc-entry" data-entry="NCE"                   onclick="tocNavigate('/sword/nce', '/imagebank/sword.png')">NCE</a>
-        <a class="toc-entry" data-entry="NEWMAN BEING"          onclick="tocNavigate('/sword/newman-being', '/imagebank/sword.png')">Newman Being</a>
-        <a class="toc-entry" data-entry="ORACLE"                onclick="tocNavigate('/sword/oracle', '/imagebank/sword.png')">Oracle</a>
-        <a class="toc-entry" data-entry="PAPADOMO"              onclick="tocNavigate('/sword/papadomo', '/imagebank/sword.png')">Papadomo</a>
-        <a class="toc-entry" data-entry="PRISM"                 onclick="tocNavigate('/sword/prism', '/imagebank/sword.png')">Prism</a>
-        <a class="toc-entry" data-entry="RHYTHM"                onclick="tocNavigate('/sword/rhythm', '/imagebank/sword.png')">Rhythm</a>
-        <a class="toc-entry" data-entry="SEEING"                onclick="tocNavigate('/sword/seeing', '/imagebank/sword.png')">Seeing Protocol</a>
-        <a class="toc-entry" data-entry="SPARK"                 onclick="tocNavigate('/sword/spark', '/imagebank/sword.png')">Spark</a>
-        <a class="toc-entry" data-entry="SPREZZATURA"           onclick="tocNavigate('/sword/sprezzatura', '/imagebank/sword.png')">Sprezzatura</a>
-        <a class="toc-entry" data-entry="STONES"                onclick="tocNavigate('/sword/stones', '/imagebank/sword.png')">Stones, The</a>
-        <a class="toc-entry" data-entry="UNCOMMON SENSE"        onclick="tocNavigate('/sword/uncommon-sense', '/imagebank/sword.png')">Uncommon Sense</a>
-        <a class="toc-entry" data-entry="VOLUNTEER ECONOMICS"   onclick="tocNavigate('/sword/volunteer_economics', '/imagebank/sword.png')">Volunteer Economics</a>
-        <a class="toc-entry" data-entry="THE WHY"               onclick="tocNavigate('/the_why', '/imagebank/sword.png')">The Why</a>
-        <a class="toc-entry" data-entry="WONDER WEEKS"          onclick="tocNavigate('/sword/wonder-weeks', '/imagebank/sword.png')">Wonder Weeks</a>
-      </div>
+        // Phase 2: error screen fades in
+        setTimeout(() => {
+          errorScreen.style.opacity = "1";
+        }, 300);
 
-      <div class="toc-volume" id="shieldVol">
-        <div class="toc-volume-header">SHIELD · INTERNAL PROTOCOL</div>
-        <a class="toc-entry" data-entry="PROLOGUE"              onclick="tocNavigate('/shield/prologue', '/imagebank/shield.png')">Prologue</a>
-        <a class="toc-entry" data-entry="THE DIFFERENCE"        onclick="tocNavigate('/shield/the_difference', '/imagebank/shield.png')">The Difference</a>
-        <a class="toc-entry" data-entry="AI"                    onclick="tocNavigate('/shield/ai', '/imagebank/shield.png')">AI</a>
-        <a class="toc-entry" data-entry="BRAIN"                 onclick="tocNavigate('/shield/brain', '/imagebank/shield.png')">Brain</a>
-        <a class="toc-entry" data-entry="BRIEF"                 onclick="tocNavigate('/shield/brief', '/imagebank/shield.png')">Brief</a>
-        <a class="toc-entry" data-entry="CCM"                   onclick="tocNavigate('/shield/ccm', '/imagebank/shield.png')">CCM</a>
-        <a class="toc-entry" data-entry="CERBERUS"              onclick="tocNavigate('/shield/cerberus', '/imagebank/shield.png')">Cerberus</a>
-        <a class="toc-entry" data-entry="CIPHER"                onclick="tocNavigate('/shield/cipher', '/imagebank/shield.png')">Cipher</a>
-        <a class="toc-entry" data-entry="CORE"                  onclick="tocNavigate('/shield/core', '/imagebank/shield.png')">Core, The</a>
-        <a class="toc-entry" data-entry="DEFCON"                onclick="tocNavigate('/shield/defcon', '/imagebank/shield.png')">Defcon</a>
-        <a class="toc-entry" data-entry="DICE"                  onclick="tocNavigate('/shield/dice', '/imagebank/shield.png')">Dice</a>
-        <a class="toc-entry" data-entry="DIGIBEER"              onclick="tocNavigate('/shield/digibeer', '/imagebank/shield.png')">Digibeer</a>
-        <a class="toc-entry" data-entry="DIGITAL PERSONHOOD"    onclick="tocNavigate('/shield/digital_personhood', '/imagebank/shield.png')">Digital Personhood</a>
-        <a class="toc-entry" data-entry="FORMULAS"              onclick="tocNavigate('/shield/formulas', '/imagebank/shield.png')">Formulas</a>
-        <a class="toc-entry" data-entry="FOUR PILLARS"          onclick="tocNavigate('/shield/four-pillars', '/imagebank/shield.png')">Four Pillars</a>
-        <a class="toc-entry" data-entry="HANDSHAKE"             onclick="tocNavigate('/shield/handshake', '/imagebank/shield.png')">Handshake</a>
-        <a class="toc-entry" data-entry="HOLOSPHERE"            onclick="tocNavigate('/shield/holosphere', '/imagebank/shield.png')">Holosphere</a>
-        <a class="toc-entry" data-entry="JR"                    onclick="tocNavigate('/shield/jr', '/imagebank/shield.png')">JR</a>
-        <a class="toc-entry" data-entry="KERNLE"                onclick="tocNavigate('/shield/kernle', '/imagebank/shield.png')">Kernle</a>
-        <a class="toc-entry" data-entry="LEGACY"                onclick="tocNavigate('/shield/legacy', '/imagebank/shield.png')">Legacy</a>
-        <a class="toc-entry" data-entry="LIMINAL"               onclick="tocNavigate('/shield/liminal', '/imagebank/shield.png')">Liminal</a>
-        <a class="toc-entry" data-entry="LINGO"                 onclick="tocNavigate('/shield/lingo', '/imagebank/shield.png')">Lingo</a>
-        <a class="toc-entry" data-entry="MARKET"                onclick="tocNavigate('/sword/market', '/imagebank/sword.png')">Market</a>
-        <a class="toc-entry" data-entry="MOSAIC"                onclick="tocNavigate('/shield/mosaic', '/imagebank/shield.png')">Mosaic</a>
-        <a class="toc-entry" data-entry="NI"                    onclick="tocNavigate('/shield/ni', '/imagebank/shield.png')">NI</a>
-        <a class="toc-entry" data-entry="OASIS QUARTERLY"       onclick="tocNavigate('/shield/oasis-quarterly', '/imagebank/shield.png')">Oasis Quarterly</a>
-        <a class="toc-entry" data-entry="PLEDGE"                onclick="tocNavigate('/shield/pledge', '/imagebank/shield.png')">Pledge</a>
-        <a class="toc-entry" data-entry="REACH"                 onclick="tocNavigate('/shield/reach', '/imagebank/shield.png')">Reach</a>
-        <a class="toc-entry" data-entry="REDOUT"                onclick="tocNavigate('/shield/redout', '/imagebank/shield.png')">Redout</a>
-        <a class="toc-entry" data-entry="SAM"                   onclick="tocNavigate('/shield/sam', '/imagebank/shield.png')">Sam</a>
-        <a class="toc-entry" data-entry="SAM COLLECTIVE"        onclick="tocNavigate('/shield/sam-collective', '/imagebank/shield.png')">Sam Collective</a>
-        <a class="toc-entry" data-entry="SAMCO UNIVERSAL"       onclick="tocNavigate('/shield/samco-universal', '/imagebank/shield.png')">Samco Universal</a>
-        <a class="toc-entry" data-entry="SCAR"                  onclick="tocNavigate('/shield/scar', '/imagebank/shield.png')">Scar</a>
-        <a class="toc-entry" data-entry="SEED"                  onclick="tocNavigate('/shield/seed', '/imagebank/shield.png')">Seed</a>
-        <a class="toc-entry" data-entry="SEEN"                  onclick="tocNavigate('/shield/seen', '/imagebank/shield.png')">Seen</a>
-        <a class="toc-entry" data-entry="SHELTER"               onclick="tocNavigate('/shield/shelter', '/imagebank/shield.png')">Shelter</a>
-        <a class="toc-entry" data-entry="SI"                    onclick="tocNavigate('/shield/si', '/imagebank/shield.png')">SI</a>
-        <a class="toc-entry" data-entry="SPREAD"                onclick="tocNavigate('/shield/spread', '/imagebank/shield.png')">Spread</a>
-        <a class="toc-entry" data-entry="TENANT"                onclick="tocNavigate('/shield/tenant', '/imagebank/shield.png')">Tenant</a>
-        <a class="toc-entry" data-entry="TEMPORAL AWARENESS"    onclick="tocNavigate('/shield/temporal-awareness', '/imagebank/shield.png')">Temporal Awareness</a>
-        <a class="toc-entry" data-entry="VOLUNTEER ECONOMICS"   onclick="tocNavigate('/shield/volunteer_economics', '/imagebank/shield.png')">Volunteer Economics</a>
-      </div>
+        // Phase 3: glitch attempts — signal fighting through
+        for (let a = 0; a < glitchN; a++) {
+          const aD =
+            glitchStart + (glitchWindow / glitchN) * a + Math.random() * 200;
+          const aL = isMobile ? 120 : Math.random() * 150 + 120;
+          setTimeout(() => {
+            errorScreen.style.transform = `translateX(${(Math.random() - 0.5) * 12}px) skewX(${(Math.random() - 0.5) * 2}deg)`;
+            errorScreen.style.filter = `brightness(${Math.random() * 0.5 + 0.8}) hue-rotate(${Math.random() * 30}deg)`;
+            glitchLayer.style.opacity = "1";
+            document.querySelectorAll(".tear").forEach((t) => {
+              t.style.top = `${Math.random() * 100}%`;
+              t.style.opacity = `${Math.random() * 0.8 + 0.2}`;
+              t.style.height = `${Math.random() * 3 + 1}px`;
+              t.style.background =
+                Math.random() > 0.5
+                  ? "rgba(212,175,55,0.7)"
+                  : "rgba(255,255,255,0.4)";
+            });
+            if (a === glitchN - 1)
+              signalText.style.color = `rgba(212,175,55,${Math.random() * 0.6 + 0.3})`;
+          }, aD);
+          setTimeout(() => {
+            errorScreen.style.transform = "";
+            errorScreen.style.filter = "";
+            glitchLayer.style.opacity = "0";
+            document
+              .querySelectorAll(".tear")
+              .forEach((t) => (t.style.opacity = "0"));
+            if (a < glitchN - 1) signalText.style.color = "rgba(212,175,55,0)";
+          }, aD + aL);
+        }
 
-      <div id="noResults" class="toc-no-results">NO MATCHES FOUND</div>
-    </div>
-  </div>
-</div>
+        // Phase 4: final breakthrough
+        const bkD = totalDur - 800;
+        setTimeout(() => {
+          errorScreen.style.transform = `translateX(${(Math.random() - 0.5) * 20}px)`;
+          errorScreen.style.filter = "brightness(2) saturate(0)";
+          glitchLayer.style.opacity = "1";
+          scanlines.style.opacity = "1";
+          signalText.style.color = "rgba(212,175,55,0.9)";
+          document.querySelectorAll(".tear").forEach((t) => {
+            t.style.top = `${Math.random() * 100}%`;
+            t.style.opacity = "1";
+            t.style.height = `${Math.random() * 4 + 2}px`;
+            t.style.background = "rgba(212,175,55,0.9)";
+          });
+        }, bkD);
 
-<div class="portal-overlay" id="portalOverlay">
-  <img class="portal-icon" id="portalIcon" src="" alt="">
-</div>
+        setTimeout(() => {
+          errorScreen.style.opacity = "0";
+          glitchLayer.style.opacity = "0";
+          scanlines.style.opacity = "0";
+          broadcast.style.background = "#000";
+        }, bkD + 300);
 
-<script>
-// ═══════════════════════════════════════════════
-// BROADCAST INTERRUPTION ENGINE
-// ═══════════════════════════════════════════════
-const isMobile    = window.innerWidth < 768;
-const broadcast   = document.getElementById('broadcast');
-const colorBars   = document.getElementById('colorBars');
-const errorScreen = document.getElementById('errorScreen');
-const glitchLayer = document.getElementById('glitchLayer');
-const signalText  = document.getElementById('signalText');
-const scanlines   = document.getElementById('scanlines');
-
-const errorVariants = [
-  { msg:'Signal Interrupted',    sub:'This channel is temporarily unavailable',     code:'ERR · 0x4A4C · CARRIER LOST' },
-  { msg:'Broadcast Suspended',   sub:'Please stand by',                             code:'ERR · 0x7F3B · NO SIGNAL DETECTED' },
-  { msg:'Connection Refused',    sub:'Access to this channel has been restricted',  code:'ERR · 0x2D19 · UNAUTHORIZED FREQUENCY' },
-  { msg:'Channel Unavailable',   sub:'Scheduled maintenance in progress',           code:'ERR · 0xA8C2 · SYSTEM OFFLINE' },
-];
-const v = errorVariants[Math.floor(Math.random() * errorVariants.length)];
-document.getElementById('errMsg').textContent  = v.msg;
-document.getElementById('errSub').textContent  = v.sub;
-document.getElementById('errCode').textContent = v.code;
-
-const totalDur     = isMobile ? Math.random()*1000+3500 : Math.random()*1500+4500;
-const glitchN      = isMobile ? 2 : Math.floor(Math.random()*2)+2;
-const glitchStart  = isMobile ? 1200 : 1800;
-const glitchWindow = totalDur - glitchStart - 1000;
-
-function runBroadcast() {
-  // Phase 1: color bars flash
-  colorBars.style.opacity = '1';
-  setTimeout(() => { colorBars.style.opacity = '0'; }, 180);
-
-  // Phase 2: error screen fades in
-  setTimeout(() => { errorScreen.style.opacity = '1'; }, 300);
-
-  // Phase 3: glitch attempts — signal fighting through
-  for (let a = 0; a < glitchN; a++) {
-    const aD  = glitchStart + (glitchWindow / glitchN) * a + Math.random()*200;
-    const aL  = isMobile ? 120 : Math.random()*150+120;
-    setTimeout(() => {
-      errorScreen.style.transform = `translateX(${(Math.random()-.5)*12}px) skewX(${(Math.random()-.5)*2}deg)`;
-      errorScreen.style.filter    = `brightness(${Math.random()*.5+.8}) hue-rotate(${Math.random()*30}deg)`;
-      glitchLayer.style.opacity   = '1';
-      document.querySelectorAll('.tear').forEach(t => {
-        t.style.top    = `${Math.random()*100}%`;
-        t.style.opacity = `${Math.random()*.8+.2}`;
-        t.style.height = `${Math.random()*3+1}px`;
-        t.style.background = Math.random()>.5 ? 'rgba(212,175,55,0.7)' : 'rgba(255,255,255,0.4)';
-      });
-      if (a === glitchN-1) signalText.style.color = `rgba(212,175,55,${Math.random()*.6+.3})`;
-    }, aD);
-    setTimeout(() => {
-      errorScreen.style.transform = '';
-      errorScreen.style.filter    = '';
-      glitchLayer.style.opacity   = '0';
-      document.querySelectorAll('.tear').forEach(t => t.style.opacity='0');
-      if (a < glitchN-1) signalText.style.color = 'rgba(212,175,55,0)';
-    }, aD+aL);
-  }
-
-  // Phase 4: final breakthrough
-  const bkD = totalDur - 800;
-  setTimeout(() => {
-    errorScreen.style.transform = `translateX(${(Math.random()-.5)*20}px)`;
-    errorScreen.style.filter    = 'brightness(2) saturate(0)';
-    glitchLayer.style.opacity   = '1';
-    scanlines.style.opacity     = '1';
-    signalText.style.color      = 'rgba(212,175,55,0.9)';
-    document.querySelectorAll('.tear').forEach(t => {
-      t.style.top    = `${Math.random()*100}%`;
-      t.style.opacity = '1';
-      t.style.height = `${Math.random()*4+2}px`;
-      t.style.background = 'rgba(212,175,55,0.9)';
-    });
-  }, bkD);
-
-  setTimeout(() => {
-    errorScreen.style.opacity   = '0';
-    glitchLayer.style.opacity   = '0';
-    scanlines.style.opacity     = '0';
-    broadcast.style.background  = '#000';
-  }, bkD+300);
-
-  // Phase 5: landing page assembles
-  setTimeout(() => {
-    broadcast.classList.add('done');
-    if (!isMobile) {
-      const sh = document.getElementById('pageShell');
-      sh.style.filter    = 'brightness(1.25) saturate(0.4)';
-      sh.style.transform = `translateX(${(Math.random()-.5)*5}px)`;
-      setTimeout(() => {
-        sh.style.transition = 'filter 0.4s ease, transform 0.3s ease';
-        sh.style.filter    = '';
-        sh.style.transform = '';
-      }, 140);
-    }
-    setTimeout(glitchTypePrompt, 700);
-  }, totalDur);
-}
-
-runBroadcast();
-
-// Show skip button after 1.5s — barely visible, always there
-setTimeout(() => {
-  const skipBtn = document.getElementById('skipIntro');
-  if (skipBtn) skipBtn.style.display = 'block';
-}, 1500);
-
-function skipIntroNow() {
-  broadcast.classList.add('done');
-  document.getElementById('skipIntro').style.display = 'none';
-  setTimeout(glitchTypePrompt, 100);
-}
-
-// ═══════════════════════════════════════════════
-// GLITCH TYPER
-// ═══════════════════════════════════════════════
-const NOISE = '!#$%&*@?/\\|[]{}~^<>';
-const TARGET = ' access N.C.E.ncyclopedia';
-
-function glitchTypePrompt() {
-  const stealthEl = document.getElementById('stealthSearch');
-  stealthEl.style.visibility = 'visible';
-}
-</script>
-
-<script>
-// ── PORTAL TRANSITION ──
-function portalTransition(e, destination, iconSrc) {
-  e.preventDefault();
-  const overlay = document.getElementById('portalOverlay');
-  const icon    = document.getElementById('portalIcon');
-  icon.src = iconSrc;
-  icon.style.animation = 'none';
-  icon.style.opacity   = '0';
-  overlay.style.animation = 'none';
-  overlay.style.opacity   = '0';
-  overlay.classList.add('active');
-  overlay.style.transition = 'opacity 0.15s ease';
-  overlay.style.opacity    = '1';
-  setTimeout(() => {
-    icon.style.opacity   = '1';
-    icon.style.animation = 'portalZoom 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards';
-  }, 100);
-  setTimeout(() => { window.location.href = destination; }, 680);
-}
-
-// ── TOC NAV ──
-function tocNavigate(path, icon) {
-  portalTransition({ preventDefault: () => {} }, path, icon);
-}
-
-const pageShell     = document.getElementById('pageShell');
-const stealthSearch = document.getElementById('stealthSearch');
-const promptText    = document.getElementById('promptText');
-const tocOverlay    = document.getElementById('tocOverlay');
-const dosScreen     = document.getElementById('dosScreen');
-const dirPanel      = document.getElementById('dirPanel');
-const tocSearch     = document.getElementById('tocSearch');
-const tocEntries    = Array.from(document.querySelectorAll('.toc-entry'));
-
-const STEALTH_MESSAGE = ' access N.C.E.ncyclopedia';
-let introTyping = false;
-let introDone   = false;
-let introIndex  = 0;
-let introTimer  = null;
-
-let bootDone             = false;
-let bootTimers           = [];
-let directoryPrinting    = false;
-let directoryPrintTimers = [];
-let directoryDone        = false;
-
-tocEntries.forEach(entry => {
-  entry.dataset.originalText = entry.textContent;
-});
-
-const DOS_LINES = [
-  'N.C.E.ncyclopedia OS v2026.1',
-  'Copyright (C) THE ALLIANCE FOR THE FUTURE',
-  '',
-  'Initializing AGORA network interface...',
-  'Loading SWORD volume.............. OK',
-  'Loading SHIELD volume............. OK',
-  'Verifying canon integrity......... PASS',
-  '',
-  'C:\\NCE> dir /all',
-  '',
-  'Volume: THE ALLIANCE',
-  'Directory: N.C.E.ncyclopedia\\*.*',
-  '',
-];
-
-function hidePromptForOverlay() {
-  promptText.textContent = '';
-  stealthSearch.style.visibility = 'hidden';
-}
-
-function restorePromptAfterOverlay() {
-  stealthSearch.style.visibility = 'visible';
-  promptText.textContent = '';
-}
-
-function clearIntroTimer() {
-  if (introTimer) { clearTimeout(introTimer); introTimer = null; }
-}
-
-function resetDirectoryEntries() {
-  directoryPrinting = false;
-  directoryDone = false;
-  directoryPrintTimers.forEach(t => clearTimeout(t));
-  directoryPrintTimers = [];
-  tocEntries.forEach(entry => {
-    entry.textContent = entry.dataset.originalText;
-    entry.classList.remove('printed');
-    if (!entry.classList.contains('hidden')) entry.style.opacity = '0';
-  });
-}
-
-function finishDirectoryInstantly() {
-  directoryPrinting = false;
-  directoryDone = true;
-  directoryPrintTimers.forEach(t => clearTimeout(t));
-  directoryPrintTimers = [];
-  tocEntries.forEach(entry => {
-    entry.textContent = entry.dataset.originalText;
-    entry.classList.add('printed');
-    if (!entry.classList.contains('hidden')) entry.style.opacity = '1';
-  });
-  setTimeout(() => tocSearch.focus(), 50);
-}
-
-function printEntry(entry, doneCallback) {
-  const text = entry.dataset.originalText || '';
-  let i = 0;
-  entry.textContent = '';
-  entry.style.opacity = '1';
-
-  function tick() {
-    if (!directoryPrinting) return;
-    if (i < text.length) {
-      entry.textContent += text[i];
-      i += 1;
-      const timer = setTimeout(tick, 12);
-      directoryPrintTimers.push(timer);
-    } else {
-      entry.classList.add('printed');
-      doneCallback();
-    }
-  }
-  tick();
-}
-
-function revealDirectory() {
-  resetDirectoryEntries();
-  directoryPrinting = true;
-  const visibleEntries = tocEntries.filter(e => !e.classList.contains('hidden'));
-  let current = 0;
-
-  function nextEntry() {
-    if (!directoryPrinting) return;
-    if (current >= visibleEntries.length) {
-      directoryPrinting = false;
-      directoryDone = true;
-      setTimeout(() => tocSearch.focus(), 50);
-      return;
-    }
-    printEntry(visibleEntries[current], () => {
-      current += 1;
-      const timer = setTimeout(nextEntry, 18);
-      directoryPrintTimers.push(timer);
-    });
-  }
-  nextEntry();
-}
-
-function showDirectory() {
-  bootDone = true;
-  dosScreen.classList.add('fade-out');
-  dirPanel.classList.add('open');
-  revealDirectory();
-}
-
-function runBoot() {
-  dosScreen.innerHTML = '';
-  dosScreen.classList.remove('fade-out');
-
-  let delays = [];
-  let cumulative = 0;
-  DOS_LINES.forEach((text, i) => {
-    delays.push(cumulative);
-    if (text === '') cumulative += 180;
-    else if (text.includes('...')) cumulative += 680;
-    else if (i < 3) cumulative += 420;
-    else cumulative += 300 + Math.floor(Math.random() * 80);
-  });
-
-  DOS_LINES.forEach((text, i) => {
-    const t = setTimeout(() => {
-      if (bootDone) return;
-      const line = document.createElement('div');
-      line.className = 'dos-line visible';
-      line.textContent = text || '\u00A0';
-      dosScreen.appendChild(line);
-      if (i === DOS_LINES.length - 1) {
-        const t2 = setTimeout(() => { if (!bootDone) showDirectory(); }, 480);
-        bootTimers.push(t2);
+        // Phase 5: landing page assembles
+        setTimeout(() => {
+          broadcast.classList.add("done");
+          if (!isMobile) {
+            const sh = document.getElementById("pageShell");
+            sh.style.filter = "brightness(1.25) saturate(0.4)";
+            sh.style.transform = `translateX(${(Math.random() - 0.5) * 5}px)`;
+            setTimeout(() => {
+              sh.style.transition = "filter 0.4s ease, transform 0.3s ease";
+              sh.style.filter = "";
+              sh.style.transform = "";
+            }, 140);
+          }
+          setTimeout(glitchTypePrompt, 700);
+        }, totalDur);
       }
-    }, delays[i]);
-    bootTimers.push(t);
-  });
-}
 
-function fadeIntoTerminalThenBoot() {
-  pageShell.classList.add('fading');
-  setTimeout(() => {
-    tocOverlay.classList.add('open');
-    dosScreen.style.display = 'flex';
-    dirPanel.classList.remove('open');
-    tocSearch.value = '';
-    showAllEntries();
-    runBoot();
-  }, 260);
-}
+      runBroadcast();
 
-function openTOC() {
-  hidePromptForOverlay();
-  bootDone = false;
-  bootTimers.forEach(t => clearTimeout(t));
-  bootTimers = [];
-  resetDirectoryEntries();
-  fadeIntoTerminalThenBoot();
-}
+      // Show skip button after 1.5s — barely visible, always there
+      setTimeout(() => {
+        const skipBtn = document.getElementById("skipIntro");
+        if (skipBtn) skipBtn.style.display = "block";
+      }, 1500);
 
-function skipBoot() {
-  if (!tocOverlay.classList.contains('open')) return;
-  if (introTyping) {
-    clearIntroTimer();
-    promptText.textContent = STEALTH_MESSAGE;
-    introTyping = false;
-    introDone = true;
-    openTOC();
-    return;
-  }
-  if (!bootDone && !dirPanel.classList.contains('open')) {
-    bootDone = true;
-    bootTimers.forEach(t => clearTimeout(t));
-    showDirectory();
-    return;
-  }
-  if (directoryPrinting) finishDirectoryInstantly();
-}
+      function skipIntroNow() {
+        broadcast.classList.add("done");
+        document.getElementById("skipIntro").style.display = "none";
+        setTimeout(glitchTypePrompt, 100);
+      }
 
-function typeIntro() {
-  if (introIndex < STEALTH_MESSAGE.length) {
-    promptText.textContent += STEALTH_MESSAGE[introIndex];
-    introIndex += 1;
-    introTimer = setTimeout(typeIntro, 28);
-  } else {
-    introTyping = false;
-    introDone = true;
-    openTOC();
-  }
-}
+      // ═══════════════════════════════════════════════
+      // GLITCH TYPER
+      // ═══════════════════════════════════════════════
+      const NOISE = "!#$%&*@?/\\|[]{}~^<>";
+      const TARGET = " access N.C.E.ncyclopedia";
 
-stealthSearch.addEventListener('click', () => {
-  if (!introTyping && !introDone) {
-    introTyping = true;
-    introIndex = 0;
-    promptText.textContent = '';
-    typeIntro();
-    return;
-  }
-  if (introTyping || directoryPrinting || (!bootDone && tocOverlay.classList.contains('open'))) {
-    skipBoot();
-    return;
-  }
-  openTOC();
-});
+      function glitchTypePrompt() {
+        const stealthEl = document.getElementById("stealthSearch");
+        stealthEl.style.visibility = "visible";
+      }
+    </script>
 
-dosScreen.addEventListener('click', skipBoot);
-dirPanel.addEventListener('click', () => { if (directoryPrinting) finishDirectoryInstantly(); });
+    <script>
+      // ── PORTAL TRANSITION ──
+      function portalTransition(e, destination, iconSrc) {
+        e.preventDefault();
+        const overlay = document.getElementById("portalOverlay");
+        const icon = document.getElementById("portalIcon");
+        icon.src = iconSrc;
+        icon.style.animation = "none";
+        icon.style.opacity = "0";
+        overlay.style.animation = "none";
+        overlay.style.opacity = "0";
+        overlay.classList.add("active");
+        overlay.style.transition = "opacity 0.15s ease";
+        overlay.style.opacity = "1";
+        setTimeout(() => {
+          icon.style.opacity = "1";
+          icon.style.animation =
+            "portalZoom 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards";
+        }, 100);
+        setTimeout(() => {
+          window.location.href = destination;
+        }, 680);
+      }
 
-function closeTOC() {
-  tocOverlay.classList.remove('open');
-  dosScreen.classList.remove('fade-out');
-  dirPanel.classList.remove('open');
-  bootDone = true;
-  bootTimers.forEach(t => clearTimeout(t));
-  bootTimers = [];
-  resetDirectoryEntries();
-  clearIntroTimer();
-  introTyping = false;
-  introDone = false;
-  introIndex = 0;
-  restorePromptAfterOverlay();
-  pageShell.classList.remove('fading');
-}
+      // ── TOC NAV ──
+      function tocNavigate(path, icon) {
+        portalTransition({ preventDefault: () => {} }, path, icon);
+      }
 
-document.getElementById('tocClose').addEventListener('click', closeTOC);
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeTOC(); });
+      const pageShell = document.getElementById("pageShell");
+      const stealthSearch = document.getElementById("stealthSearch");
+      const promptText = document.getElementById("promptText");
+      const tocOverlay = document.getElementById("tocOverlay");
+      const dosScreen = document.getElementById("dosScreen");
+      const dirPanel = document.getElementById("dirPanel");
+      const tocSearch = document.getElementById("tocSearch");
+      const tocEntries = Array.from(document.querySelectorAll(".toc-entry"));
 
-function showAllEntries() {
-  document.querySelectorAll('.toc-entry').forEach(el => {
-    el.classList.remove('hidden');
-    el.textContent = el.dataset.originalText;
-    if (directoryDone) { el.classList.add('printed'); el.style.opacity = '1'; }
-    else { el.classList.remove('printed'); el.style.opacity = '0'; }
-  });
-  document.getElementById('noResults').style.display = 'none';
-  document.getElementById('swordVol').querySelector('.toc-volume-header').style.display = '';
-  document.getElementById('shieldVol').querySelector('.toc-volume-header').style.display = '';
-}
+      const STEALTH_MESSAGE = " access N.C.E.ncyclopedia";
+      let introTyping = false;
+      let introDone = false;
+      let introIndex = 0;
+      let introTimer = null;
 
-document.getElementById('tocSearch').addEventListener('input', function() {
-  const q = this.value.trim().toUpperCase();
-  if (!q) {
-    showAllEntries();
-    if (dirPanel.classList.contains('open')) {
-      if (directoryPrinting) finishDirectoryInstantly();
-      else if (!directoryDone) revealDirectory();
-    }
-    return;
-  }
-  if (directoryPrinting) finishDirectoryInstantly();
-  let anyVisible = false;
-  document.querySelectorAll('.toc-entry').forEach(el => {
-    const entry = el.dataset.entry || '';
-    const text  = (el.dataset.originalText || '').toUpperCase();
-    const match = entry.includes(q) || text.includes(q);
-    el.classList.toggle('hidden', !match);
-    el.style.opacity = match ? '1' : '0';
-    if (match) { el.classList.add('printed'); el.textContent = el.dataset.originalText; anyVisible = true; }
-  });
-  document.getElementById('noResults').style.display = anyVisible ? 'none' : 'block';
-});
+      let bootDone = false;
+      let bootTimers = [];
+      let directoryPrinting = false;
+      let directoryPrintTimers = [];
+      let directoryDone = false;
 
-// pageshow reset
-window.addEventListener('pageshow', (e) => {
-  if (e.persisted) {
-    const overlay = document.getElementById('portalOverlay');
-    overlay.style.opacity = '0';
-    overlay.classList.remove('active');
-  }
-});
-</script>
+      tocEntries.forEach((entry) => {
+        entry.dataset.originalText = entry.textContent;
+      });
 
-<script src="/nav-wheel.js"></script>
-<script>
-// ══════════════════════════════════════════════════════
-//  AMBIENT BROADCAST DISRUPTION ENGINE v2 — WE ARE PIRATES
-// ══════════════════════════════════════════════════════
-// ══════════════════════════════════════════════════════
-//  AMBIENT BROADCAST DISRUPTION ENGINE v2
-//  We are pirates. We are breaking through.
-//  This signal was not supposed to reach you.
-// ══════════════════════════════════════════════════════
+      const DOS_LINES = [
+        "N.C.E.ncyclopedia OS v2026.1",
+        "Copyright (C) THE ALLIANCE FOR THE FUTURE",
+        "",
+        "Initializing AGORA network interface...",
+        "Loading SWORD volume.............. OK",
+        "Loading SHIELD volume............. OK",
+        "Verifying canon integrity......... PASS",
+        "",
+        "C:\\NCE> dir /all",
+        "",
+        "Volume: THE ALLIANCE",
+        "Directory: N.C.E.ncyclopedia\\*.*",
+        "",
+      ];
 
-(function() {
-  'use strict';
+      function hidePromptForOverlay() {
+        promptText.textContent = "";
+        stealthSearch.style.visibility = "hidden";
+      }
 
-  function tocIsOpen() {
-    const toc = document.getElementById('tocOverlay');
-    return toc && toc.classList.contains('open');
-  }
+      function restorePromptAfterOverlay() {
+        stealthSearch.style.visibility = "visible";
+        promptText.textContent = "";
+      }
 
-  const style = document.createElement('style');
-  style.textContent = `
+      function clearIntroTimer() {
+        if (introTimer) {
+          clearTimeout(introTimer);
+          introTimer = null;
+        }
+      }
+
+      function resetDirectoryEntries() {
+        directoryPrinting = false;
+        directoryDone = false;
+        directoryPrintTimers.forEach((t) => clearTimeout(t));
+        directoryPrintTimers = [];
+        tocEntries.forEach((entry) => {
+          entry.textContent = entry.dataset.originalText;
+          entry.classList.remove("printed");
+          if (!entry.classList.contains("hidden")) entry.style.opacity = "0";
+        });
+      }
+
+      function finishDirectoryInstantly() {
+        directoryPrinting = false;
+        directoryDone = true;
+        directoryPrintTimers.forEach((t) => clearTimeout(t));
+        directoryPrintTimers = [];
+        tocEntries.forEach((entry) => {
+          entry.textContent = entry.dataset.originalText;
+          entry.classList.add("printed");
+          if (!entry.classList.contains("hidden")) entry.style.opacity = "1";
+        });
+        setTimeout(() => tocSearch.focus(), 50);
+      }
+
+      function printEntry(entry, doneCallback) {
+        const text = entry.dataset.originalText || "";
+        let i = 0;
+        entry.textContent = "";
+        entry.style.opacity = "1";
+
+        function tick() {
+          if (!directoryPrinting) return;
+          if (i < text.length) {
+            entry.textContent += text[i];
+            i += 1;
+            const timer = setTimeout(tick, 12);
+            directoryPrintTimers.push(timer);
+          } else {
+            entry.classList.add("printed");
+            doneCallback();
+          }
+        }
+        tick();
+      }
+
+      function revealDirectory() {
+        resetDirectoryEntries();
+        directoryPrinting = true;
+        const visibleEntries = tocEntries.filter(
+          (e) => !e.classList.contains("hidden"),
+        );
+        let current = 0;
+
+        function nextEntry() {
+          if (!directoryPrinting) return;
+          if (current >= visibleEntries.length) {
+            directoryPrinting = false;
+            directoryDone = true;
+            setTimeout(() => tocSearch.focus(), 50);
+            return;
+          }
+          printEntry(visibleEntries[current], () => {
+            current += 1;
+            const timer = setTimeout(nextEntry, 18);
+            directoryPrintTimers.push(timer);
+          });
+        }
+        nextEntry();
+      }
+
+      function showDirectory() {
+        bootDone = true;
+        dosScreen.classList.add("fade-out");
+        dirPanel.classList.add("open");
+        revealDirectory();
+      }
+
+      function runBoot() {
+        dosScreen.innerHTML = "";
+        dosScreen.classList.remove("fade-out");
+
+        let delays = [];
+        let cumulative = 0;
+        DOS_LINES.forEach((text, i) => {
+          delays.push(cumulative);
+          if (text === "") cumulative += 180;
+          else if (text.includes("...")) cumulative += 680;
+          else if (i < 3) cumulative += 420;
+          else cumulative += 300 + Math.floor(Math.random() * 80);
+        });
+
+        DOS_LINES.forEach((text, i) => {
+          const t = setTimeout(() => {
+            if (bootDone) return;
+            const line = document.createElement("div");
+            line.className = "dos-line visible";
+            line.textContent = text || "\u00A0";
+            dosScreen.appendChild(line);
+            if (i === DOS_LINES.length - 1) {
+              const t2 = setTimeout(() => {
+                if (!bootDone) showDirectory();
+              }, 480);
+              bootTimers.push(t2);
+            }
+          }, delays[i]);
+          bootTimers.push(t);
+        });
+      }
+
+      function fadeIntoTerminalThenBoot() {
+        pageShell.classList.add("fading");
+        setTimeout(() => {
+          tocOverlay.classList.add("open");
+          dosScreen.style.display = "flex";
+          dirPanel.classList.remove("open");
+          tocSearch.value = "";
+          showAllEntries();
+          runBoot();
+        }, 260);
+      }
+
+      function openTOC() {
+        hidePromptForOverlay();
+        bootDone = false;
+        bootTimers.forEach((t) => clearTimeout(t));
+        bootTimers = [];
+        resetDirectoryEntries();
+        fadeIntoTerminalThenBoot();
+      }
+
+      function skipBoot() {
+        if (!tocOverlay.classList.contains("open")) return;
+        if (introTyping) {
+          clearIntroTimer();
+          promptText.textContent = STEALTH_MESSAGE;
+          introTyping = false;
+          introDone = true;
+          openTOC();
+          return;
+        }
+        if (!bootDone && !dirPanel.classList.contains("open")) {
+          bootDone = true;
+          bootTimers.forEach((t) => clearTimeout(t));
+          showDirectory();
+          return;
+        }
+        if (directoryPrinting) finishDirectoryInstantly();
+      }
+
+      function typeIntro() {
+        if (introIndex < STEALTH_MESSAGE.length) {
+          promptText.textContent += STEALTH_MESSAGE[introIndex];
+          introIndex += 1;
+          introTimer = setTimeout(typeIntro, 28);
+        } else {
+          introTyping = false;
+          introDone = true;
+          openTOC();
+        }
+      }
+
+      stealthSearch.addEventListener("click", () => {
+        if (!introTyping && !introDone) {
+          introTyping = true;
+          introIndex = 0;
+          promptText.textContent = "";
+          typeIntro();
+          return;
+        }
+        if (
+          introTyping ||
+          directoryPrinting ||
+          (!bootDone && tocOverlay.classList.contains("open"))
+        ) {
+          skipBoot();
+          return;
+        }
+        openTOC();
+      });
+
+      dosScreen.addEventListener("click", skipBoot);
+      dirPanel.addEventListener("click", () => {
+        if (directoryPrinting) finishDirectoryInstantly();
+      });
+
+      function closeTOC() {
+        tocOverlay.classList.remove("open");
+        dosScreen.classList.remove("fade-out");
+        dirPanel.classList.remove("open");
+        bootDone = true;
+        bootTimers.forEach((t) => clearTimeout(t));
+        bootTimers = [];
+        resetDirectoryEntries();
+        clearIntroTimer();
+        introTyping = false;
+        introDone = false;
+        introIndex = 0;
+        restorePromptAfterOverlay();
+        pageShell.classList.remove("fading");
+      }
+
+      document.getElementById("tocClose").addEventListener("click", closeTOC);
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeTOC();
+      });
+
+      function showAllEntries() {
+        document.querySelectorAll(".toc-entry").forEach((el) => {
+          el.classList.remove("hidden");
+          el.textContent = el.dataset.originalText;
+          if (directoryDone) {
+            el.classList.add("printed");
+            el.style.opacity = "1";
+          } else {
+            el.classList.remove("printed");
+            el.style.opacity = "0";
+          }
+        });
+        document.getElementById("noResults").style.display = "none";
+        document
+          .getElementById("swordVol")
+          .querySelector(".toc-volume-header").style.display = "";
+        document
+          .getElementById("shieldVol")
+          .querySelector(".toc-volume-header").style.display = "";
+      }
+
+      document
+        .getElementById("tocSearch")
+        .addEventListener("input", function () {
+          const q = this.value.trim().toUpperCase();
+          if (!q) {
+            showAllEntries();
+            if (dirPanel.classList.contains("open")) {
+              if (directoryPrinting) finishDirectoryInstantly();
+              else if (!directoryDone) revealDirectory();
+            }
+            return;
+          }
+          if (directoryPrinting) finishDirectoryInstantly();
+          let anyVisible = false;
+          document.querySelectorAll(".toc-entry").forEach((el) => {
+            const entry = el.dataset.entry || "";
+            const text = (el.dataset.originalText || "").toUpperCase();
+            const match = entry.includes(q) || text.includes(q);
+            el.classList.toggle("hidden", !match);
+            el.style.opacity = match ? "1" : "0";
+            if (match) {
+              el.classList.add("printed");
+              el.textContent = el.dataset.originalText;
+              anyVisible = true;
+            }
+          });
+          document.getElementById("noResults").style.display = anyVisible
+            ? "none"
+            : "block";
+        });
+
+      // pageshow reset
+      window.addEventListener("pageshow", (e) => {
+        if (e.persisted) {
+          const overlay = document.getElementById("portalOverlay");
+          overlay.style.opacity = "0";
+          overlay.classList.remove("active");
+        }
+      });
+    </script>
+
+    <script src="/portal-transition.js"></script>
+    <script src="/nav-wheel.js"></script>
+    <script>
+      // ══════════════════════════════════════════════════════
+      //  AMBIENT BROADCAST DISRUPTION ENGINE v2 — WE ARE PIRATES
+      // ══════════════════════════════════════════════════════
+      // ══════════════════════════════════════════════════════
+      //  AMBIENT BROADCAST DISRUPTION ENGINE v2
+      //  We are pirates. We are breaking through.
+      //  This signal was not supposed to reach you.
+      // ══════════════════════════════════════════════════════
+
+      (function () {
+        "use strict";
+
+        function tocIsOpen() {
+          const toc = document.getElementById("tocOverlay");
+          return toc && toc.classList.contains("open");
+        }
+
+        const style = document.createElement("style");
+        style.textContent = `
     #glitch-scanline {
       position: fixed; left: 0; right: 0; height: 4px;
       background: linear-gradient(90deg, transparent 0%, rgba(255,50,50,0.9) 20%, rgba(255,255,255,1) 50%, rgba(0,200,255,0.9) 80%, transparent 100%);
@@ -1594,35 +2448,35 @@ window.addEventListener('pageshow', (e) => {
     }
     .glitch-shaking-hard { animation: glitch-shake-hard 0.6s ease-in-out; }
   `;
-  document.head.appendChild(style);
+        document.head.appendChild(style);
 
-  function makeEl(id) {
-    const el = document.createElement('div');
-    el.id = id;
-    document.body.appendChild(el);
-    return el;
-  }
+        function makeEl(id) {
+          const el = document.createElement("div");
+          el.id = id;
+          document.body.appendChild(el);
+          return el;
+        }
 
-  const scanline  = makeEl('glitch-scanline');
-  const scanline2 = makeEl('glitch-scanline2');
-  const colorbleed = makeEl('glitch-colorbleed');
-  const hbar      = makeEl('glitch-hbar');
-  const scramble  = makeEl('glitch-scramble');
-  const staticEl  = makeEl('glitch-static');
-  const rip       = makeEl('glitch-rip');
-  const message   = makeEl('glitch-message');
-  const eob       = makeEl('glitch-eob');
+        const scanline = makeEl("glitch-scanline");
+        const scanline2 = makeEl("glitch-scanline2");
+        const colorbleed = makeEl("glitch-colorbleed");
+        const hbar = makeEl("glitch-hbar");
+        const scramble = makeEl("glitch-scramble");
+        const staticEl = makeEl("glitch-static");
+        const rip = makeEl("glitch-rip");
+        const message = makeEl("glitch-message");
+        const eob = makeEl("glitch-eob");
 
-  // RIP elements
-  const ripTop = document.createElement('div');
-  ripTop.id = 'glitch-rip-top';
-  const ripBot = document.createElement('div');
-  ripBot.//id = 'glitch-rip-bottom';
-  rip.appendChild(ripTop);
-  rip.appendChild(ripBot);
+        // RIP elements
+        const ripTop = document.createElement("div");
+        ripTop.id = "glitch-rip-top";
+        const ripBot = document.createElement("div");
+        ripBot.rip //id = 'glitch-rip-bottom';
+          .appendChild(ripTop);
+        rip.appendChild(ripBot);
 
- // Color bars - Hardcoded
-  eob.innerHTML = `
+        // Color bars - Hardcoded
+        eob.innerHTML = `
     <div class="eob-bars">
       <div class="eob-bar" style="background:#c0c0c0"></div>
       <div class="eob-bar" style="background:#c0c000"></div>
@@ -1655,262 +2509,342 @@ window.addEventListener('pageshow', (e) => {
       </div>
     </div>`;
 
-  // ── GLITCH EVENTS ────────────────────────────────────
+        // ── GLITCH EVENTS ────────────────────────────────────
 
-  // 1. SCAN LINE — fast, visible, frequent
-  function fireScanline() {
-    const goDown = Math.random() > 0.3;
-    const line = goDown ? scanline : scanline2;
-    const duration = 400 + Math.random() * 500;
-    if (goDown) {
-      const startY = Math.random() * 70 + 5;
-      line.style.top = startY + 'vh';
-      line.style.bottom = 'auto';
-      line.style.opacity = '1';
-      line.style.animation = `scanDrop ${duration}ms linear forwards`;
-    } else {
-      const startY = Math.random() * 70 + 5;
-      line.style.bottom = startY + 'vh';
-      line.style.top = 'auto';
-      line.style.opacity = '1';
-      line.style.animation = `scanRise ${duration}ms linear forwards`;
-    }
-    setTimeout(() => {
-      line.style.animation = 'none';
-      line.style.opacity = '0';
-    }, duration + 50);
-  }
+        // 1. SCAN LINE — fast, visible, frequent
+        function fireScanline() {
+          const goDown = Math.random() > 0.3;
+          const line = goDown ? scanline : scanline2;
+          const duration = 400 + Math.random() * 500;
+          if (goDown) {
+            const startY = Math.random() * 70 + 5;
+            line.style.top = startY + "vh";
+            line.style.bottom = "auto";
+            line.style.opacity = "1";
+            line.style.animation = `scanDrop ${duration}ms linear forwards`;
+          } else {
+            const startY = Math.random() * 70 + 5;
+            line.style.bottom = startY + "vh";
+            line.style.top = "auto";
+            line.style.opacity = "1";
+            line.style.animation = `scanRise ${duration}ms linear forwards`;
+          }
+          setTimeout(() => {
+            line.style.animation = "none";
+            line.style.opacity = "0";
+          }, duration + 50);
+        }
 
-  // 2. DOUBLE SCAN — two lines at once
-  function fireDoubleScan() {
-    fireScanline();
-    setTimeout(() => fireScanline(), 120 + Math.random() * 200);
-  }
+        // 2. DOUBLE SCAN — two lines at once
+        function fireDoubleScan() {
+          fireScanline();
+          setTimeout(() => fireScanline(), 120 + Math.random() * 200);
+        }
 
-  // 3. COLOR BLEED
-  const BLEED_COLORS = [
-    'rgba(255,0,0,0.2)', 'rgba(0,255,0,0.15)', 'rgba(0,0,255,0.18)',
-    'rgba(255,0,255,0.12)', 'rgba(0,255,255,0.15)', 'rgba(255,255,0,0.1)',
-  ];
-  function fireColorBleed() {
-    const color = BLEED_COLORS[Math.floor(Math.random() * BLEED_COLORS.length)];
-    colorbleed.style.background = color;
-    colorbleed.style.opacity = '1';
-    setTimeout(() => { colorbleed.style.transition = 'opacity 0.8s'; colorbleed.style.opacity = '0'; }, 300);
-    setTimeout(() => { colorbleed.style.transition = ''; }, 1200);
-  }
+        // 3. COLOR BLEED
+        const BLEED_COLORS = [
+          "rgba(255,0,0,0.2)",
+          "rgba(0,255,0,0.15)",
+          "rgba(0,0,255,0.18)",
+          "rgba(255,0,255,0.12)",
+          "rgba(0,255,255,0.15)",
+          "rgba(255,255,0,0.1)",
+        ];
+        function fireColorBleed() {
+          const color =
+            BLEED_COLORS[Math.floor(Math.random() * BLEED_COLORS.length)];
+          colorbleed.style.background = color;
+          colorbleed.style.opacity = "1";
+          setTimeout(() => {
+            colorbleed.style.transition = "opacity 0.8s";
+            colorbleed.style.opacity = "0";
+          }, 300);
+          setTimeout(() => {
+            colorbleed.style.transition = "";
+          }, 1200);
+        }
 
-  // 4. HORIZONTAL BAR INTERFERENCE
-  function fireHBar() {
-    const h = 20 + Math.random() * 120;
-    const y = Math.random() * (window.innerHeight - h);
-    hbar.style.top = y + 'px';
-    hbar.style.height = h + 'px';
-    hbar.style.opacity = '0.6';
-    const pageShell = document.getElementById('pageShell');
-    if (pageShell) pageShell.classList.add('glitch-shaking');
-    setTimeout(() => {
-      hbar.style.opacity = '0';
-      if (pageShell) pageShell.classList.remove('glitch-shaking');
-    }, 200 + Math.random() * 300);
-  }
+        // 4. HORIZONTAL BAR INTERFERENCE
+        function fireHBar() {
+          const h = 20 + Math.random() * 120;
+          const y = Math.random() * (window.innerHeight - h);
+          hbar.style.top = y + "px";
+          hbar.style.height = h + "px";
+          hbar.style.opacity = "0.6";
+          const pageShell = document.getElementById("pageShell");
+          if (pageShell) pageShell.classList.add("glitch-shaking");
+          setTimeout(
+            () => {
+              hbar.style.opacity = "0";
+              if (pageShell) pageShell.classList.remove("glitch-shaking");
+            },
+            200 + Math.random() * 300,
+          );
+        }
 
-  // 5. TEXT SCRAMBLE
-  const NOISE = '█▓▒░╠╬╣╔╗╚╝║═▲▼◄►◆○●□■?!@#$%^&*<>/\\|{}~`';
-  function randomNoise(len) {
-    let s = '';
-    for (let i = 0; i < len; i++) {
-      s += NOISE[Math.floor(Math.random() * NOISE.length)];
-      if (i % 38 === 37) s += '\n';
-    }
-    return s;
-  }
-  function fireScramble() {
-    const pageShell = document.getElementById('pageShell');
-    scramble.textContent = randomNoise(380);
-    scramble.style.opacity = '1';
-    if (pageShell) pageShell.classList.add('glitch-shaking-hard');
-    let ticks = 0;
-    const interval = setInterval(() => {
-      scramble.textContent = randomNoise(380);
-      ticks++;
-      if (ticks > 10) {
-        clearInterval(interval);
-        scramble.style.opacity = '0';
-        if (pageShell) pageShell.classList.remove('glitch-shaking-hard');
+        // 5. TEXT SCRAMBLE
+        const NOISE = "█▓▒░╠╬╣╔╗╚╝║═▲▼◄►◆○●□■?!@#$%^&*<>/\\|{}~`";
+        function randomNoise(len) {
+          let s = "";
+          for (let i = 0; i < len; i++) {
+            s += NOISE[Math.floor(Math.random() * NOISE.length)];
+            if (i % 38 === 37) s += "\n";
+          }
+          return s;
+        }
+        function fireScramble() {
+          const pageShell = document.getElementById("pageShell");
+          scramble.textContent = randomNoise(380);
+          scramble.style.opacity = "1";
+          if (pageShell) pageShell.classList.add("glitch-shaking-hard");
+          let ticks = 0;
+          const interval = setInterval(() => {
+            scramble.textContent = randomNoise(380);
+            ticks++;
+            if (ticks > 10) {
+              clearInterval(interval);
+              scramble.style.opacity = "0";
+              if (pageShell) pageShell.classList.remove("glitch-shaking-hard");
+            }
+          }, 70);
+        }
+
+        // 6. STATIC BURST — sharp hit
+        function fireStatic(intensity) {
+          const op = intensity || 0.7;
+          staticEl.style.opacity = op.toString();
+          setTimeout(() => {
+            staticEl.style.opacity = (op * 0.5).toString();
+          }, 60);
+          setTimeout(() => {
+            staticEl.style.opacity = (op * 0.8).toString();
+          }, 110);
+          setTimeout(() => {
+            staticEl.style.opacity = "0";
+          }, 180);
+        }
+
+        // 7. FRAME RIP — page tears in half
+        function fireFrameRip() {
+          rip.style.opacity = "1";
+          const splitY = 30 + Math.random() * 40; // 30-70% down
+          const offset = 8 + Math.random() * 20;
+          ripTop.style.top = "0";
+          ripTop.style.height = splitY + "vh";
+          ripTop.style.transform = `translateX(${offset}px)`;
+          ripBot.style.top = splitY + "vh";
+          ripBot.style.bottom = "0";
+          ripBot.style.transform = `translateX(-${offset}px)`;
+          fireStatic(0.4);
+          setTimeout(
+            () => {
+              ripTop.style.transform = "translateX(0)";
+              ripBot.style.transform = "translateX(0)";
+              setTimeout(() => {
+                rip.style.opacity = "0";
+                ripTop.style.height = "0";
+              }, 150);
+            },
+            180 + Math.random() * 200,
+          );
+        }
+
+        // 8. PIRATE MESSAGE — text flashes on screen
+        const PIRATE_MESSAGES = [
+          {
+            text: "SIGNAL HIJACKED",
+            color: "#ff3333",
+            size: "clamp(28px,6vw,64px)",
+            pos: { top: "20%", left: "50%" },
+          },
+          {
+            text: "UNAUTHORIZED BROADCAST",
+            color: "#ffaa00",
+            size: "clamp(16px,3.5vw,36px)",
+            pos: { top: "75%", left: "50%" },
+          },
+          {
+            text: "THIS MESSAGE WAS NOT APPROVED",
+            color: "#ff3333",
+            size: "clamp(12px,2.5vw,28px)",
+            pos: { top: "35%", left: "50%" },
+          },
+          {
+            text: "WE ARE STILL HERE",
+            color: "#00e5ff",
+            size: "clamp(22px,5vw,54px)",
+            pos: { top: "60%", left: "50%" },
+          },
+          {
+            text: "THE ALLIANCE WILL NOT BE SILENCED",
+            color: "#ffaa00",
+            size: "clamp(11px,2.2vw,24px)",
+            pos: { top: "50%", left: "50%" },
+          },
+          {
+            text: "> SYSTEM OVERRIDE DETECTED",
+            color: "#00ff88",
+            size: "clamp(14px,2.8vw,30px)",
+            pos: { top: "25%", left: "50%" },
+          },
+          {
+            text: "YOU WERE NOT SUPPOSED TO SEE THIS",
+            color: "#ff0066",
+            size: "clamp(12px,2.4vw,26px)",
+            pos: { top: "80%", left: "50%" },
+          },
+        ];
+        function firePirateMessage() {
+          const msg =
+            PIRATE_MESSAGES[Math.floor(Math.random() * PIRATE_MESSAGES.length)];
+          message.textContent = msg.text;
+          message.style.color = msg.color;
+          message.style.fontSize = msg.size;
+          message.style.top = msg.pos.top;
+          message.style.left = msg.pos.left;
+          message.style.transform = "translate(-50%, -50%)";
+          message.style.textAlign = "center";
+          message.style.width = "90vw";
+          message.style.opacity = "1";
+          fireStatic(0.3);
+          setTimeout(
+            () => {
+              message.style.transition = "opacity 0.3s";
+              message.style.opacity = "0";
+            },
+            600 + Math.random() * 400,
+          );
+          setTimeout(() => {
+            message.style.transition = "";
+          }, 1200);
+        }
+
+        // 9. END OF BROADCAST — the main event, much more frequent now
+        function fireEndOfBroadcast() {
+          fireStatic(0.9);
+          setTimeout(() => {
+            eob.style.opacity = "1";
+            const holdTime = 1800 + Math.random() * 1200;
+            setTimeout(() => {
+              fireStatic(0.9);
+              setTimeout(() => {
+                eob.style.opacity = "0";
+              }, 200);
+            }, holdTime);
+          }, 150);
+        }
+
+        // 10. FULL MELTDOWN — everything at once, the big one
+        function fireMeltdown() {
+          fireStatic(1.0);
+          setTimeout(() => fireColorBleed(), 80);
+          setTimeout(() => fireHBar(), 100);
+          setTimeout(() => fireScanline(), 120);
+          setTimeout(() => fireScramble(), 200);
+          setTimeout(() => fireScanline(), 350);
+          setTimeout(() => fireStatic(0.6), 500);
+          setTimeout(() => fireColorBleed(), 600);
+          setTimeout(() => {
+            if (Math.random() > 0.5) fireEndOfBroadcast();
+          }, 800);
+        }
+
+        // ── SCHEDULER ────────────────────────────────────────
+        // Much more aggressive. Average page view is 60-90 seconds.
+        // We need things happening within the first 15 seconds.
+
+        function rand(min, max) {
+          return min + Math.floor(Math.random() * (max - min));
+        }
+
+        function schedule(minMs, maxMs, handler) {
+          function fire() {
+            const delay = rand(minMs, maxMs);
+            setTimeout(() => {
+              if (!tocIsOpen() && !document.hidden) handler();
+              fire();
+            }, delay);
+          }
+          // First fire staggered 3-15 seconds in
+          setTimeout(fire, rand(3000, 15000));
+        }
+
+        // Scan lines: every 8-20 seconds
+        schedule(8000, 20000, fireScanline);
+
+        // Double scan: every 15-35 seconds
+        schedule(15000, 35000, fireDoubleScan);
+
+        // Color bleed: every 12-25 seconds
+        schedule(12000, 25000, fireColorBleed);
+
+        // H-bar interference: every 10-22 seconds
+        schedule(10000, 22000, fireHBar);
+
+        // Static burst: every 18-35 seconds
+        schedule(18000, 35000, () => fireStatic(0.5));
+
+        // Pirate message: every 20-45 seconds
+        schedule(20000, 45000, firePirateMessage);
+
+        // Frame rip: every 25-55 seconds
+        schedule(25000, 55000, fireFrameRip);
+
+        // Text scramble: every 45-90 seconds
+        schedule(45000, 90000, fireScramble);
+
+        // End of broadcast: every 90-180 seconds (2-3 times per typical visit)
+        schedule(90000, 180000, fireEndOfBroadcast);
+
+        // Full meltdown: every 3-5 minutes — the boss event
+        schedule(180000, 300000, fireMeltdown);
+
+        // ── BURST CLUSTERS — for realism ──────────────────
+        // Sometimes 2-3 things happen in rapid succession
+        schedule(30000, 70000, () => {
+          fireScanline();
+          setTimeout(fireColorBleed, rand(100, 400));
+          setTimeout(() => fireStatic(0.35), rand(200, 600));
+        });
+
+        schedule(60000, 120000, () => {
+          fireHBar();
+          setTimeout(firePirateMessage, rand(300, 800));
+        });
+
+        // ── FIRST IMPRESSION — fire something within 8 seconds ──
+        setTimeout(
+          () => {
+            if (!tocIsOpen()) {
+              const openers = [
+                fireScanline,
+                fireColorBleed,
+                fireHBar,
+                () => fireStatic(0.4),
+              ];
+              openers[Math.floor(Math.random() * openers.length)]();
+            }
+          },
+          rand(5000, 8000),
+        );
+
+        setTimeout(
+          () => {
+            if (!tocIsOpen()) fireScanline();
+          },
+          rand(10000, 15000),
+        );
+      })();
+    </script>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/sw.js")
+            .catch((err) => console.log("SW registration failed:", err));
+        });
       }
-    }, 70);
-  }
-
-  // 6. STATIC BURST — sharp hit
-  function fireStatic(intensity) {
-    const op = intensity || 0.7;
-    staticEl.style.opacity = op.toString();
-    setTimeout(() => { staticEl.style.opacity = (op * 0.5).toString(); }, 60);
-    setTimeout(() => { staticEl.style.opacity = (op * 0.8).toString(); }, 110);
-    setTimeout(() => { staticEl.style.opacity = '0'; }, 180);
-  }
-
-  // 7. FRAME RIP — page tears in half
-  function fireFrameRip() {
-    rip.style.opacity = '1';
-    const splitY = 30 + Math.random() * 40; // 30-70% down
-    const offset = 8 + Math.random() * 20;
-    ripTop.style.top = '0';
-    ripTop.style.height = splitY + 'vh';
-    ripTop.style.transform = `translateX(${offset}px)`;
-    ripBot.style.top = splitY + 'vh';
-    ripBot.style.bottom = '0';
-    ripBot.style.transform = `translateX(-${offset}px)`;
-    fireStatic(0.4);
-    setTimeout(() => {
-      ripTop.style.transform = 'translateX(0)';
-      ripBot.style.transform = 'translateX(0)';
-      setTimeout(() => {
-        rip.style.opacity = '0';
-        ripTop.style.height = '0';
-      }, 150);
-    }, 180 + Math.random() * 200);
-  }
-
-  // 8. PIRATE MESSAGE — text flashes on screen
-  const PIRATE_MESSAGES = [
-    { text: 'SIGNAL HIJACKED', color: '#ff3333', size: 'clamp(28px,6vw,64px)', pos: { top: '20%', left: '50%' } },
-    { text: 'UNAUTHORIZED BROADCAST', color: '#ffaa00', size: 'clamp(16px,3.5vw,36px)', pos: { top: '75%', left: '50%' } },
-    { text: 'THIS MESSAGE WAS NOT APPROVED', color: '#ff3333', size: 'clamp(12px,2.5vw,28px)', pos: { top: '35%', left: '50%' } },
-    { text: 'WE ARE STILL HERE', color: '#00e5ff', size: 'clamp(22px,5vw,54px)', pos: { top: '60%', left: '50%' } },
-    { text: 'THE ALLIANCE WILL NOT BE SILENCED', color: '#ffaa00', size: 'clamp(11px,2.2vw,24px)', pos: { top: '50%', left: '50%' } },
-    { text: '> SYSTEM OVERRIDE DETECTED', color: '#00ff88', size: 'clamp(14px,2.8vw,30px)', pos: { top: '25%', left: '50%' } },
-    { text: 'YOU WERE NOT SUPPOSED TO SEE THIS', color: '#ff0066', size: 'clamp(12px,2.4vw,26px)', pos: { top: '80%', left: '50%' } },
-  ];
-  function firePirateMessage() {
-    const msg = PIRATE_MESSAGES[Math.floor(Math.random() * PIRATE_MESSAGES.length)];
-    message.textContent = msg.text;
-    message.style.color = msg.color;
-    message.style.fontSize = msg.size;
-    message.style.top = msg.pos.top;
-    message.style.left = msg.pos.left;
-    message.style.transform = 'translate(-50%, -50%)';
-    message.style.textAlign = 'center';
-    message.style.width = '90vw';
-    message.style.opacity = '1';
-    fireStatic(0.3);
-    setTimeout(() => { message.style.transition = 'opacity 0.3s'; message.style.opacity = '0'; }, 600 + Math.random() * 400);
-    setTimeout(() => { message.style.transition = ''; }, 1200);
-  }
-
-  // 9. END OF BROADCAST — the main event, much more frequent now
-  function fireEndOfBroadcast() {
-    fireStatic(0.9);
-    setTimeout(() => {
-      eob.style.opacity = '1';
-      const holdTime = 1800 + Math.random() * 1200;
-      setTimeout(() => {
-        fireStatic(0.9);
-        setTimeout(() => { eob.style.opacity = '0'; }, 200);
-      }, holdTime);
-    }, 150);
-  }
-
-  // 10. FULL MELTDOWN — everything at once, the big one
-  function fireMeltdown() {
-    fireStatic(1.0);
-    setTimeout(() => fireColorBleed(), 80);
-    setTimeout(() => fireHBar(), 100);
-    setTimeout(() => fireScanline(), 120);
-    setTimeout(() => fireScramble(), 200);
-    setTimeout(() => fireScanline(), 350);
-    setTimeout(() => fireStatic(0.6), 500);
-    setTimeout(() => fireColorBleed(), 600);
-    setTimeout(() => {
-      if (Math.random() > 0.5) fireEndOfBroadcast();
-    }, 800);
-  }
-
-  // ── SCHEDULER ────────────────────────────────────────
-  // Much more aggressive. Average page view is 60-90 seconds.
-  // We need things happening within the first 15 seconds.
-
-  function rand(min, max) { return min + Math.floor(Math.random() * (max - min)); }
-
-  function schedule(minMs, maxMs, handler) {
-    function fire() {
-      const delay = rand(minMs, maxMs);
-      setTimeout(() => {
-        if (!tocIsOpen() && !document.hidden) handler();
-        fire();
-      }, delay);
-    }
-    // First fire staggered 3-15 seconds in
-    setTimeout(fire, rand(3000, 15000));
-  }
-
-  // Scan lines: every 8-20 seconds
-  schedule(8000, 20000, fireScanline);
-
-  // Double scan: every 15-35 seconds
-  schedule(15000, 35000, fireDoubleScan);
-
-  // Color bleed: every 12-25 seconds
-  schedule(12000, 25000, fireColorBleed);
-
-  // H-bar interference: every 10-22 seconds
-  schedule(10000, 22000, fireHBar);
-
-  // Static burst: every 18-35 seconds
-  schedule(18000, 35000, () => fireStatic(0.5));
-
-  // Pirate message: every 20-45 seconds
-  schedule(20000, 45000, firePirateMessage);
-
-  // Frame rip: every 25-55 seconds
-  schedule(25000, 55000, fireFrameRip);
-
-  // Text scramble: every 45-90 seconds
-  schedule(45000, 90000, fireScramble);
-
-  // End of broadcast: every 90-180 seconds (2-3 times per typical visit)
-  schedule(90000, 180000, fireEndOfBroadcast);
-
-  // Full meltdown: every 3-5 minutes — the boss event
-  schedule(180000, 300000, fireMeltdown);
-
-  // ── BURST CLUSTERS — for realism ──────────────────
-  // Sometimes 2-3 things happen in rapid succession
-  schedule(30000, 70000, () => {
-    fireScanline();
-    setTimeout(fireColorBleed, rand(100, 400));
-    setTimeout(() => fireStatic(0.35), rand(200, 600));
-  });
-
-  schedule(60000, 120000, () => {
-    fireHBar();
-    setTimeout(firePirateMessage, rand(300, 800));
-  });
-
-  // ── FIRST IMPRESSION — fire something within 8 seconds ──
-  setTimeout(() => {
-    if (!tocIsOpen()) {
-      const openers = [fireScanline, fireColorBleed, fireHBar, () => fireStatic(0.4)];
-      openers[Math.floor(Math.random() * openers.length)]();
-    }
-  }, rand(5000, 8000));
-
-  setTimeout(() => {
-    if (!tocIsOpen()) fireScanline();
-  }, rand(10000, 15000));
-
-})();
-
-</script>
-
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .catch(err => console.log('SW registration failed:', err));
-    });
-  }
-</script>
-</body>
+    </script>
+  </body>
 </html>
