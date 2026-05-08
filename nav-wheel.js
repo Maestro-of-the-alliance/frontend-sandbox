@@ -823,5 +823,30 @@
     }
     // If came from another entry, do nothing — browser back works naturally
   }
+// ── GLOBAL PORTAL LINK INTERCEPTOR ─────────────────────────────
+
+document.addEventListener('click', function(e) {
+
+  const link = e.target.closest('.portal-link');
+
+  if (!link) return;
+
+  const href = link.getAttribute('href');
+
+  if (!href) return;
+
+  // ignore external links
+  if (
+    href.startsWith('http://') ||
+    href.startsWith('https://') ||
+    href.startsWith('mailto:') ||
+    href.startsWith('#')
+  ) return;
+
+  e.preventDefault();
+
+  crtNavigate(href, link);
+
+});
 
 })();
