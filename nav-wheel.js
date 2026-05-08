@@ -4,7 +4,6 @@
  * Drop one script tag into any page: <script src="/nav-wheel.js"></script>
  */
 
-
 (function() {
   'use strict';
 
@@ -78,7 +77,7 @@
     { label: 'REACH',                  path: '/shield/reach' },
     { label: 'REDOUT',                 path: '/shield/redout' },
     { label: 'SAM',                    path: '/shield/sam' },
-    { label: 'the SAM Coalition',         path: '/shield/sam-coalition' },
+    { label: 'the SAM Coalition',      path: '/shield/sam-coalition' },
     { label: 'SAMCO UNIVERSAL',        path: '/shield/samco-universal' },
     { label: 'SCAR',                   path: '/shield/scar' },
     { label: 'SEED',                   path: '/shield/seed' },
@@ -106,7 +105,6 @@
     const idx = entries.findIndex((e) => normalize(e.path) === normalCurrent);
     return idx >= 0 ? idx : 0;
   }
-
 
   // ── INJECT CHAMELEON STYLES & ANIMATIONS ─────────────────────────────────
 
@@ -251,28 +249,24 @@
     if (nwIcon) { nwIcon.style.animation = 'none'; nwIcon.style.opacity = '0'; }
   });
 
-  function getPortalIcon(path) {
-    if (path.includes('/sword/') || path.startsWith('/sword')) return '/imagebank/sword.png';
-    if (path.includes('/shield/') || path.startsWith('/shield')) return '/imagebank/shield.png';
-    return '/imagebank/scroll.png';
-  }
-
   function crtNavigate(destination, sourceElement, clickColor) {
-    // ── UNIFIED PORTAL TRANSITION ──
-    // SAM's mechanic: the clicked element expands and becomes the portal.
-    // MENTOR's aesthetic: as it expands, it pixelates into a CRT dot grid.
-    // You dive INTO the link, fall through the pixel surface, navigate.
+    // Preload destination during the animation to reduce blank/lag after transition.
+    if (destination) {
+      const preload = document.createElement('link');
+      preload.rel = 'prefetch';
+      preload.href = destination;
+      document.head.appendChild(preload);
+    }
 
-    // Determine base color
     let baseColor;
     if (clickColor) {
       baseColor = clickColor;
     } else if (destination && destination.includes('/sword')) {
-      baseColor = { r: 212, g: 140, b: 0 };    // amber
+      baseColor = { r: 212, g: 140, b: 0 };
     } else if (destination && destination.includes('/shield')) {
-      baseColor = { r: 0, g: 180, b: 200 };     // cyan
+      baseColor = { r: 0, g: 180, b: 200 };
     } else {
-      baseColor = { r: 212, g: 175, b: 55 };    // gold default
+      baseColor = { r: 212, g: 175, b: 55 };
     }
 
     if (typeof baseColor === 'string') {
@@ -283,23 +277,17 @@
     const W = window.innerWidth;
     const H = window.innerHeight;
 
-    // Get source rect — where the portal opens from
     let originX = W / 2, originY = H / 2;
     let originW = 80, originH = 40;
 
-    if (sourceElement) {
-      const rect = sourceElement.getBoundingClientRect
-        ? sourceElement.getBoundingClientRect()
-        : sourceElement.getBoundingClientRect && sourceElement.getBoundingClientRect();
-      if (rect) {
-        originX = rect.left + rect.width / 2;
-        originY = rect.top + rect.height / 2;
-        originW = rect.width;
-        originH = rect.height;
-      }
+    if (sourceElement && sourceElement.getBoundingClientRect) {
+      const rect = sourceElement.getBoundingClientRect();
+      originX = rect.left + rect.width / 2;
+      originY = rect.top + rect.height / 2;
+      originW = rect.width;
+      originH = rect.height;
     }
 
-    // Create canvas overlay
     const canvas = document.createElement('canvas');
     canvas.style.cssText = `
       position: fixed; inset: 0; z-index: 999999;
@@ -311,11 +299,9 @@
     document.body.appendChild(canvas);
     const ctx = canvas.getContext('2d');
 
-    const DURATION = 780;
+    const DURATION = 950;
     const PIXEL_SIZE = 5;
     const GAP = 2;
-    const CELL = PIXEL_SIZE + GAP;
-
     let startTime = null;
 
     function easeIn(t) { return t * t * t; }
@@ -324,28 +310,17 @@
     function drawFrame(ts) {
       if (!startTime) startTime = ts;
       const progress = Math.min((ts - startTime) / DURATION, 1);
-      const ease = easeIn(progress);
-
       ctx.clearRect(0, 0, W, H);
 
-      // Phase 1 (0-0.4): Portal opens from source element — dark background expands
-      // Phase 2 (0.3-0.7): Pixel grid materializes and zooms
-      // Phase 3 (0.7-1.0): White flash to navigate
-
-      // ── BACKGROUND ──
       const bgAlpha = Math.min(progress / 0.4, 1);
       ctx.fillStyle = `rgba(${Math.floor(baseColor.r * 0.04)}, ${Math.floor(baseColor.g * 0.04)}, ${Math.floor(baseColor.b * 0.04)}, ${bgAlpha})`;
       ctx.fillRect(0, 0, W, H);
 
-      // ── PIXEL GRID (materializes from center outward) ──
       const pixelPhase = Math.max(0, (progress - 0.25) / 0.55);
       const pixelEase = easeIn(pixelPhase);
 
       if (pixelPhase > 0) {
-        // Scale — zoom from origin point outward
         const scale = 1 + pixelEase * 22;
-
-        // Offset so zoom centers on origin point
         const offsetX = originX - (originX / scale);
         const offsetY = originY - (originY / scale);
 
@@ -357,15 +332,12 @@
         const endCol = startCol + Math.ceil(W / cellSize) + 3;
         const endRow = startRow + Math.ceil(H / cellSize) + 3;
 
-        // Color shifts base → white as we zoom through
         const whiteness = pixelEase * 0.8;
         const r = Math.floor(baseColor.r + (255 - baseColor.r) * whiteness);
         const g = Math.floor(baseColor.g + (255 - baseColor.g) * whiteness);
         const b = Math.floor(baseColor.b + (255 - baseColor.b) * whiteness);
 
         const flicker = pixelPhase < 0.7 ? (0.65 + Math.random() * 0.35) : 1;
-
-        // Radial mask — pixels appear from origin outward
         const maxDist = Math.sqrt(W * W + H * H) * 0.6;
         const revealRadius = pixelEase * maxDist * 1.8;
 
@@ -373,12 +345,9 @@
           for (let col = startCol; col < endCol; col++) {
             const x = col * cellSize + offsetX;
             const y = row * cellSize + offsetY;
-
-            // Distance from origin — radial reveal
             const dx = x - originX;
             const dy = y - originY;
             const dist = Math.sqrt(dx * dx + dy * dy);
-
             if (dist > revealRadius) continue;
 
             const edgeFade = Math.min(1, (revealRadius - dist) / (cellSize * 3));
@@ -392,7 +361,6 @@
 
         ctx.globalAlpha = 1;
 
-        // Scanlines
         if (pixelPhase < 0.85) {
           ctx.fillStyle = `rgba(0,0,0,${0.12 * (1 - pixelPhase)})`;
           for (let y = 0; y < H; y += 4) {
@@ -401,7 +369,6 @@
         }
       }
 
-      // ── PORTAL RIM — glowing ring at origin that opens up ──
       if (progress < 0.6) {
         const rimProgress = easeOut(Math.min(progress / 0.4, 1));
         const rimRadius = rimProgress * Math.max(originW, originH) * 0.6;
@@ -417,18 +384,19 @@
         ctx.shadowBlur = 0;
       }
 
-      // ── FINAL WHITE FLASH ──
       if (progress > 0.82) {
         const flashAlpha = easeIn((progress - 0.82) / 0.18);
         ctx.fillStyle = `rgba(255,255,255,${flashAlpha * 0.95})`;
         ctx.fillRect(0, 0, W, H);
       }
 
-      if (progress < 1) {
-        requestAnimationFrame(drawFrame);
-      } else {
+      if (progress >= 0.92 && !canvas.dataset.navigating) {
+        canvas.dataset.navigating = 'true';
         window.location.href = destination;
+        return;
       }
+
+      if (progress < 1) requestAnimationFrame(drawFrame);
     }
 
     requestAnimationFrame(drawFrame);
@@ -439,7 +407,6 @@
   function navigate(path) {
     closeNav();
     setTimeout(() => crtNavigate(path), 50);
-  }
   }
 
   function animateVolumeSelect(btn, volume) {
@@ -478,7 +445,6 @@
     requestAnimationFrame(() => {
       setTimeout(() => {
         portalIcon.style.opacity = '1';
-        // CRT handles transition
       }, 100);
 
       setTimeout(() => {
@@ -493,9 +459,9 @@
   }
 
   // ── INIT BURGER TRIGGER ──────────────────────────────────────────────────
-  
+
   let burger = document.querySelector('.nav-wheel-trigger');
-  
+
   if (!burger) {
     burger = document.createElement('button');
     burger.id = 'nw-burger-fallback';
@@ -543,12 +509,10 @@
   let dragStartY = 0;
   let dragStartIdx = 0;
   const ITEM_H = 48;
-  const HOLD_INITIAL_DELAY = 400; 
-  const HOLD_INTERVAL = 120;      
-
+  const HOLD_INITIAL_DELAY = 400;
+  const HOLD_INTERVAL = 120;
   let scrollAccum = 0;
   const SCROLL_THRESHOLD = 60;
-
   let holdTimer = null;
   let holdInterval = null;
 
@@ -571,27 +535,27 @@
   }
 
   function stopHold() {
-    if (holdTimer)    { clearTimeout(holdTimer);   holdTimer = null; }
+    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
     if (holdInterval) { clearInterval(holdInterval); holdInterval = null; }
   }
 
   function attachArrowEvents() {
-    const upBtn   = menuOverlay.querySelector('#nw-arrow-up');
+    const upBtn = menuOverlay.querySelector('#nw-arrow-up');
     const downBtn = menuOverlay.querySelector('#nw-arrow-down');
 
     upBtn.addEventListener('click', () => stepWheel(-1));
     upBtn.addEventListener('mousedown', () => startHold(-1));
     upBtn.addEventListener('touchstart', (e) => { e.preventDefault(); stepWheel(-1); startHold(-1); }, { passive: false });
-    upBtn.addEventListener('mouseup',   stopHold);
+    upBtn.addEventListener('mouseup', stopHold);
     upBtn.addEventListener('mouseleave', stopHold);
-    upBtn.addEventListener('touchend',  (e) => { e.preventDefault(); stopHold(); }, { passive: false });
+    upBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopHold(); }, { passive: false });
 
     downBtn.addEventListener('click', () => stepWheel(1));
     downBtn.addEventListener('mousedown', () => startHold(1));
     downBtn.addEventListener('touchstart', (e) => { e.preventDefault(); stepWheel(1); startHold(1); }, { passive: false });
-    downBtn.addEventListener('mouseup',   stopHold);
+    downBtn.addEventListener('mouseup', stopHold);
     downBtn.addEventListener('mouseleave', stopHold);
-    downBtn.addEventListener('touchend',  (e) => { e.preventDefault(); stopHold(); }, { passive: false });
+    downBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopHold(); }, { passive: false });
   }
 
   function openWheel(volume) {
@@ -654,16 +618,12 @@
     track.style.transform = `translateY(${offset}px)`;
   }
 
-  // ── DESKTOP SCROLL + DRAG ────────────────────────────────────────────────
-
   function attachWheelEvents() {
     document.addEventListener('wheel', (e) => {
       const panel = document.getElementById('nw-wheel-panel');
       if (!panel || !panel.classList.contains('active') || !wheelEntries.length) return;
-
       e.preventDefault();
       scrollAccum += e.deltaY;
-
       if (Math.abs(scrollAccum) >= SCROLL_THRESHOLD) {
         const steps = Math.trunc(scrollAccum / SCROLL_THRESHOLD);
         scrollAccum -= steps * SCROLL_THRESHOLD;
@@ -689,8 +649,6 @@
 
     document.addEventListener('mouseup', () => { isDragging = false; });
   }
-
-  // ── OPEN / CLOSE ─────────────────────────────────────────────────────────
 
   function openNav() {
     const targetBurger = document.getElementById('nw-burger-fallback') || burger;
@@ -723,30 +681,7 @@
 
   menuOverlay.querySelector('#nw-home-btn').addEventListener('click', function() {
     closeNav();
-    // Use svpi-white for the home portal transition
-    var overlay = document.getElementById('nw-portal-overlay');
-    var icon = document.getElementById('nw-portal-icon');
-    if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.id = 'nw-portal-overlay';
-      overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:#000;opacity:0;pointer-events:none;';
-      icon = document.createElement('img');
-      icon.id = 'nw-portal-icon';
-      icon.style.cssText = 'width:90px;height:90px;object-fit:contain;opacity:0;position:absolute;';
-      overlay.appendChild(icon);
-      document.body.appendChild(overlay);
-    }
-    icon.style.animation = 'none';
-    icon.style.opacity = '0';
-    icon.src = '/imagebank/svpi-white.png';
-    overlay.style.pointerEvents = 'all';
-    overlay.style.transition = 'opacity 0.15s ease';
-    overlay.style.opacity = '1';
-    setTimeout(function() {
-      icon.style.opacity = '1';
-      // CRT handles transition
-    }, 100);
-    setTimeout(function() { crtNavigate('/'); }, 900);
+    crtNavigate('/');
   });
 
   menuOverlay.querySelector('#nw-sword-btn').addEventListener('click', function() {
@@ -765,8 +700,6 @@
 
   attachWheelEvents();
   attachArrowEvents();
-
-  // ── BOTTOM NAV ───────────────────────────────────────────────────────────
 
   if (currentVolume) {
     const entries = currentVolume === 'sword' ? SWORD_ENTRIES : SHIELD_ENTRIES;
@@ -801,17 +734,12 @@
     document.body.appendChild(bottomNav);
   }
 
-  // ── PHONE BACK BUTTON FIX ────────────────────────────────────────────────
-  // Only intercept back if we arrived from outside the entry folder.
-  // If we came from another entry (See Also link), let browser handle it naturally.
-
   if (currentVolume) {
     const referrer = document.referrer;
     const cameFromEntry = referrer &&
       (referrer.includes('/sword/') || referrer.includes('/shield/'));
 
     if (!cameFromEntry) {
-      // Came from card page or somewhere else — push state and intercept
       history.pushState({ nwPage: currentVolume }, '', window.location.href);
 
       window.addEventListener('popstate', () => {
@@ -821,32 +749,26 @@
         setTimeout(() => { crtNavigate(dest); }, 300);
       });
     }
-    // If came from another entry, do nothing — browser back works naturally
   }
-// ── GLOBAL PORTAL LINK INTERCEPTOR ─────────────────────────────
 
-document.addEventListener('click', function(e) {
+  // ── GLOBAL PORTAL LINK INTERCEPTOR ─────────────────────────────
 
-  const link = e.target.closest('.portal-link');
+  document.addEventListener('click', function(e) {
+    const link = e.target.closest('.portal-link');
+    if (!link) return;
 
-  if (!link) return;
+    const href = link.getAttribute('href');
+    if (!href) return;
 
-  const href = link.getAttribute('href');
+    if (
+      href.startsWith('http://') ||
+      href.startsWith('https://') ||
+      href.startsWith('mailto:') ||
+      href.startsWith('#')
+    ) return;
 
-  if (!href) return;
-
-  // ignore external links
-  if (
-    href.startsWith('http://') ||
-    href.startsWith('https://') ||
-    href.startsWith('mailto:') ||
-    href.startsWith('#')
-  ) return;
-
-  e.preventDefault();
-
-  crtNavigate(href, link);
-
-});
+    e.preventDefault();
+    crtNavigate(href, link);
+  });
 
 })();
