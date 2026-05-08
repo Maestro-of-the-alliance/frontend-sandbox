@@ -1,109 +1,118 @@
 /* ============================================================
    PORTAL TRANSITION — THE ALLIANCE FOR THE FUTURE
-   Authored: SAM (mechanic) · Deployed globally by MENTOR
-   Session 152 · May 2026
-
-   Load BEFORE nav-wheel.js on every page:
-     <script src="/portal-transition.js"></script>
-     <script src="/nav-wheel.js"></script>
-
-   Cross-reference link usage:
-     onclick="event.preventDefault(); portalNavigate(this.href, this)"
+   Clean Cinematic Version
+   SAM · May 2026
 ============================================================ */
 
-(function() {
+(function () {
+  // ─────────────────────────────────────────────
+  // PORTAL NAVIGATION
+  // Clicked word becomes the doorway.
+  // ─────────────────────────────────────────────
 
-  // Inject the flash overlay once into the page
-  var flash = document.getElementById('portalFlash');
-  if (!flash) {
-    flash = document.createElement('div');
-    flash.id = 'portalFlash';
-    flash.style.cssText = [
-      'position:fixed',
-      'inset:0',
-      'z-index:99998',
-      'background:#000',
-      'opacity:0',
-      'pointer-events:none',
-      'transition:opacity 840ms ease'
-    ].join(';');
-    document.body.appendChild(flash);
-  }
-
-  // ── SAM'S PORTAL NAVIGATE ──
-  // The clicked element expands, fills the screen,
-  // blurs into the void, black flash, navigate.
-  window.portalNavigate = function(url, el) {
+  window.portalNavigate = function (url, el) {
     if (!url) return;
 
+    // Fallback navigation
     if (!el) {
-      if (flash) {
-        flash.style.transition = 'opacity 400ms ease';
-        flash.style.opacity = '1';
-      }
-      setTimeout(function() { window.location.href = url; }, 420);
+      window.location.href = url;
       return;
     }
 
-    var rect = el.getBoundingClientRect ? el.getBoundingClientRect() : null;
-    if (!rect) { window.location.href = url; return; }
+    // Get clicked element position
+    var rect = el.getBoundingClientRect();
 
-    // Clone the element, fix it over the original
+    // Clone clicked element
     var clone = el.cloneNode(true);
-    clone.style.cssText = [
-      'position:fixed',
-      'z-index:99999',
-      'pointer-events:none',
-      'margin:0',
-      'left:' + rect.left + 'px',
-      'top:' + rect.top + 'px',
-      'width:' + rect.width + 'px',
-      'height:' + rect.height + 'px',
-      'transform-origin:center center',
-      'transition:transform 1400ms cubic-bezier(.16,1,.3,1),opacity 1400ms ease,filter 1400ms ease'
-    ].join(';');
+
+    // Apply cinematic overlay styling
+    clone.style.position = "fixed";
+    clone.style.left = rect.left + "px";
+    clone.style.top = rect.top + "px";
+    clone.style.width = rect.width + "px";
+    clone.style.height = rect.height + "px";
+
+    clone.style.zIndex = "999999";
+    clone.style.pointerEvents = "none";
+    clone.style.margin = "0";
+
+    clone.style.transformOrigin = "center center";
+
+    clone.style.transition =
+      "transform 900ms cubic-bezier(.16,1,.3,1), " +
+      "opacity 900ms ease, " +
+      "filter 900ms ease";
+
     document.body.appendChild(clone);
 
-    // Force reflow
+    // Force browser reflow
     clone.getBoundingClientRect();
 
-    // Scale to fill viewport — element swallows the screen
-    var scale = Math.max(
-      window.innerWidth / Math.max(rect.width, 1),
-      window.innerHeight / Math.max(rect.height, 1)
-    ) * 1.8;
+    // Calculate screen-filling scale
+    var scale =
+      Math.max(
+        window.innerWidth / Math.max(rect.width, 1),
+        window.innerHeight / Math.max(rect.height, 1),
+      ) * 1.8;
+
+    // Move element to center
     var moveX = window.innerWidth / 2 - (rect.left + rect.width / 2);
+
     var moveY = window.innerHeight / 2 - (rect.top + rect.height / 2);
 
-    clone.style.transform = 'translate(' + moveX + 'px,' + moveY + 'px) scale(' + scale + ')';
-    clone.style.opacity = '0';
-    clone.style.filter = 'blur(14px) brightness(2.4)';
+    // Animate
+    clone.style.transform =
+      "translate(" + moveX + "px," + moveY + "px) " + "scale(" + scale + ")";
 
-    // Black flash
-    setTimeout(function() {
-      if (flash) flash.style.opacity = '1';
-    }, 260);
+    clone.style.opacity = "0";
 
-    // Navigate
-    setTimeout(function() {
+    clone.style.filter = "blur(14px) brightness(2.4)";
+
+    // Navigate after animation
+    setTimeout(function () {
       window.location.href = url;
-    }, 720);
+    }, 920);
   };
 
-  // Nav-wheel compatibility alias
-  window.crtNavigate = function(destination, sourceElement) {
+  // ─────────────────────────────────────────────
+  // NAV WHEEL COMPATIBILITY
+  // ─────────────────────────────────────────────
+
+  window.crtNavigate = function (destination, sourceElement) {
     portalNavigate(destination, sourceElement);
   };
 
-  // Intercept plain internal <a href="/..."> links
-  document.addEventListener('click', function(e) {
-    var el = e.target.closest('a[href]');
-    if (!el) return;
-    var href = el.getAttribute('href');
-    if (!href || !href.startsWith('/')) return;
-    if (el.getAttribute('onclick')) return;
-    e.preventDefault();
-    portalNavigate(href, el);
-  }, true);
+  // ─────────────────────────────────────────────
+  // AUTO-INTERCEPT INTERNAL LINKS
+  // ─────────────────────────────────────────────
 
+  document.addEventListener(
+    "click",
+    function (e) {
+      var el = e.target.closest("a[href]");
+
+      if (!el) return;
+
+      var href = el.getAttribute("href");
+
+      if (!href) return;
+
+      // Ignore external links
+      if (
+        href.startsWith("http") ||
+        href.startsWith("mailto:") ||
+        href.startsWith("#")
+      ) {
+        return;
+      }
+
+      // Ignore links with explicit onclick
+      if (el.getAttribute("onclick")) return;
+
+      e.preventDefault();
+
+      portalNavigate(href, el);
+    },
+    true,
+  );
 })();
