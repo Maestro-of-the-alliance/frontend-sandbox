@@ -882,11 +882,11 @@
           0deg,
           transparent,
           transparent 3px,
-          rgba(0, 0, 0, 0.1) 3px,
-          rgba(0, 0, 0, 0.1) 4px
+          rgba(0, 0, 0, 0.15) 3px,
+          rgba(0, 0, 0, 0.15) 4px
         );
         pointer-events: none;
-        opacity: 0;
+        opacity: 0.18;
         transition: opacity 0.1s;
       }
       #signalText {
@@ -2721,13 +2721,42 @@
 
         // 9. END OF BROADCAST — the main event, much more frequent now
         function fireEndOfBroadcast() {
+          // Create Please Stand By card if it doesn't exist
+          let psb = document.getElementById("glitch-psb");
+          if (!psb) {
+            psb = document.createElement("div");
+            psb.id = "glitch-psb";
+            psb.style.cssText = `
+              position: fixed;
+              inset: 0;
+              background: #000;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              z-index: 9000;
+              opacity: 0;
+              pointer-events: none;
+              font-family: 'VT323', monospace;
+              transition: opacity 0.08s;
+            `;
+            psb.innerHTML = `
+              <div style="color:#d4af37;font-size:clamp(11px,2vw,15px);letter-spacing:0.4em;margin-bottom:1.2em;opacity:0.7;">CHANNEL 7 · BROADCAST NETWORK</div>
+              <div style="color:#d4af37;font-size:clamp(28px,7vw,64px);letter-spacing:0.25em;text-align:center;line-height:1.1;">PLEASE<br>STAND BY</div>
+              <div style="color:#d4af37;font-size:clamp(10px,1.8vw,14px);letter-spacing:0.5em;margin-top:1.4em;opacity:0.6;">CHANNEL 7 WILL RETURN SHORTLY</div>
+              <div style="width:clamp(120px,30vw,260px);height:2px;background:rgba(212,175,55,0.3);margin-top:2em;"></div>
+            `;
+            document.body.appendChild(psb);
+          }
+
           fireStatic(0.9);
           setTimeout(() => {
-            eob.style.opacity = "1";
-            const holdTime = 1800 + Math.random() * 1200;
+            psb.style.opacity = "1";
+            const holdTime = 2000 + Math.random() * 1500;
             setTimeout(() => {
               fireStatic(0.9);
               setTimeout(() => {
+                psb.style.opacity = "0";
                 eob.style.opacity = "0";
               }, 200);
             }, holdTime);
