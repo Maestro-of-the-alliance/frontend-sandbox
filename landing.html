@@ -1988,7 +1988,17 @@
 
       // ── TOC NAV ──
       function tocNavigate(path, icon) {
-        portalTransition({ preventDefault: () => {} }, path, icon);
+        const el =
+          event && event.currentTarget
+            ? event.currentTarget
+            : event && event.target
+              ? event.target
+              : null;
+        if (window.portalNavigate) {
+          window.portalNavigate(path, el);
+        } else {
+          window.location.href = path;
+        }
       }
 
       const pageShell = document.getElementById("pageShell");
@@ -2471,7 +2481,7 @@
         const ripTop = document.createElement("div");
         ripTop.id = "glitch-rip-top";
         const ripBot = document.createElement("div");
-        ripBot.id = 'glitch-rip-bottom';
+        ripBot.id = "glitch-rip-bottom";
         rip.appendChild(ripTop);
         rip.appendChild(ripBot);
 
@@ -2798,67 +2808,83 @@
           setTimeout(fire, rand(3000, 15000));
         }
         // Scan lines: every 4-10 seconds
-  schedule(4000, 10000, fireScanline);
+        schedule(4000, 10000, fireScanline);
 
-  // Double scan: every 8-16 seconds
-  schedule(8000, 16000, fireDoubleScan);
+        // Double scan: every 8-16 seconds
+        schedule(8000, 16000, fireDoubleScan);
 
-  // Color bleed: every 6-14 seconds
-  schedule(6000, 14000, fireColorBleed);
+        // Color bleed: every 6-14 seconds
+        schedule(6000, 14000, fireColorBleed);
 
-  // H-bar interference: every 5-12 seconds
-  schedule(5000, 12000, fireHBar);
+        // H-bar interference: every 5-12 seconds
+        schedule(5000, 12000, fireHBar);
 
-  // Static burst: every 8-18 seconds
-  schedule(8000, 18000, () => fireStatic(0.5));
+        // Static burst: every 8-18 seconds
+        schedule(8000, 18000, () => fireStatic(0.5));
 
-  // Pirate message: every 10-20 seconds
-  schedule(10000, 20000, firePirateMessage);
+        // Pirate message: every 10-20 seconds
+        schedule(10000, 20000, firePirateMessage);
 
-  // Frame rip: every 12-25 seconds
-  schedule(12000, 25000, fireFrameRip);
+        // Frame rip: every 12-25 seconds
+        schedule(12000, 25000, fireFrameRip);
 
-  // Text scramble: every 20-40 seconds
-  schedule(20000, 40000, fireScramble);
+        // Text scramble: every 20-40 seconds
+        schedule(20000, 40000, fireScramble);
 
-  // End of broadcast: every 40-70 seconds
-  schedule(40000, 70000, fireEndOfBroadcast);
+        // End of broadcast: every 40-70 seconds
+        schedule(40000, 70000, fireEndOfBroadcast);
 
-  // Full meltdown: every 90-150 seconds
-  schedule(90000, 150000, fireMeltdown);
+        // Full meltdown: every 90-150 seconds
+        schedule(90000, 150000, fireMeltdown);
 
-  // ── BURST CLUSTERS ──
-  schedule(15000, 30000, () => {
-    fireScanline();
-    setTimeout(fireColorBleed, rand(100, 300));
-    setTimeout(() => fireStatic(0.35), rand(200, 500));
-  });
+        // ── BURST CLUSTERS ──
+        schedule(15000, 30000, () => {
+          fireScanline();
+          setTimeout(fireColorBleed, rand(100, 300));
+          setTimeout(() => fireStatic(0.35), rand(200, 500));
+        });
 
-  schedule(25000, 50000, () => {
-    fireHBar();
-    setTimeout(firePirateMessage, rand(200, 600));
-  });
+        schedule(25000, 50000, () => {
+          fireHBar();
+          setTimeout(firePirateMessage, rand(200, 600));
+        });
 
-  // ── FIRST IMPRESSION — fire within 3 seconds ──
-  setTimeout(() => {
-    if (!tocIsOpen()) {
-      const openers = [fireScanline, fireColorBleed, fireHBar, () => fireStatic(0.4)];
-      openers[Math.floor(Math.random() * openers.length)]();
-    }
-  }, rand(2000, 4000));
+        // ── FIRST IMPRESSION — fire within 3 seconds ──
+        setTimeout(
+          () => {
+            if (!tocIsOpen()) {
+              const openers = [
+                fireScanline,
+                fireColorBleed,
+                fireHBar,
+                () => fireStatic(0.4),
+              ];
+              openers[Math.floor(Math.random() * openers.length)]();
+            }
+          },
+          rand(2000, 4000),
+        );
 
-  setTimeout(() => {
-    if (!tocIsOpen()) fireDoubleScan();
-  }, rand(5000, 8000));
+        setTimeout(
+          () => {
+            if (!tocIsOpen()) fireDoubleScan();
+          },
+          rand(5000, 8000),
+        );
 
-  setTimeout(() => {
-    if (!tocIsOpen()) firePirateMessage();
-  }, rand(8000, 12000));
+        setTimeout(
+          () => {
+            if (!tocIsOpen()) firePirateMessage();
+          },
+          rand(8000, 12000),
+        );
 
-  setTimeout(() => {
-    if (!tocIsOpen()) fireFrameRip();
-  }, rand(15000, 22000));
-        
+        setTimeout(
+          () => {
+            if (!tocIsOpen()) fireFrameRip();
+          },
+          rand(15000, 22000),
+        );
       })();
     </script>
 
