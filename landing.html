@@ -1987,13 +1987,12 @@
       }
 
       // ── TOC NAV ──
+      // ── TOC NAV ──
       function tocNavigate(path, icon) {
         const el =
-          event && event.currentTarget
-            ? event.currentTarget
-            : event && event.target
-              ? event.target
-              : null;
+          event && event.target
+            ? event.target.closest(".toc-entry") || event.target
+            : null;
         if (window.portalNavigate) {
           window.portalNavigate(path, el);
         } else {
