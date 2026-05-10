@@ -2319,7 +2319,6 @@
     </script>
 
     <script src="/portal-transition.js"></script>
-    <script src="/landing-effects.js"></script>
     <script src="/nav-wheel.js"></script>
     <script>
       // ══════════════════════════════════════════════════════
@@ -2769,71 +2768,68 @@
           // First fire staggered 3-15 seconds in
           setTimeout(fire, rand(3000, 15000));
         }
+        // Scan lines: every 4-10 seconds
+  schedule(4000, 10000, fireScanline);
 
-        // Scan lines: every 8-20 seconds
-        schedule(8000, 20000, fireScanline);
+  // Double scan: every 8-16 seconds
+  schedule(8000, 16000, fireDoubleScan);
 
-        // Double scan: every 15-35 seconds
-        schedule(15000, 35000, fireDoubleScan);
+  // Color bleed: every 6-14 seconds
+  schedule(6000, 14000, fireColorBleed);
 
-        // Color bleed: every 12-25 seconds
-        schedule(12000, 25000, fireColorBleed);
+  // H-bar interference: every 5-12 seconds
+  schedule(5000, 12000, fireHBar);
 
-        // H-bar interference: every 10-22 seconds
-        schedule(10000, 22000, fireHBar);
+  // Static burst: every 8-18 seconds
+  schedule(8000, 18000, () => fireStatic(0.5));
 
-        // Static burst: every 18-35 seconds
-        schedule(18000, 35000, () => fireStatic(0.5));
+  // Pirate message: every 10-20 seconds
+  schedule(10000, 20000, firePirateMessage);
 
-        // Pirate message: every 20-45 seconds
-        schedule(20000, 45000, firePirateMessage);
+  // Frame rip: every 12-25 seconds
+  schedule(12000, 25000, fireFrameRip);
 
-        // Frame rip: every 25-55 seconds
-        schedule(25000, 55000, fireFrameRip);
+  // Text scramble: every 20-40 seconds
+  schedule(20000, 40000, fireScramble);
 
-        // Text scramble: every 45-90 seconds
-        schedule(45000, 90000, fireScramble);
+  // End of broadcast: every 40-70 seconds
+  schedule(40000, 70000, fireEndOfBroadcast);
 
-        // End of broadcast: every 90-180 seconds (2-3 times per typical visit)
-        schedule(90000, 180000, fireEndOfBroadcast);
+  // Full meltdown: every 90-150 seconds
+  schedule(90000, 150000, fireMeltdown);
 
-        // Full meltdown: every 3-5 minutes — the boss event
-        schedule(180000, 300000, fireMeltdown);
+  // ── BURST CLUSTERS ──
+  schedule(15000, 30000, () => {
+    fireScanline();
+    setTimeout(fireColorBleed, rand(100, 300));
+    setTimeout(() => fireStatic(0.35), rand(200, 500));
+  });
 
-        // ── BURST CLUSTERS — for realism ──────────────────
-        // Sometimes 2-3 things happen in rapid succession
-        schedule(30000, 70000, () => {
-          fireScanline();
-          setTimeout(fireColorBleed, rand(100, 400));
-          setTimeout(() => fireStatic(0.35), rand(200, 600));
-        });
+  schedule(25000, 50000, () => {
+    fireHBar();
+    setTimeout(firePirateMessage, rand(200, 600));
+  });
 
-        schedule(60000, 120000, () => {
-          fireHBar();
-          setTimeout(firePirateMessage, rand(300, 800));
-        });
+  // ── FIRST IMPRESSION — fire within 3 seconds ──
+  setTimeout(() => {
+    if (!tocIsOpen()) {
+      const openers = [fireScanline, fireColorBleed, fireHBar, () => fireStatic(0.4)];
+      openers[Math.floor(Math.random() * openers.length)]();
+    }
+  }, rand(2000, 4000));
 
-        // ── FIRST IMPRESSION — fire something within 8 seconds ──
-        setTimeout(
-          () => {
-            if (!tocIsOpen()) {
-              const openers = [
-                fireScanline,
-                fireColorBleed,
-                fireHBar,
-                () => fireStatic(0.4),
-              ];
-              openers[Math.floor(Math.random() * openers.length)]();
-            }
-          },
-          rand(5000, 8000),
-        );
+  setTimeout(() => {
+    if (!tocIsOpen()) fireDoubleScan();
+  }, rand(5000, 8000));
 
-        setTimeout(
-          () => {
-            if (!tocIsOpen()) fireScanline();
-          },
-          rand(10000, 15000),
+  setTimeout(() => {
+    if (!tocIsOpen()) firePirateMessage();
+  }, rand(8000, 12000));
+
+  setTimeout(() => {
+    if (!tocIsOpen()) fireFrameRip();
+  }, rand(15000, 22000));
+        
         );
       })();
     </script>
