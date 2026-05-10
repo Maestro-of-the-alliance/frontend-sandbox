@@ -35,7 +35,7 @@
 .rs-led-layer {
   position: absolute;
   inset: 0;
-  z-index: 9990;
+  z-index: 50;
   pointer-events: none;
   min-height: 100%;
   overflow: hidden;
@@ -259,7 +259,18 @@
         document.body.style.position = "relative";
       }
 
-      document.body.prepend(layer);
+      const host =
+  document.querySelector(".content") ||
+  document.querySelector(".content-body") ||
+  document.querySelector(".page") ||
+  document.querySelector("main") ||
+  document.body;
+
+if (getComputedStyle(host).position === "static") {
+  host.style.position = "relative";
+}
+
+host.prepend(layer);
     }
 
     layer.style.height =
