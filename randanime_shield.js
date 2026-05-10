@@ -3,14 +3,6 @@
    Random Animation + Randa Memory Layer
    THE ALLIANCE · SHIELD Volume
 
-   Purpose:
-   - make SHIELD feel alive
-   - silent future-noise
-   - randomized LEDs
-   - suppression flickers
-   - micro-shifts
-   - rare “did I just see that?” events
-
    Usage on SHIELD pages:
      <script src="/randanime_shield.js"></script>
      <script>
@@ -40,19 +32,17 @@
   };
 
   const css = `
-/* ============================================================
-   RANDANIME SHIELD CSS
-============================================================ */
-
 .rs-led-layer {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 9990;
   pointer-events: none;
+  min-height: 100%;
+  overflow: hidden;
 }
 
 .rs-led {
-  position: fixed;
+  position: absolute;
   width: var(--rs-size, 6px);
   height: var(--rs-size, 6px);
   border-radius: 50%;
@@ -64,46 +54,28 @@
   animation: rsBlink var(--rs-speed, 2s) var(--rs-delay, 0s) infinite;
 }
 
-.rs-led.square {
-  border-radius: 2px;
-}
-
-.rs-led.tiny {
-  --rs-size: 3px;
-}
-
-.rs-led.small {
-  --rs-size: 5px;
-}
-
-.rs-led.medium {
-  --rs-size: 8px;
-}
-
-.rs-led.big {
-  --rs-size: 11px;
-}
+.rs-led.square { border-radius: 2px; }
+.rs-led.tiny { --rs-size: 3px; }
+.rs-led.small { --rs-size: 5px; }
+.rs-led.medium { --rs-size: 8px; }
+.rs-led.big { --rs-size: 11px; }
 
 .rs-led.cyan {
   --rs-color: #00e5ff;
   --rs-glow: rgba(0,229,255,0.4);
 }
-
 .rs-led.red {
   --rs-color: #ff2a2a;
   --rs-glow: rgba(255,42,42,0.4);
 }
-
 .rs-led.amber {
   --rs-color: #ffb000;
   --rs-glow: rgba(255,176,0,0.4);
 }
-
 .rs-led.green {
   --rs-color: #39ff14;
   --rs-glow: rgba(57,255,20,0.35);
 }
-
 .rs-led.white {
   --rs-color: #e8f8ff;
   --rs-glow: rgba(232,248,255,0.35);
@@ -277,26 +249,37 @@
 
   function makeLayer() {
     let layer = document.getElementById("rsLedLayer");
+
     if (!layer) {
       layer = document.createElement("div");
       layer.id = "rsLedLayer";
       layer.className = "rs-led-layer";
-      document.body.appendChild(layer);
+
+      if (getComputedStyle(document.body).position === "static") {
+        document.body.style.position = "relative";
+      }
+
+      document.body.prepend(layer);
     }
+
+    layer.style.height =
+      Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) + "px";
+
     return layer;
   }
 
   function spawnLEDs() {
     const layer = makeLayer();
+    layer.innerHTML = "";
+
     const count = R.int(3, 14);
     const colors = ["cyan", "red", "amber", "green", "white"];
     const sizes = ["tiny", "small", "medium", "big"];
     const shapes = ["", "square"];
-    const edges = ["top", "right", "bottom", "left"];
 
     for (let i = 0; i < count; i++) {
       const led = document.createElement("div");
-      const edge = R.pick(edges);
+
       const size = R.pick(sizes);
       const color = R.pick(colors);
       const shape = R.pick(shapes);
@@ -309,26 +292,27 @@
       led.style.setProperty("--rs-speed", R.between(0.6, 5.8).toFixed(2) + "s");
       led.style.setProperty("--rs-delay", R.between(0, 3).toFixed(2) + "s");
 
-      const offset = R.int(3, 96);
+      const edge = R.pick(["top", "right", "bottom", "left"]);
+      const along = R.int(3, 97);
 
       if (edge === "top") {
-        led.style.top = R.int(5, 18) + "px";
-        led.style.left = offset + "vw";
+        led.style.top = R.int(6, 26) + "px";
+        led.style.left = along + "%";
       }
 
       if (edge === "bottom") {
-        led.style.bottom = R.int(5, 24) + "px";
-        led.style.left = offset + "vw";
+        led.style.bottom = R.int(6, 26) + "px";
+        led.style.left = along + "%";
       }
 
       if (edge === "left") {
-        led.style.left = R.int(5, 18) + "px";
-        led.style.top = offset + "vh";
+        led.style.left = R.int(6, 22) + "px";
+        led.style.top = along + "%";
       }
 
       if (edge === "right") {
-        led.style.right = R.int(5, 18) + "px";
-        led.style.top = offset + "vh";
+        led.style.right = R.int(6, 22) + "px";
+        led.style.top = along + "%";
       }
 
       layer.appendChild(led);
@@ -441,16 +425,19 @@
 
     if (!el) return;
 
-    const effects = ["rs-word-lock", "rs-word-glitch"];
-    const chosen = R.pick(effects);
+    const chosen = R.pick(["rs-word-lock", "rs-word-glitch"]);
 
     el.classList.add(chosen);
 
     setTimeout(() => {
       el.classList.remove(chosen);
+
       if (R.chance(45)) {
         el.classList.add("rs-system-breathe");
-        el.style.setProperty("--rs-breathe-speed", R.between(6, 14).toFixed(1) + "s");
+        el.style.setProperty(
+          "--rs-breathe-speed",
+          R.between(6, 14).toFixed(1) + "s"
+        );
       }
     }, 1200);
   }
@@ -481,13 +468,16 @@
   function scheduleAmbient() {
     function loop() {
       const delay = R.int(3500, 18000);
+
       setTimeout(() => {
         if (!document.hidden) {
           if (R.chance(70)) rareEvent();
+
           if (R.chance(18)) {
             setTimeout(rareEvent, R.int(250, 1000));
           }
         }
+
         loop();
       }, delay);
     }
@@ -503,6 +493,9 @@
     spawnLEDs();
     titleEffect(elementId);
     scheduleAmbient();
+
+    window.addEventListener("resize", makeLayer);
+    window.addEventListener("load", makeLayer);
 
     return {
       leds: document.querySelectorAll(".rs-led").length,
