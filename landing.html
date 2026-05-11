@@ -1989,15 +1989,14 @@
       // ── TOC NAV ──
       // ── TOC NAV ──
       function tocNavigate(path, icon) {
-        const el =
-          event && event.target
-            ? event.target.closest(".toc-entry") || event.target
-            : null;
-        if (window.portalNavigate) {
-          window.portalNavigate(path, el);
-        } else {
-          window.location.href = path;
+        const overlay = document.getElementById("tocOverlay");
+        if (overlay) {
+          overlay.style.transition = "opacity 0.4s ease";
+          overlay.style.opacity = "0";
         }
+        setTimeout(() => {
+          portalTransition({ preventDefault: () => {} }, path, icon);
+        }, 350);
       }
 
       const pageShell = document.getElementById("pageShell");
