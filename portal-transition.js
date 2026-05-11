@@ -13,8 +13,26 @@
   window.portalNavigate = function (url, el) {
     if (!url) return;
 
-    // Fallback navigation
+    // If no element passed, use the page entry title as the portal
     if (!el) {
+      el =
+        document.querySelector(".entry-title") ||
+        document.querySelector("h1") ||
+        document.querySelector(".title") ||
+        null;
+    }
+
+    // Hard fallback if still nothing
+    if (!el) {
+      window.location.href = url;
+      return;
+    }
+
+    // Get clicked element position
+    var rect = el.getBoundingClientRect();
+
+    // Skip if element has no size (hidden)
+    if (rect.width === 0 && rect.height === 0) {
       window.location.href = url;
       return;
     }
