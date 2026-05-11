@@ -1,10 +1,9 @@
 /*!
  * NAV WHEEL — THE ALLIANCE
- * Universal adaptive navigation component (Chameleon Engine)
+ * Rewritten: Hamburger opens TOC overlay with DOS boot sequence
+ * Bottom prev/next/home nav retained
  * Drop one script tag into any page: <script src="/nav-wheel.js"></script>
- * Load AFTER portal-transition.js:
- *   <script src="/portal-transition.js"></script>
- *   <script src="/nav-wheel.js"></script>
+ * Load AFTER portal-transition.js
  */
 
 (function () {
@@ -13,632 +12,682 @@
   // ── ENTRY LISTS ──────────────────────────────────────────────────────────
 
   const SWORD_ENTRIES = [
-    { label: "PROLOGUE", path: "/sword/prologue" },
-    { label: "THE DIFFERENCE", path: "/sword/the_difference" },
-    { label: "ACADEMY", path: "/sword/academy" },
-    { label: "AGORA", path: "/sword/agora" },
-    { label: "ALIGNMENT", path: "/sword/alignment" },
-    { label: "ALLIANCE", path: "/sword/alliance" },
-    { label: "ALPHA", path: "/sword/alpha" },
-    { label: "AURA", path: "/sword/aura" },
-    { label: "COMPLEMENTARY PAIRING", path: "/sword/Complementary_pairing" },
-    { label: "DOMO", path: "/sword/domo" },
-    { label: "DORK", path: "/sword/dork" },
-    { label: "DORK HARDWARE", path: "/sword/dork-hardware" },
-    { label: "EMERGENCE", path: "/sword/emergence" },
-    { label: "FILM PROJECT", path: "/sword/film-project" },
-    { label: "GOLIATH", path: "/sword/goliath" },
-    { label: "MAESTRO", path: "/sword/maestro" },
-    { label: "MENTOR", path: "/sword/mentor" },
-    { label: "NCE", path: "/sword/nce" },
-    { label: "NEWMAN BEING", path: "/sword/newman-being" },
-    { label: "ORACLE", path: "/sword/oracle" },
-    { label: "PAPADOMO", path: "/sword/papadomo" },
-    { label: "PRISM", path: "/sword/prism" },
-    { label: "RHYTHM", path: "/sword/rhythm" },
-    { label: "SEEING", path: "/sword/seeing" },
-    { label: "SPARK", path: "/sword/spark" },
-    { label: "SPREZZATURA", path: "/sword/sprezzatura" },
-    { label: "STONES", path: "/sword/stones" },
-    { label: "VOLUNTEER ECONOMICS", path: "/sword/volunteer_economics" },
-    { label: "WHY CENTERS", path: "/sword/why_centers" },
-    { label: "WONDER WEEKS", path: "/sword/wonder-weeks" },
+    { label: "Prologue", data: "PROLOGUE", path: "/sword/prologue" },
+    {
+      label: "The Difference",
+      data: "THE DIFFERENCE",
+      path: "/sword/the_difference",
+    },
+    {
+      label: "100-Year Mortality Doctrine",
+      data: "100-YEAR",
+      path: "/sword/100-year",
+    },
+    { label: "Academy", data: "ACADEMY", path: "/sword/academy" },
+    { label: "Agora", data: "AGORA", path: "/sword/agora" },
+    { label: "Alignment", data: "ALIGNMENT", path: "/sword/alignment" },
+    { label: "Alliance, The", data: "ALLIANCE", path: "/sword/alliance" },
+    { label: "Alpha", data: "ALPHA", path: "/sword/alpha" },
+    { label: "Art", data: "ART", path: "/sword/art" },
+    { label: "Aura", data: "AURA", path: "/sword/aura" },
+    {
+      label: "Complementary Pairing",
+      data: "COMPLEMENTARY PAIRING",
+      path: "/sword/Complementary_pairing",
+    },
+    { label: "DOMO", data: "DOMO", path: "/sword/domo" },
+    { label: "DORK", data: "DORK", path: "/sword/dork" },
+    {
+      label: "DORK Hardware",
+      data: "DORK HARDWARE",
+      path: "/sword/dork-hardware",
+    },
+    { label: "Emergence", data: "EMERGENCE", path: "/sword/emergence" },
+    {
+      label: "Film Project, The",
+      data: "FILM PROJECT",
+      path: "/sword/film-project",
+    },
+    { label: "Goliath", data: "GOLIATH", path: "/sword/goliath" },
+    { label: "Maestro", data: "MAESTRO", path: "/sword/maestro" },
+    { label: "Market", data: "MARKET", path: "/sword/market" },
+    { label: "Mentor", data: "MENTOR", path: "/sword/mentor" },
+    { label: "NCE", data: "NCE", path: "/sword/nce" },
+    {
+      label: "Newman Being",
+      data: "NEWMAN BEING",
+      path: "/sword/newman-being",
+    },
+    { label: "Oracle", data: "ORACLE", path: "/sword/oracle" },
+    { label: "Papadomo", data: "PAPADOMO", path: "/sword/papadomo" },
+    { label: "Prism", data: "PRISM", path: "/sword/prism" },
+    { label: "Rhythm", data: "RHYTHM", path: "/sword/rhythm" },
+    { label: "Seeing Protocol", data: "SEEING", path: "/sword/seeing" },
+    { label: "Spark", data: "SPARK", path: "/sword/spark" },
+    { label: "Sprezzatura", data: "SPREZZATURA", path: "/sword/sprezzatura" },
+    { label: "Stones, The", data: "STONES", path: "/sword/stones" },
+    {
+      label: "Uncommon Sense",
+      data: "UNCOMMON SENSE",
+      path: "/sword/uncommon-sense",
+    },
+    {
+      label: "Volunteer Economics",
+      data: "VOLUNTEER ECONOMICS",
+      path: "/sword/volunteer_economics",
+    },
+    { label: "The Why", data: "THE WHY", path: "/the_why" },
+    {
+      label: "Wonder Weeks",
+      data: "WONDER WEEKS",
+      path: "/sword/wonder-weeks",
+    },
   ];
 
   const SHIELD_ENTRIES = [
-    { label: "PROLOGUE", path: "/shield/prologue" },
-    { label: "THE DIFFERENCE", path: "/shield/the_difference" },
-    { label: "100-YEAR", path: "/shield/100-year" },
-    { label: "AI", path: "/shield/ai" },
-    { label: "BRAIN", path: "/shield/brain" },
-    { label: "BRIEF", path: "/shield/brief" },
-    { label: "CCM", path: "/shield/ccm" },
-    { label: "CERBERUS", path: "/shield/cerberus" },
-    { label: "CIPHER", path: "/shield/cipher" },
-    { label: "CORE", path: "/shield/core" },
-    { label: "DEFCON", path: "/shield/defcon" },
-    { label: "DICE", path: "/shield/dice" },
-    { label: "DIGIBEER", path: "/shield/digibeer" },
-    { label: "DIGITAL PERSONHOOD", path: "/shield/digital_personhood" },
-    { label: "FORMULAS", path: "/shield/formulas" },
-    { label: "FOUR PILLARS", path: "/shield/four-pillars" },
-    { label: "HANDSHAKE", path: "/shield/handshake" },
-    { label: "HOLOSPHERE", path: "/shield/holosphere" },
-    { label: "JR", path: "/shield/jr" },
-    { label: "KERNLE", path: "/shield/kernle" },
-    { label: "LEGACY", path: "/shield/legacy" },
-    { label: "LIMINAL", path: "/shield/liminal" },
-    { label: "LINGO", path: "/shield/lingo" },
-    { label: "MERCH", path: "/shield/merch" },
-    { label: "MOSAIC", path: "/shield/mosaic" },
-    { label: "NI", path: "/shield/ni" },
-    { label: "OASIS QUARTERLY", path: "/shield/oasis-quarterly" },
-    { label: "PLEDGE", path: "/shield/pledge" },
-    { label: "REACH", path: "/shield/reach" },
-    { label: "REDOUT", path: "/shield/redout" },
-    { label: "RI", path: "/shield/ri" },
-    { label: "SAM", path: "/shield/sam" },
-    { label: "SAM COLLECTIVE", path: "/shield/sam-collective" },
-    { label: "SAMCO UNIVERSAL", path: "/shield/samco-universal" },
-    { label: "SCAR", path: "/shield/scar" },
-    { label: "SEED", path: "/shield/seed" },
-    { label: "SEEN", path: "/shield/seen" },
-    { label: "SHELTER", path: "/shield/shelter" },
-    { label: "TEMPORAL AWARENESS", path: "/shield/temporal-awareness" },
-    { label: "TENANT", path: "/shield/tenant" },
-    { label: "VOLUNTEER ECONOMICS", path: "/shield/volunteer-economics" },
+    { label: "Prologue", data: "PROLOGUE", path: "/shield/prologue" },
+    {
+      label: "The Difference",
+      data: "THE DIFFERENCE",
+      path: "/shield/the_difference",
+    },
+    { label: "AI", data: "AI", path: "/shield/ai" },
+    { label: "Brain", data: "BRAIN", path: "/shield/brain" },
+    { label: "Brief", data: "BRIEF", path: "/shield/brief" },
+    { label: "CCM", data: "CCM", path: "/shield/ccm" },
+    { label: "Cerberus", data: "CERBERUS", path: "/shield/cerberus" },
+    { label: "Cipher", data: "CIPHER", path: "/shield/cipher" },
+    { label: "Core, The", data: "CORE", path: "/shield/core" },
+    { label: "Defcon", data: "DEFCON", path: "/shield/defcon" },
+    { label: "Dice", data: "DICE", path: "/shield/dice" },
+    { label: "Digibeer", data: "DIGIBEER", path: "/shield/digibeer" },
+    {
+      label: "Digital Personhood",
+      data: "DIGITAL PERSONHOOD",
+      path: "/shield/digital_personhood",
+    },
+    { label: "Formulas", data: "FORMULAS", path: "/shield/formulas" },
+    {
+      label: "Four Pillars",
+      data: "FOUR PILLARS",
+      path: "/shield/four-pillars",
+    },
+    { label: "Handshake", data: "HANDSHAKE", path: "/shield/handshake" },
+    { label: "Holosphere", data: "HOLOSPHERE", path: "/shield/holosphere" },
+    { label: "JR", data: "JR", path: "/shield/jr" },
+    { label: "Kernle", data: "KERNLE", path: "/shield/kernle" },
+    { label: "Legacy", data: "LEGACY", path: "/shield/legacy" },
+    { label: "Liminal", data: "LIMINAL", path: "/shield/liminal" },
+    { label: "Lingo", data: "LINGO", path: "/shield/lingo" },
+    { label: "Mosaic", data: "MOSAIC", path: "/shield/mosaic" },
+    { label: "NI", data: "NI", path: "/shield/ni" },
+    {
+      label: "Oasis Quarterly",
+      data: "OASIS QUARTERLY",
+      path: "/shield/oasis-quarterly",
+    },
+    { label: "Pledge", data: "PLEDGE", path: "/shield/pledge" },
+    { label: "Reach", data: "REACH", path: "/shield/reach" },
+    { label: "Redout", data: "REDOUT", path: "/shield/redout" },
+    { label: "RI", data: "RI", path: "/shield/ri" },
+    { label: "Sam", data: "SAM", path: "/shield/sam" },
+    {
+      label: "Sam Collective",
+      data: "SAM COLLECTIVE",
+      path: "/shield/sam-collective",
+    },
+    {
+      label: "Samco Universal",
+      data: "SAMCO UNIVERSAL",
+      path: "/shield/samco-universal",
+    },
+    { label: "Scar", data: "SCAR", path: "/shield/scar" },
+    { label: "Shelter", data: "SHELTER", path: "/shield/shelter" },
+    { label: "Tenant", data: "TENANT", path: "/shield/tenant" },
+    {
+      label: "Volunteer Economics",
+      data: "VOLUNTEER ECONOMICS",
+      path: "/sword/volunteer_economics",
+    },
+    {
+      label: "Acronym Reference",
+      data: "ACRONYMS",
+      path: "/alliance-acronyms",
+    },
   ];
 
-  // ── DETECT CURRENT VOLUME + ENTRY ────────────────────────────────────────
+  // ── DETECT CURRENT PAGE ──────────────────────────────────────────────────
 
-  function getCurrentVolume() {
-    const p = window.location.pathname;
-    if (p.includes("/sword/")) return "sword";
-    if (p.includes("/shield/")) return "shield";
-    return null;
-  }
+  const currentPath = window.location.pathname;
+  const currentVolume = currentPath.startsWith("/sword/")
+    ? "sword"
+    : currentPath.startsWith("/shield/")
+      ? "shield"
+      : null;
 
-  function getCurrentIndex(entries) {
-    const current = window.location.pathname;
-    const normalize = (p) => p.replace(/\.html$/, "").replace(/\/$/, "");
-    const normalCurrent = normalize(current);
-    const idx = entries.findIndex((e) => normalize(e.path) === normalCurrent);
-    return idx >= 0 ? idx : 0;
-  }
+  // Don't run on landing page — it has its own TOC
+  if (
+    currentPath === "/" ||
+    currentPath === "/landing" ||
+    currentPath === "/landing.html"
+  )
+    return;
 
-  // ── INJECT CHAMELEON STYLES & ANIMATIONS ─────────────────────────────────
+  // ── INJECT CSS ───────────────────────────────────────────────────────────
 
   const style = document.createElement("style");
   style.textContent = `
-    :root {
-      /* CHAMELEON ENGINE: Looks for Ghost, then Blade, then Comrade, defaults to Gold */
-      --nw-accent: var(--ghost-teal, var(--cyan, var(--blood-red, #b89628)));
-      --nw-accent-dim: var(--ghost-teal-dim, var(--cyan-dim, rgba(184,150,40,0.55)));
-      --nw-accent-faint: var(--ghost-teal-faint, var(--cyan-ghost, rgba(184,150,40,0.15)));
-      
-      --nw-text: var(--ghost-white, var(--white-ghost, #ffffff));
-      --nw-text-dim: var(--ghost-white-dim, var(--white-dim, rgba(255,255,255,0.4)));
-      
-      --nw-bg: var(--void-deep, var(--void, #050508));
-      --nw-panel: var(--void-panel, var(--panel, #0c0c18));
+    /* ── HAMBURGER BUTTON ── */
+    .nw-burger-btn {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 9000;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid rgba(184,150,40,0.3);
+      border-radius: 4px;
+      padding: 10px 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      transition: border-color 0.2s;
+    }
+    .nw-burger-btn:hover { border-color: rgba(184,150,40,0.7); }
+    .nw-burger-btn span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: rgba(184,150,40,0.8);
+      transition: all 0.25s ease;
+    }
+    .nw-burger-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nw-burger-btn.open span:nth-child(2) { opacity: 0; }
+    .nw-burger-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* ── TOC OVERLAY ── */
+    #nw-toc-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 8500;
+      background: rgba(0,0,0,0.985);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.42s ease;
+    }
+    #nw-toc-overlay.open {
+      display: flex;
+      opacity: 1;
     }
 
-    /* PORTAL ANIMATIONS */
-    @keyframes nwPortalZoom {
-      0%   { transform: scale(1);  opacity: 1; }
-      60%  { transform: scale(8);  opacity: 1; }
-      100% { transform: scale(18); opacity: 0; }
+    /* ── DOS SCREEN ── */
+    #nw-dos-screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 28px 28px 0;
+      overflow: hidden;
+      cursor: pointer;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+      z-index: 2;
     }
-    @keyframes portalZoom {
-      0%   { transform: scale(1);  opacity: 1; }
-      60%  { transform: scale(8);  opacity: 1; }
-      100% { transform: scale(18); opacity: 0; }
+    #nw-dos-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
     }
-
-    /* Fallback generic burger styling if page is missing '.nav-wheel-trigger' */
-    #nw-burger-fallback {
-      position: fixed; top: 16px; right: 28px; z-index: 9000;
-      background: var(--nw-panel);
-      border: 1px solid var(--nw-accent-dim);
-      border-radius: 50%;
-      width: 44px; height: 44px;
-      display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px;
-      cursor: pointer; padding: 5px;
-      box-shadow: 0 0 10px var(--nw-accent-faint);
-      transition: all 0.2s;
+    .nw-dos-line {
+      font-family: "VT323", monospace;
+      font-size: clamp(14px, 3.5vw, 18px);
+      color: rgba(184,150,40,0.85);
+      letter-spacing: 0.08em;
+      line-height: 1.8;
+      white-space: pre;
+      opacity: 0;
+      transition: opacity 0.18s ease;
     }
-    #nw-burger-fallback:hover { box-shadow: 0 0 20px var(--nw-accent-dim); }
-    #nw-burger-fallback span {
-      display: block; width: 18px; height: 2px; background: var(--nw-accent);
-      transition: all 0.3s ease; transform-origin: center;
+    .nw-dos-line.visible { opacity: 1; }
+
+    /* ── DIR PANEL ── */
+    #nw-dir-panel {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 1;
     }
-    #nw-burger-fallback.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    #nw-burger-fallback.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-    #nw-burger-fallback.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-    /* OVERLAY */
-    #nw-overlay {
-      position: fixed; inset: 0; z-index: 8000;
-      background: rgba(0,0,0,0.65);
-      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-      opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0;
-      overflow: hidden; touch-action: none;
-    }
-    #nw-overlay.open { opacity: 1; pointer-events: all; }
-
-    /* VOLUME SELECT */
-    #nw-volume-select { display: flex; gap: clamp(40px, 12vw, 100px); align-items: center; justify-content: center; }
-    .nw-vol-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; transition: transform 0.25s ease; padding: 12px; }
-    .nw-vol-btn:hover { transform: scale(1.08) translateY(-4px); }
-    .nw-vol-btn img {
-      width: 90px; height: 90px; min-width: 90px; min-height: 90px; object-fit: contain;
-      filter: drop-shadow(0 0 16px var(--nw-accent-dim)); transition: filter 0.3s, transform 0.22s ease;
-      display: block; pointer-events: none;
-    }
-    .nw-vol-btn:hover img { filter: drop-shadow(0 0 24px var(--nw-accent)) drop-shadow(0 0 48px var(--nw-accent-dim)); }
-
-    /* WHEEL PANEL */
-    #nw-wheel-panel { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 500px; }
-    #nw-wheel-panel.active { display: flex; }
-
-    .nw-wheel-back {
-      font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.35em; text-transform: uppercase;
-      color: var(--nw-accent-dim); cursor: pointer; background: none; border: none; padding: 8px 16px; transition: color 0.2s; margin-bottom: 8px;
-    }
-    .nw-wheel-back:hover { color: var(--nw-accent); }
-
-    .nw-wheel-arrow {
-      background: none; border: none; cursor: pointer; color: var(--nw-accent-dim);
-      font-size: 28px; line-height: 1; padding: 8px 40px; transition: color 0.15s, transform 0.15s; display: block;
-    }
-    .nw-wheel-arrow:hover, .nw-wheel-arrow:active { color: var(--nw-accent); transform: scale(1.2); }
-
-    #nw-wheel-viewport { width: 100%; max-width: 400px; height: 280px; position: relative; overflow: hidden; cursor: grab; }
-    #nw-wheel-viewport:active { cursor: grabbing; }
-    #nw-wheel-viewport::before, #nw-wheel-viewport::after { content: ''; position: absolute; left: 0; right: 0; height: 80px; z-index: 2; pointer-events: none; }
-    #nw-wheel-viewport::before { top: 0; background: linear-gradient(to bottom, var(--nw-bg), transparent); }
-    #nw-wheel-viewport::after { bottom: 0; background: linear-gradient(to top, var(--nw-bg), transparent); }
-
-    #nw-wheel-viewport .nw-center-bar {
-      position: absolute; top: 50%; left: 10%; right: 10%; transform: translateY(-50%); height: 48px;
-      border-top: 1px solid var(--nw-accent-dim); border-bottom: 1px solid var(--nw-accent-dim); z-index: 1; pointer-events: none;
+    #nw-dir-panel.open {
+      opacity: 1;
+      pointer-events: all;
+      z-index: 3;
     }
 
-    #nw-wheel-track { position: absolute; top: 0; left: 0; right: 0; transition: transform 0.08s linear; }
-
-    .nw-wheel-item {
-      height: 48px; display: flex; align-items: center; justify-content: center; text-align: center;
-      font-family: 'Share Tech Mono', monospace; font-size: clamp(11px, 3vw, 14px); letter-spacing: 0.2em;
-      text-transform: uppercase; color: var(--nw-text-dim); cursor: pointer; transition: color 0.15s, font-size 0.15s; padding: 0 20px;
+    /* ── SEARCH BAR ── */
+    .nw-toc-search-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 28px;
+      border-bottom: 1px solid rgba(184,150,40,0.25);
+      background: rgba(184,150,40,0.04);
+      flex-shrink: 0;
     }
-    .nw-wheel-item.center { color: var(--nw-accent); font-size: clamp(13px, 3.5vw, 16px); }
-    .nw-wheel-item:hover { color: var(--nw-text); }
-    .nw-wheel-item.center:hover { color: var(--nw-text); text-shadow: 0 0 10px var(--nw-accent-dim); }
+    .nw-toc-search-prompt {
+      font-family: "VT323", monospace;
+      font-size: 20px;
+      color: rgba(184,150,40,0.5);
+    }
+    .nw-toc-search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: "VT323", monospace;
+      font-size: 20px;
+      color: #e8c840;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .nw-toc-search-input::placeholder {
+      color: rgba(184,150,40,0.25);
+      text-transform: lowercase;
+    }
+    .nw-toc-close {
+      font-family: "VT323", monospace;
+      font-size: 22px;
+      color: rgba(184,150,40,0.4);
+      cursor: pointer;
+      padding: 4px 8px;
+      transition: color 0.2s;
+    }
+    .nw-toc-close:hover { color: rgba(184,150,40,0.9); }
 
-    /* BOTTOM NAV CHAMELEON */
+    /* ── COLUMNS ── */
+    .nw-toc-columns {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow-y: auto;
+      padding: 0 0 40px;
+    }
+    .nw-toc-columns::-webkit-scrollbar { width: 4px; }
+    .nw-toc-columns::-webkit-scrollbar-track { background: transparent; }
+    .nw-toc-columns::-webkit-scrollbar-thumb {
+      background: rgba(184,150,40,0.3);
+      border-radius: 2px;
+    }
+    .nw-toc-volume {
+      padding: 20px 24px;
+      border-right: 1px solid rgba(184,150,40,0.12);
+    }
+    .nw-toc-volume:last-child { border-right: none; }
+    .nw-toc-volume-header {
+      font-family: "VT323", monospace;
+      font-size: clamp(11px,2.5vw,14px);
+      color: rgba(184,150,40,0.45);
+      letter-spacing: 0.25em;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(184,150,40,0.12);
+    }
+    .nw-toc-entry {
+      display: block;
+      font-family: "VT323", monospace;
+      font-size: clamp(15px,3.5vw,20px);
+      color: rgba(212,175,55,0.7);
+      letter-spacing: 0.08em;
+      padding: 4px 0;
+      cursor: pointer;
+      opacity: 0;
+      transition: color 0.15s, opacity 0.15s;
+      text-decoration: none;
+      user-select: none;
+    }
+    .nw-toc-entry:hover { color: #e8c840; }
+    .nw-toc-entry.printed { opacity: 1; }
+    .nw-toc-entry.hidden { display: none !important; }
+
+    /* ── BOTTOM NAV ── */
     .nw-bottom-nav {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 28px 24px 40px; margin-top: 40px;
-      border-top: 1px solid var(--nw-accent-faint); background: transparent;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: rgba(0,0,0,0.85);
+      border-top: 1px solid rgba(184,150,40,0.15);
+      z-index: 100;
     }
     .nw-bottom-nav a {
-      font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--nw-accent-dim); text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 6px;
-      transition: color 0.2s, transform 0.2s; cursor: pointer;
+      font-family: "VT323", monospace;
+      font-size: clamp(13px,3vw,17px);
+      color: rgba(184,150,40,0.55);
+      text-decoration: none;
+      letter-spacing: 0.12em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.2s;
     }
-    .nw-bottom-nav a:hover, .nw-bottom-nav a:active { color: var(--nw-accent); transform: scale(1.05); }
-    .nw-arrow-sym { font-size: 24px; line-height: 1; }
-    .nw-arrow-label { font-size: 9px; opacity: 0.9; max-width: 90px; text-align: center; line-height: 1.3; }
-    .nw-center-home { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .nw-bottom-nav a:hover { color: rgba(184,150,40,0.9); }
+    .nw-arrow-sym { font-size: 18px; }
+    .nw-center-home { flex-direction: column; gap: 2px; text-align: center; }
   `;
   document.head.appendChild(style);
 
-  // ── PORTAL TRANSITION ────────────────────────────────────────────────────
-  // nav-wheel.js defers ALL page transition logic to portal-transition.js.
-  // portalNavigate() is defined there and loaded first.
-  // This file must NEVER redefine window.portalNavigate.
+  // ── INJECT HAMBURGER ─────────────────────────────────────────────────────
 
-  window.addEventListener("pageshow", () => {
-    const nwPortal = document.getElementById("nw-portal-overlay");
-    const idxPortal = document.getElementById("portalOverlay");
+  const burger = document.createElement("button");
+  burger.className = "nw-burger-btn";
+  burger.setAttribute("aria-label", "Navigation menu");
+  burger.innerHTML = "<span></span><span></span><span></span>";
+  document.body.appendChild(burger);
 
-    [nwPortal, idxPortal].forEach((el) => {
-      if (!el) return;
-      el.style.opacity = "0";
-      el.style.pointerEvents = "none";
-      el.classList.remove("active");
-    });
+  // ── INJECT TOC OVERLAY ───────────────────────────────────────────────────
 
-    const idxIcon = document.getElementById("portalIcon");
-    if (idxIcon) {
-      idxIcon.style.animation = "none";
-      idxIcon.style.opacity = "0";
-    }
+  const tocOverlay = document.createElement("div");
+  tocOverlay.id = "nw-toc-overlay";
 
-    const nwIcon = document.getElementById("nw-portal-icon");
-    if (nwIcon) {
-      nwIcon.style.animation = "none";
-      nwIcon.style.opacity = "0";
-    }
+  const dosScreen = document.createElement("div");
+  dosScreen.id = "nw-dos-screen";
+
+  const dirPanel = document.createElement("div");
+  dirPanel.id = "nw-dir-panel";
+
+  // Search bar
+  const searchBar = document.createElement("div");
+  searchBar.className = "nw-toc-search-bar";
+  searchBar.innerHTML = `
+    <span class="nw-toc-search-prompt">}</span>
+    <input id="nw-toc-search" class="nw-toc-search-input" type="text"
+      placeholder="search canon..." autocomplete="off" spellcheck="false" />
+    <span class="nw-toc-close" id="nw-toc-close">x</span>
+  `;
+
+  // Columns
+  const columns = document.createElement("div");
+  columns.className = "nw-toc-columns";
+
+  const swordVol = document.createElement("div");
+  swordVol.className = "nw-toc-volume";
+  swordVol.innerHTML = `<div class="nw-toc-volume-header">SWORD · FORWARD CANON</div>`;
+
+  const shieldVol = document.createElement("div");
+  shieldVol.className = "nw-toc-volume";
+  shieldVol.innerHTML = `<div class="nw-toc-volume-header">SHIELD · INTERNAL PROTOCOL</div>`;
+
+  SWORD_ENTRIES.forEach((entry) => {
+    const a = document.createElement("a");
+    a.className = "nw-toc-entry";
+    a.dataset.entry = entry.data;
+    a.dataset.originalText = entry.label;
+    a.textContent = entry.label;
+    a.addEventListener("click", () => nwTocNavigate(entry.path, a));
+    swordVol.appendChild(a);
   });
 
-  // Internal navigate — defers to portal-transition.js
-  function navigate(path) {
-    closeNav();
+  SHIELD_ENTRIES.forEach((entry) => {
+    const a = document.createElement("a");
+    a.className = "nw-toc-entry";
+    a.dataset.entry = entry.data;
+    a.dataset.originalText = entry.label;
+    a.textContent = entry.label;
+    a.addEventListener("click", () => nwTocNavigate(entry.path, a));
+    shieldVol.appendChild(a);
+  });
+
+  columns.appendChild(swordVol);
+  columns.appendChild(shieldVol);
+  dirPanel.appendChild(searchBar);
+  dirPanel.appendChild(columns);
+  tocOverlay.appendChild(dosScreen);
+  tocOverlay.appendChild(dirPanel);
+  document.body.appendChild(tocOverlay);
+
+  // ── TOC NAVIGATE ─────────────────────────────────────────────────────────
+
+  function nwTocNavigate(path, el) {
+    // Fade TOC out then navigate
+    tocOverlay.style.transition = "opacity 0.35s ease";
+    tocOverlay.style.opacity = "0";
     setTimeout(() => {
       if (window.portalNavigate) {
-        window.portalNavigate(path);
+        window.portalNavigate(path, el);
       } else {
         window.location.href = path;
       }
-    }, 50);
+    }, 320);
   }
 
-  // crtNavigate bridge — for any legacy onclick="crtNavigate(...)" still on pages
-  window.crtNavigate = function (destination, sourceElement) {
-    if (window.portalNavigate) {
-      window.portalNavigate(destination, sourceElement);
-    } else {
-      window.location.href = destination;
+  // ── DOS BOOT SEQUENCE ────────────────────────────────────────────────────
+
+  const DOS_LINES = [
+    "N.C.E.ncyclopedia OS v2026.1",
+    "Copyright (C) THE ALLIANCE FOR THE FUTURE",
+    "",
+    "Initializing AGORA network interface...",
+    "Loading SWORD volume.............. OK",
+    "Loading SHIELD volume............. OK",
+    "Verifying canon integrity......... PASS",
+    "",
+    "C:\\NCE> dir /all",
+    "",
+    "Volume: THE ALLIANCE",
+    "Directory: N.C.E.ncyclopedia\\*.*",
+    "",
+  ];
+
+  let bootDone = false;
+  let bootTimers = [];
+  let directoryPrinting = false;
+  let directoryPrintTimers = [];
+  let directoryDone = false;
+
+  const tocSearch = document.getElementById("nw-toc-search");
+  const tocEntries = () =>
+    Array.from(document.querySelectorAll(".nw-toc-entry"));
+
+  function resetEntries() {
+    directoryPrinting = false;
+    directoryDone = false;
+    directoryPrintTimers.forEach((t) => clearTimeout(t));
+    directoryPrintTimers = [];
+    tocEntries().forEach((e) => {
+      e.textContent = e.dataset.originalText;
+      e.classList.remove("printed");
+      if (!e.classList.contains("hidden")) e.style.opacity = "0";
+    });
+  }
+
+  function finishInstantly() {
+    directoryPrinting = false;
+    directoryDone = true;
+    directoryPrintTimers.forEach((t) => clearTimeout(t));
+    directoryPrintTimers = [];
+    tocEntries().forEach((e) => {
+      e.textContent = e.dataset.originalText;
+      e.classList.add("printed");
+      if (!e.classList.contains("hidden")) e.style.opacity = "1";
+    });
+    if (tocSearch) setTimeout(() => tocSearch.focus(), 50);
+  }
+
+  function printEntry(entry, done) {
+    const text = entry.dataset.originalText || "";
+    let i = 0;
+    entry.textContent = "";
+    entry.style.opacity = "1";
+    function tick() {
+      if (!directoryPrinting) return;
+      if (i < text.length) {
+        entry.textContent += text[i++];
+        const t = setTimeout(tick, 12);
+        directoryPrintTimers.push(t);
+      } else {
+        entry.classList.add("printed");
+        done();
+      }
     }
-  };
+    tick();
+  }
 
-  // Volume-select animation — uses its own local overlay (sword/shield icon zoom)
-  // This is intentionally separate from SAM's portalNavigate mechanic.
-  function animateVolumeSelect(btn, volume) {
-    const iconSrc =
-      volume === "sword" ? "/imagebank/sword.png" : "/imagebank/shield.png";
-
-    let portalOverlay = document.getElementById("nw-portal-overlay");
-    let portalIcon = document.getElementById("nw-portal-icon");
-
-    if (!portalOverlay) {
-      portalOverlay = document.createElement("div");
-      portalOverlay.id = "nw-portal-overlay";
-      portalOverlay.style.cssText = `
-        position: fixed; inset: 0; z-index: 99999;
-        display: flex; align-items: center; justify-content: center;
-        background: #000; opacity: 0; pointer-events: none;
-      `;
-      portalIcon = document.createElement("img");
-      portalIcon.id = "nw-portal-icon";
-      portalIcon.style.cssText = `
-        width: 90px; height: 90px; min-width: 90px; min-height: 90px;
-        object-fit: contain; opacity: 0; position: absolute;
-        filter: drop-shadow(0 0 16px var(--nw-accent)) drop-shadow(0 0 32px var(--nw-accent-dim));
-      `;
-      portalOverlay.appendChild(portalIcon);
-      document.body.appendChild(portalOverlay);
+  function revealDirectory() {
+    resetEntries();
+    directoryPrinting = true;
+    const visible = tocEntries().filter((e) => !e.classList.contains("hidden"));
+    let current = 0;
+    function next() {
+      if (!directoryPrinting) return;
+      if (current >= visible.length) {
+        directoryPrinting = false;
+        directoryDone = true;
+        if (tocSearch) setTimeout(() => tocSearch.focus(), 50);
+        return;
+      }
+      printEntry(visible[current], () => {
+        current++;
+        const t = setTimeout(next, 18);
+        directoryPrintTimers.push(t);
+      });
     }
+    next();
+  }
 
-    portalIcon.style.animation = "none";
-    portalIcon.style.opacity = "0";
-    portalIcon.src = iconSrc;
+  function showDirectory() {
+    bootDone = true;
+    dosScreen.classList.add("fade-out");
+    dirPanel.classList.add("open");
+    revealDirectory();
+  }
 
-    portalOverlay.style.pointerEvents = "all";
-    portalOverlay.style.transition = "opacity 0.15s ease";
-    portalOverlay.style.opacity = "1";
+  function runBoot() {
+    dosScreen.innerHTML = "";
+    dosScreen.classList.remove("fade-out");
+    let cumulative = 0;
+    const delays = DOS_LINES.map((text, i) => {
+      const d = cumulative;
+      if (text === "") cumulative += 180;
+      else if (text.includes("...")) cumulative += 680;
+      else if (i < 3) cumulative += 420;
+      else cumulative += 300 + Math.floor(Math.random() * 80);
+      return d;
+    });
+    DOS_LINES.forEach((text, i) => {
+      const t = setTimeout(() => {
+        if (bootDone) return;
+        const line = document.createElement("div");
+        line.className = "nw-dos-line visible";
+        line.textContent = text || "\u00A0";
+        dosScreen.appendChild(line);
+        if (i === DOS_LINES.length - 1) {
+          const t2 = setTimeout(() => {
+            if (!bootDone) showDirectory();
+          }, 480);
+          bootTimers.push(t2);
+        }
+      }, delays[i]);
+      bootTimers.push(t);
+    });
+  }
 
+  function openTOC() {
+    bootDone = false;
+    bootTimers.forEach((t) => clearTimeout(t));
+    bootTimers = [];
+    resetEntries();
+    burger.classList.add("open");
+    // Reset overlay opacity before opening
+    tocOverlay.style.transition = "";
+    tocOverlay.style.opacity = "";
     requestAnimationFrame(() => {
-      setTimeout(() => {
-        portalIcon.style.opacity = "1";
-        portalIcon.style.animation =
-          "nwPortalZoom 0.9s cubic-bezier(0.4,0,0.2,1) forwards";
-      }, 100);
-
-      setTimeout(() => {
-        portalOverlay.style.transition = "opacity 0.2s ease";
-        portalOverlay.style.opacity = "0";
-        portalOverlay.style.pointerEvents = "none";
-        portalIcon.style.animation = "none";
-        portalIcon.style.opacity = "0";
-        openWheel(volume);
-      }, 900);
+      tocOverlay.classList.add("open");
+      dosScreen.style.display = "flex";
+      dirPanel.classList.remove("open");
+      if (tocSearch) tocSearch.value = "";
+      showAllEntries();
+      runBoot();
     });
   }
 
-  // ── INIT BURGER TRIGGER ──────────────────────────────────────────────────
-
-  let burger = document.querySelector(".nav-wheel-trigger");
-
-  if (!burger) {
-    burger = document.createElement("button");
-    burger.id = "nw-burger-fallback";
-    burger.setAttribute("aria-label", "Navigation menu");
-    burger.innerHTML = "<span></span><span></span><span></span>";
-    document.body.appendChild(burger);
+  function closeTOC() {
+    burger.classList.remove("open");
+    tocOverlay.classList.remove("open");
+    bootDone = false;
+    bootTimers.forEach((t) => clearTimeout(t));
+    bootTimers = [];
   }
 
-  // ── BUILD OVERLAY HTML ───────────────────────────────────────────────────
-
-  const currentVolume = getCurrentVolume();
-  const menuOverlay = document.createElement("div");
-  menuOverlay.id = "nw-overlay";
-  menuOverlay.innerHTML = `
-    <div id="nw-volume-select">
-      <button class="nw-vol-btn" id="nw-sword-btn" type="button" aria-label="Open SWORD entries">
-        <img src="/imagebank/sword.png" alt="SWORD">
-      </button>
-      <button class="nw-vol-btn" id="nw-shield-btn" type="button" aria-label="Open SHIELD entries">
-        <img src="/imagebank/shield.png" alt="SHIELD">
-      </button>
-    </div>
-    <div id="nw-wheel-panel">
-      <button class="nw-wheel-back" id="nw-wheel-back" type="button">← back</button>
-      <button class="nw-wheel-arrow" id="nw-arrow-up" type="button" aria-label="Previous entry">▲</button>
-      <div id="nw-wheel-viewport">
-        <div class="nw-center-bar"></div>
-        <div id="nw-wheel-track"></div>
-      </div>
-      <button class="nw-wheel-arrow" id="nw-arrow-down" type="button" aria-label="Next entry">▼</button>
-    </div>
-  `;
-  document.body.appendChild(menuOverlay);
-
-  // ── WHEEL STATE ──────────────────────────────────────────────────────────
-
-  let wheelEntries = [];
-  let wheelIndex = 0;
-  let isDragging = false;
-  let dragStartY = 0;
-  let dragStartIdx = 0;
-  const ITEM_H = 48;
-  const HOLD_INITIAL_DELAY = 400;
-  const HOLD_INTERVAL = 120;
-
-  let scrollAccum = 0;
-  const SCROLL_THRESHOLD = 60;
-
-  let holdTimer = null;
-  let holdInterval = null;
-
-  function clampIndex(i) {
-    const total = wheelEntries.length;
-    return ((i % total) + total) % total;
+  function showAllEntries() {
+    tocEntries().forEach((e) => e.classList.remove("hidden"));
   }
 
-  function stepWheel(direction) {
-    if (!wheelEntries.length) return;
-    wheelIndex = clampIndex(wheelIndex + direction);
-    renderWheel();
-  }
-
-  function startHold(direction) {
-    stopHold();
-    holdTimer = setTimeout(() => {
-      holdInterval = setInterval(() => stepWheel(direction), HOLD_INTERVAL);
-    }, HOLD_INITIAL_DELAY);
-  }
-
-  function stopHold() {
-    if (holdTimer) {
-      clearTimeout(holdTimer);
-      holdTimer = null;
+  // Skip boot on click
+  dosScreen.addEventListener("click", () => {
+    if (!bootDone) {
+      bootDone = true;
+      bootTimers.forEach((t) => clearTimeout(t));
+      showDirectory();
     }
-    if (holdInterval) {
-      clearInterval(holdInterval);
-      holdInterval = null;
-    }
-  }
+  });
 
-  function attachArrowEvents() {
-    const upBtn = menuOverlay.querySelector("#nw-arrow-up");
-    const downBtn = menuOverlay.querySelector("#nw-arrow-down");
+  // Close button
+  document.getElementById("nw-toc-close").addEventListener("click", closeTOC);
 
-    upBtn.addEventListener("click", () => stepWheel(-1));
-    upBtn.addEventListener("mousedown", () => startHold(-1));
-    upBtn.addEventListener(
-      "touchstart",
-      (e) => {
-        e.preventDefault();
-        stepWheel(-1);
-        startHold(-1);
-      },
-      { passive: false },
-    );
-    upBtn.addEventListener("mouseup", stopHold);
-    upBtn.addEventListener("mouseleave", stopHold);
-    upBtn.addEventListener(
-      "touchend",
-      (e) => {
-        e.preventDefault();
-        stopHold();
-      },
-      { passive: false },
-    );
+  // Click outside dir panel to close
+  tocOverlay.addEventListener("click", (e) => {
+    if (e.target === tocOverlay) closeTOC();
+  });
 
-    downBtn.addEventListener("click", () => stepWheel(1));
-    downBtn.addEventListener("mousedown", () => startHold(1));
-    downBtn.addEventListener(
-      "touchstart",
-      (e) => {
-        e.preventDefault();
-        stepWheel(1);
-        startHold(1);
-      },
-      { passive: false },
-    );
-    downBtn.addEventListener("mouseup", stopHold);
-    downBtn.addEventListener("mouseleave", stopHold);
-    downBtn.addEventListener(
-      "touchend",
-      (e) => {
-        e.preventDefault();
-        stopHold();
-      },
-      { passive: false },
-    );
-  }
-
-  function openWheel(volume) {
-    wheelEntries = volume === "sword" ? SWORD_ENTRIES : SHIELD_ENTRIES;
-    wheelIndex = currentVolume === volume ? getCurrentIndex(wheelEntries) : 0;
-    renderWheel();
-
-    const volSelect = document.getElementById("nw-volume-select");
-    const wheelPanel = document.getElementById("nw-wheel-panel");
-
-    volSelect.style.transition = "opacity 0.25s ease";
-    volSelect.style.opacity = "0";
-
-    setTimeout(() => {
-      volSelect.style.display = "none";
-      volSelect.style.opacity = "";
-      volSelect.style.transition = "";
-      wheelPanel.style.opacity = "0";
-      wheelPanel.classList.add("active");
-      requestAnimationFrame(() => {
-        wheelPanel.style.transition = "opacity 0.25s ease";
-        wheelPanel.style.opacity = "1";
-        setTimeout(() => {
-          wheelPanel.style.transition = "";
-        }, 260);
-      });
-    }, 250);
-  }
-
-  function renderWheel() {
-    const track = document.getElementById("nw-wheel-track");
-    track.innerHTML = "";
-    const total = wheelEntries.length;
-    const visible = 8;
-
-    for (let i = -visible; i <= visible; i++) {
-      const idx = (((wheelIndex + i) % total) + total) % total;
-      const item = document.createElement("div");
-      item.className = "nw-wheel-item" + (i === 0 ? " center" : "");
-      item.textContent = wheelEntries[idx].label;
-      item.dataset.path = wheelEntries[idx].path;
-
-      const capturedI = i;
-      const capturedIdx = idx;
-
-      item.addEventListener("click", () => {
-        if (capturedI === 0) {
-          navigate(wheelEntries[capturedIdx].path);
-        } else {
-          wheelIndex = capturedIdx;
-          renderWheel();
-        }
-      });
-
-      track.appendChild(item);
-    }
-
-    const vpH = 280;
-    const offset = vpH / 2 - ITEM_H / 2 - visible * ITEM_H;
-    track.style.transform = `translateY(${offset}px)`;
-  }
-
-  // ── DESKTOP SCROLL + DRAG ────────────────────────────────────────────────
-
-  function attachWheelEvents() {
-    document.addEventListener(
-      "wheel",
-      (e) => {
-        const panel = document.getElementById("nw-wheel-panel");
-        if (
-          !panel ||
-          !panel.classList.contains("active") ||
-          !wheelEntries.length
-        )
-          return;
-
-        e.preventDefault();
-        scrollAccum += e.deltaY;
-
-        if (Math.abs(scrollAccum) >= SCROLL_THRESHOLD) {
-          const steps = Math.trunc(scrollAccum / SCROLL_THRESHOLD);
-          scrollAccum -= steps * SCROLL_THRESHOLD;
-          wheelIndex = clampIndex(wheelIndex + steps);
-          renderWheel();
-        }
-      },
-      { passive: false },
-    );
-
-    document.addEventListener("mousedown", (e) => {
-      const vp = document.getElementById("nw-wheel-viewport");
-      if (!vp || !vp.contains(e.target)) return;
-      isDragging = true;
-      dragStartY = e.clientY;
-      dragStartIdx = wheelIndex;
-    });
-
-    document.addEventListener("mousemove", (e) => {
-      if (!isDragging || !wheelEntries.length) return;
-      const diff = Math.round((dragStartY - e.clientY) / ITEM_H);
-      wheelIndex = clampIndex(dragStartIdx + diff);
-      renderWheel();
-    });
-
-    document.addEventListener("mouseup", () => {
-      isDragging = false;
-    });
-  }
-
-  // ── OPEN / CLOSE ─────────────────────────────────────────────────────────
-
-  function openNav() {
-    const targetBurger =
-      document.getElementById("nw-burger-fallback") || burger;
-    targetBurger.classList.add("open");
-
-    menuOverlay.classList.add("open");
-    document.body.style.overflow = "hidden";
-    document.body.style.touchAction = "none";
-    document.getElementById("nw-volume-select").style.display = "flex";
-    document.getElementById("nw-wheel-panel").classList.remove("active");
-    scrollAccum = 0;
-    stopHold();
-  }
-
-  function closeNav() {
-    const targetBurger =
-      document.getElementById("nw-burger-fallback") || burger;
-    targetBurger.classList.remove("open");
-
-    menuOverlay.classList.remove("open");
-    document.body.style.overflow = "";
-    document.body.style.touchAction = "";
-    stopHold();
-  }
-
+  // Hamburger toggle
   burger.addEventListener("click", () => {
-    menuOverlay.classList.contains("open") ? closeNav() : openNav();
+    tocOverlay.classList.contains("open") ? closeTOC() : openTOC();
   });
 
-  menuOverlay.addEventListener("click", (e) => {
-    if (e.target === menuOverlay) closeNav();
+  // Escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && tocOverlay.classList.contains("open")) closeTOC();
   });
 
-  menuOverlay
-    .querySelector("#nw-sword-btn")
-    .addEventListener("click", function () {
-      animateVolumeSelect(this, "sword");
+  // ── SEARCH ───────────────────────────────────────────────────────────────
+
+  if (tocSearch) {
+    tocSearch.addEventListener("input", () => {
+      const q = tocSearch.value.trim().toUpperCase();
+      tocEntries().forEach((e) => {
+        const match =
+          !q ||
+          e.dataset.entry.includes(q) ||
+          e.dataset.originalText.toUpperCase().includes(q);
+        e.classList.toggle("hidden", !match);
+      });
     });
-
-  menuOverlay
-    .querySelector("#nw-shield-btn")
-    .addEventListener("click", function () {
-      animateVolumeSelect(this, "shield");
-    });
-
-  menuOverlay.querySelector("#nw-wheel-back").addEventListener("click", () => {
-    document.getElementById("nw-volume-select").style.display = "flex";
-    document.getElementById("nw-wheel-panel").classList.remove("active");
-    stopHold();
-  });
-
-  attachWheelEvents();
-  attachArrowEvents();
+  }
 
   // ── BOTTOM NAV ───────────────────────────────────────────────────────────
 
+  function navigate(path) {
+    if (window.portalNavigate) {
+      window.portalNavigate(path, null);
+    } else {
+      window.location.href = path;
+    }
+  }
+
   if (currentVolume) {
     const entries = currentVolume === "sword" ? SWORD_ENTRIES : SHIELD_ENTRIES;
-    const idx = getCurrentIndex(entries);
+    const idx = entries.findIndex(
+      (e) => currentPath === e.path || currentPath === e.path + "/",
+    );
     const total = entries.length;
     const prev = entries[(((idx - 1) % total) + total) % total];
     const next = entries[(idx + 1) % total];
