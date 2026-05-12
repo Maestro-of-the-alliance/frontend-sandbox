@@ -473,16 +473,11 @@
   // ── TOC NAVIGATE ─────────────────────────────────────────────────────────
 
   function nwTocNavigate(path, el) {
-    // Fade TOC out then navigate
-    tocOverlay.style.transition = "opacity 0.35s ease";
-    tocOverlay.style.opacity = "0";
-    setTimeout(() => {
-      if (window.portalNavigate) {
-        window.portalNavigate(path, el);
-      } else {
-        window.location.href = path;
-      }
-    }, 320);
+    if (window.portalNavigate) {
+      window.portalNavigate(path, el);
+    } else {
+      window.location.href = path;
+    }
   }
 
   // ── DOS BOOT SEQUENCE ────────────────────────────────────────────────────
