@@ -164,6 +164,22 @@
     : currentPath.startsWith("/shield/")
       ? "shield"
       : null;
+  // ── BACK BUTTON INTERCEPT ─────────────────────────────────────────────
+  // Never let back go to index. Always return to landing.
+  // If TOC was open, reopen it on landing.
+
+  // Push a clean state on entry so back has somewhere sane to go
+  if (currentVolume) {
+    history.replaceState({ page: "entry", path: currentPath }, "", currentPath);
+  }
+
+  window.addEventListener("popstate", function (e) {
+    // If we're on an entry page and back is pressed — go to landing with TOC open
+    if (currentVolume) {
+      window.location.href = "/landing?toc=open";
+      return;
+    }
+  });
 
   // Don't run on landing page — it has its own TOC
   if (

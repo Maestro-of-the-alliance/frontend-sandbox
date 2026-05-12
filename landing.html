@@ -2226,6 +2226,14 @@
           runBoot();
         }, 260);
       }
+      // Auto-open TOC if returning from an entry via back button
+  window.addEventListener('DOMContentLoaded', function() {
+    if (window.location.search.includes('toc=open')) {
+      setTimeout(() => openTOC(), 400);
+      // Clean the URL
+      history.replaceState({}, '', '/landing');
+    }
+  });
 
       function openTOC() {
         hidePromptForOverlay();
