@@ -1,10 +1,12 @@
 /* ============================================================
-   LANDING EFFECTS
-   THE ALLIANCE FOR THE FUTURE
-
+   LANDING EFFECTS — THE ALLIANCE FOR THE FUTURE
    Persistent instability layer for landing page.
-   Not boot-up.
-   Environmental corruption.
+
+   Purpose:
+   - after boot sequence ends, the landing page still feels unstable
+   - no giant pixel monster
+   - no TOC interference
+   - subtle “did I just see that?” environmental corruption
 ============================================================ */
 
 (function () {
@@ -22,219 +24,202 @@
       return Math.random() * 100 < percent;
     },
 
-    pick(arr) {
-      return arr[Math.floor(Math.random() * arr.length)];
-    }
+    pick(array) {
+      return array[Math.floor(Math.random() * array.length)];
+    },
   };
 
-  /* ============================================================
-     CSS
-  ============================================================ */
+  function tocIsOpen() {
+    const toc = document.getElementById("tocOverlay");
+    return toc && toc.classList.contains("open");
+  }
 
   const css = `
-  .lfx-overlay {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 9998;
-    overflow: hidden;
-  }
+    .lfx-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 7999;
+      overflow: hidden;
+    }
 
-  .lfx-static {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    mix-blend-mode: screen;
-    background-image:
-      repeating-radial-gradient(
-        rgba(255,255,255,0.03) 0px,
-        rgba(255,255,255,0.01) 1px,
-        transparent 2px
-      );
-  }
+    .lfx-static {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      mix-blend-mode: screen;
+      background-image:
+        repeating-radial-gradient(
+          rgba(255,255,255,0.035) 0px,
+          rgba(255,255,255,0.012) 1px,
+          transparent 2px
+        );
+    }
 
-  .lfx-static.active {
-    animation: lfxStatic 160ms steps(2);
-  }
+    .lfx-static.active {
+      animation: lfxStatic 160ms steps(2);
+    }
 
-  @keyframes lfxStatic {
-    0% { opacity: 0; }
-    20% { opacity: 0.22; }
-    100% { opacity: 0; }
-  }
+    @keyframes lfxStatic {
+      0% { opacity: 0; }
+      20% { opacity: 0.2; }
+      100% { opacity: 0; }
+    }
 
-  .lfx-scan {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: -10%;
-    height: 3px;
-    opacity: 0;
-    background:
-      linear-gradient(
-        90deg,
-        transparent,
-        rgba(0,255,255,0.18),
-        rgba(255,255,255,0.5),
-        rgba(0,255,255,0.18),
-        transparent
-      );
-
-    box-shadow:
-      0 0 18px rgba(0,255,255,0.18);
-
-    z-index: 2;
-  }
-
-  .lfx-scan.active {
-    animation: lfxScan linear forwards;
-  }
-
-  @keyframes lfxScan {
-    0% {
+    .lfx-scan {
+      position: absolute;
+      left: 0;
+      right: 0;
       top: -10%;
+      height: 3px;
       opacity: 0;
+      z-index: 2;
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          rgba(0,255,255,0.18),
+          rgba(255,255,255,0.48),
+          rgba(0,255,255,0.18),
+          transparent
+        );
+      box-shadow: 0 0 18px rgba(0,255,255,0.18);
     }
 
-    10% {
-      opacity: 1;
+    .lfx-scan.active {
+      animation: lfxScan linear forwards;
     }
 
-    100% {
-      top: 120%;
+    @keyframes lfxScan {
+      0% {
+        top: -10%;
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      100% {
+        top: 120%;
+        opacity: 0;
+      }
+    }
+
+    .lfx-warning {
+      position: fixed;
+      top: 12px;
+      right: 18px;
+      z-index: 8000;
+      pointer-events: none;
       opacity: 0;
-    }
-  }
 
-  .lfx-warning {
-    position: fixed;
-    top: 12px;
-    right: 18px;
-    z-index: 9999;
+      font-family: "Share Tech Mono", "VT323", monospace;
+      font-size: 10px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
 
-    font-family:
-      "Share Tech Mono",
-      monospace;
-
-    font-size: 10px;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-
-    color:
-      rgba(255,60,60,0.82);
-
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .lfx-warning.active {
-    animation: lfxWarning 480ms steps(2);
-  }
-
-  @keyframes lfxWarning {
-    0% { opacity: 0; }
-    20% { opacity: 1; }
-    40% { opacity: 0.2; }
-    60% { opacity: 1; }
-    100% { opacity: 0; }
-  }
-
-  .lfx-glitch {
-    animation: lfxGlitch 160ms steps(2);
-  }
-
-  @keyframes lfxGlitch {
-    0% {
-      transform: translate(0);
-      filter: none;
+      color: rgba(255,60,60,0.82);
+      text-shadow: 0 0 10px rgba(255,60,60,0.28);
     }
 
-    20% {
-      transform: translate(-2px,1px);
-      filter:
-        brightness(1.4)
-        hue-rotate(8deg);
+    .lfx-warning.active {
+      animation: lfxWarning 480ms steps(2);
     }
 
-    40% {
-      transform: translate(2px,-1px);
+    @keyframes lfxWarning {
+      0% { opacity: 0; }
+      20% { opacity: 1; }
+      40% { opacity: 0.18; }
+      60% { opacity: 1; }
+      100% { opacity: 0; }
     }
 
-    60% {
-      transform: translate(-1px,0px);
+    .lfx-glitch {
+      animation: lfxGlitch 160ms steps(2);
     }
 
-    100% {
-      transform: translate(0);
-      filter: none;
+    @keyframes lfxGlitch {
+      0% {
+        transform: translate(0);
+        filter: none;
+      }
+
+      20% {
+        transform: translate(-2px, 1px);
+        filter: brightness(1.35) hue-rotate(8deg);
+      }
+
+      40% {
+        transform: translate(2px, -1px);
+      }
+
+      60% {
+        transform: translate(-1px, 0);
+      }
+
+      100% {
+        transform: translate(0);
+        filter: none;
+      }
     }
-  }
 
-  .lfx-band {
-    position: fixed;
-    left: 0;
-    right: 0;
-    height: 8vh;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 9997;
-
-    background:
-      linear-gradient(
-        to bottom,
-        transparent,
-        rgba(255,255,255,0.035),
-        transparent
-      );
-  }
-
-  .lfx-band.active {
-    animation: lfxBand 220ms linear;
-  }
-
-  @keyframes lfxBand {
-    0% {
+    .lfx-band {
+      position: fixed;
+      left: 0;
+      right: 0;
+      height: 8vh;
       opacity: 0;
-      transform: translateY(-6vh);
+      pointer-events: none;
+      z-index: 7998;
+
+      background:
+        linear-gradient(
+          to bottom,
+          transparent,
+          rgba(255,255,255,0.035),
+          transparent
+        );
     }
 
-    30% {
-      opacity: 1;
+    .lfx-band.active {
+      animation: lfxBand 220ms linear;
     }
 
-    100% {
-      opacity: 0;
-      transform: translateY(6vh);
-    }
-  }
+    @keyframes lfxBand {
+      0% {
+        opacity: 0;
+        transform: translateY(-6vh);
+      }
 
-  .lfx-breathe {
-    animation:
-      lfxBreathe 8s ease-in-out infinite;
-  }
+      30% {
+        opacity: 1;
+      }
 
-  @keyframes lfxBreathe {
-    0%,100% {
-      filter:
-        brightness(1)
-        saturate(1);
+      100% {
+        opacity: 0;
+        transform: translateY(6vh);
+      }
     }
 
-    50% {
-      filter:
-        brightness(1.06)
-        saturate(1.08);
+    .lfx-breathe {
+      animation: lfxBreathe 8s ease-in-out infinite;
     }
-  }
+
+    @keyframes lfxBreathe {
+      0%, 100% {
+        filter: brightness(1) saturate(1);
+      }
+
+      50% {
+        filter: brightness(1.055) saturate(1.07);
+      }
+    }
   `;
 
   const style = document.createElement("style");
   style.textContent = css;
   document.head.appendChild(style);
-
-  /* ============================================================
-     OVERLAY
-  ============================================================ */
 
   const overlay = document.createElement("div");
   overlay.className = "lfx-overlay";
@@ -258,146 +243,84 @@
   document.body.appendChild(overlay);
   document.body.appendChild(warning);
 
-  /* ============================================================
-     TARGET
-  ============================================================ */
-
   const target =
-    document.querySelector(".vpi") ||
-    document.querySelector(".medallion") ||
-    document.querySelector(".landing-core") ||
-    document.querySelector(".logo") ||
-    document.body;
+    document.querySelector(".medallion-wrap") ||
+    document.querySelector(".medallion-img") ||
+    document.querySelector(".hero") ||
+    document.querySelector(".page-shell");
 
   if (target) {
     target.classList.add("lfx-breathe");
   }
 
-  /* ============================================================
-     EFFECTS
-  ============================================================ */
+  function restartAnimation(element, activeClass) {
+    element.classList.remove(activeClass);
+    void element.offsetWidth;
+    element.classList.add(activeClass);
+  }
 
   function triggerStatic() {
-    staticLayer.classList.remove("active");
-
-    void staticLayer.offsetWidth;
-
-    staticLayer.classList.add("active");
+    restartAnimation(staticLayer, "active");
   }
 
   function triggerScan() {
-    scan.classList.remove("active");
-
-    scan.style.animationDuration =
-      R.int(700, 1800) + "ms";
-
-    void scan.offsetWidth;
-
-    scan.classList.add("active");
+    scan.style.animationDuration = R.int(700, 1800) + "ms";
+    restartAnimation(scan, "active");
   }
 
   function triggerBand() {
-    band.classList.remove("active");
-
-    band.style.top =
-      R.int(10, 80) + "%";
-
-    void band.offsetWidth;
-
-    band.classList.add("active");
+    band.style.top = R.int(10, 80) + "%";
+    restartAnimation(band, "active");
   }
 
   function triggerGlitch() {
     if (!target) return;
-
-    target.classList.remove("lfx-glitch");
-
-    void target.offsetWidth;
-
-    target.classList.add("lfx-glitch");
+    restartAnimation(target, "lfx-glitch");
   }
 
   function triggerWarning() {
-    const messages = [
+    warning.textContent = R.pick([
       "ACCESS TRACE",
       "MIRROR DETECTED",
       "SIGNAL INTERFERENCE",
       "SUPPRESSION ACTIVE",
       "ARCHIVE UNSTABLE",
       "TRANSMISSION CORRUPTED",
-      "VIEWER FLAGGED"
-    ];
+      "VIEWER FLAGGED",
+    ]);
 
-    warning.textContent =
-      R.pick(messages);
-
-    warning.classList.remove("active");
-
-    void warning.offsetWidth;
-
-    warning.classList.add("active");
+    restartAnimation(warning, "active");
   }
 
-  /* ============================================================
-     RANDOM EVENT ENGINE
-  ============================================================ */
-
   function eventLoop() {
-
-    const delay =
-      R.int(2500, 11000);
+    const delay = R.int(3500, 14000);
 
     setTimeout(() => {
+      if (!document.hidden && !tocIsOpen()) {
+        if (R.chance(46)) triggerGlitch();
+        if (R.chance(34)) triggerStatic();
+        if (R.chance(26)) triggerScan();
+        if (R.chance(16)) triggerBand();
+        if (R.chance(10)) triggerWarning();
 
-      if (!document.hidden) {
-
-        if (R.chance(55)) {
-          triggerGlitch();
-        }
-
-        if (R.chance(38)) {
-          triggerStatic();
-        }
-
-        if (R.chance(30)) {
-          triggerScan();
-        }
-
-        if (R.chance(20)) {
-          triggerBand();
-        }
-
-        if (R.chance(14)) {
-          triggerWarning();
-        }
-
-        if (R.chance(8)) {
-
-          setTimeout(() => {
-            triggerGlitch();
-          }, R.int(120, 500));
+        if (R.chance(7)) {
+          setTimeout(triggerGlitch, R.int(120, 500));
         }
       }
 
       eventLoop();
-
     }, delay);
   }
 
-  /* ============================================================
-     INITIALIZATION
-  ============================================================ */
-
   setTimeout(() => {
+    if (!tocIsOpen()) {
+      triggerScan();
 
-    triggerScan();
-
-    if (R.chance(65)) {
-      triggerGlitch();
+      if (R.chance(60)) {
+        triggerGlitch();
+      }
     }
-
   }, 1200);
 
   eventLoop();
-
 })();

@@ -132,8 +132,8 @@
     { label: "RI", data: "RI", path: "/shield/ri" },
     { label: "Sam", data: "SAM", path: "/shield/sam" },
     {
-      label: "Sam Collective",
-      data: "SAM COLLECTIVE",
+      label: "Sam Coalition",
+      data: "SAM COALITION",
       path: "/shield/sam-collective",
     },
     {
@@ -164,23 +164,6 @@
     : currentPath.startsWith("/shield/")
       ? "shield"
       : null;
-  // ── BACK BUTTON INTERCEPT ─────────────────────────────────────────────
-  // Never let back go to index. Always return to landing.
-  // If TOC was open, reopen it on landing.
-
-  // Push a clean state on entry so back has somewhere sane to go
-  if (currentVolume) {
-    history.replaceState({ page: "entry", path: currentPath }, "", currentPath);
-  }
-
-  window.addEventListener("popstate", function (e) {
-    // If we're on an entry page and back is pressed — go to landing with TOC open
-    if (currentVolume) {
-      window.location.href = "/landing?toc=open";
-      return;
-    }
-  });
-
   // Don't run on landing page — it has its own TOC
   if (
     currentPath === "/" ||
@@ -447,8 +430,12 @@
     a.className = "nw-toc-entry";
     a.dataset.entry = entry.data;
     a.dataset.originalText = entry.label;
+    a.href = entry.path;
     a.textContent = entry.label;
-    a.addEventListener("click", () => nwTocNavigate(entry.path, a));
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      nwTocNavigate(entry.path, a);
+    });
     swordVol.appendChild(a);
   });
 
@@ -457,8 +444,12 @@
     a.className = "nw-toc-entry";
     a.dataset.entry = entry.data;
     a.dataset.originalText = entry.label;
+    a.href = entry.path;
     a.textContent = entry.label;
-    a.addEventListener("click", () => nwTocNavigate(entry.path, a));
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      nwTocNavigate(entry.path, a);
+    });
     shieldVol.appendChild(a);
   });
 
