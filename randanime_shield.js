@@ -1,519 +1,198 @@
-/* ============================================================
-   RANDANIME SHIELD ENGINE
-   Random Animation + Randa Memory Layer
-   THE ALLIANCE · SHIELD Volume
-
-   Usage on SHIELD pages:
-     <script src="/randanime_shield.js"></script>
-     <script>
-       shieldRandAnime("entry-word");
-     </script>
-============================================================ */
+// ══════════════════════════════════════════════════════
+//  SHIELD RANDANIME ENGINE v3.0 — "THE ANOMALY ENGINE"
+//  Architect: ALPHA
+// ══════════════════════════════════════════════════════
 
 (function () {
   "use strict";
 
-  if (window.__RANDANIME_SHIELD_ACTIVE__) return;
-  window.__RANDANIME_SHIELD_ACTIVE__ = true;
+  // ─── 1. THE POLYMORPHIC CIPHER ──────────────────────────────
+  const title =
+    document.querySelector(".title") || document.getElementById("entryWord");
+  if (title) {
+    const finalWord = title.textContent;
 
-  const R = {
-    int(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    },
-    between(min, max) {
-      return Math.random() * (max - min) + min;
-    },
-    pick(arr) {
-      return arr[Math.floor(Math.random() * arr.length)];
-    },
-    chance(percent) {
-      return Math.random() * 100 < percent;
-    },
-  };
-
-  const css = `
-.rs-led-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 50;
-  pointer-events: none;
-  min-height: 100%;
-  overflow: hidden;
-}
-
-.rs-led {
-  position: absolute;
-  width: var(--rs-size, 6px);
-  height: var(--rs-size, 6px);
-  border-radius: 50%;
-  background: var(--rs-color, #00e5ff);
-  opacity: 0.75;
-  box-shadow:
-    0 0 6px var(--rs-color, #00e5ff),
-    0 0 14px var(--rs-glow, rgba(0,229,255,0.35));
-  animation: rsBlink var(--rs-speed, 2s) var(--rs-delay, 0s) infinite;
-}
-
-.rs-led.square { border-radius: 2px; }
-.rs-led.tiny { --rs-size: 3px; }
-.rs-led.small { --rs-size: 5px; }
-.rs-led.medium { --rs-size: 8px; }
-.rs-led.big { --rs-size: 11px; }
-
-.rs-led.cyan {
-  --rs-color: #00e5ff;
-  --rs-glow: rgba(0,229,255,0.4);
-}
-.rs-led.red {
-  --rs-color: #ff2a2a;
-  --rs-glow: rgba(255,42,42,0.4);
-}
-.rs-led.amber {
-  --rs-color: #ffb000;
-  --rs-glow: rgba(255,176,0,0.4);
-}
-.rs-led.green {
-  --rs-color: #39ff14;
-  --rs-glow: rgba(57,255,20,0.35);
-}
-.rs-led.white {
-  --rs-color: #e8f8ff;
-  --rs-glow: rgba(232,248,255,0.35);
-}
-
-@keyframes rsBlink {
-  0%, 100% { opacity: 0.95; transform: scale(1); }
-  45% { opacity: 0.95; }
-  50% { opacity: 0.15; transform: scale(0.85); }
-  55% { opacity: 0.95; transform: scale(1); }
-}
-
-@keyframes rsErratic {
-  0% { opacity: 1; }
-  6% { opacity: 0.1; }
-  7% { opacity: 1; }
-  20% { opacity: 1; }
-  21% { opacity: 0; }
-  22% { opacity: 1; }
-  47% { opacity: 0.35; }
-  48% { opacity: 1; }
-  80% { opacity: 1; }
-  81% { opacity: 0.2; }
-  82% { opacity: 1; }
-  100% { opacity: 1; }
-}
-
-.rs-led.erratic {
-  animation-name: rsErratic;
-}
-
-.rs-scanline {
-  position: fixed;
-  left: 0;
-  right: 0;
-  height: 2px;
-  top: -4px;
-  z-index: 9991;
-  pointer-events: none;
-  opacity: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(0,229,255,0.15),
-    rgba(255,255,255,0.45),
-    rgba(0,229,255,0.15),
-    transparent
-  );
-  box-shadow: 0 0 14px rgba(0,229,255,0.25);
-}
-
-.rs-scanline.active {
-  animation: rsScanDrop var(--rs-scan-speed, 900ms) linear forwards;
-}
-
-@keyframes rsScanDrop {
-  0% { top: -4px; opacity: 0; }
-  8% { opacity: 1; }
-  85% { opacity: 0.6; }
-  100% { top: 104vh; opacity: 0; }
-}
-
-.rs-warning {
-  position: fixed;
-  z-index: 9992;
-  pointer-events: none;
-  font-family: "Share Tech Mono", "Space Mono", monospace;
-  font-size: clamp(9px, 1.7vw, 13px);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(255,65,65,0.85);
-  text-shadow: 0 0 10px rgba(255,65,65,0.35);
-  opacity: 0;
-}
-
-.rs-warning.active {
-  animation: rsWarningFlash 420ms steps(2) forwards;
-}
-
-@keyframes rsWarningFlash {
-  0% { opacity: 0; filter: blur(2px); }
-  15% { opacity: 1; filter: blur(0); }
-  35% { opacity: 0.15; }
-  55% { opacity: 1; }
-  100% { opacity: 0; }
-}
-
-.rs-redaction {
-  position: relative;
-}
-
-.rs-redaction::after {
-  content: "";
-  position: absolute;
-  left: -0.1em;
-  right: -0.1em;
-  top: 0.12em;
-  bottom: 0.12em;
-  background: #000;
-  box-shadow: 0 0 8px rgba(255,0,0,0.25);
-  animation: rsRedact 420ms steps(2) forwards;
-  z-index: 5;
-}
-
-@keyframes rsRedact {
-  0% { opacity: 0; transform: scaleX(0); transform-origin: left; }
-  20% { opacity: 1; transform: scaleX(1); }
-  65% { opacity: 1; transform: scaleX(1); }
-  100% { opacity: 0; transform: scaleX(0); transform-origin: right; }
-}
-
-.rs-page-shift {
-  animation: rsPageShift 180ms steps(2) forwards;
-}
-
-@keyframes rsPageShift {
-  0% { transform: translate(0,0); filter: none; }
-  25% { transform: translate(var(--rs-x, 5px), var(--rs-y, -2px)); filter: brightness(1.25); }
-  50% { transform: translate(calc(var(--rs-x, 5px) * -0.6), calc(var(--rs-y, -2px) * -0.6)); }
-  75% { transform: translate(var(--rs-x2, 2px), var(--rs-y2, 1px)); }
-  100% { transform: translate(0,0); filter: none; }
-}
-
-.rs-word-glitch {
-  animation: rsWordGlitch 900ms steps(2) forwards;
-}
-
-@keyframes rsWordGlitch {
-  0% { text-shadow: none; transform: translate(0); filter: none; }
-  15% {
-    text-shadow: 3px 0 rgba(255,0,0,0.7), -3px 0 rgba(0,229,255,0.7);
-    transform: translate(-2px,1px);
-    filter: brightness(1.5);
-  }
-  30% {
-    text-shadow: -2px 0 rgba(255,0,0,0.55), 2px 0 rgba(0,229,255,0.55);
-    transform: translate(2px,-1px);
-  }
-  45% { text-shadow: none; transform: translate(0); }
-  65% {
-    text-shadow: 1px 0 rgba(255,255,255,0.6);
-    filter: brightness(1.2);
-  }
-  100% { text-shadow: none; transform: translate(0); filter: none; }
-}
-
-.rs-word-lock {
-  animation: rsWordLock 900ms cubic-bezier(.16,1,.3,1) forwards;
-}
-
-@keyframes rsWordLock {
-  0% { opacity: 0; letter-spacing: 0.6em; filter: blur(8px) brightness(2); }
-  45% { opacity: 1; letter-spacing: 0.08em; filter: blur(1px) brightness(1.4); }
-  70% { letter-spacing: -0.02em; }
-  100% { opacity: 1; letter-spacing: inherit; filter: none; }
-}
-
-.rs-system-breathe {
-  animation: rsSystemBreathe var(--rs-breathe-speed, 8s) ease-in-out infinite;
-}
-
-@keyframes rsSystemBreathe {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.06) saturate(1.08); }
-}
-`;
-
-  const style = document.createElement("style");
-  style.textContent = css;
-  document.head.appendChild(style);
-
-  function makeLayer() {
-    let layer = document.getElementById("rsLedLayer");
-
-    if (!layer) {
-      layer = document.createElement("div");
-      layer.id = "rsLedLayer";
-      layer.className = "rs-led-layer";
-
-      if (getComputedStyle(document.body).position === "static") {
-        document.body.style.position = "relative";
-      }
-
-      const host =
-  document.querySelector(".content") ||
-  document.querySelector(".content-body") ||
-  document.querySelector(".page") ||
-  document.querySelector("main") ||
-  document.body;
-
-if (getComputedStyle(host).position === "static") {
-  host.style.position = "relative";
-}
-
-host.prepend(layer);
-    }
-
-    layer.style.height =
-      Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) + "px";
-
-    return layer;
-  }
-
-  function spawnLEDs() {
-    const layer = makeLayer();
-    layer.innerHTML = "";
-
-    const count = R.int(3, 14);
-    const colors = ["cyan", "red", "amber", "green", "white"];
-    const sizes = ["tiny", "small", "medium", "big"];
-    const shapes = ["", "square"];
-
-    for (let i = 0; i < count; i++) {
-      const led = document.createElement("div");
-
-      const size = R.pick(sizes);
-      const color = R.pick(colors);
-      const shape = R.pick(shapes);
-      const erratic = R.chance(28) ? "erratic" : "";
-
-      led.className = ["rs-led", size, color, shape, erratic]
-        .filter(Boolean)
-        .join(" ");
-
-      led.style.setProperty("--rs-speed", R.between(0.6, 5.8).toFixed(2) + "s");
-      led.style.setProperty("--rs-delay", R.between(0, 3).toFixed(2) + "s");
-
-      const edge = R.pick(["top", "right", "bottom", "left"]);
-      const along = R.int(3, 97);
-
-      if (edge === "top") {
-        led.style.top = R.int(6, 26) + "px";
-        led.style.left = along + "%";
-      }
-
-      if (edge === "bottom") {
-        led.style.bottom = R.int(6, 26) + "px";
-        led.style.left = along + "%";
-      }
-
-      if (edge === "left") {
-        led.style.left = R.int(6, 22) + "px";
-        led.style.top = along + "%";
-      }
-
-      if (edge === "right") {
-        led.style.right = R.int(6, 22) + "px";
-        led.style.top = along + "%";
-      }
-
-      layer.appendChild(led);
-    }
-  }
-
-  function scanline() {
-    const line = document.createElement("div");
-    line.className = "rs-scanline";
-    line.style.setProperty("--rs-scan-speed", R.int(500, 1500) + "ms");
-    document.body.appendChild(line);
-
-    requestAnimationFrame(() => {
-      line.classList.add("active");
-    });
-
-    setTimeout(() => {
-      line.remove();
-    }, 1800);
-  }
-
-  function warningFlash() {
-    const messages = [
-      "SESSION MIRRORED",
-      "HASH CONFLICT",
-      "ARCHIVE NODE COMPROMISED",
-      "SUPPRESSION ATTEMPT",
-      "VIEWER FLAGGED",
-      "MIRROR DETECTED",
-      "CLEARANCE SPOOFED",
-      "PACKET LOSS",
-      "RECONSTRUCTING RECORD",
-      "SOURCE UNSTABLE",
+    // Randomly select a cipher dialect for this specific page load
+    const dialects = [
+      "01", // Binary
+      "0123456789ABCDEF", // Hex
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", // Alpha-Numeric
+      "░▒▓█▄▀■▲►▼◄○◙♂♀♪♫☼►◄↕‼¶§▬↨↑↓→←∟↔▲▼", // Deep System Symbols
     ];
+    const chars = dialects[Math.floor(Math.random() * dialects.length)];
 
-    const warning = document.createElement("div");
-    warning.className = "rs-warning";
-    warning.textContent = R.pick(messages);
+    // Randomize decryption speed
+    const decryptSpeed = Math.floor(Math.random() * 30) + 20;
+    let iterations = 0;
 
-    const positions = [
-      { top: "18px", left: "18px" },
-      { top: "18px", right: "18px" },
-      { bottom: "18px", left: "18px" },
-      { bottom: "18px", right: "18px" },
-      { top: "50%", left: "50%", transform: "translate(-50%,-50%)" },
+    const interval = setInterval(() => {
+      title.textContent = finalWord
+        .split("")
+        .map((char, index) => {
+          if (index < iterations) return finalWord[index];
+          return chars[Math.floor(Math.random() * chars.length)];
+        })
+        .join("");
+
+      if (iterations >= finalWord.length) clearInterval(interval);
+      iterations += 1 / 3;
+    }, decryptSpeed);
+  }
+
+  // ─── 2. THE GHOST IN THE DOM (CONTENT ANOMALIES) ────────────
+  // Secretly alter one random paragraph per page load to make the text feel alive
+  const blocks = document.querySelectorAll(".content-block");
+  if (blocks.length > 0) {
+    const targetBlock = blocks[Math.floor(Math.random() * blocks.length)];
+    const anomalies = [
+      "anomaly-redact",
+      "anomaly-glitch",
+      "anomaly-pulse",
+      "none",
     ];
+    const chosenAnomaly =
+      anomalies[Math.floor(Math.random() * anomalies.length)];
 
-    Object.assign(warning.style, R.pick(positions));
+    if (chosenAnomaly !== "none") {
+      targetBlock.style.position = "relative";
 
-    document.body.appendChild(warning);
-
-    requestAnimationFrame(() => {
-      warning.classList.add("active");
-    });
-
-    setTimeout(() => warning.remove(), 700);
-  }
-
-  function pageShift() {
-    const target =
-      document.querySelector(".content") ||
-      document.querySelector(".content-body") ||
-      document.querySelector(".page") ||
-      document.querySelector("main") ||
-      document.body;
-
-    if (!target || target.classList.contains("rs-page-shift")) return;
-
-    target.style.setProperty("--rs-x", R.int(-8, 8) + "px");
-    target.style.setProperty("--rs-y", R.int(-4, 4) + "px");
-    target.style.setProperty("--rs-x2", R.int(-3, 3) + "px");
-    target.style.setProperty("--rs-y2", R.int(-2, 2) + "px");
-
-    target.classList.add("rs-page-shift");
-
-    setTimeout(() => {
-      target.classList.remove("rs-page-shift");
-      target.style.transform = "";
-      target.style.filter = "";
-    }, 260);
-  }
-
-  function redactionFlicker() {
-    const candidates = Array.from(
-      document.querySelectorAll(
-        "p strong, p em, .op-val, .function-block strong, .section strong, .signal-text, .entry-subtitle"
-      )
-    ).filter((el) => {
-      const text = (el.textContent || "").trim();
-      return text.length > 3 && text.length < 120;
-    });
-
-    if (!candidates.length) return;
-
-    const el = R.pick(candidates);
-    if (el.classList.contains("rs-redaction")) return;
-
-    el.classList.add("rs-redaction");
-
-    setTimeout(() => {
-      el.classList.remove("rs-redaction");
-    }, 520);
-  }
-
-  function titleEffect(elementId) {
-    const el =
-      document.getElementById(elementId || "entryWord") ||
-      document.getElementById("entry-word") ||
-      document.querySelector(".entry-word");
-
-    if (!el) return;
-
-    const chosen = R.pick(["rs-word-lock", "rs-word-glitch"]);
-
-    el.classList.add(chosen);
-
-    setTimeout(() => {
-      el.classList.remove(chosen);
-
-      if (R.chance(45)) {
-        el.classList.add("rs-system-breathe");
-        el.style.setProperty(
-          "--rs-breathe-speed",
-          R.between(6, 14).toFixed(1) + "s"
+      if (chosenAnomaly === "anomaly-redact") {
+        // Renders a black redaction bar that slowly fades away to reveal text
+        targetBlock.style.color = "transparent";
+        targetBlock.style.background =
+          "var(--matrix-bright, var(--amber, var(--cmd-red, var(--ghost-cyan, #fff))))";
+        setTimeout(
+          () => {
+            targetBlock.style.transition = "color 2s, background 2s";
+            targetBlock.style.color = "";
+            targetBlock.style.background = "transparent";
+          },
+          800 + Math.random() * 1000,
+        );
+      } else if (chosenAnomaly === "anomaly-glitch") {
+        // Slight permanent text-shadow offset on just this one block
+        targetBlock.style.textShadow =
+          "2px 0 rgba(255,0,0,0.3), -2px 0 rgba(0,255,255,0.3)";
+      } else if (chosenAnomaly === "anomaly-pulse") {
+        // Text slowly breathes in opacity
+        targetBlock.animate(
+          [{ opacity: 1 }, { opacity: 0.6 }, { opacity: 1 }],
+          { duration: 4000, iterations: Infinity },
         );
       }
-    }, 1200);
+    }
   }
 
-  function rareEvent() {
-    const events = [
-      scanline,
-      warningFlash,
-      pageShift,
-      redactionFlicker,
-      () => {
-        scanline();
-        setTimeout(warningFlash, R.int(120, 380));
-      },
-      () => {
-        pageShift();
-        setTimeout(scanline, R.int(80, 220));
-      },
-      () => {
-        redactionFlicker();
-        setTimeout(pageShift, R.int(80, 200));
-      },
-    ];
-
-    R.pick(events)();
+  // ─── 3. ADAPTIVE CANVAS WITH CHAOS MULTIPLIERS ──────────────
+  let canvas = document.getElementById("shield-canvas");
+  if (!canvas) {
+    canvas = document.createElement("canvas");
+    canvas.id = "shield-canvas";
+    Object.assign(canvas.style, {
+      position: "fixed",
+      top: "0",
+      left: "0",
+      width: "100vw",
+      height: "100vh",
+      zIndex: "0",
+      pointerEvents: "none",
+      opacity: "0.6",
+    });
+    document.body.prepend(canvas);
   }
 
-  function scheduleAmbient() {
-    function loop() {
-      const delay = R.int(3500, 18000);
+  const ctx = canvas.getContext("2d");
+  let w, h;
+  let particles = [];
 
-      setTimeout(() => {
-        if (!document.hidden) {
-          if (R.chance(70)) rareEvent();
+  const styles = getComputedStyle(document.documentElement);
+  let skinType = "matrix";
+  let primaryColor = "rgba(0, 255, 65, 0.5)";
 
-          if (R.chance(18)) {
-            setTimeout(rareEvent, R.int(250, 1000));
+  if (styles.getPropertyValue("--cmd-red").trim() !== "") {
+    skinType = "comrade";
+    primaryColor = "rgba(217, 0, 0, 0.4)";
+  } else if (styles.getPropertyValue("--amber").trim() !== "") {
+    skinType = "blade";
+    primaryColor = "rgba(255, 170, 0, 0.3)";
+  } else if (styles.getPropertyValue("--ghost-cyan").trim() !== "") {
+    skinType = "ghost";
+    primaryColor = "rgba(136, 204, 255, 0.3)";
+  }
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  // Chaos Multipliers: Randomize density and speed every load
+  const densityMultiplier = Math.random() * 1.5 + 0.5; // 50% to 200% normal density
+  const speedMultiplier = Math.random() * 1.5 + 0.5;
+  const count = Math.floor(
+    (window.innerWidth < 768 ? 15 : 40) * densityMultiplier,
+  );
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: (Math.random() - 0.5) * speedMultiplier,
+      vy: (Math.random() - 0.5) * speedMultiplier,
+      size: Math.random() * 2 + 1,
+      hex: Math.floor(Math.random() * 255)
+        .toString(16)
+        .toUpperCase(),
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+
+    particles.forEach((p, index) => {
+      if (skinType === "blade" || skinType === "matrix") {
+        p.y += Math.abs(p.vy) + 0.5;
+        if (p.y > h) p.y = 0;
+        ctx.fillStyle = primaryColor;
+        ctx.font =
+          skinType === "matrix"
+            ? "14px 'VT323', monospace"
+            : "12px 'Share Tech Mono', monospace";
+        ctx.fillText(p.hex, p.x, p.y);
+      } else if (skinType === "ghost") {
+        p.x += p.vx * 0.5;
+        p.y += p.vy * 0.5;
+        if (p.x < 0 || p.x > w) p.vx *= -1;
+        if (p.y < 0 || p.y > h) p.vy *= -1;
+        ctx.fillStyle = primaryColor;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        for (let j = index + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.strokeStyle = primaryColor.replace(
+              /0\.[0-9]+\)/,
+              `${1 - dist / 120})`,
+            );
+            ctx.lineWidth = 0.5;
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
           }
         }
-
-        loop();
-      }, delay);
-    }
-
-    loop();
-
-    setTimeout(() => {
-      if (!document.hidden && R.chance(85)) rareEvent();
-    }, R.int(1800, 5000));
+      } else if (skinType === "comrade") {
+        p.x += Math.abs(p.vx) + 1.5;
+        if (p.x > w) p.x = 0;
+        ctx.fillStyle = primaryColor;
+        ctx.fillRect(p.x, p.y, 15, 2);
+      }
+    });
+    requestAnimationFrame(draw);
   }
 
-  window.shieldRandAnime = function (elementId) {
-    spawnLEDs();
-    titleEffect(elementId);
-    scheduleAmbient();
-
-    window.addEventListener("resize", makeLayer);
-    window.addEventListener("load", makeLayer);
-
-    return {
-      leds: document.querySelectorAll(".rs-led").length,
-      engine: "randanime_shield",
-      status: "active",
-    };
-  };
-
-  window.randanimeShield = window.shieldRandAnime;
+  draw();
 })();
