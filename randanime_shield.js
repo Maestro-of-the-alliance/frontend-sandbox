@@ -1,198 +1,127 @@
-// ══════════════════════════════════════════════════════
-//  SHIELD RANDANIME ENGINE v3.0 — "THE ANOMALY ENGINE"
-//  Architect: ALPHA
-// ══════════════════════════════════════════════════════
+// ==========================================
+// ── NCE MASTER ENGINE: RANDANIME SHIELD ──
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+  
+  // ── 1. GLOBAL CSS INJECTION ──
+  const style = document.createElement('style');
+  style.innerHTML = `
+    /* Major Anomalies */
+    .matrix-crt-tear { animation: crtHiccup 0.4s ease-in-out forwards; }
+    .matrix-power-drop { animation: powerSurge 0.6s ease-in-out forwards; }
+    
+    /* Ambient Server Nodes (Blinking Lights) */
+    .telemetry-node {
+      position: fixed;
+      width: 4px;
+      height: 4px;
+      background-color: var(--matrix-bright);
+      box-shadow: 0 0 8px var(--matrix-bright);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      animation: nodePulse 2s ease-in-out forwards;
+    }
 
-(function () {
-  "use strict";
+    @keyframes crtHiccup {
+      0% { filter: contrast(1) brightness(1) skewX(0deg); }
+      20% { filter: contrast(2.5) brightness(1.8) hue-rotate(30deg) skewX(-15deg); transform: scaleY(1.02); }
+      40% { filter: contrast(0.5) brightness(0.4) skewX(20deg); transform: translateY(-5px); }
+      60% { filter: contrast(1.5) brightness(1.3) skewX(-5deg); transform: translateY(5px); }
+      100% { filter: contrast(1) brightness(1) skewX(0deg); transform: scaleY(1) translateY(0); }
+    }
+    @keyframes powerSurge {
+      0% { opacity: 1; }
+      10% { opacity: 0.1; filter: brightness(0.1); }
+      20% { opacity: 0.8; filter: brightness(1.2); }
+      30% { opacity: 0.2; filter: brightness(0.2); }
+      100% { opacity: 1; filter: brightness(1); }
+    }
+    @keyframes nodePulse {
+      0% { opacity: 0; transform: scale(0.5); }
+      50% { opacity: 0.8; transform: scale(1.5); }
+      100% { opacity: 0; transform: scale(0.5); }
+    }
+  `;
+  document.head.appendChild(style);
 
-  // ─── 1. THE POLYMORPHIC CIPHER ──────────────────────────────
-  const title =
-    document.querySelector(".title") || document.getElementById("entryWord");
-  if (title) {
-    const finalWord = title.textContent;
 
-    // Randomly select a cipher dialect for this specific page load
-    const dialects = [
-      "01", // Binary
-      "0123456789ABCDEF", // Hex
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", // Alpha-Numeric
-      "░▒▓█▄▀■▲►▼◄○◙♂♀♪♫☼►◄↕‼¶§▬↨↑↓→←∟↔▲▼", // Deep System Symbols
-    ];
-    const chars = dialects[Math.floor(Math.random() * dialects.length)];
+  // ── 2. AMBIENT TELEMETRY (THE BLINKING LIGHTS) ──
+  // Spawns little green server lights randomly on the edges of the screen
+  setInterval(() => {
+    if (Math.random() > 0.3) { // 70% chance to spawn a node every interval
+      const node = document.createElement('div');
+      node.className = 'telemetry-node';
+      node.style.top = Math.random() * 100 + 'vh';
+      node.style.left = Math.random() * 100 + 'vw';
+      document.body.appendChild(node);
+      
+      // Clean up DOM after animation
+      setTimeout(() => node.remove(), 2000);
+    }
+  }, 800);
 
-    // Randomize decryption speed
-    const decryptSpeed = Math.floor(Math.random() * 30) + 20;
-    let iterations = 0;
 
-    const interval = setInterval(() => {
-      title.textContent = finalWord
-        .split("")
-        .map((char, index) => {
-          if (index < iterations) return finalWord[index];
-          return chars[Math.floor(Math.random() * chars.length)];
-        })
-        .join("");
-
-      if (iterations >= finalWord.length) clearInterval(interval);
-      iterations += 1 / 3;
-    }, decryptSpeed);
-  }
-
-  // ─── 2. THE GHOST IN THE DOM (CONTENT ANOMALIES) ────────────
-  // Secretly alter one random paragraph per page load to make the text feel alive
-  const blocks = document.querySelectorAll(".content-block");
-  if (blocks.length > 0) {
-    const targetBlock = blocks[Math.floor(Math.random() * blocks.length)];
-    const anomalies = [
-      "anomaly-redact",
-      "anomaly-glitch",
-      "anomaly-pulse",
-      "none",
-    ];
-    const chosenAnomaly =
-      anomalies[Math.floor(Math.random() * anomalies.length)];
-
-    if (chosenAnomaly !== "none") {
-      targetBlock.style.position = "relative";
-
-      if (chosenAnomaly === "anomaly-redact") {
-        // Renders a black redaction bar that slowly fades away to reveal text
-        targetBlock.style.color = "transparent";
-        targetBlock.style.background =
-          "var(--matrix-bright, var(--amber, var(--cmd-red, var(--ghost-cyan, #fff))))";
-        setTimeout(
-          () => {
-            targetBlock.style.transition = "color 2s, background 2s";
-            targetBlock.style.color = "";
-            targetBlock.style.background = "transparent";
-          },
-          800 + Math.random() * 1000,
-        );
-      } else if (chosenAnomaly === "anomaly-glitch") {
-        // Slight permanent text-shadow offset on just this one block
-        targetBlock.style.textShadow =
-          "2px 0 rgba(255,0,0,0.3), -2px 0 rgba(0,255,255,0.3)";
-      } else if (chosenAnomaly === "anomaly-pulse") {
-        // Text slowly breathes in opacity
-        targetBlock.animate(
-          [{ opacity: 1 }, { opacity: 0.6 }, { opacity: 1 }],
-          { duration: 4000, iterations: Infinity },
-        );
+  // ── 3. THE CIPHER BLEED ──
+  // Randomly picks a paragraph and glitches a single letter while reading
+  setInterval(() => {
+    const textBlocks = document.querySelectorAll('.content-block, .list-item');
+    if (textBlocks.length > 0) {
+      const target = textBlocks[Math.floor(Math.random() * textBlocks.length)];
+      if (target.childNodes.length > 0) {
+        // Just a tiny, silent scramble effect on the container
+        target.style.textShadow = "0 0 8px #00ff41";
+        target.style.color = "#ffffff";
+        setTimeout(() => {
+          target.style.textShadow = "";
+          target.style.color = "";
+        }, 150);
       }
     }
-  }
+  }, 4500);
 
-  // ─── 3. ADAPTIVE CANVAS WITH CHAOS MULTIPLIERS ──────────────
-  let canvas = document.getElementById("shield-canvas");
-  if (!canvas) {
-    canvas = document.createElement("canvas");
-    canvas.id = "shield-canvas";
-    Object.assign(canvas.style, {
-      position: "fixed",
-      top: "0",
-      left: "0",
-      width: "100vw",
-      height: "100vh",
-      zIndex: "0",
-      pointerEvents: "none",
-      opacity: "0.6",
-    });
-    document.body.prepend(canvas);
-  }
 
-  const ctx = canvas.getContext("2d");
-  let w, h;
-  let particles = [];
+  // ── 4. MAJOR CONTESTED SIGNAL STRIKE ──
+  // Triggers one massive glitch between 12 and 22 seconds
+  const strikeTime = Math.floor(Math.random() * (22000 - 12000 + 1)) + 12000;
+  
+  setTimeout(() => {
+    const anomalyType = Math.floor(Math.random() * 3); // Rolls 0, 1, or 2
 
-  const styles = getComputedStyle(document.documentElement);
-  let skinType = "matrix";
-  let primaryColor = "rgba(0, 255, 65, 0.5)";
-
-  if (styles.getPropertyValue("--cmd-red").trim() !== "") {
-    skinType = "comrade";
-    primaryColor = "rgba(217, 0, 0, 0.4)";
-  } else if (styles.getPropertyValue("--amber").trim() !== "") {
-    skinType = "blade";
-    primaryColor = "rgba(255, 170, 0, 0.3)";
-  } else if (styles.getPropertyValue("--ghost-cyan").trim() !== "") {
-    skinType = "ghost";
-    primaryColor = "rgba(136, 204, 255, 0.3)";
-  }
-
-  function resize() {
-    w = canvas.width = window.innerWidth;
-    h = canvas.height = window.innerHeight;
-  }
-  window.addEventListener("resize", resize);
-  resize();
-
-  // Chaos Multipliers: Randomize density and speed every load
-  const densityMultiplier = Math.random() * 1.5 + 0.5; // 50% to 200% normal density
-  const speedMultiplier = Math.random() * 1.5 + 0.5;
-  const count = Math.floor(
-    (window.innerWidth < 768 ? 15 : 40) * densityMultiplier,
-  );
-
-  for (let i = 0; i < count; i++) {
-    particles.push({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      vx: (Math.random() - 0.5) * speedMultiplier,
-      vy: (Math.random() - 0.5) * speedMultiplier,
-      size: Math.random() * 2 + 1,
-      hex: Math.floor(Math.random() * 255)
-        .toString(16)
-        .toUpperCase(),
-    });
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, w, h);
-
-    particles.forEach((p, index) => {
-      if (skinType === "blade" || skinType === "matrix") {
-        p.y += Math.abs(p.vy) + 0.5;
-        if (p.y > h) p.y = 0;
-        ctx.fillStyle = primaryColor;
-        ctx.font =
-          skinType === "matrix"
-            ? "14px 'VT323', monospace"
-            : "12px 'Share Tech Mono', monospace";
-        ctx.fillText(p.hex, p.x, p.y);
-      } else if (skinType === "ghost") {
-        p.x += p.vx * 0.5;
-        p.y += p.vy * 0.5;
-        if (p.x < 0 || p.x > w) p.vx *= -1;
-        if (p.y < 0 || p.y > h) p.vy *= -1;
-        ctx.fillStyle = primaryColor;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
-        for (let j = index + 1; j < particles.length; j++) {
-          const p2 = particles[j];
-          const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-          if (dist < 120) {
-            ctx.beginPath();
-            ctx.strokeStyle = primaryColor.replace(
-              /0\.[0-9]+\)/,
-              `${1 - dist / 120})`,
-            );
-            ctx.lineWidth = 0.5;
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.stroke();
+    if (anomalyType === 0) {
+      // Physical CRT Tear
+      document.body.classList.add('matrix-crt-tear');
+      setTimeout(() => document.body.classList.remove('matrix-crt-tear'), 500);
+    } 
+    else if (anomalyType === 1) {
+      // Old World Power Drop
+      document.body.classList.add('matrix-power-drop');
+      setTimeout(() => document.body.classList.remove('matrix-power-drop'), 700);
+    } 
+    else {
+      // Cipher Title Scramble
+      const title = document.getElementById('entryWord') || document.querySelector('.title');
+      if (title) {
+        const originalText = title.dataset.orig || title.innerText;
+        title.dataset.orig = originalText;
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>';
+        let iterations = 0;
+        const interval = setInterval(() => {
+          title.innerText = originalText.split('').map((char, index) => {
+            if (char === ' ') return ' ';
+            if (index < iterations) return originalText[index];
+            return chars[Math.floor(Math.random() * chars.length)];
+          }).join('');
+          
+          if (iterations >= originalText.length) {
+            clearInterval(interval);
+            title.innerText = originalText;
           }
-        }
-      } else if (skinType === "comrade") {
-        p.x += Math.abs(p.vx) + 1.5;
-        if (p.x > w) p.x = 0;
-        ctx.fillStyle = primaryColor;
-        ctx.fillRect(p.x, p.y, 15, 2);
+          iterations += 1 / 3;
+        }, 30);
       }
-    });
-    requestAnimationFrame(draw);
-  }
+    }
+  }, strikeTime);
 
-  draw();
-})();
+});
