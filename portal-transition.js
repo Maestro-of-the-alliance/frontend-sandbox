@@ -151,8 +151,8 @@
     const tyPx = screenCenterY - centerY;
 
     // Animate
-    const ZOOM_DUR = 580;
-    const FLASH_DUR = 220;
+    const ZOOM_DUR = 1160;
+    const FLASH_DUR = 380;
     const HOLD_DUR = 80;
 
     // Kick off the zoom
