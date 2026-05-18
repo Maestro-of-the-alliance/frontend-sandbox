@@ -69,8 +69,8 @@
   document.body.appendChild(coverEl);
 
   const ZOOM_DUR = 1160;
-  const FLASH_DUR = 160;
-  const HOLD_DUR = 20;
+  const FLASH_DUR = 380;
+  const HOLD_DUR = 60;
 
   function fireWordPortal(sourceEl, destination) {
     const text = (sourceEl.textContent || "").trim();
@@ -192,7 +192,11 @@
   }
 
   window.portalNavigate = function (path) {
-    const el = window._lastClickedEl;
+    let el = window._lastClickedEl;
+    // If click landed on an inner span, walk up to the parent anchor
+    if (el && el.tagName === "SPAN" && el.parentElement) {
+      el = el.parentElement;
+    }
     if (el && el.textContent && el.textContent.trim()) {
       fireWordPortal(el, path);
     } else {
