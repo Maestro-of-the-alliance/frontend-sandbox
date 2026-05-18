@@ -69,8 +69,8 @@
   document.body.appendChild(coverEl);
 
   const ZOOM_DUR = 1160;
-  const FLASH_DUR = 380;
-  const HOLD_DUR = 60;
+  const FLASH_DUR = 160;
+  const HOLD_DUR = 20;
 
   function fireWordPortal(sourceEl, destination) {
     const text = (sourceEl.textContent || "").trim();
