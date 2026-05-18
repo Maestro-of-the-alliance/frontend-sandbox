@@ -143,6 +143,7 @@
     },
     { label: "Scar", data: "SCAR", path: "/shield/scar" },
     { label: "Shelter", data: "SHELTER", path: "/shield/shelter" },
+    { label: "SI", data: "SI", path: "/shield/si" },
     { label: "Tenant", data: "TENANT", path: "/shield/tenant" },
     {
       label: "Volunteer Economics",
@@ -362,10 +363,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 24px;
-      background: rgba(0,0,0,0.85);
+      padding: 12px 24px 16px;
+      background: rgba(0,0,0,0.9);
       border-top: 1px solid rgba(184,150,40,0.15);
       z-index: 100;
+      min-height: 64px;
     }
     .nw-bottom-nav a {
       font-family: "VT323", monospace;
@@ -375,12 +377,27 @@
       letter-spacing: 0.12em;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       transition: color 0.2s;
+      max-width: 38%;
     }
     .nw-bottom-nav a:hover { color: rgba(184,150,40,0.9); }
-    .nw-arrow-sym { font-size: 18px; }
-    .nw-center-home { flex-direction: column; gap: 2px; text-align: center; }
+    .nw-arrow-sym { font-size: 18px; flex-shrink: 0; }
+    .nw-arrow-label {
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.3;
+      text-align: center;
+    }
+    .nw-center-home {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      flex-direction: column;
+      gap: 2px;
+      text-align: center;
+      max-width: 60px;
+    }
   `;
   document.head.appendChild(style);
 
@@ -717,6 +734,7 @@
     const nextA = document.createElement("a");
     nextA.href = next.path;
     nextA.style.textAlign = "right";
+    nextA.style.alignItems = "flex-end";
     nextA.innerHTML = `<span class="nw-arrow-label">${next.label}</span><span class="nw-arrow-sym">►</span>`;
     nextA.addEventListener("click", (e) => {
       e.preventDefault();
