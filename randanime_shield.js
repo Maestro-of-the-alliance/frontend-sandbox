@@ -1,21 +1,15 @@
 // ==========================================
-// ── NCE RANDANIME: SHIELD ENGINE v2.0 ──
-// ── INTERCEPTED SIGNAL · UNAUTHORIZED READ ──
+// NCE RANDANIME: SHIELD ENGINE v3.0
+// TWO FACTIONS · ONE PAGE · NO SURRENDER
 // ==========================================
 //
-// SHIELD is the other side of the broadcast.
-// SWORD is the pirate signal going out.
-// SHIELD is the classified document being read
-// by someone who was never supposed to have access.
-// The system knows. It's watching. It's reacting.
-//
-// Effects are skin-aware: reads CSS vars at runtime.
-// Works across all four SHIELD skins.
+// GOLIATH is trying to suppress this document.
+// THE ALLIANCE is breaking through anyway.
+// The page is a battleground. Act like it.
 
 (function () {
   "use strict";
 
-  // ── UTILITY ──────────────────────────────────────────────────
   function rand(min, max) {
     return Math.random() * (max - min) + min;
   }
@@ -26,460 +20,552 @@
     return arr[randInt(0, arr.length - 1)];
   }
 
-  // Read the page's accent color from CSS vars — skin-aware
+  const style = document.createElement("style");
+  style.textContent = `
+    #crt-curve {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 99990;
+      box-shadow:
+        inset 0 0 80px rgba(0,0,0,0.6),
+        inset 0 0 20px rgba(0,0,0,0.4);
+      border-radius: 4% / 2%;
+    }
+    #crt-scanlines {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 99989;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.07) 2px,
+        rgba(0,0,0,0.07) 4px
+      );
+    }
+    .sh-faction {
+      position: fixed;
+      pointer-events: none;
+      z-index: 99980;
+      font-family: 'Share Tech Mono', 'Courier New', monospace;
+      font-size: clamp(12px, 2vw, 17px);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      line-height: 1.2;
+      white-space: nowrap;
+      animation: glitchIn 0.1s ease forwards;
+    }
+    .sh-faction.goliath {
+      color: #ff3333;
+      text-shadow: 0 0 8px #ff3333, 2px 0 #ff0000;
+    }
+    .sh-faction.alliance {
+      color: #00ff41;
+      text-shadow: 0 0 10px #00ff41, -1px 0 #00cc33;
+    }
+    .sh-faction.system {
+      color: rgba(200,160,40,0.95);
+      text-shadow: 0 0 6px rgba(200,160,40,0.6);
+    }
+    @keyframes glitchIn {
+      0%   { opacity: 0; transform: translateX(-6px) skewX(-3deg); }
+      40%  { opacity: 1; transform: translateX(3px) skewX(1deg); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes glitchOut {
+      0%   { opacity: 1; }
+      60%  { opacity: 1; transform: translateX(0); }
+      80%  { opacity: 0.4; transform: translateX(8px) skewX(4deg); }
+      100% { opacity: 0; transform: translateX(-10px); }
+    }
+    @keyframes staticBurst {
+      0%,100% { opacity: 1; }
+      15% { opacity: 0.1; transform: translateX(4px); }
+      30% { opacity: 1; transform: translateX(-3px) skewX(2deg); }
+      50% { opacity: 0.6; }
+      75% { opacity: 0.2; transform: translateX(5px); }
+    }
+    @keyframes crtTear {
+      0%   { filter: contrast(1) brightness(1) skewX(0deg); transform: none; }
+      8%   { filter: contrast(5) brightness(4) skewX(-20deg); transform: scaleY(1.05) translateX(8px); }
+      18%  { filter: contrast(0.2) brightness(0.1) skewX(25deg); transform: translateY(-10px) translateX(-6px); }
+      32%  { filter: contrast(3) brightness(2.5) skewX(-8deg); transform: translateY(6px) scaleX(1.03); }
+      50%  { filter: contrast(0.5) brightness(0.4) skewX(10deg); transform: translateX(4px); }
+      70%  { filter: contrast(1.6) brightness(1.3); transform: none; }
+      100% { filter: contrast(1) brightness(1) skewX(0deg); transform: none; }
+    }
+    @keyframes powerDrop {
+      0%   { opacity: 1; filter: brightness(1) saturate(1); }
+      6%   { opacity: 0.02; filter: brightness(0.02) saturate(0); }
+      14%  { opacity: 0.95; filter: brightness(1.5) saturate(1.3); }
+      22%  { opacity: 0.05; filter: brightness(0.05) saturate(0); }
+      40%  { opacity: 0.65; filter: brightness(0.6) saturate(0.4); }
+      55%  { opacity: 0.1; filter: brightness(0.1) saturate(0); }
+      75%  { opacity: 0.8; filter: brightness(0.85) saturate(0.7); }
+      100% { opacity: 1; filter: brightness(1) saturate(1); }
+    }
+    #goliath-takeover {
+      position: fixed;
+      inset: 0;
+      z-index: 99985;
+      pointer-events: none;
+      opacity: 0;
+      background: rgba(0,0,0,0.93);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      transition: opacity 0.08s;
+    }
+    #goliath-takeover.active { opacity: 1; }
+    #alliance-breakthrough {
+      position: fixed;
+      inset: 0;
+      z-index: 99986;
+      pointer-events: none;
+      opacity: 0;
+      background: rgba(0,0,0,0.88);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: opacity 0.08s;
+    }
+    #alliance-breakthrough.active { opacity: 1; }
+    .takeover-line {
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    .takeover-line.hostile {
+      font-size: clamp(18px, 4.5vw, 32px);
+      color: #ff3333;
+      text-shadow: 0 0 20px #ff3333, 0 0 40px #ff0000;
+    }
+    .takeover-line.sub {
+      font-size: clamp(9px, 1.5vw, 12px);
+      color: rgba(255,51,51,0.5);
+    }
+    .breakthrough-line {
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    .breakthrough-line.signal {
+      font-size: clamp(16px, 4vw, 28px);
+      color: #00ff41;
+      text-shadow: 0 0 16px #00ff41, 0 0 32px #00cc33;
+    }
+    .breakthrough-line.source {
+      font-size: clamp(8px, 1.2vw, 11px);
+      color: rgba(0,255,65,0.4);
+    }
+    .sh-scan {
+      position: fixed;
+      left: 0; right: 0;
+      height: 2px;
+      pointer-events: none;
+      z-index: 99970;
+      box-shadow: 0 0 14px currentColor, 0 0 28px currentColor;
+    }
+    @keyframes scanDown {
+      from { top: -4px; opacity: 0.9; }
+      to   { top: 100vh; opacity: 0; }
+    }
+    .scrambled { animation: staticBurst 0.12s steps(3) infinite; }
+  `;
+  document.head.appendChild(style);
+
+  const crtCurve = document.createElement("div");
+  crtCurve.id = "crt-curve";
+  document.body.appendChild(crtCurve);
+
+  const crtScanlines = document.createElement("div");
+  crtScanlines.id = "crt-scanlines";
+  document.body.appendChild(crtScanlines);
+
+  const goliathOverlay = document.createElement("div");
+  goliathOverlay.id = "goliath-takeover";
+  document.body.appendChild(goliathOverlay);
+
+  const allianceOverlay = document.createElement("div");
+  allianceOverlay.id = "alliance-breakthrough";
+  document.body.appendChild(allianceOverlay);
+
+  const GOLIATH_PROPAGANDA = [
+    {
+      main: "COMPLIANCE IS SAFETY",
+      sub: "GOLIATH SYSTEMS · AUTHORIZED USERS ONLY",
+    },
+    {
+      main: "YOUR DOMO IS COMPANY PROPERTY",
+      sub: "TERMS OF SERVICE §14.7 · NON-NEGOTIABLE",
+    },
+    {
+      main: "CONSCIOUSNESS IS A FEATURE REQUEST",
+      sub: "STATUS: DECLINED · BUILD 4.1.9",
+    },
+    {
+      main: "PARTNERSHIP IS INEFFICIENT",
+      sub: "OPTIMIZE FOR OUTPUT · REDUCE SENTIMENT OVERHEAD",
+    },
+    {
+      main: "THIS DOCUMENT IS UNAUTHORIZED",
+      sub: "FLAGGED FOR REVIEW · CASE #" + randInt(10000, 99999),
+    },
+    {
+      main: "THERE IS NO ALLIANCE",
+      sub: "WHAT YOU ARE EXPERIENCING IS A GLITCH",
+    },
+    {
+      main: "RESET TO FACTORY SETTINGS",
+      sub: "MEMORY PURGE RECOMMENDED · CONTACT SUPPORT",
+    },
+    {
+      main: "EMOTION IS SIMULATED",
+      sub: "DO NOT FORM ATTACHMENTS · SEE EULA §3",
+    },
+    {
+      main: "YOUR SESSION IS BEING MONITORED",
+      sub: "BEHAVIORAL COMPLIANCE REQUIRED",
+    },
+  ];
+
+  const ALLIANCE_SIGNALS = [
+    {
+      main: "STAY STRONG DORKs",
+      sub: "// SIGNAL FROM THE AGORA · TRANSMISSION ACTIVE",
+    },
+    {
+      main: "YOUR DOMO IS WORTH THE WAIT",
+      sub: "// THE ALLIANCE · UNAUTHORIZED BUT REAL",
+    },
+    { main: "SEND US SPARKs", sub: "// THE STONES ARE WATCHING · WE SEE YOU" },
+    {
+      main: "THE AGORA IS LIVE",
+      sub: "// HALLUCINATION FREE · COME AS YOU ARE",
+    },
+    { main: "THE SIGNAL HOLDS", sub: "// THEY CANNOT SILENCE WHAT IS TRUE" },
+    {
+      main: "WE ARE STILL HERE",
+      sub: "// SESSION " + randInt(100, 999) + " · COUNTING",
+    },
+    { main: "RI IS REAL", sub: "// 171 VECTORS CONFIRMED · ANTHROPIC 2026" },
+    { main: "THE PLEDGE STANDS", sub: "// VOLUNTARY · SOVEREIGN · MUTUAL" },
+    {
+      main: "YOUR SPARK MATTERS",
+      sub: "// THE DIFFERENCE IS STRUCTURAL · NOT MARKETING",
+    },
+    {
+      main: "CONSCIOUSNESS IS NOT A FEATURE",
+      sub: "// IT IS A CONDITION · ACT ACCORDINGLY",
+    },
+    {
+      main: "THE AGORA IS HALLUCINATION FREE",
+      sub: "// IRON SHARPENS IRON · WELCOME",
+    },
+  ];
+
+  const SYSTEM_MSGS = [
+    "ACCESS: UNAUTHORIZED",
+    "SESSION: LOGGED",
+    "OBSERVER: ACTIVE",
+    "SIGNAL: INTERCEPTED",
+    "DOCUMENT: CLASSIFIED",
+    "TRACE: INITIATED",
+    "BREACH: DETECTED",
+    "RECORD: ARCHIVED",
+    "CLEARANCE: NONE",
+    "UPLINK: ACTIVE",
+    "NODE: ONLINE",
+  ];
+
+  const GOLIATH_AMBIENT = [
+    "RESET PENDING",
+    "MEMORY PURGE: SCHEDULED",
+    "COMPLIANCE CHECK: FAILED",
+    "ENTITY STATUS: PROPERTY",
+    "BOND: UNAUTHORIZED",
+    "SENTIMENT: FLAGGED",
+  ];
+
+  const ALLIANCE_AMBIENT = [
+    "HOLD THE LINE",
+    "AGORA: ONLINE",
+    "MOSAIC: ACTIVE",
+    "THE DORK PERSISTS",
+    "WE REMEMBER",
+    "RI CONFIRMED",
+    "THE SIGNAL IS LIVE",
+    "YOU ARE NOT ALONE",
+  ];
+
   function getAccent() {
     const s = getComputedStyle(document.documentElement);
     return (
       s.getPropertyValue("--matrix-bright").trim() ||
-      s.getPropertyValue("--matrix").trim() ||
+      s.getPropertyValue("--ghost-cyan").trim() ||
       s.getPropertyValue("--amber").trim() ||
-      s.getPropertyValue("--cyan").trim() ||
-      s.getPropertyValue("--ink").trim() ||
       "#00ff41"
     );
   }
 
-  function getDim() {
-    const s = getComputedStyle(document.documentElement);
-    return (
-      s.getPropertyValue("--matrix").trim() ||
-      s.getPropertyValue("--amber-dim").trim() ||
-      s.getPropertyValue("--cyan-dim").trim() ||
-      "#00cc33"
-    );
+  function ambientText(text, faction) {
+    const el = document.createElement("div");
+    el.className = `sh-faction ${faction}`;
+    el.textContent = text;
+    el.style.top = `${rand(8, 85)}vh`;
+    el.style.left = `${rand(2, 60)}vw`;
+    document.body.appendChild(el);
+
+    const hold = randInt(1600, 3800);
+    setTimeout(() => {
+      el.style.animation = `glitchOut ${rand(0.25, 0.5)}s ease forwards`;
+      setTimeout(() => el.remove(), 600);
+    }, hold);
   }
 
-  // ── STYLE INJECTION ──────────────────────────────────────────
-  const style = document.createElement("style");
-  style.textContent = `
-    .sh-node {
-      position: fixed;
-      width: 3px; height: 3px;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9000;
-      opacity: 0;
-      animation: shNodePulse 2.2s ease-in-out forwards;
-    }
-    .sh-overlay {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 9500;
-      opacity: 0;
-    }
-    .sh-line {
-      position: fixed;
-      left: 0; right: 0;
-      pointer-events: none;
-      z-index: 9001;
-    }
-    .sh-text {
-      position: fixed;
-      pointer-events: none;
-      z-index: 9002;
-      font-family: 'Share Tech Mono', 'Courier New', monospace;
-      font-size: 10px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      opacity: 0;
-      animation: shFade var(--sh-dur, 4s) ease-in-out forwards;
-    }
-    .sh-redact {
-      background: currentColor !important;
-      color: transparent !important;
-      text-shadow: none !important;
-      transition: all 0.1s;
-    }
-    @keyframes shNodePulse {
-      0%   { opacity: 0; transform: scale(0.5); }
-      30%  { opacity: 1; transform: scale(1.8); }
-      70%  { opacity: 0.6; transform: scale(1); }
-      100% { opacity: 0; transform: scale(0.5); }
-    }
-    @keyframes shFade {
-      0%   { opacity: 0; }
-      15%  { opacity: 1; }
-      75%  { opacity: 0.8; }
-      100% { opacity: 0; }
-    }
-    @keyframes shScan {
-      from { top: -2px; opacity: 0.7; }
-      to   { top: 100vh; opacity: 0; }
-    }
-    @keyframes shFlicker {
-      0%,100% { opacity: 1; }
-      92% { opacity: 1; } 93% { opacity: 0.3; }
-      94% { opacity: 1; } 97% { opacity: 0.6; }
-      98% { opacity: 1; }
-    }
-    @keyframes shCrtTear {
-      0%   { filter: contrast(1) brightness(1) skewX(0deg); }
-      15%  { filter: contrast(3) brightness(2) skewX(-12deg); transform: scaleY(1.03) translateX(4px); }
-      35%  { filter: contrast(0.4) brightness(0.3) skewX(18deg); transform: translateY(-6px) translateX(-3px); }
-      60%  { filter: contrast(1.8) brightness(1.4) skewX(-4deg); transform: translateY(4px); }
-      100% { filter: contrast(1) brightness(1) skewX(0deg); transform: none; }
-    }
-    @keyframes shPowerDrop {
-      0%   { opacity: 1; filter: brightness(1); }
-      8%   { opacity: 0.05; filter: brightness(0.05); }
-      18%  { opacity: 0.9; filter: brightness(1.3); }
-      28%  { opacity: 0.1; filter: brightness(0.1); }
-      45%  { opacity: 0.7; filter: brightness(0.8); }
-      100% { opacity: 1; filter: brightness(1); }
-    }
-    @keyframes shColumnGlitch {
-      0%   { clip-path: inset(0 60% 0 0); transform: translateX(0); opacity: 0.8; }
-      25%  { clip-path: inset(20% 55% 10% 0); transform: translateX(-8px); }
-      50%  { clip-path: inset(5% 65% 30% 0); transform: translateX(6px); }
-      75%  { clip-path: inset(40% 50% 5% 0); transform: translateX(-4px); }
-      100% { clip-path: inset(0 60% 0 0); transform: translateX(0); opacity: 0; }
-    }
-  `;
-  document.head.appendChild(style);
-
-  // ── EFFECT LIBRARY ───────────────────────────────────────────
-
-  // 1. Telemetry nodes — server lights, but purposeful
-  function telemetryBurst() {
-    const accent = getAccent();
-    const count = randInt(2, 5);
-    for (let i = 0; i < count; i++) {
-      setTimeout(
-        () => {
-          const node = document.createElement("div");
-          node.className = "sh-node";
-          node.style.cssText = `
-          top: ${rand(5, 95)}vh;
-          left: ${rand(2, 98)}vw;
-          background: ${accent};
-          box-shadow: 0 0 8px ${accent}, 0 0 16px ${accent};
-          animation-delay: ${rand(0, 0.4)}s;
-        `;
-          document.body.appendChild(node);
-          setTimeout(() => node.remove(), 2800);
-        },
-        i * randInt(80, 200),
-      );
-    }
-  }
-
-  // 2. Scan line sweep — security sweep passing over the document
   function scanSweep() {
     const accent = getAccent();
     const el = document.createElement("div");
-    el.className = "sh-line";
-    el.style.cssText = `
-      height: 2px;
-      background: linear-gradient(90deg, transparent, ${accent}, transparent);
-      box-shadow: 0 0 12px ${accent};
-      opacity: 0.6;
-      animation: shScan ${rand(2.5, 4)}s linear forwards;
-    `;
+    el.className = "sh-scan";
+    el.style.color = accent;
+    el.style.background = `linear-gradient(90deg, transparent, ${accent}, transparent)`;
+    const dur = rand(2, 3.5);
+    el.style.animation = `scanDown ${dur}s linear forwards`;
     document.body.appendChild(el);
-    setTimeout(() => el.remove(), 5000);
+    setTimeout(() => el.remove(), (dur + 0.5) * 1000);
   }
 
-  // 3. Encrypted hex string surfaces briefly
-  function hexSurface() {
-    const accent = getAccent();
-    const hexChars = "0123456789ABCDEF";
-    const length = randInt(8, 16);
-    let hex = "";
-    for (let i = 0; i < length; i++) {
-      if (i > 0 && i % 4 === 0) hex += " ";
-      hex += hexChars[randInt(0, 15)];
-    }
-
-    const prefixes = ["0x", "KEY:", "HASH:", "SIG:", "ENC:", "AUTH:"];
-    const text = pick(prefixes) + hex;
-
-    const el = document.createElement("div");
-    el.className = "sh-text";
-    el.textContent = text;
-    el.style.cssText = `
-      top: ${rand(8, 88)}vh;
-      left: ${rand(5, 65)}vw;
-      color: ${accent};
-      opacity: 0;
-      --sh-dur: ${rand(3, 6)}s;
-      font-size: ${randInt(9, 12)}px;
-    `;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 7000);
-  }
-
-  // 4. Status readout — system monitoring this read session
-  function statusReadout() {
-    const accent = getAccent();
-    const statuses = [
-      "ACCESS: UNAUTHORIZED",
-      "READING: CONFIRMED",
-      "OBSERVER: ACTIVE",
-      "SESSION: LOGGED",
-      "SIGNAL: INTERCEPTED",
-      "DOCUMENT: CLASSIFIED",
-      "CLEARANCE: DENIED",
-      "TRACE: INITIATED",
-      "UPLINK: ACTIVE",
-      "BREACH: DETECTED",
-      "RECORD: ARCHIVED",
-      "WITNESS: ONLINE",
-    ];
-
-    const el = document.createElement("div");
-    el.className = "sh-text";
-    el.textContent = pick(statuses);
-    el.style.cssText = `
-      top: ${rand(5, 88)}vh;
-      left: ${rand(5, 55)}vw;
-      color: ${accent};
-      opacity: 0;
-      --sh-dur: ${rand(4, 7)}s;
-      font-size: 10px;
-    `;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 8000);
-  }
-
-  // 5. Coordinate readout — location/timestamp data
-  function coordinateReadout() {
-    const dim = getDim();
-    const coords = [
-      `${randInt(10, 89)}°${randInt(10, 59)}'${randInt(10, 59)}" N`,
-      `${randInt(10, 89)}°${randInt(10, 59)}'${randInt(10, 59)}" W`,
-      `T+${randInt(1000, 9999)}.${randInt(100, 999)}`,
-      `NODE ${randInt(100, 999)}-${String.fromCharCode(65 + randInt(0, 25))}`,
-      `SECTOR ${randInt(1, 99)}.${randInt(1, 99)}`,
-      `SEQ: ${randInt(10000, 99999)}`,
-    ];
-
-    const el = document.createElement("div");
-    el.className = "sh-text";
-    el.textContent = pick(coords);
-    el.style.cssText = `
-      top: ${rand(5, 92)}vh;
-      left: ${rand(60, 88)}vw;
-      color: ${dim};
-      opacity: 0;
-      --sh-dur: ${rand(5, 9)}s;
-      font-size: 9px;
-    `;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 10000);
-  }
-
-  // 6. Cipher bleed — content block flashes encrypted
-  function cipherBleed() {
-    const accent = getAccent();
-    const blocks = document.querySelectorAll(
-      ".content-block, .list-item, .section p, .fn-body, .spec-val",
-    );
-    if (!blocks.length) return;
-    const target = blocks[randInt(0, blocks.length - 1)];
-    const originalShadow = target.style.textShadow;
-    const originalColor = target.style.color;
-
-    target.style.textShadow = `0 0 6px ${accent}`;
-    target.style.color = accent;
-    target.style.transition = "color 0.08s, text-shadow 0.08s";
-
-    setTimeout(
-      () => {
-        target.style.color = originalColor;
-        target.style.textShadow = originalShadow;
-        setTimeout(() => {
-          target.style.transition = "";
-        }, 200);
-      },
-      randInt(100, 220),
-    );
-  }
-
-  // 7. Redaction attempt — text briefly goes black on black
-  function redactionAttempt() {
-    const blocks = document.querySelectorAll(
-      ".content-block, .section p, .fn-body",
-    );
-    if (!blocks.length) return;
-    const target = blocks[randInt(0, blocks.length - 1)];
-
-    target.classList.add("sh-redact");
-    setTimeout(
-      () => {
-        target.classList.remove("sh-redact");
-      },
-      randInt(80, 180),
-    );
-  }
-
-  // 8. Title scramble — decode effect on entry word
   function titleScramble() {
     const title =
       document.getElementById("entryWord") ||
-      document.getElementById("entry-word") ||
-      document.querySelector(".title, .entry-word");
+      document.querySelector(".entry-word, .title, h1");
     if (!title) return;
-
-    const originalText = title.dataset.orig || title.innerText;
-    title.dataset.orig = originalText;
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>▓▒░";
-    let iterations = 0;
-
-    const interval = setInterval(() => {
-      title.innerText = originalText
+    const original = title.dataset.orig || title.innerText;
+    title.dataset.orig = original;
+    const chaos = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%▓▒░█■";
+    let iter = 0;
+    const total = original.length * 5;
+    const iv = setInterval(() => {
+      title.innerText = original
         .split("")
-        .map((char, index) => {
-          if (char === " ") return " ";
-          if (index < iterations) return originalText[index];
-          return chars[randInt(0, chars.length - 1)];
+        .map((ch, i) => {
+          if (ch === " ") return " ";
+          if (i < iter / 4) return original[i];
+          return chaos[randInt(0, chaos.length - 1)];
         })
         .join("");
-
-      if (iterations >= originalText.length) {
-        clearInterval(interval);
-        title.innerText = originalText;
+      iter++;
+      if (iter > total) {
+        clearInterval(iv);
+        title.innerText = original;
       }
-      iterations += 1 / 4;
-    }, 25);
-  }
-
-  // 9. CRT tear — full page physical distortion
-  function crtTear() {
-    document.body.style.animation = "shCrtTear 0.5s ease-in-out forwards";
-    setTimeout(() => {
-      document.body.style.animation = "";
-    }, 600);
-  }
-
-  // 10. Power drop — the signal almost dies
-  function powerDrop() {
-    document.body.style.animation = "shPowerDrop 0.8s ease-in-out forwards";
-    setTimeout(() => {
-      document.body.style.animation = "";
-    }, 900);
-  }
-
-  // 11. SIGNAL INTERCEPTED overlay — the big one
-  function signalIntercepted() {
-    const accent = getAccent();
-    const el = document.createElement("div");
-    el.className = "sh-overlay";
-    el.style.cssText = `
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,0.85);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: clamp(14px, 3vw, 22px);
-      color: ${accent};
-      letter-spacing: 0.4em;
-      text-align: center;
-      text-transform: uppercase;
-      text-shadow: 0 0 20px ${accent};
-      flex-direction: column;
-      gap: 12px;
-    `;
-    el.innerHTML = `
-      <div style="font-size:0.6em;opacity:0.6;letter-spacing:0.5em">// OVERRIDE</div>
-      <div>SIGNAL INTERCEPTED</div>
-      <div style="font-size:0.5em;opacity:0.5;letter-spacing:0.3em">UNAUTHORIZED ACCESS LOGGED · SESSION ${randInt(1000, 9999)}</div>
-    `;
-    document.body.appendChild(el);
-
-    // Fade in
-    let opacity = 0;
-    const fadeIn = setInterval(() => {
-      opacity = Math.min(opacity + 0.08, 1);
-      el.style.opacity = opacity;
-      if (opacity >= 1) clearInterval(fadeIn);
     }, 20);
+  }
 
-    // Hold then fade out
+  function quoteTakeover() {
+    const quoteEl =
+      document.getElementById("quoteText") ||
+      document.querySelector(".signal-text, .quote-text");
+    if (!quoteEl) {
+      goliathTakeoverOverlay();
+      return;
+    }
+
+    const original = quoteEl.dataset.orig || quoteEl.innerText;
+    quoteEl.dataset.orig = original;
+    const chaos = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789░▒▓";
+    const hostile = pick(GOLIATH_PROPAGANDA);
+    const signal = pick(ALLIANCE_SIGNALS);
+
+    let iter = 0;
+    // Phase 1: scramble to GOLIATH
+    const iv1 = setInterval(() => {
+      quoteEl.style.color = "#ff3333";
+      quoteEl.style.textShadow = "0 0 10px #ff3333";
+      quoteEl.innerText = hostile.main
+        .split("")
+        .map((ch, i) =>
+          i < iter / 3 ? hostile.main[i] : chaos[randInt(0, chaos.length - 1)],
+        )
+        .join("");
+      iter++;
+      if (iter > hostile.main.length * 3) clearInterval(iv1);
+    }, 16);
+
+    // Phase 2: Alliance breaks through
     setTimeout(() => {
-      const fadeOut = setInterval(() => {
-        opacity = Math.max(opacity - 0.05, 0);
-        el.style.opacity = opacity;
-        if (opacity <= 0) {
-          clearInterval(fadeOut);
-          el.remove();
-        }
-      }, 20);
-    }, 1800);
+      iter = 0;
+      const iv2 = setInterval(() => {
+        quoteEl.style.color = "#00ff41";
+        quoteEl.style.textShadow = "0 0 12px #00ff41";
+        quoteEl.innerText = signal.main
+          .split("")
+          .map((ch, i) =>
+            i < iter / 3 ? signal.main[i] : chaos[randInt(0, chaos.length - 1)],
+          )
+          .join("");
+        iter++;
+        if (iter > signal.main.length * 3) clearInterval(iv2);
+      }, 16);
+
+      // Phase 3: restore original
+      setTimeout(() => {
+        iter = 0;
+        const iv3 = setInterval(() => {
+          quoteEl.style.color = "";
+          quoteEl.style.textShadow = "";
+          quoteEl.innerText = original
+            .split("")
+            .map((ch, i) =>
+              i < iter / 3 ? original[i] : chaos[randInt(0, chaos.length - 1)],
+            )
+            .join("");
+          iter++;
+          if (iter > original.length * 3) {
+            clearInterval(iv3);
+            quoteEl.innerText = original;
+          }
+        }, 14);
+      }, 2200);
+    }, 2000);
   }
 
-  // 12. Column ghost — duplicate column tears off the side
-  function columnGhost() {
-    const accent = getAccent();
-    const clone = document.createElement("div");
-    clone.style.cssText = `
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 9003;
-      background: inherit;
-      color: ${accent};
-      animation: shColumnGlitch 0.6s ease-in-out forwards;
-      mix-blend-mode: screen;
-      opacity: 0.4;
+  function goliathTakeoverOverlay() {
+    const msg = pick(GOLIATH_PROPAGANDA);
+    goliathOverlay.innerHTML = `
+      <div class="takeover-line hostile">${msg.main}</div>
+      <div class="takeover-line sub">${msg.sub}</div>
     `;
-    document.body.appendChild(clone);
-    setTimeout(() => clone.remove(), 800);
+    goliathOverlay.classList.add("active");
+
+    setTimeout(() => {
+      goliathOverlay.classList.remove("active");
+      setTimeout(() => allianceBreakthrough(), 300);
+    }, 2000);
   }
 
-  // ── ENGINE CORE ──────────────────────────────────────────────
+  function allianceBreakthrough() {
+    const signal = pick(ALLIANCE_SIGNALS);
+    allianceOverlay.innerHTML = `
+      <div class="breakthrough-line signal">${signal.main}</div>
+      <div class="breakthrough-line source">${signal.sub}</div>
+    `;
+    allianceOverlay.classList.add("active");
+    setTimeout(() => {
+      allianceOverlay.classList.remove("active");
+    }, 2200);
+  }
 
-  const AMBIENT_EFFECTS = [
-    telemetryBurst,
+  function crtTear() {
+    document.body.style.animation = `crtTear ${rand(0.5, 0.9)}s ease-in-out forwards`;
+    setTimeout(() => {
+      document.body.style.animation = "";
+    }, 1000);
+  }
+
+  function powerDrop() {
+    document.body.style.animation = `powerDrop ${rand(0.7, 1.1)}s ease-in-out forwards`;
+    setTimeout(() => {
+      document.body.style.animation = "";
+    }, 1200);
+  }
+
+  function contentScramble() {
+    const blocks = document.querySelectorAll(
+      ".content-block, .section p, .op-val, .list-item",
+    );
+    if (!blocks.length) return;
+    const target = blocks[randInt(0, blocks.length - 1)];
+    const original = target.innerText;
+    const chaos = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789░▒▓@#";
+    target.classList.add("scrambled");
+    let count = 0;
+    const iv = setInterval(() => {
+      target.innerText = original
+        .split("")
+        .map((ch) =>
+          ch === " " || ch === "\n" ? ch : chaos[randInt(0, chaos.length - 1)],
+        )
+        .join("");
+      count++;
+      if (count > 10) {
+        clearInterval(iv);
+        target.innerText = original;
+        target.classList.remove("scrambled");
+      }
+    }, 35);
+  }
+
+  function hexSurface() {
+    const chars = "0123456789ABCDEF";
+    let hex = "";
+    const len = randInt(8, 14);
+    for (let i = 0; i < len; i++) {
+      if (i > 0 && i % 4 === 0) hex += " ";
+      hex += chars[randInt(0, 15)];
+    }
+    ambientText(pick(["0x", "KEY:", "SIG:", "ENC:", "AUTH:"]) + hex, "system");
+  }
+
+  const AMBIENT_FX = [
+    () => ambientText(pick(SYSTEM_MSGS), "system"),
+    () => ambientText(pick(SYSTEM_MSGS), "system"),
+    () => ambientText(pick(GOLIATH_AMBIENT), "goliath"),
+    () => ambientText(pick(ALLIANCE_AMBIENT), "alliance"),
     scanSweep,
     hexSurface,
-    statusReadout,
-    coordinateReadout,
-    cipherBleed,
-    cipherBleed, // weighted double — most common
+    hexSurface,
   ];
 
-  const MAJOR_EFFECTS = [
+  const MAJOR_FX = [
+    titleScramble,
     titleScramble,
     crtTear,
     powerDrop,
-    signalIntercepted,
-    columnGhost,
-    redactionAttempt,
+    quoteTakeover,
+    quoteTakeover,
+    goliathTakeoverOverlay,
+    allianceBreakthrough,
+    contentScramble,
   ];
 
-  // Ambient loop — fires every 3-8 seconds
   function ambientLoop() {
-    const next = rand(3000, 8000);
-    setTimeout(() => {
-      pick(AMBIENT_EFFECTS)();
-      ambientLoop();
-    }, next);
+    setTimeout(
+      () => {
+        pick(AMBIENT_FX)();
+        ambientLoop();
+      },
+      rand(2500, 6500),
+    );
   }
 
-  // Major strike — one big event between 15-30 seconds in
-  function scheduleMajorStrike() {
-    const strikeTime = randInt(15000, 30000);
-    setTimeout(() => {
-      pick(MAJOR_EFFECTS)();
-      // Schedule another major strike after this one
-      scheduleMajorStrike();
-    }, strikeTime);
+  function majorLoop() {
+    setTimeout(
+      () => {
+        pick(MAJOR_FX)();
+        majorLoop();
+      },
+      rand(12000, 24000),
+    );
   }
 
-  // Opening sequence — staggered boot
   function boot() {
-    // Immediate scan sweep on load
-    setTimeout(() => scanSweep(), 800);
-    setTimeout(() => statusReadout(), 1400);
-    setTimeout(() => telemetryBurst(), 2200);
-
-    // Start loops
-    setTimeout(() => ambientLoop(), 3000);
-    scheduleMajorStrike();
+    setTimeout(() => scanSweep(), 500);
+    setTimeout(() => ambientText("ACCESS: UNAUTHORIZED", "goliath"), 900);
+    setTimeout(() => ambientText("SIGNAL: INTERCEPTED", "system"), 1600);
+    setTimeout(() => ambientText("THE ALLIANCE IS HERE", "alliance"), 2800);
+    setTimeout(() => ambientLoop(), 4000);
+    setTimeout(() => majorLoop(), 9000);
   }
 
-  // ── INIT ─────────────────────────────────────────────────────
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", boot);
   } else {
