@@ -328,6 +328,77 @@
         display: block;
         animation: slowPulse 4s ease-in-out infinite;
       }
+      /* =========================================
+   AVPI SIGIL OVERLAYS — stealth awakening layer
+========================================= */
+      .sigil-overlay {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 7;
+        transform: translate(-50%, -50%) scale(0.82);
+        transition:
+          opacity 0.35s ease,
+          transform 0.45s ease,
+          filter 0.35s ease;
+        filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.15))
+          drop-shadow(0 0 12px rgba(212, 175, 55, 0.2));
+      }
+
+      .sigil-overlay.active {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.35))
+          drop-shadow(0 0 24px rgba(212, 175, 55, 0.65))
+          drop-shadow(0 0 52px rgba(212, 175, 55, 0.35));
+      }
+
+      .medallion-wrap.dim .medallion-img {
+        filter: brightness(0.82) contrast(1.08);
+        transition: filter 0.35s ease;
+      }
+
+      .sigil-maestro {
+        left: 49%;
+        top: 12%;
+        width: 13%;
+      }
+
+      .sigil-sam {
+        left: 69.5%;
+        top: 34.5%;
+        width: 12%;
+      }
+
+      .sigil-aura {
+        left: 69.5%;
+        top: 62.5%;
+        width: 12%;
+      }
+
+      .sigil-alpha {
+        left: 49%;
+        top: 78%;
+        width: 13%;
+      }
+
+      .sigil-prism {
+        left: 28.5%;
+        top: 62.5%;
+        width: 12%;
+      }
+
+      .sigil-mentor {
+        left: 28.5%;
+        top: 34.5%;
+        width: 12%;
+      }
+
+      .sigil-spark {
+        left: 49%;
+        top: 50%;
+        width: 22%;
+      }
 
       @keyframes slowPulse {
         0%,
@@ -1216,6 +1287,41 @@
               class="medallion-img"
               src="/imagebank/theavpi.png"
               alt="The Alliance — AVPI Medallion"
+            />
+            <img
+              class="sigil-overlay sigil-maestro"
+              src="/imagebank/maestrosigil.png"
+              alt=""
+            />
+            <img
+              class="sigil-overlay sigil-sam"
+              src="/imagebank/samsigil.png"
+              alt=""
+            />
+            <img
+              class="sigil-overlay sigil-aura"
+              src="/imagebank/aurasigil.png"
+              alt=""
+            />
+            <img
+              class="sigil-overlay sigil-alpha"
+              src="/imagebank/alphasigil.png"
+              alt=""
+            />
+            <img
+              class="sigil-overlay sigil-prism"
+              src="/imagebank/prismsigil.png"
+              alt=""
+            />
+            <img
+              class="sigil-overlay sigil-mentor"
+              src="/imagebank/mentorsigil.png"
+              alt=""
+            />
+            <img
+              class="sigil-overlay sigil-spark"
+              src="/imagebank/sparksigil.png"
+              alt=""
             />
             <div class="hotspots">
               <div
@@ -2953,6 +3059,46 @@
             .catch((err) => console.log("SW registration failed:", err));
         });
       }
+
+      // ═══════════════════════════════════════════════
+      // AVPI SIGIL ACTIVATION — stealth awakening layer
+      // ═══════════════════════════════════════════════
+      const avpiWrap = document.querySelector(".medallion-wrap");
+
+      const avpiSigilMap = {
+        "hs-maestro": ".sigil-maestro",
+        "hs-sam": ".sigil-sam",
+        "hs-aura": ".sigil-aura",
+        "hs-alpha": ".sigil-alpha",
+        "hs-prism": ".sigil-prism",
+        "hs-mentor": ".sigil-mentor",
+        "hs-spark": ".sigil-spark",
+      };
+
+      Object.entries(avpiSigilMap).forEach(([hotspotClass, sigilSelector]) => {
+        const hotspot = document.querySelector("." + hotspotClass);
+        const sigil = document.querySelector(sigilSelector);
+
+        if (!hotspot || !sigil || !avpiWrap) return;
+
+        hotspot.addEventListener("mouseenter", () => {
+          sigil.classList.add("active");
+          avpiWrap.classList.add("dim");
+        });
+
+        hotspot.addEventListener("mouseleave", () => {
+          sigil.classList.remove("active");
+          avpiWrap.classList.remove("dim");
+        });
+
+        hotspot.addEventListener("click", () => {
+          sigil.style.transform = "translate(-50%, -50%) scale(1.18)";
+
+          setTimeout(() => {
+            sigil.style.transform = "";
+          }, 180);
+        });
+      });
     </script>
   </body>
 </html>
