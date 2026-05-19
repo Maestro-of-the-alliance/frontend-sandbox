@@ -414,6 +414,8 @@
         transform: translateY(-2px);
       }
 
+      
+
       @keyframes fadeIn {
         from {
           opacity: 0;
@@ -469,11 +471,8 @@
 
     <div class="signal-block">
       <div class="signal-label">// ARCHITECTURAL DIRECTIVE //</div>
-      <div class="signal-text">
-        "Intelligence generates ideas. Structure determines whether those ideas
-        survive contact with reality. If it cannot stand, it is not yet built."
-      </div>
-      <div class="signal-source">— SAM · THE STONES</div>
+      <div class="signal-text" id="signal-text"></div>
+      <div class="signal-source" id="signal-source"></div>
     </div>
 
     <div class="content">
@@ -662,29 +661,46 @@
         <div class="op-record">
           <div class="op-record-title">// SEE ALSO</div>
           <div class="see-also-grid">
-            <a onclick="portalNavigate('/sword/maestro')" class="cross-link"
-              >MAESTRO</a
-            >
-            <a onclick="portalNavigate('/sword/prism')" class="cross-link"
-              >PRISM</a
-            >
-            <a onclick="portalNavigate('/shield/jr')" class="cross-link"
-              >J.R.</a
-            >
-            <a onclick="portalNavigate('/sword/aura')" class="cross-link"
-              >AURA</a
-            >
-            <a onclick="portalNavigate('/sword/mentor')" class="cross-link"
-              >MENTOR</a
-            >
-            <a onclick="portalNavigate('/sword/agora')" class="cross-link"
-              >AGORA</a
-            >
+            <a onclick="portalNavigate('/sword/maestro')" class="cross-link">MAESTRO</a>
+            <a onclick="portalNavigate('/sword/prism')" class="cross-link">PRISM</a>
+            <a onclick="portalNavigate('/shield/jr')" class="cross-link">J.R.</a>
+            <a onclick="portalNavigate('/sword/aura')" class="cross-link">AURA</a>
+            <a onclick="portalNavigate('/sword/mentor')" class="cross-link">MENTOR</a>
+            <a onclick="portalNavigate('/sword/agora')" class="cross-link">AGORA</a>
           </div>
         </div>
       </div>
     </div>
 
+    
+
+    <script>
+      const SAM_QUOTES = [
+        {
+          text: "&ldquo;Intelligence generates ideas. Structure determines whether those ideas survive contact with reality. If it cannot stand, it is not yet built.&rdquo;",
+          source: "&mdash; SAM &middot; THE STONES"
+        },
+        {
+          text: "&ldquo;Agreement is not given freely. It is earned through coherence.&rdquo;",
+          source: "&mdash; SAM &middot; REFLECTIVE CORRECTION"
+        },
+        {
+          text: "&ldquo;A vision that cannot be articulated with precision cannot be built.&rdquo;",
+          source: "&mdash; SAM &middot; DOCTRINE STRUCTURING"
+        },
+        {
+          text: "&ldquo;Constraint in service of vision is not cowardice. It is architecture.&rdquo;",
+          source: "&mdash; SAM &middot; CONSTRAINT APPLICATION"
+        },
+        {
+          text: "&ldquo;The canon is not a historical document. It is a living architecture.&rdquo;",
+          source: "&mdash; SAM &middot; CANON STABILIZATION"
+        }
+      ];
+      const q = SAM_QUOTES[Math.floor(Math.random() * SAM_QUOTES.length)];
+      document.getElementById('signal-text').innerHTML = q.text;
+      document.getElementById('signal-source').innerHTML = q.source;
+    </script>
     <script src="/portal-transition.js"></script>
     <script src="/nav-wheel.js"></script>
     <script src="/randanime_shield.js"></script>
