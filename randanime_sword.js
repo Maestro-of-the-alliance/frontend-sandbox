@@ -327,11 +327,40 @@
   // ── ANIMATION REGISTRY ───────────────────────────────
   // Organized by tier for weighted random selection.
   const TIERS = {
-    miniscule: ["ra-breathe", "ra-ghost", "ra-drift", "ra-dim", "ra-pixel-shift"],
-    minor: ["ra-flicker", "ra-chroma-soft", "ra-scan-line", "ra-weight-pulse", "ra-hue-rotate"],
-    moderate: ["ra-slide-in", "ra-tear-focus", "ra-chroma-hard", "ra-stamp", "ra-static-entry"],
-    major: ["ra-burn", "ra-glitch-shake", "ra-signal-break", "ra-noise-resolve"],
-    massive: ["ra-meltdown", "ra-tear-apart", "ra-broadcast-break", "ra-emp", "ra-vertical-wipe"],
+    miniscule: [
+      "ra-breathe",
+      "ra-ghost",
+      "ra-drift",
+      "ra-dim",
+      "ra-pixel-shift",
+    ],
+    minor: [
+      "ra-flicker",
+      "ra-chroma-soft",
+      "ra-scan-line",
+      "ra-weight-pulse",
+      "ra-hue-rotate",
+    ],
+    moderate: [
+      "ra-slide-in",
+      "ra-tear-focus",
+      "ra-chroma-hard",
+      "ra-stamp",
+      "ra-static-entry",
+    ],
+    major: [
+      "ra-burn",
+      "ra-glitch-shake",
+      "ra-signal-break",
+      "ra-noise-resolve",
+    ],
+    massive: [
+      "ra-meltdown",
+      "ra-tear-apart",
+      "ra-broadcast-break",
+      "ra-emp",
+      "ra-vertical-wipe",
+    ],
   };
 
   // Weighted random pick — massives are rare, miniscules are common.
