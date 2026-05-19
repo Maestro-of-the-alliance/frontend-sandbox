@@ -2,11 +2,17 @@
 //  RANDANIME SWORD ENGINE — 25 ANIMATION VARIANTS
 //  Unauthorized transmission. Signal unstable.
 //  Every visit is different. That's the point.
+//
+//  v2.1 SPRINT TUNE:
+//  - Preserves original SWORD atmosphere.
+//  - Prevents multiple Tier 5 / massive animations stacking on one page load.
+//  - Slows the signal-break loop to protect readability.
 // ══════════════════════════════════════════════════════
 
-(function() {
+(function () {
+  "use strict";
 
-const RANDANIME_CSS = `
+  const RANDANIME_CSS = `
 
 /* ═══════════════════════════════════
    TIER 1 — MINISCULE (barely there)
@@ -210,8 +216,9 @@ const RANDANIME_CSS = `
   90% { transform:translate(-1px,2px); }
 }
 
+/* Slowed from 3s to 11s so the rupture reads as atmosphere, not constant distraction. */
 .ra-signal-break {
-  animation: raSignalBreak 3s ease infinite;
+  animation: raSignalBreak 11s ease infinite;
 }
 @keyframes raSignalBreak {
   0%,70%,100% { clip-path: none; transform:none; }
@@ -312,112 +319,158 @@ const RANDANIME_CSS = `
 }
 `;
 
-// ── INJECT CSS ───────────────────────────────────────
-const styleEl = document.createElement('style');
-styleEl.textContent = RANDANIME_CSS;
-document.head.appendChild(styleEl);
+  // ── INJECT CSS ───────────────────────────────────────
+  const styleEl = document.createElement("style");
+  styleEl.textContent = RANDANIME_CSS;
+  document.head.appendChild(styleEl);
 
-// ── ANIMATION REGISTRY ───────────────────────────────
-// Organized by tier for weighted random selection
-const TIERS = {
-  miniscule: ['ra-breathe','ra-ghost','ra-drift','ra-dim','ra-pixel-shift'],
-  minor:     ['ra-flicker','ra-chroma-soft','ra-scan-line','ra-weight-pulse','ra-hue-rotate'],
-  moderate:  ['ra-slide-in','ra-tear-focus','ra-chroma-hard','ra-stamp','ra-static-entry'],
-  major:     ['ra-burn','ra-glitch-shake','ra-signal-break','ra-noise-resolve'],
-  massive:   ['ra-meltdown','ra-tear-apart','ra-broadcast-break','ra-emp','ra-vertical-wipe']
-};
+  // ── ANIMATION REGISTRY ───────────────────────────────
+  // Organized by tier for weighted random selection.
+  const TIERS = {
+    miniscule: ["ra-breathe", "ra-ghost", "ra-drift", "ra-dim", "ra-pixel-shift"],
+    minor: ["ra-flicker", "ra-chroma-soft", "ra-scan-line", "ra-weight-pulse", "ra-hue-rotate"],
+    moderate: ["ra-slide-in", "ra-tear-focus", "ra-chroma-hard", "ra-stamp", "ra-static-entry"],
+    major: ["ra-burn", "ra-glitch-shake", "ra-signal-break", "ra-noise-resolve"],
+    massive: ["ra-meltdown", "ra-tear-apart", "ra-broadcast-break", "ra-emp", "ra-vertical-wipe"],
+  };
 
-// Weighted random pick — massives are rare, miniscules are common
-const WEIGHTS = {
-  miniscule: 5,
-  minor: 4,
-  moderate: 3,
-  major: 2,
-  massive: 1
-};
+  // Weighted random pick — massives are rare, miniscules are common.
+  const WEIGHTS = {
+    miniscule: 5,
+    minor: 4,
+    moderate: 3,
+    major: 2,
+    massive: 1,
+  };
 
-function weightedPick(exclude) {
-  const pool = [];
-  for (const [tier, anims] of Object.entries(TIERS)) {
-    const weight = WEIGHTS[tier];
-    for (const anim of anims) {
-      if (!exclude.includes(anim)) {
-        for (let i = 0; i < weight; i++) pool.push(anim);
+  const MASSIVE_ANIMS = new Set(TIERS.massive);
+
+  function getTier(animName) {
+    for (const [tier, anims] of Object.entries(TIERS)) {
+      if (anims.includes(animName)) return tier;
+    }
+    return null;
+  }
+
+  function weightedPick(exclude, alreadyHasMassive) {
+    const pool = [];
+
+    for (const [tier, anims] of Object.entries(TIERS)) {
+      if (tier === "massive" && alreadyHasMassive) continue;
+
+      const weight = WEIGHTS[tier];
+
+      for (const anim of anims) {
+        if (!exclude.includes(anim)) {
+          for (let i = 0; i < weight; i++) {
+            pool.push(anim);
+          }
+        }
       }
     }
-  }
-  return pool[Math.floor(Math.random() * pool.length)];
-}
 
-function pickAnimations(count) {
-  const picked = [];
-  for (let i = 0; i < count; i++) {
-    picked.push(weightedPick(picked));
+    return pool[Math.floor(Math.random() * pool.length)];
   }
-  return picked;
-}
 
-// ── APPLY TO ENTRY WORD ──────────────────────────────
-window.randanime = function(elementId, count) {
-  const el = document.getElementById(elementId || 'entryWord');
-  if (!el) return;
-  const n = count || (3 + Math.floor(Math.random() * 3)); // 3-5 animations
-  const chosen = pickAnimations(n);
-  
-  // Apply first as primary entry animation, rest as ongoing
-  // Entry animations (one-shot) vs loop animations
-  const oneShots = ['ra-slide-in','ra-tear-focus','ra-stamp','ra-static-entry','ra-burn',
-                    'ra-glitch-shake','ra-noise-resolve','ra-meltdown','ra-tear-apart',
-                    'ra-broadcast-break','ra-emp','ra-vertical-wipe'];
-  
-  const loops = chosen.filter(c => !oneShots.includes(c));
-  const entry = chosen.find(c => oneShots.includes(c));
-  
-  // Apply entry animation first
-  if (entry) {
-    el.classList.add(entry);
-    // After entry completes, apply loop animations
-    setTimeout(() => {
-      el.classList.remove(entry);
-      loops.forEach(l => el.classList.add(l));
-    }, 1800);
-  } else {
-    loops.forEach(l => el.classList.add(l));
+  function pickAnimations(count) {
+    const picked = [];
+
+    for (let i = 0; i < count; i++) {
+      const alreadyHasMassive = picked.some((anim) => MASSIVE_ANIMS.has(anim));
+      const next = weightedPick(picked, alreadyHasMassive);
+
+      if (!next) break;
+
+      picked.push(next);
+    }
+
+    return picked;
   }
-  
-  return chosen;
-};
 
-// ── QUOTE ROTATION ENGINE ────────────────────────────
-window.rotateQuotes = function(quotes, textId, sourceId, interval) {
-  if (!quotes || quotes.length === 0) return;
-  
-  const textEl = document.getElementById(textId || 'quoteText');
-  const sourceEl = document.getElementById(sourceId || 'quoteSource');
-  if (!textEl) return;
-  
-  // Pick random starting quote
-  let idx = Math.floor(Math.random() * quotes.length);
-  
-  function showQuote() {
-    const q = quotes[idx];
-    if (textEl) textEl.style.opacity = '0';
-    if (sourceEl) sourceEl.style.opacity = '0';
-    
-    setTimeout(() => {
-      if (textEl) textEl.textContent = typeof q === 'string' ? q : q.text;
-      if (sourceEl && typeof q === 'object') sourceEl.textContent = q.source || '';
-      if (textEl) textEl.style.transition = 'opacity 0.8s';
-      if (sourceEl) sourceEl.style.transition = 'opacity 0.8s';
-      if (textEl) textEl.style.opacity = '1';
-      if (sourceEl) sourceEl.style.opacity = '1';
-    }, 600);
-    
-    idx = (idx + 1) % quotes.length;
-  }
-  
-  showQuote();
-  setInterval(showQuote, interval || 7000);
-};
+  // ── APPLY TO ENTRY WORD ──────────────────────────────
+  window.randanime = function (elementId, count) {
+    const el = document.getElementById(elementId || "entryWord");
+    if (!el) return;
 
+    const n = count || 3 + Math.floor(Math.random() * 3); // 3-5 animations
+    const chosen = pickAnimations(n);
+
+    // Entry animations are one-shot.
+    // Loop animations continue as background instability.
+    const oneShots = [
+      "ra-slide-in",
+      "ra-tear-focus",
+      "ra-stamp",
+      "ra-static-entry",
+      "ra-burn",
+      "ra-glitch-shake",
+      "ra-noise-resolve",
+      "ra-meltdown",
+      "ra-tear-apart",
+      "ra-broadcast-break",
+      "ra-emp",
+      "ra-vertical-wipe",
+    ];
+
+    const loops = chosen.filter((c) => !oneShots.includes(c));
+    const entry = chosen.find((c) => oneShots.includes(c));
+
+    // Clean any previous Randanime classes before applying new ones.
+    Object.values(TIERS)
+      .flat()
+      .forEach((className) => el.classList.remove(className));
+
+    if (entry) {
+      el.classList.add(entry);
+
+      // After entry resolves, remove the one-shot and apply the selected loops.
+      setTimeout(() => {
+        el.classList.remove(entry);
+        loops.forEach((loopClass) => el.classList.add(loopClass));
+      }, 1800);
+    } else {
+      loops.forEach((loopClass) => el.classList.add(loopClass));
+    }
+
+    return chosen;
+  };
+
+  // ── QUOTE ROTATION ENGINE ────────────────────────────
+  window.rotateQuotes = function (quotes, textId, sourceId, interval) {
+    if (!quotes || quotes.length === 0) return;
+
+    const textEl = document.getElementById(textId || "quoteText");
+    const sourceEl = document.getElementById(sourceId || "quoteSource");
+
+    if (!textEl) return;
+
+    // Pick random starting quote.
+    let idx = Math.floor(Math.random() * quotes.length);
+
+    function showQuote() {
+      const q = quotes[idx];
+
+      if (textEl) textEl.style.opacity = "0";
+      if (sourceEl) sourceEl.style.opacity = "0";
+
+      setTimeout(() => {
+        if (textEl) {
+          textEl.textContent = typeof q === "string" ? q : q.text;
+          textEl.style.transition = "opacity 0.8s";
+          textEl.style.opacity = "1";
+        }
+
+        if (sourceEl && typeof q === "object") {
+          sourceEl.textContent = q.source || "";
+          sourceEl.style.transition = "opacity 0.8s";
+          sourceEl.style.opacity = "1";
+        }
+      }, 600);
+
+      idx = (idx + 1) % quotes.length;
+    }
+
+    showQuote();
+    setInterval(showQuote, interval || 7000);
+  };
 })();
