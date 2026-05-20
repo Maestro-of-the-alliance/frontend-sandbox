@@ -244,4 +244,89 @@
       overlay.classList.remove("active");
     }
   });
+  // ==========================================
+  // IMAGE PORTAL TRANSITION
+  // AVPI SIGIL ZOOM ENGINE
+  // ==========================================
+
+  window.portalImageTransition = function (e, destination, imageSrc) {
+    if (e && e.preventDefault) e.preventDefault();
+
+    const sourceEl =
+      (e && e.currentTarget) || (e && e.target) || window._lastClickedEl;
+
+    if (!sourceEl || !imageSrc) {
+      pageFadeNavigate(destination);
+      return;
+    }
+
+    const rect = sourceEl.getBoundingClientRect();
+
+    const img = document.createElement("img");
+
+    img.src = imageSrc;
+
+    img.style.cssText = `
+    position: fixed;
+    left: ${rect.left + rect.width / 2}px;
+    top: ${rect.top + rect.height / 2}px;
+    width: ${rect.width}px;
+    height: ${rect.height}px;
+    transform: translate(-50%, -50%);
+    transform-origin: center center;
+    pointer-events: none;
+    z-index: 999996;
+    opacity: 1;
+    will-change: transform, opacity, filter;
+    filter:
+      drop-shadow(0 0 12px rgba(255,255,255,0.18))
+      drop-shadow(0 0 36px rgba(212,175,55,0.28));
+  `;
+
+    document.body.appendChild(img);
+
+    overlay.classList.add("active");
+
+    setTimeout(() => {
+      coverEl.classList.add("covering");
+    }, 40);
+
+    const start = performance.now();
+    const DURATION = 1100;
+
+    function animate(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / DURATION, 1);
+
+      const eased = 1 - Math.pow(1 - progress, 4);
+
+      const scale = 1 + 22 * eased;
+
+      const brightness = 1 + 2.5 * eased;
+
+      img.style.transform = `translate(-50%, -50%) scale(${scale})`;
+
+      img.style.filter = `
+      brightness(${brightness})
+      drop-shadow(0 0 20px rgba(255,255,255,0.35))
+      drop-shadow(0 0 80px rgba(212,175,55,0.42))
+    `;
+
+      img.style.opacity = `${1 - progress * 0.35}`;
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        flashEl.style.transition = "opacity 240ms ease";
+
+        flashEl.style.opacity = "1";
+
+        setTimeout(() => {
+          window.location.href = destination;
+        }, 220);
+      }
+    }
+
+    requestAnimationFrame(animate);
+  };
 })();
