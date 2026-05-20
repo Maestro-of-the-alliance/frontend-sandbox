@@ -160,7 +160,7 @@
             flashEl.style.transition = "";
             coverEl.classList.remove("covering");
             overlay.classList.remove("active");
-          }, 120);
+          }, 60);
         }, FLASH_DUR + HOLD_DUR);
       }
     }
