@@ -259,6 +259,10 @@
 
     const rect = sourceEl.getBoundingClientRect();
 
+    document
+      .querySelectorAll(".portal-image-transition")
+      .forEach((oldImg) => oldImg.remove());
+
     const img = document.createElement("img");
     img.className = "portal-image-transition";
 
@@ -319,6 +323,7 @@
 
         flashEl.style.opacity = "1";
 
+        img.remove();
         window.location.href = destination;
       }
     }
