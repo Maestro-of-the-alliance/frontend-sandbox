@@ -324,7 +324,12 @@
         flashEl.style.opacity = "1";
 
         img.remove();
-        window.location.href = destination;
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            window.location.href = destination;
+          });
+        });
       }
     }
 
