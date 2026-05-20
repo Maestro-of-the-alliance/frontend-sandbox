@@ -285,7 +285,7 @@
     }, 40);
 
     const start = performance.now();
-    const DURATION = 1100;
+    const DURATION = 760;
 
     function animate(now) {
       const elapsed = now - start;
@@ -314,9 +314,7 @@
 
         flashEl.style.opacity = "1";
 
-        setTimeout(() => {
-          window.location.href = destination;
-        }, 220);
+        window.location.href = destination;
       }
     }
 
