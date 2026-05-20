@@ -227,15 +227,19 @@
     true,
   );
 
-  window.addEventListener("pageshow", function (e) {
-    if (e.persisted) {
-      wordEl.style.opacity = "0";
-      wordEl.style.transform = "";
-      flashEl.style.opacity = "0";
-      flashEl.style.transition = "";
-      coverEl.classList.remove("covering");
-      overlay.classList.remove("active");
-    }
+  window.addEventListener("pageshow", function () {
+    wordEl.style.opacity = "0";
+    wordEl.style.transform = "";
+
+    flashEl.style.opacity = "0";
+    flashEl.style.transition = "";
+
+    coverEl.classList.remove("covering");
+    overlay.classList.remove("active");
+
+    document
+      .querySelectorAll(".portal-image-transition")
+      .forEach((img) => img.remove());
   });
   // ==========================================
   // IMAGE PORTAL TRANSITION
@@ -256,6 +260,7 @@
     const rect = sourceEl.getBoundingClientRect();
 
     const img = document.createElement("img");
+    img.className = "portal-image-transition";
 
     img.src = imageSrc;
 
