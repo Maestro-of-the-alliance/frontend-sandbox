@@ -316,21 +316,13 @@
 
       img.style.opacity = `${1 - progress * 0.35}`;
 
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      } else {
-        flashEl.style.transition = "opacity 240ms ease";
-
-        flashEl.style.opacity = "1";
-
+      if (progress >= 0.82) {
         img.remove();
-
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            window.location.href = destination;
-          });
-        });
+        window.location.href = destination;
+        return;
       }
+
+      requestAnimationFrame(animate);
     }
 
     requestAnimationFrame(animate);
