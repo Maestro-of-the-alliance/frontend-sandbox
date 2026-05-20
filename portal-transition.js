@@ -154,14 +154,7 @@
 
         setTimeout(() => {
           window.location.href = destination;
-          setTimeout(() => {
-            wordEl.style.opacity = "0";
-            flashEl.style.opacity = "0";
-            flashEl.style.transition = "";
-            coverEl.classList.remove("covering");
-            overlay.classList.remove("active");
-          }, 60);
-        }, FLASH_DUR + HOLD_DUR);
+        }, 120);
       }
     }
 
