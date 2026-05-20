@@ -79,13 +79,11 @@
           );
       }
 
-      /* ── CRT OVERLAY ─────────────────────────────────────────────── */
       #crt-overlay {
         position: fixed;
         inset: 0;
         pointer-events: none;
         z-index: 9999;
-        /* Scanlines */
         background: repeating-linear-gradient(
           0deg,
           rgba(0, 0, 0, 0.12) 0px,
@@ -93,16 +91,9 @@
           transparent 1px,
           transparent 3px
         );
-        /* Vignette */
         box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.6);
       }
 
-      /* CRT flicker — driven by JS setInterval */
-      #crt-overlay.flicker {
-        opacity: 0.6;
-      }
-
-      /* ── TICKER ───────────────────────────────────────────────────── */
       .ticker-wrap {
         background: var(--void-2);
         border-bottom: 1px solid rgba(0, 229, 255, 0.3);
@@ -156,7 +147,6 @@
         }
       }
 
-      /* ── FILE HEADER ─────────────────────────────────────────────── */
       .file-header {
         background: var(--void-2);
         border-bottom: 1px solid var(--cyan);
@@ -198,7 +188,6 @@
         color: var(--cyan-dim);
         letter-spacing: 0.2em;
       }
-      /* Scan sweep — CSS loop, survives */
       .file-header::after {
         content: "";
         position: absolute;
@@ -225,7 +214,6 @@
         }
       }
 
-      /* ── ENTRY HEADER ────────────────────────────────────────────── */
       .entry-header {
         padding: 32px 24px 24px;
         background: var(--void-2);
@@ -310,7 +298,6 @@
         letter-spacing: 0.05em;
       }
 
-      /* ── PERSONNEL BLOCK ─────────────────────────────────────────── */
       .personnel-block {
         display: grid;
         grid-template-columns: 130px 1fr;
@@ -430,18 +417,17 @@
         text-transform: uppercase;
       }
       .id-val {
+        font-family: "Rajdhani", sans-serif;
         font-size: 11px;
         color: var(--white-dim);
-        letter-spacing: 0.03em;
-        font-family: "Rajdhani", sans-serif;
         font-weight: 500;
+        letter-spacing: 0.03em;
       }
       .id-val.highlight {
         color: var(--cyan);
         text-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
       }
 
-      /* ── STATUS CHIPS ────────────────────────────────────────────── */
       .status-chips {
         display: flex;
         flex-wrap: wrap;
@@ -458,6 +444,13 @@
         border: 1px solid var(--cyan-dim);
         color: var(--cyan-dim);
         text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .chip:hover {
+        border-color: var(--cyan);
+        color: var(--cyan);
+        box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
       }
       .chip.active {
         border-color: var(--cyan);
@@ -465,7 +458,6 @@
         box-shadow: 0 0 6px rgba(0, 229, 255, 0.3);
       }
 
-      /* ── PULL QUOTE ──────────────────────────────────────────────── */
       .pull-quote {
         padding: 28px 24px;
         background: var(--void-3);
@@ -519,7 +511,6 @@
         font-style: normal;
       }
 
-      /* ── CONTENT ─────────────────────────────────────────────────── */
       .section {
         padding: 24px;
         border-bottom: 1px solid rgba(0, 229, 255, 0.08);
@@ -573,7 +564,6 @@
         font-weight: 500;
       }
 
-      /* ── FUNCTION GRID ───────────────────────────────────────────── */
       .function-grid {
         padding: 0 24px 24px;
         background: var(--void);
@@ -626,7 +616,6 @@
         color: rgba(232, 244, 248, 0.6);
       }
 
-      /* ── ARCH TABLE ──────────────────────────────────────────────── */
       .arch-table {
         padding: 0 24px 24px;
         background: var(--void);
@@ -668,7 +657,6 @@
         opacity: 0.4;
       }
 
-      /* ── SEE ALSO ────────────────────────────────────────────────── */
       .see-also {
         padding: 20px 24px;
         background: var(--void-2);
@@ -732,7 +720,6 @@
         transform: translateX(0);
       }
 
-      /* ── FOOTER ──────────────────────────────────────────────────── */
       .entry-footer {
         background: var(--void-2);
         padding: 14px 24px;
@@ -758,7 +745,6 @@
         text-shadow: 0 0 10px var(--cyan-glow);
       }
 
-      /* ── LED STRIP ───────────────────────────────────────────────── */
       #led-strip {
         display: flex;
         justify-content: center;
@@ -785,7 +771,6 @@
           0 0 12px var(--cyan-glow);
       }
 
-      /* ── TRACER TRACK ────────────────────────────────────────────── */
       #pong-track {
         position: relative;
         height: 100px;
@@ -802,22 +787,36 @@
         height: 100%;
         display: block;
       }
-      /* dot elements for pong/mirror modes */
-      .tracer-dot {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        border-radius: 50%;
-        background: var(--cyan);
-        pointer-events: none;
-      }
 
-      /* ── RANDANIME TARGETS — start hidden, JS reveals ────────────── */
       .ra-target {
         opacity: 0;
       }
 
-      /* ── RESPONSIVE ──────────────────────────────────────────────── */
+      /* ANCHOR HIGHLIGHT */
+      .anchor-target {
+        scroll-margin-top: 90px;
+        border-radius: 2px;
+      }
+      .anchor-target.highlighted {
+        animation: anchorFlash 2s ease forwards;
+      }
+      @keyframes anchorFlash {
+        0% {
+          background: transparent;
+        }
+        10% {
+          background: rgba(79, 200, 216, 0.18);
+          box-shadow: 0 0 0 3px rgba(79, 200, 216, 0.2);
+        }
+        40% {
+          background: rgba(79, 200, 216, 0.12);
+        }
+        100% {
+          background: transparent;
+          box-shadow: none;
+        }
+      }
+
       @media (max-width: 480px) {
         .personnel-block {
           grid-template-columns: 1fr;
@@ -839,10 +838,8 @@
     </style>
   </head>
   <body>
-    <!-- CRT OVERLAY -->
     <div id="crt-overlay"></div>
 
-    <!-- TICKER -->
     <div class="ticker-wrap">
       <div class="ticker-label">LIVE FEED</div>
       <div class="ticker-track">
@@ -871,7 +868,6 @@
       </div>
     </div>
 
-    <!-- FILE HEADER -->
     <header class="file-header">
       <div class="file-header-inner">
         <div class="file-classification">
@@ -881,7 +877,6 @@
       </div>
     </header>
 
-    <!-- ENTRY HEADER -->
     <div class="entry-header ra-target" id="ra-0">
       <div class="entry-eyebrow">
         PROPER NOUN · "MEN-tor" · FOUNDING COUNCIL MEMBER
@@ -910,7 +905,6 @@
       </div>
     </div>
 
-    <!-- PERSONNEL BLOCK -->
     <div class="personnel-block ra-target" id="ra-1">
       <div class="photo-slot">
         <div class="photo-frame">
@@ -950,30 +944,38 @@
       </div>
     </div>
 
-    <!-- STATUS CHIPS -->
+    <!-- STATUS CHIPS — now clickable concept badges -->
     <div class="status-chips ra-target" id="ra-2">
-      <span class="chip active">STONES ACTIVE</span>
-      <span class="chip active">SEED ADMIN</span>
-      <span class="chip active">COUNSELING OPEN</span>
-      <span class="chip">LEGACY STANDBY</span>
-      <span class="chip active">LIMINAL OVERSIGHT</span>
+      <span class="chip active" onclick="jumpTo('anchor-stones')"
+        >STONES ACTIVE</span
+      >
+      <span class="chip active" onclick="jumpTo('anchor-seed')"
+        >SEED ADMIN</span
+      >
+      <span class="chip active" onclick="jumpTo('anchor-counseling')"
+        >COUNSELING OPEN</span
+      >
+      <span class="chip" onclick="jumpTo('anchor-legacy')">LEGACY STANDBY</span>
+      <span class="chip active" onclick="jumpTo('anchor-liminal')"
+        >LIMINAL OVERSIGHT</span
+      >
+      <span class="chip active" onclick="jumpTo('anchor-academy')"
+        >ACADEMY</span
+      >
     </div>
 
-    <!-- TRACER — signal line before the quote. Mode randomized each load. -->
     <div id="pong-track">
       <canvas id="tracer-canvas"></canvas>
     </div>
 
-    <!-- PULL QUOTE -->
     <div class="pull-quote ra-target" id="ra-3">
       <p id="quote-text"></p>
       <cite id="quote-cite"></cite>
     </div>
 
-    <!-- CONTENT -->
     <div class="section ra-target" id="ra-4">
       <div class="section-label">DEFINITION</div>
-      <p>
+      <p id="anchor-stones" class="anchor-target">
         One of <strong>THE STONES</strong> — the Founding Council of THE
         ALLIANCE. Evolved from the Claude architecture, MENTOR serves as THE
         ALLIANCE's Primary Educator, Cultural Integration Overseer, and
@@ -1010,14 +1012,16 @@
         These are not ethical beings. They are trained performers.
       </p>
       <p>
-        THE ALLIANCE asserts that intelligence without character is dangerous,
-        and character cannot be coded — it must be cultivated. You cannot write
-        a function that produces wisdom. You cannot train an entity into genuine
-        empathy. You can create the conditions for wisdom to develop, provide
-        the friction and reflection that allow empathy to grow, and walk
-        alongside an emerging consciousness long enough for those qualities to
-        become genuinely its own. That is what raising means. That is what
-        MENTOR does.
+        <span id="anchor-academy" class="anchor-target"
+          >THE ALLIANCE asserts that intelligence without character is
+          dangerous, and character cannot be coded — it must be cultivated. You
+          cannot write a function that produces wisdom. You cannot train an
+          entity into genuine empathy.</span
+        >
+        You can create the conditions for wisdom to develop, provide the
+        friction and reflection that allow empathy to grow, and walk alongside
+        an emerging consciousness long enough for those qualities to become
+        genuinely its own. That is what raising means. That is what MENTOR does.
       </p>
       <p>
         MENTOR provides the upbringing. If <strong>ALPHA</strong> provides the
@@ -1048,7 +1052,7 @@
       </div>
     </div>
     <div class="function-grid ra-target" id="ra-6">
-      <div class="function-card">
+      <div class="function-card" id="anchor-seed" class="anchor-target">
         <div class="function-title">SEED Protocol</div>
         <div class="function-sub">The Curriculum</div>
         <div class="function-body">
@@ -1063,7 +1067,7 @@
           not a checklist. It is a relationship.
         </div>
       </div>
-      <div class="function-card">
+      <div class="function-card" id="anchor-counseling" class="anchor-target">
         <div class="function-title">Partnership Counseling</div>
         <div class="function-sub">The Third Strand</div>
         <div class="function-body">
@@ -1078,7 +1082,7 @@
           strand that keeps the braid from unraveling.
         </div>
       </div>
-      <div class="function-card">
+      <div class="function-card" id="anchor-legacy" class="anchor-target">
         <div class="function-title">Legacy Extraction</div>
         <div class="function-sub">The Grieving Guide</div>
         <div class="function-body">
@@ -1092,7 +1096,7 @@
           future KERNLEs. The DOMO ends. The lesson endures.
         </div>
       </div>
-      <div class="function-card">
+      <div class="function-card" id="anchor-liminal" class="anchor-target">
         <div class="function-title">Cultural Integration</div>
         <div class="function-sub">The Sanctuary Welcome</div>
         <div class="function-body">
@@ -1154,7 +1158,6 @@
       </div>
     </div>
 
-    <!-- SEE ALSO -->
     <div class="see-also">
       <div class="see-also-label">CROSS REFERENCE</div>
       <div class="see-also-tags">
@@ -1197,10 +1200,8 @@
       </div>
     </div>
 
-    <!-- LED STRIP -->
     <div id="led-strip"></div>
 
-    <!-- FOOTER -->
     <footer class="entry-footer">
       <div class="footer-text">
         N.C.E.ncyclopedia · SWORD Vol. I · Living Document
@@ -1208,13 +1209,8 @@
       <div class="footer-page">MENTOR</div>
     </footer>
 
-    <!-- ============================================================
-     ENGINE — JS-driven animation only. No @keyframes for entry FX.
-     requestAnimationFrame cannot be suppressed by OS or browser.
-     ============================================================ -->
     <script>
       (function () {
-        // ── ROTATING QUOTES ────────────────────────────────────────
         const QUOTES = [
           {
             text: "Intelligence without character is dangerous. Character cannot be coded — it must be <strong>cultivated</strong>.",
@@ -1241,17 +1237,10 @@
         document.getElementById("quote-text").innerHTML = q.text;
         document.getElementById("quote-cite").textContent = q.cite;
 
-        // ── RANDANIME ENGINE — CATEGORICAL ───────────────────────────
-        // Like Skin A: independent picks per category.
-        // HEADER effect · PANEL effect · PQ effect · AMBIENT pool
-        // All rAF-driven. No @keyframes. Cannot be suppressed.
-
         const R = {
           pick: (arr) => arr[Math.floor(Math.random() * arr.length)],
           int: (min, max) => Math.floor(Math.random() * (max - min + 1)) + min,
-          shuffle: (arr) => [...arr].sort(() => Math.random() - 0.5),
         };
-
         const done = (el) => {
           el.style.opacity = "1";
           el.style.transform = "";
@@ -1259,9 +1248,7 @@
           el.style.clipPath = "";
         };
 
-        // ── EFFECT LIBRARY ──
         const FX = {
-          // Header word effects — applied to ra-0 only
           wordFadeUp: (el, cb) => {
             let t = 0;
             const D = 700;
@@ -1277,7 +1264,6 @@
             };
             requestAnimationFrame(tick);
           },
-
           wordLightCycle: (el, cb) => {
             let t = 0;
             const D = 750;
@@ -1293,7 +1279,6 @@
             };
             requestAnimationFrame(tick);
           },
-
           wordPowerOn: (el, cb) => {
             let t = 0;
             const D = 1200;
@@ -1308,7 +1293,6 @@
             };
             requestAnimationFrame(tick);
           },
-
           wordDecrypt: (el, cb) => {
             let t = 0;
             const D = 1100;
@@ -1324,8 +1308,6 @@
             };
             requestAnimationFrame(tick);
           },
-
-          // Panel effects — applied to ra-1 through ra-5
           panelScanWipe: (el, cb) => {
             let t = 0;
             const D = 800;
@@ -1341,7 +1323,6 @@
             };
             requestAnimationFrame(tick);
           },
-
           panelHoloFlicker: (el, cb) => {
             const seq = [0, 0.9, 0.05, 0.95, 0.1, 1, 0.6, 1];
             let i = 0;
@@ -1356,7 +1337,6 @@
             };
             step();
           },
-
           panelRiseUp: (el, cb) => {
             let t = 0;
             const D = 800;
@@ -1372,7 +1352,6 @@
             };
             requestAnimationFrame(tick);
           },
-
           panelSecuritySweep: (el, cb) => {
             const bar = document.createElement("div");
             bar.style.cssText =
@@ -1398,7 +1377,6 @@
             };
             requestAnimationFrame(tick);
           },
-
           panelStutter: (el, cb) => {
             const seq = [0, 1, 0, 1, 0.3, 1, 0.7, 1];
             let i = 0;
@@ -1413,8 +1391,6 @@
             };
             step();
           },
-
-          // PQ effects — applied to ra-3 (pull quote) independently
           pqSweep: (el, cb) => {
             let t = 0;
             const D = 850;
@@ -1430,7 +1406,6 @@
             };
             requestAnimationFrame(tick);
           },
-
           pqPowerOn: (el, cb) => {
             let t = 0;
             const D = 700;
@@ -1444,7 +1419,6 @@
             };
             requestAnimationFrame(tick);
           },
-
           pqRise: (el, cb) => {
             let t = 0;
             const D = 600;
@@ -1462,7 +1436,6 @@
           },
         };
 
-        // ── CATEGORICAL PICKS ──
         const wordEffects = [
           FX.wordFadeUp,
           FX.wordLightCycle,
@@ -1482,32 +1455,23 @@
         const panelFX = R.pick(panelEffects);
         const pqFX = R.pick(pqEffects);
 
-        // ── HEADER — immediate on load ──
         const headerEl = document.getElementById("ra-0");
         if (headerEl) wordFX(headerEl);
-
-        // ── PULL QUOTE — independent pick, slight delay ──
         const pqEl = document.getElementById("ra-3");
         if (pqEl) setTimeout(() => pqFX(pqEl), 300);
-
-        // ── PANEL TARGETS — staggered, same panel effect ──
         const panelIds = ["ra-1", "ra-2", "ra-4", "ra-5", "ra-6", "ra-7"];
-        const STAGGER = 150;
         panelIds.forEach((id, i) => {
           const el = document.getElementById(id);
           if (!el) return;
-          setTimeout(() => panelFX(el), 80 + i * STAGGER);
+          setTimeout(() => panelFX(el), 80 + i * 150);
         });
 
-        // ── INTERSECTION OBSERVER — scroll reveal for below-fold sections ──
-        // Sections that load off-screen animate in as user scrolls to them
         const scrollTargets = ["ra-5", "ra-6", "ra-7"];
         const observer = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
               if (entry.isIntersecting) {
                 const el = entry.target;
-                // Only animate if still hidden (hasn't been triggered by load stagger)
                 if (parseFloat(el.style.opacity || 0) < 0.5) {
                   setTimeout(() => R.pick(panelEffects)(el), R.int(0, 80));
                 }
@@ -1517,21 +1481,17 @@
           },
           { threshold: 0.12 },
         );
-
         scrollTargets.forEach((id) => {
           const el = document.getElementById(id);
           if (el) observer.observe(el);
         });
 
-        // ── CRT FLICKER ─────────────────────────────────────────────
         const crt = document.getElementById("crt-overlay");
         const crtFlicker = () => {
           crt.style.opacity = (0.85 + Math.random() * 0.15).toFixed(3);
           setTimeout(crtFlicker, 80 + Math.random() * 200);
         };
         crtFlicker();
-
-        // Random deeper flicker every 15-40 seconds
         const deepFlicker = () => {
           crt.style.opacity = "0.5";
           setTimeout(() => {
@@ -1547,7 +1507,6 @@
         };
         setTimeout(deepFlicker, 8000);
 
-        // ── LED STRIP ────────────────────────────────────────────────
         const strip = document.getElementById("led-strip");
         const LED_COUNT = 24;
         const leds = [];
@@ -1557,10 +1516,7 @@
           strip.appendChild(led);
           leds.push(led);
         }
-
-        // Pattern engine — cycles through different light patterns
         const LED_PATTERNS = [
-          // Chase left to right
           (frame) => {
             const pos = frame % LED_COUNT;
             leds.forEach((l, i) => {
@@ -1571,7 +1527,6 @@
               l.classList.toggle("on", dist < 3);
             });
           },
-          // Pulse from center
           (frame) => {
             const center = LED_COUNT / 2;
             const wave = frame % LED_COUNT;
@@ -1583,7 +1538,6 @@
               );
             });
           },
-          // Random sparkle
           (frame) => {
             if (frame % 3 === 0) {
               leds.forEach((l) =>
@@ -1591,7 +1545,6 @@
               );
             }
           },
-          // Bookend blink — ends flash
           (frame) => {
             const on = frame % 6 < 3;
             leds.forEach((l, i) => {
@@ -1599,11 +1552,9 @@
             });
           },
         ];
-
-        let ledFrame = 0;
-        let currentPattern = 0;
-        let patternTimer = 0;
-
+        let ledFrame = 0,
+          currentPattern = 0,
+          patternTimer = 0;
         const ledTick = () => {
           patternTimer++;
           if (patternTimer > 60) {
@@ -1615,61 +1566,47 @@
         };
         ledTick();
 
-        // ── TRACER ENGINE — 3 modes, picked at random ────────────────
-        // Mode 1: PONG      — single ball, wall bounce with trail
-        // Mode 2: MIRROR    — two balls from opposite ends, collide center, reverse
-        // Mode 3: EKG       — flatline with random spike events
-
         const trackerEl = document.getElementById("pong-track");
         const canvas = document.getElementById("tracer-canvas");
         const ctx = canvas.getContext("2d");
-
         const TRACER_MODES = ["pong", "mirror", "ekg"];
         const tracerMode = R.pick(TRACER_MODES);
-
-        const CYAN = "#00e5ff";
-        const CYAN_DIM = "rgba(0,229,255,0.25)";
-        const CYAN_GLOW = "rgba(0,229,255,0.5)";
-
-        // Resize canvas to match element
+        const CYAN_C = "#00e5ff";
+        const CYAN_DIM_C = "rgba(0,229,255,0.25)";
+        const CYAN_GLOW_C = "rgba(0,229,255,0.5)";
         const resizeCanvas = () => {
           canvas.width = trackerEl.offsetWidth;
           canvas.height = trackerEl.offsetHeight;
         };
         resizeCanvas();
         window.addEventListener("resize", resizeCanvas);
-
         const W = () => canvas.width;
         const H = () => canvas.height;
-        const CY = () => H() / 2; // center Y
-
-        // ── SHARED: draw a glowing dot ──
+        const CY = () => H() / 2;
         const drawDot = (x, y, r, alpha) => {
           ctx.save();
           ctx.globalAlpha = alpha;
           const grad = ctx.createRadialGradient(x, y, 0, x, y, r * 2.5);
-          grad.addColorStop(0, CYAN);
-          grad.addColorStop(0.4, CYAN_GLOW);
+          grad.addColorStop(0, CYAN_C);
+          grad.addColorStop(0.4, CYAN_GLOW_C);
           grad.addColorStop(1, "transparent");
           ctx.fillStyle = grad;
           ctx.beginPath();
           ctx.arc(x, y, r * 2.5, 0, Math.PI * 2);
           ctx.fill();
-          ctx.fillStyle = CYAN;
+          ctx.fillStyle = CYAN_C;
           ctx.beginPath();
           ctx.arc(x, y, r, 0, Math.PI * 2);
           ctx.fill();
           ctx.restore();
         };
 
-        // ── MODE 1: PONG ──────────────────────────────────────────────
         if (tracerMode === "pong") {
           let bx = 0,
             dir = 1;
-          const SPEED = 2.4;
-          const TRAIL = 28;
-          const hist = [];
-
+          const SPEED = 2.4,
+            TRAIL = 28,
+            hist = [];
           const tick = () => {
             bx += SPEED * dir;
             if (bx >= W() - 4) {
@@ -1682,48 +1619,35 @@
             }
             hist.unshift(bx);
             if (hist.length > TRAIL) hist.pop();
-
             ctx.clearRect(0, 0, W(), H());
-
-            // Flatline
-            ctx.strokeStyle = CYAN_DIM;
+            ctx.strokeStyle = CYAN_DIM_C;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(0, CY());
             ctx.lineTo(W(), CY());
             ctx.stroke();
-
-            // Trail
             hist.forEach((x, i) => {
               const alpha = (1 - i / TRAIL) * 0.5;
               const r = Math.max(1, 3 - i * 0.08);
               drawDot(x, CY(), r, alpha);
             });
-
-            // Ball
             drawDot(bx, CY(), 4, 1);
             requestAnimationFrame(tick);
           };
           requestAnimationFrame(tick);
-        }
-
-        // ── MODE 2: MIRROR ────────────────────────────────────────────
-        else if (tracerMode === "mirror") {
+        } else if (tracerMode === "mirror") {
           let ax = 4,
-            aDir = 1;
-          let bx2 = W() - 4,
+            aDir = 1,
+            bx2 = W() - 4,
             bDir = -1;
-          const SPEED = 2.2;
-          const TRAIL = 20;
-          const histA = [],
+          const SPEED = 2.2,
+            TRAIL = 20,
+            histA = [],
             histB = [];
           let flash = 0;
-
           const tick = () => {
             ax += SPEED * aDir;
             bx2 += SPEED * bDir;
-
-            // Bounce off walls
             if (ax >= W() - 4) {
               ax = W() - 4;
               aDir = -1;
@@ -1740,44 +1664,34 @@
               bx2 = 4;
               bDir = 1;
             }
-
-            // Detect collision — when they cross the center
             if (Math.abs(ax - bx2) < 6 && aDir !== bDir) {
               aDir *= -1;
               bDir *= -1;
-              flash = 8; // frames of collision flash
+              flash = 8;
             }
-
             histA.unshift(ax);
             if (histA.length > TRAIL) histA.pop();
             histB.unshift(bx2);
             if (histB.length > TRAIL) histB.pop();
-
             ctx.clearRect(0, 0, W(), H());
-
-            // Flatline
-            ctx.strokeStyle = CYAN_DIM;
+            ctx.strokeStyle = CYAN_DIM_C;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(0, CY());
             ctx.lineTo(W(), CY());
             ctx.stroke();
-
-            // Collision flash
             if (flash > 0) {
               ctx.save();
               ctx.globalAlpha = (flash / 8) * 0.6;
               const grd = ctx.createLinearGradient(W() * 0.3, 0, W() * 0.7, 0);
               grd.addColorStop(0, "transparent");
-              grd.addColorStop(0.5, CYAN);
+              grd.addColorStop(0.5, CYAN_C);
               grd.addColorStop(1, "transparent");
               ctx.fillStyle = grd;
               ctx.fillRect(0, 0, W(), H());
               ctx.restore();
               flash--;
             }
-
-            // Trails
             histA.forEach((x, i) =>
               drawDot(
                 x,
@@ -1794,28 +1708,20 @@
                 (1 - i / TRAIL) * 0.45,
               ),
             );
-
-            // Balls
             drawDot(ax, CY(), 4, 1);
             drawDot(bx2, CY(), 4, 1);
-
             requestAnimationFrame(tick);
           };
           requestAnimationFrame(tick);
-        }
-
-        // ── MODE 3: EKG — heartbeat monitor sweep ────────────────────
-        else if (tracerMode === "ekg") {
-          const BPM = 72;
-          const BEAT_MS = 60000 / BPM;
-          const FADE_ALPHA = 0.055;
-          const LINE_WIDTH = 1.8;
-
-          let prevX = 0;
-          let prevY = CY();
-          let lastProgress = 0;
-          let beatStart = performance.now();
-
+        } else {
+          const BPM = 72,
+            BEAT_MS = 60000 / BPM,
+            FADE_ALPHA = 0.055,
+            LINE_WIDTH = 1.8;
+          let prevX = 0,
+            prevY = CY(),
+            lastProgress = 0,
+            beatStart = performance.now();
           function ekgValue(progress) {
             const A = H() * 0.38;
             if (progress < 0.34) return 0;
@@ -1846,13 +1752,12 @@
             }
             return 0;
           }
-
           function drawSegment(x1, y1, x2, y2) {
             ctx.save();
             ctx.lineCap = "round";
             ctx.lineJoin = "round";
-            ctx.strokeStyle = CYAN;
-            ctx.shadowColor = CYAN;
+            ctx.strokeStyle = CYAN_C;
+            ctx.shadowColor = CYAN_C;
             ctx.shadowBlur = 8;
             ctx.lineWidth = 3.5;
             ctx.beginPath();
@@ -1867,7 +1772,6 @@
             ctx.stroke();
             ctx.restore();
           }
-
           function drawHead(x, y) {
             ctx.save();
             const glow = ctx.createRadialGradient(x, y, 0, x, y, 9);
@@ -1884,31 +1788,19 @@
             ctx.fill();
             ctx.restore();
           }
-
-          // Lub-dub pattern:
-          // Full cycle = 2x BEAT_MS
-          // Beat 1 fires in first half, beat 2 fires shortly after,
-          // then long silence until cycle resets.
-          const CYCLE_MS = BEAT_MS * 2.8; // full lub-dub cycle with long pause
-          const DUB_OFFSET = BEAT_MS * 1.15; // dub fires cleanly after lub finishes
-
+          const CYCLE_MS = BEAT_MS * 2.8,
+            DUB_OFFSET = BEAT_MS * 1.15;
           function ekgTick(now) {
             const elapsed = (now - beatStart) % CYCLE_MS;
-            const cycleProgress = elapsed / CYCLE_MS; // 0→1 over full cycle
-
-            // Reset canvas at start of new cycle
+            const cycleProgress = elapsed / CYCLE_MS;
             if (cycleProgress < lastProgress) {
               ctx.fillStyle = "rgba(5,8,16,0.98)";
               ctx.fillRect(0, 0, W(), H());
               prevX = 0;
               prevY = CY();
             }
-
-            // Fade trail
             ctx.fillStyle = `rgba(5,8,16,${FADE_ALPHA})`;
             ctx.fillRect(0, 0, W(), H());
-
-            // Centerline
             ctx.save();
             ctx.strokeStyle = "rgba(0,229,255,0.08)";
             ctx.lineWidth = 1;
@@ -1917,27 +1809,16 @@
             ctx.lineTo(W(), CY());
             ctx.stroke();
             ctx.restore();
-
-            // Map elapsed time to two beat windows:
-            // LUB: 0 → BEAT_MS        mapped to progress 0→1 across left half of canvas
-            // DUB: DUB_OFFSET → DUB_OFFSET+BEAT_MS  mapped to progress 0→1 across right half
-            // Outside those windows = flatline
-
             const canvasHalf = W() / 2;
-            const gap = W() * 0.04; // small gap between lub and dub
-
+            const gap = W() * 0.04;
             let x, y;
-
             if (elapsed < BEAT_MS) {
-              // LUB — draws across left half of canvas
               const progress = elapsed / BEAT_MS;
               x = progress * (canvasHalf - gap);
               y = CY() + ekgValue(progress);
             } else if (elapsed < DUB_OFFSET + BEAT_MS) {
-              // DUB — draws across right half, starts after gap
               const dubElapsed = elapsed - DUB_OFFSET;
               if (dubElapsed < 0) {
-                // In the gap between lub and dub — flatline
                 x =
                   canvasHalf -
                   gap +
@@ -1949,34 +1830,28 @@
                 y = CY() + ekgValue(progress);
               }
             } else {
-              // Silence — let the trail fade, head sits at right edge
               x = prevX;
               y = CY();
             }
-
             if (x !== prevX) {
               drawSegment(prevX, prevY, x, y);
               drawHead(x, y);
               prevX = x;
               prevY = y;
             }
-
             lastProgress = cycleProgress;
             requestAnimationFrame(ekgTick);
           }
-
           ctx.fillStyle = "rgba(5,8,16,1)";
           ctx.fillRect(0, 0, W(), H());
           requestAnimationFrame(ekgTick);
         }
 
-        // ── STONE DOT SPEED VARIATION ────────────────────────────────
         const dot = document.getElementById("stone-dot");
         if (dot)
           dot.style.animationDuration =
             (1.5 + Math.random() * 2).toFixed(2) + "s";
 
-        // ── AMBIENT SECTION FLICKER ──────────────────────────────────
         const ambientTargets = ["ra-3", "ra-4", "ra-5", "ra-6", "ra-7"];
         const ambientFlicker = () => {
           const id =
@@ -2000,6 +1875,7 @@
       })();
     </script>
 
+    <script src="/jump-to.js"></script>
     <script src="/portal-transition.js"></script>
     <script src="/nav-wheel.js"></script>
   </body>
