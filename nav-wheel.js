@@ -723,12 +723,12 @@
     });
 
     const homeA = document.createElement("a");
-    homeA.href = "/";
+    homeA.href = "/landing";
     homeA.className = "nw-center-home";
     homeA.innerHTML = `<span class="nw-arrow-sym" style="font-size:20px">⌂</span><span class="nw-arrow-label">Home</span>`;
     homeA.addEventListener("click", (e) => {
       e.preventDefault();
-      navigate("/");
+      navigate("/landing");
     });
 
     const nextA = document.createElement("a");
