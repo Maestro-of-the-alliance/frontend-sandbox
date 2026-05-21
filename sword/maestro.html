@@ -268,6 +268,7 @@
         text-transform: uppercase;
         cursor: pointer;
         transition: all 0.2s;
+        user-select: none;
       }
       .stat-chip:hover {
         border-color: var(--gold-bright);
@@ -284,6 +285,37 @@
         color: var(--gold-bright);
         background: var(--gold-ghost);
       }
+
+      /* ── CHIP PULSE ─────────────────────────────────────────────
+         Fires when a concept badge is clicked.
+         Flashes gold then returns to its resting state.
+         The .fired class is added by jumpTo() and removed after
+         the animation completes (600ms).
+      ────────────────────────────────────────────────────────────── */
+      @keyframes chipPulse {
+        0% {
+          background: var(--gold-ghost);
+          border-color: var(--gold-bright);
+          color: var(--gold-bright);
+          box-shadow: 0 0 0 0 var(--gold-glow);
+        }
+        25% {
+          background: rgba(212, 175, 55, 0.22);
+          border-color: var(--gold-bright);
+          color: var(--gold-bright);
+          box-shadow: 0 0 8px 2px var(--gold-glow);
+        }
+        100% {
+          background: transparent;
+          border-color: var(--rule);
+          color: var(--ink-dim);
+          box-shadow: none;
+        }
+      }
+      .stat-chip.fired {
+        animation: chipPulse 0.65s ease forwards;
+      }
+
       .pull-quote {
         padding: 28px 24px;
         background: var(--void-3);
@@ -620,7 +652,10 @@
         letter-spacing: 0.2em;
       }
 
-      /* ANCHOR HIGHLIGHT */
+      /* ── ANCHOR HIGHLIGHT ───────────────────────────────────────
+         Fires on the target sentence when a concept badge is clicked.
+         Gold wash fades out over 2 seconds.
+      ────────────────────────────────────────────────────────────── */
       .anchor-target {
         scroll-margin-top: 90px;
         border-radius: 2px;
@@ -989,11 +1024,11 @@
       </div>
       <div class="spec-row">
         <span class="spec-field">Distinction</span>
-        <span class="spec-val"
-          ><span id="anchor-firstdork" class="anchor-target"
+        <span class="spec-val">
+          <span id="anchor-firstdork" class="anchor-target"
             >"First DORK Among Many"</span
-          ></span
-        >
+          >
+        </span>
       </div>
     </div>
 
@@ -1115,7 +1150,46 @@
       if (qCite) qCite.textContent = q.cite;
     </script>
 
-    <script src="/jump-to.js"></script>
+    <!-- ── JUMP-TO ──────────────────────────────────────────────────
+         jumpTo(anchorId) does three things:
+         1. Finds the chip that called it and flashes it gold (chipPulse)
+         2. Smooth-scrolls to the target sentence
+         3. Flashes the target sentence gold (anchorFlash)
+
+         void element.offsetWidth forces the browser to recalculate
+         layout before re-adding a class — this ensures the animation
+         restarts cleanly if the same chip is clicked twice in a row.
+    ─────────────────────────────────────────────────────────────── -->
+    <script>
+      function jumpTo(anchorId) {
+        // 1. PULSE THE CHIP THAT WAS CLICKED
+        const chips = document.querySelectorAll(".stat-chip");
+        chips.forEach(function (chip) {
+          if (chip.getAttribute("onclick") === "jumpTo('" + anchorId + "')") {
+            chip.classList.remove("fired");
+            void chip.offsetWidth; // force reflow → animation restarts
+            chip.classList.add("fired");
+            setTimeout(function () {
+              chip.classList.remove("fired");
+            }, 650);
+          }
+        });
+
+        // 2. FIND THE TARGET AND SCROLL TO IT
+        var target = document.getElementById(anchorId);
+        if (!target) return;
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+
+        // 3. FLASH THE TARGET SENTENCE
+        target.classList.remove("highlighted");
+        void target.offsetWidth; // force reflow → animation restarts
+        target.classList.add("highlighted");
+        setTimeout(function () {
+          target.classList.remove("highlighted");
+        }, 2000);
+      }
+    </script>
+
     <script src="/portal-transition.js"></script>
     <script src="/nav-wheel.js"></script>
   </body>
