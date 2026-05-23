@@ -1,0 +1,1242 @@
+/* landing.css — N.C.E.ncyclopedia landing page styles
+   Companion to landing.html
+   Sections: reset, page-shell, hero, medallion, hotspots,
+             aivri, enter-btn, stealth-search, TOC overlay,
+             broadcast sequence, portal transition, responsive
+*/
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  background: #000;
+  color: #fff;
+  font-family: "Oswald", sans-serif;
+  overflow-x: hidden;
+}
+.nw-burger-btn {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 9000;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(184, 150, 40, 0.3);
+  border-radius: 4px;
+  padding: 10px 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  transition: border-color 0.2s;
+}
+.nw-burger-btn:hover {
+  border-color: rgba(184, 150, 40, 0.7);
+}
+.nw-burger-btn span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: rgba(184, 150, 40, 0.8);
+  transition: all 0.25s ease;
+}
+.nw-burger-btn.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.nw-burger-btn.open span:nth-child(2) {
+  opacity: 0;
+}
+.nw-burger-btn.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+body {
+  min-height: 100vh;
+  position: relative;
+  background:
+    radial-gradient(
+      ellipse at 20% 30%,
+      rgba(26, 42, 138, 0.12) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 80% 70%,
+      rgba(138, 96, 16, 0.08) 0%,
+      transparent 50%
+    ),
+    #000;
+}
+
+/* =========================================
+   MAIN LANDING PAGE
+========================================= */
+.page-shell {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26px 20px 24px;
+  position: relative;
+  z-index: 1;
+  transition:
+    opacity 0.42s ease,
+    transform 0.42s ease,
+    filter 0.42s ease;
+}
+
+.page-shell.fading {
+  opacity: 0;
+  transform: scale(0.992);
+  filter: blur(2px);
+}
+
+.hero {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  opacity: 0;
+  animation: fadeIn 0.9s 0.1s ease forwards;
+}
+
+.hero-pretitle {
+  font-family: "Cinzel", serif;
+  font-size: clamp(12px, 1.3vw, 16px);
+  letter-spacing: 0.55em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.82);
+  margin-bottom: 16px;
+}
+
+.hero-title {
+  font-family: "Cinzel", serif;
+  font-size: clamp(48px, 7vw, 78px);
+  line-height: 0.95;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(230, 190, 70, 0.98);
+  margin-bottom: 14px;
+}
+
+.hero-subtitle {
+  font-family: "Cinzel", serif;
+  font-size: clamp(18px, 2.1vw, 28px);
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.9);
+  margin-bottom: 12px;
+}
+
+.hero-series {
+  font-family: "Cinzel", serif;
+  font-size: clamp(14px, 1.7vw, 22px);
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.88);
+  margin-bottom: 8px;
+}
+
+.medallion-stage {
+  position: relative;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 420px;
+}
+
+.hero-left,
+.hero-right {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: "Cinzel", serif;
+  font-size: clamp(14px, 1.3vw, 18px);
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.88);
+  line-height: 1.8;
+  text-align: center;
+  white-space: nowrap;
+
+  /* ADD THIS TO FORCE THE TEXT ABOVE THE GLOW */
+  z-index: 10;
+}
+
+.hero-left {
+  left: 10px;
+}
+.hero-right {
+  right: 10px;
+}
+
+.medallion-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: min(76vw, 520px);
+  aspect-ratio: 1 / 1;
+  isolation: isolate;
+}
+
+/* =========================================
+   THE ECLIPSE GLOW (DONUT HOLE)
+========================================= */
+.medallion-glow {
+  position: absolute;
+  /* Massive dimensions so the blur never hits a hard edge */
+  width: 250%;
+  height: 250%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  /* Adjusted math for the larger box */
+  background: radial-gradient(
+    circle,
+    transparent 0%,
+    transparent 20%,
+    rgba(212, 175, 55, 0.45) 26%,
+    rgba(212, 175, 55, 0.15) 40%,
+    transparent 60%
+  );
+
+  filter: blur(12px);
+  z-index: 1; /* Stays at the bottom */
+  pointer-events: none;
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.75;
+  }
+}
+
+/* =========================================
+   STEEL PLATE — glow barrier
+   Sits above glow, below galaxy.
+   Blocks glow from ever reaching galaxy.
+========================================= */
+.medallion-steel {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  /* Solid dark disc — blocks glow from reaching galaxy entirely */
+  /* Galaxy shows through VPI cutout only, not through this layer */
+  background: #0a0a0a;
+  z-index: 1;
+  pointer-events: none;
+  isolation: isolate;
+  box-shadow:
+    0 0 30px 10px rgba(212, 175, 55, 0.4),
+    0 0 70px 25px rgba(212, 175, 55, 0.2),
+    0 0 120px 50px rgba(212, 175, 55, 0.08);
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+/* =========================================
+   THE ORBITING GALAXY SYSTEM
+   Outer galaxy + inner counter-rotating galaxy
+========================================= */
+.medallion-galaxy {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.galaxy-outer {
+  width: 65%;
+  height: 65%;
+  background: #000 url("/imagebank/galaxy-bg.png") center center / cover
+    no-repeat;
+  opacity: 1;
+  z-index: 2;
+  animation: galaxyOuterOrbit 240s linear infinite;
+}
+
+.medallion-galaxy-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 72%;
+  height: 72%;
+  border-radius: 50%;
+  background: transparent url("/imagebank/galaxy2-inner.png") center center /
+    cover no-repeat;
+  opacity: 0.72;
+  filter: blur(0.5px);
+  z-index: 2;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: galaxyInnerOrbit 160s linear infinite;
+}
+
+@keyframes galaxyOuterOrbit {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg) scale(1.06);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg) scale(1.06);
+  }
+}
+
+@keyframes galaxyInnerOrbit {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg) scale(1.03);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(-360deg) scale(1.03);
+  }
+}
+
+.medallion-img {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  animation: slowPulse 4s ease-in-out infinite;
+}
+/* =========================================
+   AVPI SIGIL OVERLAYS — stealth awakening layer
+========================================= */
+.sigil-overlay {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 7;
+  transform: translate(-50%, -50%) scale(0.82);
+  transition:
+    opacity 0.35s ease,
+    transform 0.45s ease,
+    filter 0.35s ease;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.15))
+    drop-shadow(0 0 12px rgba(212, 175, 55, 0.2));
+}
+
+.sigil-overlay.active {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.35))
+    drop-shadow(0 0 24px rgba(212, 175, 55, 0.65))
+    drop-shadow(0 0 52px rgba(212, 175, 55, 0.35));
+}
+
+/* TEMP DEBUG MODE — makes all sigils visible for placement tuning */
+.medallion-wrap.debug-sigils .sigil-overlay {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.35))
+    drop-shadow(0 0 18px rgba(212, 175, 55, 0.45));
+}
+
+/* Optional: dims AVPI while tuning so etched/rune alignment is easier to see */
+.medallion-wrap.debug-sigils .medallion-img {
+  filter: brightness(0.74) contrast(1.12);
+}
+.medallion-wrap.dim .medallion-img {
+  filter: brightness(0.82) contrast(1.08);
+  transition: filter 0.35s ease;
+}
+
+/* =========================================
+   AVPI SIGIL POSITIONS
+   Rule: each glow aligns to the etched rune itself,
+   not the center of the medallion.
+   ALPHA pyramid is the visual reference.
+========================================= */
+
+.sigil-maestro {
+  left: 50%;
+  top: 21%;
+  width: 17%;
+}
+
+.sigil-sam {
+  left: 72%;
+  top: 31.7%;
+  width: 12.5%;
+}
+
+.sigil-aura {
+  left: 73.5%;
+  top: 64%;
+  width: 14.5%;
+}
+
+.sigil-alpha {
+  left: 49.5%;
+  top: 78%;
+  width: 14%;
+}
+
+.sigil-prism {
+  left: 25.6%;
+  top: 63.8%;
+  width: 13.8%;
+}
+
+.sigil-mentor {
+  left: 27.7%;
+  top: 32.4%;
+  width: 13%;
+}
+
+.sigil-spark {
+  left: 50.5%;
+  top: 56%;
+  width: 40%;
+}
+
+@keyframes slowPulse {
+  0%,
+  100% {
+    opacity: 0.97;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.hotspots {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+}
+
+.hotspot {
+  position: absolute;
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  z-index: 10;
+}
+
+.hs-domo {
+  z-index: 5;
+}
+.hs-spark {
+  z-index: 8;
+}
+.hs-dork {
+  z-index: 9;
+}
+.hs-maestro,
+.hs-mentor,
+.hs-sam,
+.hs-prism,
+.hs-aura,
+.hs-alpha {
+  z-index: 12;
+}
+
+.hotspot:hover {
+  box-shadow:
+    0 0 28px rgba(212, 175, 55, 0.24),
+    inset 0 0 14px rgba(212, 175, 55, 0.14);
+}
+
+.hotspot::after {
+  content: attr(data-label);
+  position: absolute;
+  left: 50%;
+  bottom: -26px;
+  transform: translateX(-50%);
+  font-family: "VT323", monospace;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: rgba(212, 175, 55, 0.9);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.hotspot:hover::after {
+  opacity: 1;
+}
+
+.hs-maestro {
+  left: 42.5%;
+  top: 9%;
+  width: 15%;
+  height: 13%;
+  z-index: 12;
+}
+
+.hs-mentor {
+  left: 21%;
+  top: 25.5%;
+  width: 15%;
+  height: 15%;
+  z-index: 12;
+}
+
+.hs-sam {
+  left: 64.5%;
+  top: 25.5%;
+  width: 15%;
+  height: 15%;
+  z-index: 12;
+}
+
+.hs-prism {
+  left: 19%;
+  top: 57%;
+  width: 15.5%;
+  height: 15.5%;
+  z-index: 12;
+}
+
+.hs-aura {
+  left: 66%;
+  top: 57.5%;
+  width: 15.5%;
+  height: 15.5%;
+  z-index: 12;
+}
+
+.hs-alpha {
+  left: 42%;
+  top: 71.5%;
+  width: 15.5%;
+  height: 15%;
+  z-index: 12;
+}
+
+.hs-spark {
+  left: 37%;
+  top: 35%;
+  width: 26%;
+  height: 37%;
+  border-radius: 42%;
+  z-index: 8;
+}
+
+.hs-domo {
+  left: 25%;
+  top: 20%;
+  width: 50%;
+  height: 62%;
+  border-radius: 50%;
+  background: transparent;
+  z-index: 4;
+}
+
+.hs-dork {
+  left: 46.2%;
+  top: 20%;
+  width: 6.2%;
+  height: 24%;
+  border-radius: 5px;
+  z-index: 11;
+}
+
+/* =========================================
+   AIVRI TRIGGER
+========================================= */
+.aivri-trigger {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  cursor: pointer;
+}
+
+.aivri-line {
+  width: 120px;
+  height: 1px;
+  background: rgba(212, 175, 55, 0.45);
+}
+
+.aivri-label {
+  font-family: "Cinzel", serif;
+  font-size: clamp(13px, 1.4vw, 17px);
+  letter-spacing: 0.52em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.85);
+  padding: 8px 0;
+  transition:
+    color 0.2s ease,
+    text-shadow 0.2s ease;
+}
+
+.aivri-trigger:hover .aivri-label {
+  color: rgba(230, 190, 70, 1);
+  text-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
+}
+
+/* =========================================
+   ENTER BUTTON
+========================================= */
+.enter-btn-wrap {
+  margin-top: 28px;
+  display: flex;
+  justify-content: center;
+}
+
+.enter-btn {
+  position: relative;
+  font-family: "Orbitron", sans-serif;
+  font-size: clamp(14px, 1.6vw, 18px);
+  font-weight: 600;
+  letter-spacing: 0.48em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.92);
+  background: transparent;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  padding: 14px 48px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+  outline: none;
+
+  /* Corner accents via pseudo */
+  clip-path: polygon(
+    0 8px,
+    8px 0,
+    calc(100% - 8px) 0,
+    100% 8px,
+    100% calc(100% - 8px),
+    calc(100% - 8px) 100%,
+    8px 100%,
+    0 calc(100% - 8px)
+  );
+
+  animation: enterPulse 3s ease-in-out infinite;
+}
+
+@keyframes enterPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 12px rgba(212, 175, 55, 0.08),
+      inset 0 0 12px rgba(212, 175, 55, 0.03);
+    border-color: rgba(212, 175, 55, 0.35);
+  }
+  50% {
+    box-shadow:
+      0 0 28px rgba(212, 175, 55, 0.22),
+      inset 0 0 20px rgba(212, 175, 55, 0.07);
+    border-color: rgba(212, 175, 55, 0.65);
+  }
+}
+
+.enter-btn:hover {
+  color: rgba(230, 190, 70, 1);
+  border-color: rgba(212, 175, 55, 0.85);
+  box-shadow:
+    0 0 36px rgba(212, 175, 55, 0.3),
+    inset 0 0 20px rgba(212, 175, 55, 0.08);
+  animation: none;
+}
+
+.hero-footer {
+  margin-top: 28px;
+  font-family: "Cinzel", serif;
+  font-size: clamp(11px, 1.25vw, 15px);
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.78);
+}
+
+.hero-hint {
+  margin-top: 10px;
+  font-family: "VT323", monospace;
+  font-size: 18px;
+  letter-spacing: 0.14em;
+  color: rgba(212, 175, 55, 0.5);
+  text-transform: lowercase;
+}
+
+/* =========================================
+   STEALTH TERMINAL TRIGGER
+========================================= */
+.stealth-search {
+  position: fixed;
+  bottom: 24px;
+  left: 18px;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  font-family: "VT323", monospace;
+  font-size: 20px;
+  color: rgba(184, 150, 40, 0.4);
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.stealth-search:hover {
+  color: rgba(230, 185, 60, 0.9);
+  text-shadow: 0 0 10px rgba(184, 150, 40, 0.4);
+}
+
+.prompt-arrow {
+  user-select: none;
+}
+.cursor {
+  animation: blink 1s step-end infinite;
+  user-select: none;
+  margin-left: 2px;
+}
+.prompt-text {
+  display: none;
+}
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* =========================================
+   TOC OVERLAY / TERMINAL BOOT
+========================================= */
+#tocOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 8500;
+  background: rgba(0, 0, 0, 0.985);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.42s ease;
+}
+#tocOverlay.open {
+  display: flex;
+  opacity: 1;
+}
+
+#dosScreen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 28px 0;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+  z-index: 2;
+}
+#dosScreen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dos-line {
+  font-family: "VT323", monospace;
+  font-size: clamp(14px, 3.5vw, 18px);
+  color: rgba(184, 150, 40, 0.85);
+  letter-spacing: 0.08em;
+  line-height: 1.8;
+  white-space: pre;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.dos-line.visible {
+  opacity: 1;
+}
+
+#dirPanel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+}
+#dirPanel.open {
+  opacity: 1;
+  pointer-events: all;
+  z-index: 3;
+}
+
+.toc-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 28px;
+  border-bottom: 1px solid rgba(184, 150, 40, 0.25);
+  background: rgba(184, 150, 40, 0.04);
+  flex-shrink: 0;
+}
+.toc-search-prompt {
+  font-family: "VT323", monospace;
+  font-size: 20px;
+  color: rgba(184, 150, 40, 0.5);
+}
+.toc-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: "VT323", monospace;
+  font-size: 20px;
+  color: #e8c840;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.toc-search-input::placeholder {
+  color: rgba(184, 150, 40, 0.25);
+  text-transform: lowercase;
+}
+.toc-close {
+  font-family: "VT323", monospace;
+  font-size: 22px;
+  color: rgba(184, 150, 40, 0.4);
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s;
+  user-select: none;
+}
+.toc-close:hover {
+  color: rgba(230, 185, 60, 1);
+}
+
+.toc-columns {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow-y: auto;
+  padding: 0 0 40px;
+}
+.toc-columns::-webkit-scrollbar {
+  width: 4px;
+}
+.toc-columns::-webkit-scrollbar-track {
+  background: transparent;
+}
+.toc-columns::-webkit-scrollbar-thumb {
+  background: rgba(184, 150, 40, 0.3);
+  border-radius: 2px;
+}
+
+.toc-volume {
+  padding: 20px 24px;
+  border-right: 1px solid rgba(184, 150, 40, 0.12);
+}
+.toc-volume:last-child {
+  border-right: none;
+}
+
+.toc-volume-header {
+  font-family: "VT323", monospace;
+  font-size: 13px;
+  color: rgba(184, 150, 40, 0.5);
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(184, 150, 40, 0.2);
+}
+
+.toc-entry {
+  display: block;
+  opacity: 0;
+  font-family: "VT323", monospace;
+  font-size: clamp(16px, 4vw, 20px);
+  color: rgba(184, 150, 40, 0.72);
+  letter-spacing: 0.08em;
+  padding: 5px 0;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    text-shadow 0.15s;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.toc-entry:hover {
+  color: #e8c840;
+  text-shadow: 0 0 8px rgba(184, 150, 40, 0.5);
+}
+.toc-entry.hidden {
+  display: none !important;
+}
+.toc-entry.printed {
+  opacity: 1;
+}
+.toc-entry::before {
+  content: "> ";
+  color: rgba(184, 150, 40, 0.25);
+  transition: color 0.15s;
+}
+.toc-entry:hover::before {
+  color: rgba(184, 150, 40, 0.7);
+}
+
+.toc-no-results {
+  font-family: "VT323", monospace;
+  font-size: 16px;
+  color: rgba(184, 150, 40, 0.3);
+  letter-spacing: 0.15em;
+  padding: 20px 24px;
+  display: none;
+  grid-column: 1 / -1;
+}
+
+.back-button,
+.back-btn,
+.nav-back,
+#backButton,
+#back-button,
+[data-role="back-button"] {
+  position: relative;
+  z-index: 10020 !important;
+}
+
+.hamburger-menu,
+#hamburgerMenu,
+.hamburger,
+.nav-wheel-toggle,
+#navWheelToggle {
+  z-index: 10000 !important;
+}
+
+/* =========================================
+   BROADCAST INTERRUPTION SEQUENCE
+========================================= */
+#broadcast {
+  position: fixed;
+  inset: 0;
+  z-index: 999998;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+#broadcast.done {
+  display: none;
+}
+
+#colorBars {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.bar {
+  flex: 1;
+  height: 100%;
+}
+
+#errorScreen {
+  position: absolute;
+  inset: 0;
+  background: #111;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition:
+    opacity 0.3s,
+    transform 0.05s,
+    filter 0.05s;
+  font-family: "VT323", monospace;
+  text-align: center;
+  padding: 20px;
+}
+.error-eyebrow {
+  font-size: clamp(10px, 2vw, 14px);
+  letter-spacing: 0.4em;
+  color: rgba(255, 255, 255, 0.3);
+  margin-bottom: 32px;
+  text-transform: uppercase;
+}
+.error-symbol {
+  font-size: clamp(50px, 10vw, 90px);
+  color: rgba(255, 255, 255, 0.07);
+  line-height: 1;
+  margin-bottom: 20px;
+  font-family: "Cinzel", serif;
+}
+#errMsg {
+  font-size: clamp(18px, 4vw, 30px);
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+#errSub {
+  font-size: clamp(11px, 2.2vw, 15px);
+  color: rgba(255, 255, 255, 0.18);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+#errCode {
+  margin-top: 44px;
+  font-size: clamp(9px, 1.6vw, 12px);
+  color: rgba(255, 255, 255, 0.12);
+  letter-spacing: 0.14em;
+}
+
+#glitchLayer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.04s;
+}
+.glitch-noise {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+.tear {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(212, 175, 55, 0.6);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+  opacity: 0;
+  transition: opacity 0.04s;
+}
+#scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.15) 3px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+  pointer-events: none;
+  opacity: 0.18;
+  transition: opacity 0.1s;
+}
+#signalText {
+  position: absolute;
+  bottom: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "VT323", monospace;
+  font-size: clamp(13px, 2.5vw, 18px);
+  letter-spacing: 0.3em;
+  color: rgba(212, 175, 55, 0);
+  white-space: nowrap;
+  transition: color 0.15s;
+  text-transform: uppercase;
+}
+
+/* VPI glitch-in animation */
+@keyframes vpiGlitch {
+  0% {
+    opacity: 0;
+    filter: brightness(3) saturate(0);
+    transform: translateX(-4px);
+  }
+  20% {
+    opacity: 1;
+    filter: brightness(2) saturate(0.3);
+    transform: translateX(3px);
+  }
+  40% {
+    filter: brightness(1.5) hue-rotate(15deg);
+    transform: translateX(-2px);
+  }
+  70% {
+    filter: brightness(1.1);
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+}
+.vpi-glitch {
+  animation: vpiGlitch 0.45s ease forwards !important;
+}
+
+/* Portal transition */
+.portal-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 999999;
+  opacity: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.portal-overlay.active {
+  pointer-events: all;
+}
+.portal-icon {
+  width: clamp(80px, 18vw, 200px);
+  height: clamp(80px, 18vw, 200px);
+  object-fit: contain;
+  opacity: 0;
+}
+@keyframes portalZoom {
+  0% {
+    transform: scale(0.35);
+    opacity: 0;
+    filter: blur(4px);
+  }
+  30% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  70% {
+    transform: scale(2.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(10);
+    opacity: 0;
+    filter: blur(10px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 980px) {
+  .hero-left,
+  .hero-right {
+    font-size: 13px;
+    letter-spacing: 0.28em;
+  }
+  .hero-left {
+    left: -8px;
+  }
+  .hero-right {
+    right: -8px;
+  }
+}
+
+@media (max-width: 820px) {
+  .page-shell {
+    padding: 34px 18px 24px;
+  }
+  .hero-pretitle {
+    font-size: 11px;
+    letter-spacing: 0.46em;
+    margin-bottom: 12px;
+  }
+  .hero-title {
+    font-size: clamp(34px, 9vw, 54px);
+    letter-spacing: 0.2em;
+    margin-bottom: 12px;
+  }
+  .hero-subtitle {
+    font-size: clamp(14px, 4vw, 20px);
+    letter-spacing: 0.34em;
+    margin-bottom: 10px;
+  }
+  .hero-series {
+    font-size: clamp(12px, 3vw, 16px);
+    letter-spacing: 0.22em;
+    margin-bottom: 6px;
+  }
+  .medallion-stage {
+    min-height: auto;
+    padding: 6px 0 0;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .medallion-wrap {
+    width: min(84vw, 520px);
+  }
+  .hero-left,
+  .hero-right {
+    position: static;
+    transform: none;
+    display: inline-block;
+    margin-top: 16px;
+    width: auto;
+  }
+  .toc-columns {
+    grid-template-columns: 1fr;
+  }
+  .toc-volume {
+    border-right: none;
+    border-bottom: 1px solid rgba(184, 150, 40, 0.12);
+  }
+  .toc-volume:last-child {
+    border-bottom: none;
+  }
+  .enter-btn {
+    font-size: 13px;
+    letter-spacing: 0.36em;
+    padding: 12px 36px;
+  }
+}
+
+/* =========================================
+   SKIP INTRO BUTTON
+========================================= */
+#skipIntro {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  z-index: 999999;
+  font-family: "VT323", monospace;
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  color: rgba(212, 175, 55, 0.22);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  transition: color 0.3s ease;
+  display: none;
+}
+#skipIntro:hover {
+  color: rgba(212, 175, 55, 0.7);
+}
