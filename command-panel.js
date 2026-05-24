@@ -454,7 +454,7 @@
       position: fixed;
       inset: 0;
       z-index: 9500;
-      background: rgba(0,0,0,0.97);
+      background: #000;
       display: none;
       flex-direction: column;
       font-family: 'VT323', monospace;
@@ -534,6 +534,7 @@
       flex: 1;
       overflow-y: auto;
       padding: 20px 24px 40px;
+      background: #000;
     }
     .cmd-body::-webkit-scrollbar { width: 4px; }
     .cmd-body::-webkit-scrollbar-track { background: transparent; }
@@ -543,7 +544,7 @@
     .cmd-section-label {
       font-size: 11px;
       letter-spacing: 0.4em;
-      color: rgba(184,150,40,0.35);
+      color: rgba(184,150,40,0.6);
       text-transform: uppercase;
       margin-bottom: 10px;
       margin-top: 4px;
@@ -562,13 +563,13 @@
     .cmd-result-vol {
       font-size: 10px;
       letter-spacing: 0.25em;
-      color: rgba(184,150,40,0.35);
+      color: rgba(184,150,40,0.6);
       min-width: 52px;
       flex-shrink: 0;
     }
     .cmd-result-title {
       font-size: 20px;
-      color: rgba(184,150,40,0.75);
+      color: rgba(212,175,55,0.9);
       letter-spacing: 0.06em;
       transition: color 0.15s, text-shadow 0.15s;
     }
@@ -686,7 +687,7 @@
     }
     .cmd-link-desc {
       font-size: 13px;
-      color: rgba(184,150,40,0.35);
+      color: rgba(184,150,40,0.6);
       letter-spacing: 0.15em;
       margin-top: 2px;
     }
@@ -711,7 +712,7 @@
     }
     .cmd-support-sub {
       font-size: 14px;
-      color: rgba(184,150,40,0.35);
+      color: rgba(184,150,40,0.6);
       letter-spacing: 0.2em;
       line-height: 1.7;
     }
