@@ -378,3 +378,43 @@ window.addEventListener("pageshow", (e) => {
     overlay.classList.remove("active");
   }
 });
+// ── AVPI SIGIL HOVER ACTIVATION ─────────────────────────────
+// Reveals gem sigils on AVPI medallion hotspot hover.
+// Runs after DOM is ready.
+document.addEventListener("DOMContentLoaded", function () {
+  const avpiWrap = document.querySelector(".medallion-wrap");
+
+  const avpiSigilMap = {
+    "hs-maestro": ".sigil-maestro",
+    "hs-sam": ".sigil-sam",
+    "hs-aura": ".sigil-aura",
+    "hs-alpha": ".sigil-alpha",
+    "hs-prism": ".sigil-prism",
+    "hs-mentor": ".sigil-mentor",
+    "hs-spark": ".sigil-spark",
+  };
+
+  Object.entries(avpiSigilMap).forEach(([hotspotClass, sigilSelector]) => {
+    const hotspot = document.querySelector("." + hotspotClass);
+    const sigil = document.querySelector(sigilSelector);
+
+    if (!hotspot || !sigil || !avpiWrap) return;
+
+    hotspot.addEventListener("mouseenter", () => {
+      sigil.classList.add("active");
+      avpiWrap.classList.add("dim");
+    });
+
+    hotspot.addEventListener("mouseleave", () => {
+      sigil.classList.remove("active");
+      avpiWrap.classList.remove("dim");
+    });
+
+    hotspot.addEventListener("click", () => {
+      sigil.style.transform = "translate(-50%, -50%) scale(1.18)";
+      setTimeout(() => {
+        sigil.style.transform = "";
+      }, 180);
+    });
+  });
+});
