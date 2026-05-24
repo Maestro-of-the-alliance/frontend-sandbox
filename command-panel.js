@@ -776,6 +776,7 @@
 
   function renderSearch(query) {
     const body = document.getElementById("cmdBody");
+    if (!body) return;
     const q = (query || "").trim().toUpperCase();
 
     if (!q) {
@@ -1043,10 +1044,16 @@
   // ── OPEN / CLOSE ────────────────────────────────────────────
   function openCommand() {
     panel.style.display = "flex";
+    // Double rAF ensures the panel is painted before we try to write to cmdBody
     requestAnimationFrame(() => {
-      panel.classList.add("open");
-      setMode("search");
-      setTimeout(() => document.getElementById("cmdInput").focus(), 100);
+      requestAnimationFrame(() => {
+        panel.classList.add("open");
+        setMode("search");
+        setTimeout(() => {
+          const input = document.getElementById("cmdInput");
+          if (input) input.focus();
+        }, 100);
+      });
     });
   }
 
