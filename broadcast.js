@@ -140,11 +140,11 @@ setTimeout(() => {
   if (skipBtn) skipBtn.style.display = "block";
 }, 1500);
 
-function skipIntroNow() {
+window.skipIntroNow = function skipIntroNow() {
   broadcast.classList.add("done");
   document.getElementById("skipIntro").style.display = "none";
   setTimeout(glitchTypePrompt, 100);
-}
+};
 
 // ═══════════════════════════════════════════════
 // GLITCH TYPER

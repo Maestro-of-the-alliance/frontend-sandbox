@@ -1,3 +1,13 @@
+// ── HISTORY FIX ─────────────────────────────────────────────
+// Replace the current history entry so the native back button
+// doesn't skip landing and go to index.
+if (
+  window.location.pathname === "/landing" ||
+  window.location.pathname === "/landing.html"
+) {
+  history.replaceState({ page: "landing" }, "", "/landing");
+}
+
 /**
  * toc.js — N.C.E.ncyclopedia landing page
  * Portal transition, TOC overlay, DOS boot sequence,
