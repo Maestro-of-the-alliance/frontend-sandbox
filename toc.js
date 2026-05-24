@@ -29,6 +29,13 @@ function portalTransition(e, destination, iconSrc) {
 
 // ── TOC NAV ──
 // ── TOC NAV ──
+
+// portalImageTransition is an alias for portalTransition
+// Used by AVPI medallion hotspots on landing page
+function portalImageTransition(e, destination, iconSrc) {
+  portalTransition(e, destination, iconSrc);
+}
+
 function tocNavigate(path, icon) {
   const overlay = document.getElementById("tocOverlay");
   if (overlay) {
