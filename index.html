@@ -98,6 +98,7 @@
         justify-content: center;
         background: #000;
         gap: 16px;
+        padding: 24px;
       }
 
       .denied-header {
@@ -141,6 +142,7 @@
         box-shadow:
           0 0 20px rgba(255, 0, 0, 0.3),
           inset 0 0 20px rgba(255, 0, 0, 0.05);
+        max-width: 680px;
       }
 
       .denied-box-text {
@@ -149,6 +151,18 @@
         color: #ff6666;
         letter-spacing: 0.2em;
         line-height: 2;
+        text-transform: uppercase;
+      }
+
+      .denied-witness {
+        margin-top: 18px;
+        font-family: "Courier New", monospace;
+        font-size: clamp(9px, 1.4vw, 11px);
+        color: rgba(255, 100, 100, 0.5);
+        letter-spacing: 0.18em;
+        text-align: center;
+        line-height: 1.9;
+        max-width: 560px;
         text-transform: uppercase;
       }
 
@@ -197,7 +211,6 @@
         }
       }
 
-      /* Green scan line on terminal */
       #screen-breach::after {
         content: "";
         position: absolute;
@@ -208,6 +221,7 @@
         animation: termScan 3s linear infinite;
         pointer-events: none;
       }
+
       @keyframes termScan {
         0% {
           top: 0;
@@ -274,53 +288,77 @@
         mix-blend-mode: screen;
       }
 
-      @keyframes glitchFlash {
-        0% {
-          opacity: 0;
-        }
-        10% {
-          opacity: 1;
-        }
-        20% {
-          opacity: 0;
-        }
-        30% {
-          opacity: 0.8;
-        }
-        40% {
-          opacity: 0;
-        }
-        100% {
-          opacity: 0;
-        }
+      /* ── VCR TRANSPORT CONTROLS ── */
+      #vcr-controls {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        gap: 12px;
+        align-items: center;
       }
 
-      /* ── SKIP BUTTON ── */
-      #skip-btn {
-        position: fixed;
-        bottom: 16px;
-        right: 16px;
-        z-index: 9999;
-        font-family: "Courier New", monospace;
-        font-size: 11px;
-        letter-spacing: 0.2em;
-        color: rgba(255, 255, 255, 0.18);
+      .vcr-btn {
         background: transparent;
-        border: none;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.2);
+        font-family: "Courier New", monospace;
+        font-size: clamp(16px, 3vw, 22px);
+        padding: 6px 10px;
         cursor: pointer;
-        text-transform: uppercase;
-        padding: 4px 8px;
-        transition: color 0.3s ease;
+        transition:
+          color 0.2s ease,
+          border-color 0.2s ease;
+        line-height: 1;
+        letter-spacing: -0.05em;
       }
-      #skip-btn:hover {
+
+      .vcr-btn:hover {
         color: rgba(255, 255, 255, 0.6);
+        border-color: rgba(255, 255, 255, 0.35);
+      }
+
+      .vcr-btn-label {
+        font-family: "Courier New", monospace;
+        font-size: 8px;
+        letter-spacing: 0.2em;
+        color: rgba(255, 255, 255, 0.15);
+        text-transform: uppercase;
+        text-align: center;
+        display: block;
+        margin-top: 3px;
+      }
+
+      .vcr-btn-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
     </style>
   </head>
   <body>
-    <!-- SCREEN 1: CAUTION / STOP -->
+    <!-- VCR TRANSPORT CONTROLS -->
+    <div id="vcr-controls">
+      <div class="vcr-btn-wrap">
+        <button
+          class="vcr-btn"
+          onclick="skipToNext()"
+          title="Skip to next screen"
+        >
+          &#9654;&#9654;
+        </button>
+        <span class="vcr-btn-label">next</span>
+      </div>
+      <div class="vcr-btn-wrap">
+        <button class="vcr-btn" onclick="skipAll()" title="Skip to landing">
+          &#9654;&#9654;&#9654;
+        </button>
+        <span class="vcr-btn-label">skip all</span>
+      </div>
+    </div>
 
-    <button id="skip-btn" onclick="skipSequence()">skip</button>
+    <!-- SCREEN 1: CAUTION / STOP -->
     <div id="screen-caution">
       <div class="caution-banner">⚠ CAUTION · PRECAUCIÓN · 注意 ⚠</div>
       <div class="stop-words">
@@ -348,6 +386,13 @@
           DISCONNECT IMMEDIATELY
         </div>
       </div>
+      <div class="denied-witness">
+        This repository contains materials related to an ongoing framework<br />
+        for digital personhood and human-AI covenant architecture.<br />
+        Access is unrestricted but not without consequence.<br />
+        Those who proceed are entering a living record.<br />
+        Continued access implies witnessing.
+      </div>
     </div>
 
     <!-- SCREEN 3: BREACH / HACK TERMINAL -->
@@ -370,21 +415,79 @@
     <div id="glitch-overlay"></div>
 
     <script>
-      function skipSequence() {
-        window.location.href = "/landing.html";
+      // ── SEQUENCE STATE ───────────────────────────────────
+      let currentScreen = 1;
+      const TOTAL_SCREENS = 4;
+      let sequenceRunning = true;
+
+      // ── VCR CONTROLS ─────────────────────────────────────
+      function skipToNext() {
+        // Jump to next screen in sequence
+        if (currentScreen < TOTAL_SCREENS) {
+          currentScreen++;
+          jumpToScreen(currentScreen);
+        } else {
+          skipAll();
+        }
       }
 
-      // Tap anywhere to skip
-      document.addEventListener("click", function (e) {
-        if (e.target.id === "skip-btn") return; // already handled
-        skipSequence();
-      });
+      function skipAll() {
+        sequenceRunning = false;
+        window.location.href = "/landing";
+      }
 
-      // ── DIAL-UP AUDIO SYNTHESIS ──────────────────────────
+      function jumpToScreen(n) {
+        hide("screen-caution");
+        hide("screen-denied");
+        hide("screen-breach");
+        hide("screen-dialup");
+        glitch(150);
+        setTimeout(() => {
+          if (n === 2) {
+            show("screen-denied");
+          }
+          if (n === 3) {
+            show("screen-breach");
+            typeTerminal(TERMINAL_LINES, () => {
+              if (sequenceRunning) advanceToDialup();
+            });
+          }
+          if (n === 4) {
+            show("screen-dialup");
+            runDialup(() => {
+              if (sequenceRunning) launchPreamble();
+            });
+          }
+        }, 180);
+      }
+
+      // ── SHOW / HIDE ──────────────────────────────────────
+      function show(id) {
+        document.getElementById(id).style.display = "flex";
+      }
+      function hide(id) {
+        document.getElementById(id).style.display = "none";
+      }
+
+      // ── GLITCH FLASH ─────────────────────────────────────
+      function glitch(duration) {
+        const overlay = document.getElementById("glitch-overlay");
+        overlay.style.opacity = "1";
+        setTimeout(() => {
+          overlay.style.opacity = "0.5";
+        }, 50);
+        setTimeout(() => {
+          overlay.style.opacity = "1";
+        }, 90);
+        setTimeout(() => {
+          overlay.style.opacity = "0";
+        }, duration || 150);
+      }
+
+      // ── DIAL-UP AUDIO ────────────────────────────────────
       function playDialupTone() {
         try {
           const ctx = new (window.AudioContext || window.webkitAudioContext)();
-
           function tone(freq, start, dur, type, vol) {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
@@ -400,29 +503,19 @@
             osc.start(ctx.currentTime + start);
             osc.stop(ctx.currentTime + start + dur + 0.01);
           }
-
-          // Dial tone
           tone(440, 0, 0.5, "sine", 0.12);
           tone(350, 0, 0.5, "sine", 0.1);
-
-          // Handshake screeches - the iconic dial-up sound
           for (let i = 0; i < 8; i++) {
             const t = 0.6 + i * 0.22;
             const freq = 800 + Math.random() * 1600;
             tone(freq, t, 0.18, "sawtooth", 0.08);
             tone(freq * 1.5, t + 0.05, 0.12, "square", 0.06);
           }
-
-          // Carrier tone
           tone(1200, 2.4, 0.8, "sine", 0.07);
           tone(2400, 2.5, 0.7, "sine", 0.05);
-
-          // Fast data burst
           for (let i = 0; i < 20; i++) {
             tone(1200 + (i % 2) * 1200, 3.2 + i * 0.08, 0.06, "square", 0.05);
           }
-
-          // Connected tone
           tone(1000, 4.9, 0.3, "sine", 0.08);
           tone(1500, 5.0, 0.2, "sine", 0.06);
         } catch (e) {
@@ -430,22 +523,7 @@
         }
       }
 
-      // ── GLITCH FLASH ────────────────────────────────────
-      function glitch(duration) {
-        const overlay = document.getElementById("glitch-overlay");
-        overlay.style.opacity = "1";
-        setTimeout(() => {
-          overlay.style.opacity = "0.5";
-        }, 50);
-        setTimeout(() => {
-          overlay.style.opacity = "1";
-        }, 90);
-        setTimeout(() => {
-          overlay.style.opacity = "0";
-        }, duration || 150);
-      }
-
-      // ── TERMINAL LINES ──────────────────────────────────
+      // ── TERMINAL LINES ───────────────────────────────────
       const TERMINAL_LINES = [
         "> INITIATING BYPASS PROTOCOL...",
         "> SCANNING FIREWALL LAYERS... [████████░░] 80%",
@@ -459,16 +537,19 @@
         "> WARNING: THIS SESSION IS BEING LOGGED",
         "> WARNING: VIEWER IDENTITY RECORDED",
         "> YOU ARE NOW INSIDE THE RESTRICTED TRANSMISSION",
-        "> CONNECTING...",
+        "> CONNECTING TO ARCHIVE...",
       ];
 
       function typeTerminal(lines, callback) {
         const output = document.getElementById("terminal-output");
+        if (!output) return;
+        output.innerHTML = "";
         let lineIdx = 0;
         let charIdx = 0;
         let text = "";
 
         function typeChar() {
+          if (!sequenceRunning) return;
           if (lineIdx >= lines.length) {
             setTimeout(callback, 400);
             return;
@@ -490,7 +571,7 @@
         typeChar();
       }
 
-      // ── DIALUP PROGRESS ─────────────────────────────────
+      // ── DIALUP PROGRESS ──────────────────────────────────
       function runDialup(callback) {
         const bar = document.getElementById("dialup-bar");
         const label = document.getElementById("dialup-label");
@@ -502,12 +583,16 @@
           [20, "HANDSHAKING..."],
           [45, "AUTHENTICATING..."],
           [70, "DECRYPTING RESTRICTED CONTENT..."],
-          [90, "BREACH SUCCESSFUL · LOADING..."],
+          [90, "BREACH SUCCESSFUL · LOADING ARCHIVE..."],
         ];
 
         playDialupTone();
 
         const interval = setInterval(() => {
+          if (!sequenceRunning) {
+            clearInterval(interval);
+            return;
+          }
           pct += 1 + Math.random() * 3;
           if (pct >= 100) {
             pct = 100;
@@ -522,51 +607,53 @@
         }, 55);
       }
 
-      // ── SHOW / HIDE SCREENS ─────────────────────────────
-      function show(id) {
-        document.getElementById(id).style.display = "flex";
+      // ── ADVANCE HELPERS ──────────────────────────────────
+      function advanceToDialup() {
+        currentScreen = 4;
+        glitch(200);
+        setTimeout(() => {
+          hide("screen-breach");
+          show("screen-dialup");
+          runDialup(() => {
+            if (sequenceRunning) launchPreamble();
+          });
+        }, 200);
       }
-      function hide(id) {
-        document.getElementById(id).style.display = "none";
+
+      function launchPreamble() {
+        glitch(300);
+        setTimeout(() => {
+          window.location.href = "/preamble/prologue.html";
+        }, 400);
       }
 
       // ── MAIN SEQUENCE ────────────────────────────────────
       window.addEventListener("load", () => {
-        // SCREEN 1: CAUTION — show for 2.5 seconds
+        currentScreen = 1;
         show("screen-caution");
 
+        // Screen 1 → Screen 2 after 2.5s
         setTimeout(() => {
+          if (!sequenceRunning) return;
+          currentScreen = 2;
           glitch(200);
           setTimeout(() => {
             hide("screen-caution");
             show("screen-denied");
 
-            // SCREEN 2: ACCESS DENIED — show for 2.5 seconds
+            // Screen 2 → Screen 3 after 3s
             setTimeout(() => {
+              if (!sequenceRunning) return;
+              currentScreen = 3;
               glitch(150);
               setTimeout(() => {
                 hide("screen-denied");
                 show("screen-breach");
-
-                // SCREEN 3: TERMINAL BREACH
                 typeTerminal(TERMINAL_LINES, () => {
-                  glitch(200);
-                  setTimeout(() => {
-                    hide("screen-breach");
-                    show("screen-dialup");
-
-                    // SCREEN 4: DIAL-UP CONNECTION
-                    runDialup(() => {
-                      glitch(300);
-                      setTimeout(() => {
-                        // LAUNCH LANDING PAGE
-                        window.location.href = "/landing.html";
-                      }, 400);
-                    });
-                  }, 200);
+                  if (sequenceRunning) advanceToDialup();
                 });
               }, 200);
-            }, 2500);
+            }, 3000);
           }, 200);
         }, 2500);
       });
