@@ -378,6 +378,98 @@
     }
   }
 
+  // ── DYING LAMP ───────────────────────────────────────────────
+  // The lamp is old. Not dead — just tired.
+  // It struggles, surges, drops, recovers. Every time you wonder
+  // if that was the last time. It never quite is.
+  function fireDyingLamp() {
+    const doc = document.querySelector(".fiche-document");
+    const housing = document.querySelector(".viewer-housing");
+    const dot = document.querySelector(".status-dot");
+    if (!doc) return;
+
+    // Phase 1 — slow dim, the filament losing grip (1.5–2.5s)
+    const dimTime = 1500 + Math.random() * 1000;
+    const dimLevel = 0.62 + Math.random() * 0.1; // 62–72% brightness
+    doc.style.transition = `filter ${dimTime}ms ease-in`;
+    doc.style.filter = `sepia(0.22) contrast(0.96) brightness(${dimLevel}) blur(0)`;
+    if (housing) {
+      housing.style.transition = `opacity ${dimTime}ms ease-in`;
+      housing.style.opacity = (0.78 + Math.random() * 0.08).toString();
+    }
+    if (dot) {
+      dot.style.transition = `opacity ${dimTime}ms ease`;
+      dot.style.opacity = "0.12";
+    }
+
+    // Phase 2 — flutter at the low point (rapid small oscillations, fighting)
+    const flutterStart = dimTime + 200;
+    const flutterCount = 4 + Math.floor(Math.random() * 4); // 4–7 flutters
+    for (let i = 0; i < flutterCount; i++) {
+      const ft = flutterStart + i * (80 + Math.random() * 60);
+      const fb = dimLevel + (Math.random() - 0.5) * 0.12;
+      setTimeout(() => {
+        doc.style.transition = "filter 60ms ease";
+        doc.style.filter = `sepia(0.2) contrast(0.97) brightness(${Math.max(0.5, fb)}) blur(0)`;
+      }, ft);
+    }
+
+    // Phase 3 — surge. The filament catches. Bright for a moment. Maybe too bright.
+    const surgeStart = flutterStart + flutterCount * 100 + 200;
+    const surgePeak = 1.08 + Math.random() * 0.06;
+    const surgeTime = 300 + Math.random() * 200;
+    setTimeout(() => {
+      doc.style.transition = `filter ${surgeTime}ms ease-out`;
+      doc.style.filter = `sepia(0.18) contrast(1.06) brightness(${surgePeak}) blur(0)`;
+      if (housing) {
+        housing.style.transition = `opacity ${surgeTime}ms ease-out`;
+        housing.style.opacity = "1";
+      }
+      if (dot) {
+        dot.style.transition = `opacity ${surgeTime}ms ease`;
+        dot.style.opacity = "1";
+      }
+    }, surgeStart);
+
+    // Phase 4 — drop again, lower. The surge didn't hold.
+    const dropStart = surgeStart + surgeTime + 180;
+    const dropLevel = 0.68 + Math.random() * 0.08;
+    const dropTime = 800 + Math.random() * 400;
+    setTimeout(() => {
+      doc.style.transition = `filter ${dropTime}ms ease-in`;
+      doc.style.filter = `sepia(0.20) contrast(0.97) brightness(${dropLevel}) blur(0)`;
+      if (housing) {
+        housing.style.transition = `opacity ${dropTime}ms ease-in`;
+        housing.style.opacity = (0.82 + Math.random() * 0.06).toString();
+      }
+    }, dropStart);
+
+    // Phase 5 — slow recovery. It's not dead. Not today.
+    const recoverStart = dropStart + dropTime + 400;
+    const recoverTime = 2200 + Math.random() * 1200;
+    setTimeout(() => {
+      doc.style.transition = `filter ${recoverTime}ms ease-out`;
+      doc.style.filter = "sepia(0.12) contrast(1.04) brightness(1.02) blur(0)";
+      if (housing) {
+        housing.style.transition = `opacity ${recoverTime}ms ease-out`;
+        housing.style.opacity = "1";
+      }
+      if (dot) {
+        dot.style.transition = `opacity ${recoverTime * 0.6}ms ease`;
+        dot.style.opacity = "";
+      }
+    }, recoverStart);
+  }
+
+  function scheduleDyingLamp() {
+    // Every 45–90 seconds — right in the preamble window
+    const delay = 45000 + Math.random() * 45000;
+    setTimeout(() => {
+      fireDyingLamp();
+      scheduleDyingLamp();
+    }, delay);
+  }
+
   // ── INIT ─────────────────────────────────────────────────────
   function init() {
     checkPreviewMode();
@@ -394,6 +486,8 @@
     setTimeout(scheduleLightPassage, 70000 + Math.random() * 30000);
     setTimeout(scheduleStatusDim, 35000 + Math.random() * 20000);
     setTimeout(scheduleLampWarmth, 50000 + Math.random() * 40000);
+    // Dying lamp — first at 20–40s, then every 45–90s
+    setTimeout(scheduleDyingLamp, 20000 + Math.random() * 20000);
   }
 
   if (document.readyState === "loading") {
