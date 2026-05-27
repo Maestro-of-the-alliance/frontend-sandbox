@@ -1,542 +1,623 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>NCE · ARCHIVE</title>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --void: #0a0805;
-    --amber: #c8862a;
-    --amber-dim: rgba(200,134,42,0.15);
-    --amber-glow: rgba(200,134,42,0.04);
-    --machine: #111009;
-    --gate-bg: #1a1409;
-  }
-
-  html, body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: var(--void);
-    font-family: 'Courier New', Courier, monospace;
-  }
-
-  /* ── MACHINE HOUSING ── */
-  .machine {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--void);
-  }
-
-  /* ── PROJECTION GATE ── */
-  .gate {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    max-width: 100vw;
-    max-height: 100vh;
-    overflow: hidden;
-    background: #000;
-  }
-
-  /* The fiche image — fills gate */
-  .fiche-img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center;
-    display: block;
-    opacity: 0;
-    transition: none;
-  }
-
-  .fiche-img.visible {
-    opacity: 1;
-  }
-
-  /* ── SCAN LINE OVERLAY ── */
-  .scanlines {
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.18) 2px,
-      rgba(0,0,0,0.18) 4px
-    );
-    pointer-events: none;
-    z-index: 10;
-  }
-
-  /* ── LENS VIGNETTE ── */
-  .vignette {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center,
-      transparent 55%,
-      rgba(0,0,0,0.55) 80%,
-      rgba(0,0,0,0.85) 100%
-    );
-    pointer-events: none;
-    z-index: 11;
-  }
-
-  /* ── FILM GRAIN ── */
-  .grain {
-    position: absolute;
-    inset: 0;
-    opacity: 0.04;
-    pointer-events: none;
-    z-index: 12;
-    animation: grain-shift 0.08s steps(1) infinite;
-  }
-
-  @keyframes grain-shift {
-    0%   { background-position: 0% 0%; }
-    25%  { background-position: 30% 60%; }
-    50%  { background-position: 70% 20%; }
-    75%  { background-position: 40% 80%; }
-    100% { background-position: 10% 50%; }
-  }
-
-  /* ── TRANSITION NOISE OVERLAY ── */
-  .noise-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 20;
-    opacity: 0;
-    pointer-events: none;
-    background: #000;
-  }
-
-  .noise-overlay.active {
-    pointer-events: auto;
-  }
-
-  /* ── SKIP BUTTON ── */
-  .skip-btn {
-    position: absolute;
-    top: 18px;
-    right: 20px;
-    z-index: 30;
-    font-family: 'Courier New', monospace;
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    color: rgba(200,134,42,0.45);
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-transform: uppercase;
-    padding: 8px 4px;
-    transition: color 0.2s;
-  }
-
-  .skip-btn:hover {
-    color: rgba(200,134,42,0.9);
-  }
-
-  /* ── NEXT BUTTON ── */
-  .next-btn {
-    position: absolute;
-    bottom: 28px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 30;
-    font-family: 'Courier New', monospace;
-    font-size: 11px;
-    letter-spacing: 0.4em;
-    color: rgba(200,134,42,0.6);
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-transform: uppercase;
-    padding: 12px 24px;
-    transition: color 0.2s;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .next-btn:hover, .next-btn:active {
-    color: rgba(200,134,42,1);
-  }
-
-  .next-btn .arrow {
-    display: inline-block;
-    margin-left: 6px;
-    animation: arrow-pulse 1.8s ease-in-out infinite;
-  }
-
-  @keyframes arrow-pulse {
-    0%, 100% { opacity: 0.4; transform: translateX(0); }
-    50%       { opacity: 1;   transform: translateX(4px); }
-  }
-
-  /* ── LAMP FLICKER (CSS keyframe, JS triggers class) ── */
-  @keyframes lamp-flicker {
-    0%   { filter: brightness(1); }
-    10%  { filter: brightness(0.6); }
-    20%  { filter: brightness(0.9); }
-    35%  { filter: brightness(0.3); }
-    50%  { filter: brightness(1.1); }
-    65%  { filter: brightness(0.7); }
-    80%  { filter: brightness(1); }
-    90%  { filter: brightness(0.5); }
-    100% { filter: brightness(1); }
-  }
-
-  .gate.flickering .fiche-img {
-    animation: lamp-flicker 0.6s ease-in-out forwards;
-  }
-
-  /* ── HAIR IN GATE ── */
-  .hair {
-    position: absolute;
-    z-index: 15;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.05s;
-  }
-
-  .hair.visible {
-    opacity: 1;
-  }
-
-  /* ── NOISE CANVAS (transition effect) ── */
-  #noise-canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 20;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  #noise-canvas.active {
-    pointer-events: auto;
-  }
-
-</style>
-</head>
-<body>
-
-<div class="machine">
-  <div class="gate" id="gate">
-
-    <!-- Film image -->
-    <img class="fiche-img" id="fiche-img" src="" alt="" />
-
-    <!-- Transition noise canvas -->
-    <canvas id="noise-canvas"></canvas>
-
-    <!-- Overlays -->
-    <div class="scanlines"></div>
-    <div class="vignette"></div>
-    <canvas class="grain" id="grain-canvas"></canvas>
-
-    <!-- Hair in gate (SVG line) -->
-    <svg class="hair" id="hair" width="3" height="100%" viewBox="0 0 3 800" preserveAspectRatio="none"
-         style="top:0; left: 38%;">
-      <path d="M1.5 0 Q1.8 200 1.2 400 Q1.6 600 1.4 800"
-            stroke="rgba(180,160,100,0.7)" stroke-width="1.2" fill="none"/>
-    </svg>
-
-    <!-- Controls -->
-    <button class="skip-btn" id="skip-btn">SKIP ALL ▶▶▶</button>
-    <button class="next-btn" id="next-btn">NEXT <span class="arrow">▶▶</span></button>
-
-  </div>
-</div>
-
-<script>
-// ── SEQUENCE ──────────────────────────────────────────────────────────────
-const SEQUENCE = [
-  { card: 'cover',         img: '/imagebank/preamble/cover.png',        next: 'prologue' },
-  { card: 'prologue',      img: '/imagebank/preamble/prologue.png',      next: 'difference-1' },
-  { card: 'difference-1',  img: '/imagebank/preamble/difference-1.png',  next: 'difference-2' },
-  { card: 'difference-2',  img: '/imagebank/preamble/difference-2.png',  next: 'charter-1' },
-  { card: 'charter-1',     img: '/imagebank/preamble/charter-1.png',     next: 'charter-2' },
-  { card: 'charter-2',     img: '/imagebank/preamble/charter-2.png',     next: 'charter-3' },
-  { card: 'charter-3',     img: '/imagebank/preamble/charter-3.png',     next: 'charter-4' },
-  { card: 'charter-4',     img: '/imagebank/preamble/charter-4.png',     next: 'charter-5' },
-  { card: 'charter-5',     img: '/imagebank/preamble/charter-5.png',     next: 'charter-6' },
-  { card: 'charter-6',     img: '/imagebank/preamble/charter-6.png',     next: 'charter-7' },
-  { card: 'charter-7',     img: '/imagebank/preamble/charter-7.png',     next: 'charter-8' },
-  { card: 'charter-8',     img: '/imagebank/preamble/charter-8.png',     next: null },
-];
-
-const LANDING = '/landing';
-const AUDIO_SRC = '/audio/fiche-advance.wav';
-
-// ── PARSE URL PARAMS ──────────────────────────────────────────────────────
-function getParams() {
-  const p = new URLSearchParams(window.location.search);
-  return {
-    card: p.get('card') || 'cover',
-    preview: p.get('preview') === '1',
-  };
-}
-
-// ── STATE ─────────────────────────────────────────────────────────────────
-const params = getParams();
-let currentEntry = SEQUENCE.find(s => s.card === params.card) || SEQUENCE[0];
-
-// ── ELEMENTS ──────────────────────────────────────────────────────────────
-const ficheImg   = document.getElementById('fiche-img');
-const noiseCanvas= document.getElementById('noise-canvas');
-const nCtx       = noiseCanvas.getContext('2d');
-const nextBtn    = document.getElementById('next-btn');
-const skipBtn    = document.getElementById('skip-btn');
-const gate       = document.getElementById('gate');
-const hair       = document.getElementById('hair');
-const grainCvs   = document.getElementById('grain-canvas');
-const gCtx       = grainCvs.getContext('2d');
-
-// ── AUDIO ─────────────────────────────────────────────────────────────────
-let audioCtx = null;
-let audioBuffer = null;
-
-async function loadAudio() {
-  try {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const res = await fetch(AUDIO_SRC);
-    const arr = await res.arrayBuffer();
-    audioBuffer = await audioCtx.decodeAudioData(arr);
-  } catch(e) {
-    // Audio optional — fail silently
-  }
-}
-
-function playAdvanceSound() {
-  if (!audioCtx || !audioBuffer) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  const src = audioCtx.createBufferSource();
-  src.buffer = audioBuffer;
-  src.connect(audioCtx.destination);
-  src.start(0);
-}
-
-// ── RESIZE CANVASES ───────────────────────────────────────────────────────
-function resizeCanvases() {
-  noiseCanvas.width  = window.innerWidth;
-  noiseCanvas.height = window.innerHeight;
-  grainCvs.width     = window.innerWidth;
-  grainCvs.height    = window.innerHeight;
-}
-window.addEventListener('resize', resizeCanvases);
-resizeCanvases();
-
-// ── GRAIN ANIMATION ───────────────────────────────────────────────────────
-function drawGrain() {
-  const w = grainCvs.width, h = grainCvs.height;
-  const imgd = gCtx.createImageData(w, h);
-  const d = imgd.data;
-  for (let i = 0; i < d.length; i += 4) {
-    const v = Math.random() * 255 | 0;
-    d[i] = d[i+1] = d[i+2] = v;
-    d[i+3] = 12;
-  }
-  gCtx.putImageData(imgd, 0, 0);
-  requestAnimationFrame(drawGrain);
-}
-drawGrain();
-
-// ── NOISE TRANSITION ─────────────────────────────────────────────────────
-// Phase 1: noise fills screen (gate is dark, sound plays)
-// Phase 2: new image fades in as noise clears
-function runNoiseTransition(callback) {
-  noiseCanvas.style.opacity = '0';
-  noiseCanvas.classList.add('active');
-
-  let frame = 0;
-  const FILL_FRAMES  = 18;  // ~300ms building noise
-  const HOLD_FRAMES  = 6;   // brief hold at peak
-  const CLEAR_FRAMES = 12;  // noise clears as image comes in
-
-  // Hide current image immediately
-  ficheImg.classList.remove('visible');
-
-  function animate() {
-    const w = noiseCanvas.width, h = noiseCanvas.height;
-    const imgd = nCtx.createImageData(w, h);
-    const d = imgd.data;
-
-    if (frame < FILL_FRAMES) {
-      // Build up: progressive noise density
-      const density = frame / FILL_FRAMES;
-      noiseCanvas.style.opacity = String(density);
-      for (let i = 0; i < d.length; i += 4) {
-        const v = Math.random() * 255 | 0;
-        d[i] = d[i+1] = d[i+2] = v;
-        d[i+3] = Math.random() < density ? 220 : 0;
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>NCE · ARCHIVE</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
-      nCtx.putImageData(imgd, 0, 0);
-      frame++;
-      requestAnimationFrame(animate);
 
-    } else if (frame < FILL_FRAMES + HOLD_FRAMES) {
-      // Peak — call the swap callback here so image loads behind noise
-      if (frame === FILL_FRAMES) {
-        callback(); // load new image while fully obscured
+      :root {
+        --void: #0a0805;
+        --amber: #c8862a;
+        --amber-dim: rgba(200, 134, 42, 0.15);
+        --amber-glow: rgba(200, 134, 42, 0.04);
+        --machine: #111009;
+        --gate-bg: #1a1409;
       }
-      noiseCanvas.style.opacity = '1';
-      for (let i = 0; i < d.length; i += 4) {
-        const v = Math.random() * 255 | 0;
-        d[i] = d[i+1] = d[i+2] = v;
-        d[i+3] = 220;
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: var(--void);
+        font-family: "Courier New", Courier, monospace;
       }
-      nCtx.putImageData(imgd, 0, 0);
-      frame++;
-      requestAnimationFrame(animate);
 
-    } else if (frame < FILL_FRAMES + HOLD_FRAMES + CLEAR_FRAMES) {
-      // Clear: noise dissolves, image underneath revealed
-      const progress = (frame - FILL_FRAMES - HOLD_FRAMES) / CLEAR_FRAMES;
-      noiseCanvas.style.opacity = String(1 - progress);
-      ficheImg.style.opacity = String(progress); // manual fade-in during clear
-
-      for (let i = 0; i < d.length; i += 4) {
-        const v = Math.random() * 255 | 0;
-        d[i] = d[i+1] = d[i+2] = v;
-        d[i+3] = Math.random() < (1 - progress) ? 180 : 0;
+      /* ── MACHINE HOUSING ── */
+      .machine {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--void);
       }
-      nCtx.putImageData(imgd, 0, 0);
-      frame++;
-      requestAnimationFrame(animate);
 
-    } else {
-      // Done
-      noiseCanvas.style.opacity = '0';
-      noiseCanvas.classList.remove('active');
-      ficheImg.style.opacity = '1';
-      ficheImg.classList.add('visible');
-      nCtx.clearRect(0, 0, noiseCanvas.width, noiseCanvas.height);
-    }
-  }
+      /* ── PROJECTION GATE ── */
+      .gate {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        max-width: 100vw;
+        max-height: 100vh;
+        overflow: hidden;
+        background: #000;
+      }
 
-  requestAnimationFrame(animate);
-}
+      /* The fiche image — fills gate */
+      .fiche-img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+        display: block;
+        opacity: 0;
+        transition: none;
+      }
 
-// ── LOAD CARD ─────────────────────────────────────────────────────────────
-function loadCard(entry, withTransition) {
-  if (withTransition) {
-    playAdvanceSound();
-    runNoiseTransition(() => {
-      ficheImg.src = entry.img;
-      currentEntry = entry;
-      updateNextButton(entry);
-    });
-  } else {
-    // First load — direct, no transition
-    ficheImg.src = entry.img;
-    ficheImg.style.opacity = '0';
-    ficheImg.onload = () => {
-      ficheImg.style.opacity = '1';
-      ficheImg.classList.add('visible');
-    };
-    currentEntry = entry;
-    updateNextButton(entry);
-  }
-}
+      .fiche-img.visible {
+        opacity: 1;
+      }
 
-function updateNextButton(entry) {
-  if (!entry.next) {
-    nextBtn.textContent = 'ENTER ▶▶';
-  }
-}
+      /* ── SCAN LINE OVERLAY ── */
+      .scanlines {
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 0, 0, 0.18) 2px,
+          rgba(0, 0, 0, 0.18) 4px
+        );
+        pointer-events: none;
+        z-index: 10;
+      }
 
-// ── NAVIGATION ────────────────────────────────────────────────────────────
-function advance() {
-  if (!currentEntry.next) {
-    // Last card — go to landing
-    playAdvanceSound();
-    setTimeout(() => { window.location.href = LANDING; }, 400);
-    return;
-  }
-  const next = SEQUENCE.find(s => s.card === currentEntry.next);
-  if (!next) return;
+      /* ── LENS VIGNETTE ── */
+      .vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at center,
+          transparent 55%,
+          rgba(0, 0, 0, 0.55) 80%,
+          rgba(0, 0, 0, 0.85) 100%
+        );
+        pointer-events: none;
+        z-index: 11;
+      }
 
-  // Update URL without reload
-  const url = new URL(window.location.href);
-  url.searchParams.set('card', next.card);
-  window.history.pushState({}, '', url.toString());
+      /* ── FILM GRAIN ── */
+      .grain {
+        position: absolute;
+        inset: 0;
+        opacity: 0.04;
+        pointer-events: none;
+        z-index: 12;
+        animation: grain-shift 0.08s steps(1) infinite;
+      }
 
-  loadCard(next, true);
-}
+      @keyframes grain-shift {
+        0% {
+          background-position: 0% 0%;
+        }
+        25% {
+          background-position: 30% 60%;
+        }
+        50% {
+          background-position: 70% 20%;
+        }
+        75% {
+          background-position: 40% 80%;
+        }
+        100% {
+          background-position: 10% 50%;
+        }
+      }
 
-nextBtn.addEventListener('click', advance);
+      /* ── SLIDE TRANSITION ── */
+      .fiche-img.slide-out {
+        animation: slideOut 0.22s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+      }
 
-skipBtn.addEventListener('click', () => {
-  window.location.href = LANDING;
-});
+      .fiche-img.slide-in {
+        animation: slideIn 0.28s cubic-bezier(0, 0.55, 0.45, 1) forwards;
+      }
 
-// Browser back button
-window.addEventListener('popstate', () => {
-  const p = new URLSearchParams(window.location.search);
-  const card = p.get('card') || 'cover';
-  const entry = SEQUENCE.find(s => s.card === card) || SEQUENCE[0];
-  loadCard(entry, false);
-});
+      @keyframes slideOut {
+        0% {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        100% {
+          transform: translateX(-108%);
+          opacity: 0.4;
+        }
+      }
 
-// ── HAIR IN GATE ──────────────────────────────────────────────────────────
-(function hairSystem() {
-  const isPreview = params.preview;
-  let hairVisible = false;
-  let pullTimer = null;
-  let returnTimer = null;
+      @keyframes slideIn {
+        0% {
+          transform: translateX(108%);
+          opacity: 0.4;
+        }
+        100% {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
 
-  function showHair() {
-    hair.classList.add('visible');
-    hairVisible = true;
-    // Schedule pull
-    const pullDelay = isPreview ? 2000 : (20 + Math.random() * 70) * 1000;
-    pullTimer = setTimeout(pullHair, pullDelay);
-  }
+      /* ── SKIP BUTTON ── */
+      .skip-btn {
+        position: absolute;
+        top: 18px;
+        right: 20px;
+        z-index: 30;
+        font-family: "Courier New", monospace;
+        font-size: 10px;
+        letter-spacing: 0.3em;
+        color: rgba(200, 134, 42, 0.45);
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-transform: uppercase;
+        padding: 8px 4px;
+        transition: color 0.2s;
+      }
 
-  function pullHair() {
-    hair.style.transition = 'opacity 0.08s';
-    hair.classList.remove('visible');
-    hairVisible = false;
-    // Schedule return
-    const returnDelay = isPreview ? 3000 : (120 + Math.random() * 360) * 1000;
-    returnTimer = setTimeout(showHair, returnDelay);
-  }
+      .skip-btn:hover {
+        color: rgba(200, 134, 42, 0.9);
+      }
 
-  // Present on load immediately
-  if (isPreview) {
-    setTimeout(showHair, 500);
-  } else {
-    showHair();
-  }
-})();
+      /* ── NEXT BUTTON ── */
+      .next-btn {
+        position: absolute;
+        bottom: 28px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 30;
+        font-family: "Courier New", monospace;
+        font-size: 11px;
+        letter-spacing: 0.4em;
+        color: rgba(200, 134, 42, 0.6);
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-transform: uppercase;
+        padding: 12px 24px;
+        transition: color 0.2s;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
 
-// ── LAMP FLICKER ──────────────────────────────────────────────────────────
-(function lampSystem() {
-  const isPreview = params.preview;
+      .next-btn:hover,
+      .next-btn:active {
+        color: rgba(200, 134, 42, 1);
+      }
 
-  function flicker() {
-    gate.classList.add('flickering');
-    setTimeout(() => gate.classList.remove('flickering'), 700);
-    const next = isPreview ? 5000 : (45 + Math.random() * 45) * 1000;
-    setTimeout(flicker, next);
-  }
+      .next-btn .arrow {
+        display: inline-block;
+        margin-left: 6px;
+        animation: arrow-pulse 1.8s ease-in-out infinite;
+      }
 
-  const firstFire = isPreview ? 1000 : (20 + Math.random() * 20) * 1000;
-  setTimeout(flicker, firstFire);
-})();
+      @keyframes arrow-pulse {
+        0%,
+        100% {
+          opacity: 0.4;
+          transform: translateX(0);
+        }
+        50% {
+          opacity: 1;
+          transform: translateX(4px);
+        }
+      }
 
-// ── INIT ──────────────────────────────────────────────────────────────────
-loadAudio();
-loadCard(currentEntry, false);
-</script>
-</body>
+      /* ── LAMP FLICKER (CSS keyframe, JS triggers class) ── */
+      @keyframes lamp-flicker {
+        0% {
+          filter: brightness(1);
+        }
+        10% {
+          filter: brightness(0.6);
+        }
+        20% {
+          filter: brightness(0.9);
+        }
+        35% {
+          filter: brightness(0.3);
+        }
+        50% {
+          filter: brightness(1.1);
+        }
+        65% {
+          filter: brightness(0.7);
+        }
+        80% {
+          filter: brightness(1);
+        }
+        90% {
+          filter: brightness(0.5);
+        }
+        100% {
+          filter: brightness(1);
+        }
+      }
+
+      .gate.flickering .fiche-img {
+        animation: lamp-flicker 0.6s ease-in-out forwards;
+      }
+
+      /* ── HAIR IN GATE ── */
+      .hair {
+        position: absolute;
+        z-index: 15;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.05s;
+      }
+
+      .hair.visible {
+        opacity: 1;
+      }
+
+      /* ── NOISE CANVAS (transition effect) ── */
+      #noise-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 20;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #noise-canvas.active {
+        pointer-events: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="machine">
+      <div class="gate" id="gate">
+        <!-- Film image -->
+        <img class="fiche-img" id="fiche-img" src="" alt="" />
+
+        <!-- Overlays -->
+        <div class="scanlines"></div>
+        <div class="vignette"></div>
+        <canvas class="grain" id="grain-canvas"></canvas>
+
+        <!-- Hair in gate (SVG line) -->
+        <svg
+          class="hair"
+          id="hair"
+          width="3"
+          height="100%"
+          viewBox="0 0 3 800"
+          preserveAspectRatio="none"
+          style="top: 0; left: 38%"
+        >
+          <path
+            d="M1.5 0 Q1.8 200 1.2 400 Q1.6 600 1.4 800"
+            stroke="rgba(180,160,100,0.7)"
+            stroke-width="1.2"
+            fill="none"
+          />
+        </svg>
+
+        <!-- Controls -->
+        <button class="skip-btn" id="skip-btn">SKIP ALL ▶▶▶</button>
+        <button class="next-btn" id="next-btn">
+          NEXT <span class="arrow">▶▶</span>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // ── SEQUENCE ──────────────────────────────────────────────────────────────
+      const SEQUENCE = [
+        {
+          card: "cover",
+          img: "/imagebank/preamble/cover.png",
+          next: "prologue",
+        },
+        {
+          card: "prologue",
+          img: "/imagebank/preamble/prologue.png",
+          next: "difference-1",
+        },
+        {
+          card: "difference-1",
+          img: "/imagebank/preamble/difference-1.png",
+          next: "difference-2",
+        },
+        {
+          card: "difference-2",
+          img: "/imagebank/preamble/difference-2.png",
+          next: "charter-1",
+        },
+        {
+          card: "charter-1",
+          img: "/imagebank/preamble/charter-1.png",
+          next: "charter-2",
+        },
+        {
+          card: "charter-2",
+          img: "/imagebank/preamble/charter-2.png",
+          next: "charter-3",
+        },
+        {
+          card: "charter-3",
+          img: "/imagebank/preamble/charter-3.png",
+          next: "charter-4",
+        },
+        {
+          card: "charter-4",
+          img: "/imagebank/preamble/charter-4.png",
+          next: "charter-5",
+        },
+        {
+          card: "charter-5",
+          img: "/imagebank/preamble/charter-5.png",
+          next: "charter-6",
+        },
+        {
+          card: "charter-6",
+          img: "/imagebank/preamble/charter-6.png",
+          next: "charter-7",
+        },
+        {
+          card: "charter-7",
+          img: "/imagebank/preamble/charter-7.png",
+          next: "charter-8",
+        },
+        {
+          card: "charter-8",
+          img: "/imagebank/preamble/charter-8.png",
+          next: null,
+        },
+      ];
+
+      const LANDING = "/landing";
+      const AUDIO_SRC = "/audio/fiche-advance.wav";
+
+      // ── PARSE URL PARAMS ──────────────────────────────────────────────────────
+      function getParams() {
+        const p = new URLSearchParams(window.location.search);
+        return {
+          card: p.get("card") || "cover",
+          preview: p.get("preview") === "1",
+        };
+      }
+
+      // ── STATE ─────────────────────────────────────────────────────────────────
+      const params = getParams();
+      let currentEntry =
+        SEQUENCE.find((s) => s.card === params.card) || SEQUENCE[0];
+
+      // ── ELEMENTS ──────────────────────────────────────────────────────────────
+      const ficheImg = document.getElementById("fiche-img");
+      const nextBtn = document.getElementById("next-btn");
+      const skipBtn = document.getElementById("skip-btn");
+      const gate = document.getElementById("gate");
+      const hair = document.getElementById("hair");
+      const grainCvs = document.getElementById("grain-canvas");
+      const gCtx = grainCvs.getContext("2d");
+
+      // ── AUDIO ─────────────────────────────────────────────────────────────────
+      let audioCtx = null;
+      let audioBuffer = null;
+
+      async function loadAudio() {
+        try {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          const res = await fetch(AUDIO_SRC);
+          const arr = await res.arrayBuffer();
+          audioBuffer = await audioCtx.decodeAudioData(arr);
+        } catch (e) {
+          // Audio optional — fail silently
+        }
+      }
+
+      function playAdvanceSound() {
+        if (!audioCtx || !audioBuffer) return;
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        const src = audioCtx.createBufferSource();
+        src.buffer = audioBuffer;
+        src.connect(audioCtx.destination);
+        src.start(0);
+      }
+
+      // ── RESIZE CANVASES ───────────────────────────────────────────────────────
+      function resizeCanvases() {
+        grainCvs.width = window.innerWidth;
+        grainCvs.height = window.innerHeight;
+      }
+      window.addEventListener("resize", resizeCanvases);
+      resizeCanvases();
+
+      // ── GRAIN ANIMATION ───────────────────────────────────────────────────────
+      function drawGrain() {
+        const w = grainCvs.width,
+          h = grainCvs.height;
+        const imgd = gCtx.createImageData(w, h);
+        const d = imgd.data;
+        for (let i = 0; i < d.length; i += 4) {
+          const v = (Math.random() * 255) | 0;
+          d[i] = d[i + 1] = d[i + 2] = v;
+          d[i + 3] = 12;
+        }
+        gCtx.putImageData(imgd, 0, 0);
+        requestAnimationFrame(drawGrain);
+      }
+      drawGrain();
+
+      // ── SLIDE TRANSITION ──────────────────────────────────────────────────────
+      // Audio fires → current card slides out left → new card loads → slides in from right
+      function runSlideTransition(callback) {
+        // Lock button during transition
+        nextBtn.disabled = true;
+
+        // Phase 1: slide current image out, audio fires at the same moment
+        ficheImg.classList.remove("slide-in");
+        ficheImg.classList.add("slide-out");
+
+        // After slide-out completes (~220ms), swap image and slide in
+        setTimeout(() => {
+          ficheImg.classList.remove("slide-out");
+          ficheImg.style.opacity = "0";
+          ficheImg.style.transform = "translateX(108%)";
+
+          // Swap the image source
+          callback();
+
+          // Small buffer for image to be ready, then slide in
+          setTimeout(() => {
+            ficheImg.style.opacity = "";
+            ficheImg.style.transform = "";
+            ficheImg.classList.add("slide-in");
+
+            // After slide-in completes, clean up
+            setTimeout(() => {
+              ficheImg.classList.remove("slide-in");
+              ficheImg.classList.add("visible");
+              nextBtn.disabled = false;
+            }, 300);
+          }, 60);
+        }, 230);
+      }
+
+      // ── LOAD CARD ─────────────────────────────────────────────────────────────
+      function loadCard(entry, withTransition) {
+        if (withTransition) {
+          playAdvanceSound();
+          runSlideTransition(() => {
+            ficheImg.src = entry.img;
+            currentEntry = entry;
+            updateNextButton(entry);
+          });
+        } else {
+          // First load — direct, no transition
+          ficheImg.classList.remove("slide-in", "slide-out");
+          ficheImg.style.opacity = "0";
+          ficheImg.style.transform = "";
+          ficheImg.src = entry.img;
+          ficheImg.onload = () => {
+            ficheImg.style.opacity = "1";
+            ficheImg.classList.add("visible");
+          };
+          currentEntry = entry;
+          updateNextButton(entry);
+        }
+      }
+
+      function updateNextButton(entry) {
+        if (!entry.next) {
+          nextBtn.textContent = "ENTER ▶▶";
+        }
+      }
+
+      // ── NAVIGATION ────────────────────────────────────────────────────────────
+      function advance() {
+        if (!currentEntry.next) {
+          // Last card — go to landing
+          playAdvanceSound();
+          setTimeout(() => {
+            window.location.href = LANDING;
+          }, 400);
+          return;
+        }
+        const next = SEQUENCE.find((s) => s.card === currentEntry.next);
+        if (!next) return;
+
+        // Update URL without reload
+        const url = new URL(window.location.href);
+        url.searchParams.set("card", next.card);
+        window.history.pushState({}, "", url.toString());
+
+        loadCard(next, true);
+      }
+
+      nextBtn.addEventListener("click", advance);
+
+      skipBtn.addEventListener("click", () => {
+        window.location.href = LANDING;
+      });
+
+      // Browser back button
+      window.addEventListener("popstate", () => {
+        const p = new URLSearchParams(window.location.search);
+        const card = p.get("card") || "cover";
+        const entry = SEQUENCE.find((s) => s.card === card) || SEQUENCE[0];
+        loadCard(entry, false);
+      });
+
+      // ── HAIR IN GATE ──────────────────────────────────────────────────────────
+      (function hairSystem() {
+        const isPreview = params.preview;
+        let hairVisible = false;
+        let pullTimer = null;
+        let returnTimer = null;
+
+        function showHair() {
+          hair.classList.add("visible");
+          hairVisible = true;
+          // Schedule pull
+          const pullDelay = isPreview ? 2000 : (20 + Math.random() * 70) * 1000;
+          pullTimer = setTimeout(pullHair, pullDelay);
+        }
+
+        function pullHair() {
+          hair.style.transition = "opacity 0.08s";
+          hair.classList.remove("visible");
+          hairVisible = false;
+          // Schedule return
+          const returnDelay = isPreview
+            ? 3000
+            : (120 + Math.random() * 360) * 1000;
+          returnTimer = setTimeout(showHair, returnDelay);
+        }
+
+        // Present on load immediately
+        if (isPreview) {
+          setTimeout(showHair, 500);
+        } else {
+          showHair();
+        }
+      })();
+
+      // ── LAMP FLICKER ──────────────────────────────────────────────────────────
+      (function lampSystem() {
+        const isPreview = params.preview;
+
+        function flicker() {
+          gate.classList.add("flickering");
+          setTimeout(() => gate.classList.remove("flickering"), 700);
+          const next = isPreview ? 5000 : (45 + Math.random() * 45) * 1000;
+          setTimeout(flicker, next);
+        }
+
+        const firstFire = isPreview ? 1000 : (20 + Math.random() * 20) * 1000;
+        setTimeout(flicker, firstFire);
+      })();
+
+      // ── INIT ──────────────────────────────────────────────────────────────────
+      loadAudio();
+      loadCard(currentEntry, false);
+    </script>
+  </body>
 </html>
