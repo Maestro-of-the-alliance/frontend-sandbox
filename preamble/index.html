@@ -226,7 +226,26 @@
         }
       }
 
-      /* ── LAMP FLICKER (CSS keyframe, JS triggers class) ── */
+      /* ── EMPTY GATE LAMP BLOOM ── */
+      .gate::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(200, 134, 42, 0.18) 0%,
+          rgba(180, 110, 20, 0.08) 35%,
+          transparent 70%
+        );
+        opacity: 1;
+        transition: opacity 0.4s ease;
+        pointer-events: none;
+      }
+
+      .gate.loaded::before {
+        opacity: 0;
+      }
       @keyframes lamp-flicker {
         0% {
           filter: brightness(1);
@@ -467,12 +486,15 @@
       drawGrain();
 
       // ── SLIDE TRANSITION ──────────────────────────────────────────────────────
-      // Audio fires → current card slides out left → new card loads → slides in from right
+      // Audio fires → current card slides out left → bloom visible → new card slides in from right
       function runSlideTransition(callback) {
         // Lock button during transition
         nextBtn.disabled = true;
 
-        // Phase 1: slide current image out, audio fires at the same moment
+        // Show bloom during the gap
+        gate.classList.remove("loaded");
+
+        // Phase 1: slide current image out
         ficheImg.classList.remove("slide-in");
         ficheImg.classList.add("slide-out");
 
@@ -491,10 +513,11 @@
             ficheImg.style.transform = "";
             ficheImg.classList.add("slide-in");
 
-            // After slide-in completes, clean up
+            // After slide-in completes, clean up and hide bloom
             setTimeout(() => {
               ficheImg.classList.remove("slide-in");
               ficheImg.classList.add("visible");
+              gate.classList.add("loaded");
               nextBtn.disabled = false;
             }, 300);
           }, 60);
@@ -511,17 +534,21 @@
             updateNextButton(entry);
           });
         } else {
-          // First load — direct, no transition
-          ficheImg.classList.remove("slide-in", "slide-out");
+          // First load — empty gate, then noise into first image
+          ficheImg.src = "";
           ficheImg.style.opacity = "0";
           ficheImg.style.transform = "";
-          ficheImg.src = entry.img;
-          ficheImg.onload = () => {
-            ficheImg.style.opacity = "1";
-            ficheImg.classList.add("visible");
-          };
           currentEntry = entry;
           updateNextButton(entry);
+
+          // Brief pause on empty machine, then retrieve first record
+          setTimeout(() => {
+            playAdvanceSound();
+            runSlideTransition(() => {
+              ficheImg.src = entry.img;
+              gate.classList.add("loaded");
+            });
+          }, 900);
         }
       }
 
