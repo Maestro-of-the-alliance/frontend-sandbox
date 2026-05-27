@@ -1,650 +1,722 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no"
-    />
-    <title>NCE · ARCHIVE</title>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NCE · ARCHIVE</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-      :root {
-        --void: #0a0805;
-        --amber: #c8862a;
-        --amber-dim: rgba(200, 134, 42, 0.15);
-        --amber-glow: rgba(200, 134, 42, 0.04);
-        --machine: #111009;
-        --gate-bg: #1a1409;
-      }
+  :root {
+    --void: #0a0805;
+    --amber: #c8862a;
+    --amber-dim: rgba(200,134,42,0.15);
+    --amber-glow: rgba(200,134,42,0.04);
+    --machine: #111009;
+    --gate-bg: #1a1409;
+  }
 
-      html,
-      body {
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        background: var(--void);
-        font-family: "Courier New", Courier, monospace;
-      }
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--void);
+    font-family: 'Courier New', Courier, monospace;
+  }
 
-      /* ── MACHINE HOUSING ── */
-      .machine {
-        position: fixed;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--void);
-      }
+  /* ── MACHINE HOUSING ── */
+  .machine {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--void);
+  }
 
-      /* ── PROJECTION GATE ── */
-      .gate {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        max-width: 100vw;
-        max-height: 100vh;
-        overflow: hidden;
-        background: #000;
-      }
+  /* ── PROJECTION GATE ── */
+  .gate {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 100vw;
+    max-height: 100vh;
+    overflow: hidden;
+    background: #000;
+  }
 
-      /* The fiche image — fills gate */
-      .fiche-img {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        object-position: center;
-        display: block;
-        opacity: 0;
-        transition: none;
-      }
+  /* ── FICHE IMAGE ── */
+  .fiche-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    opacity: 0;
+    transition: none;
+  }
 
-      .fiche-img.visible {
-        opacity: 1;
-      }
+  /* ── SCAN LINE OVERLAY ── */
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.18) 2px,
+      rgba(0,0,0,0.18) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+  }
 
-      /* ── SCAN LINE OVERLAY ── */
-      .scanlines {
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 2px,
-          rgba(0, 0, 0, 0.18) 2px,
-          rgba(0, 0, 0, 0.18) 4px
-        );
-        pointer-events: none;
-        z-index: 10;
-      }
+  /* ── LENS VIGNETTE ── */
+  .vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center,
+      transparent 55%,
+      rgba(0,0,0,0.55) 80%,
+      rgba(0,0,0,0.85) 100%
+    );
+    pointer-events: none;
+    z-index: 11;
+  }
 
-      /* ── LENS VIGNETTE ── */
-      .vignette {
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(
-          ellipse at center,
-          transparent 55%,
-          rgba(0, 0, 0, 0.55) 80%,
-          rgba(0, 0, 0, 0.85) 100%
-        );
-        pointer-events: none;
-        z-index: 11;
-      }
+  /* ── FILM GRAIN ── */
+  .grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 12;
+    animation: grain-shift 0.08s steps(1) infinite;
+  }
 
-      /* ── FILM GRAIN ── */
-      .grain {
-        position: absolute;
-        inset: 0;
-        opacity: 0.04;
-        pointer-events: none;
-        z-index: 12;
-        animation: grain-shift 0.08s steps(1) infinite;
-      }
+  @keyframes grain-shift {
+    0%   { background-position: 0% 0%; }
+    25%  { background-position: 30% 60%; }
+    50%  { background-position: 70% 20%; }
+    75%  { background-position: 40% 80%; }
+    100% { background-position: 10% 50%; }
+  }
 
-      @keyframes grain-shift {
-        0% {
-          background-position: 0% 0%;
-        }
-        25% {
-          background-position: 30% 60%;
-        }
-        50% {
-          background-position: 70% 20%;
-        }
-        75% {
-          background-position: 40% 80%;
-        }
-        100% {
-          background-position: 10% 50%;
-        }
-      }
+  /* ── SLIDE TRANSITION ── */
+  .fiche-img.slide-out {
+    animation: slideOut 0.22s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+  }
 
-      /* ── SLIDE TRANSITION ── */
-      .fiche-img.slide-out {
-        animation: slideOut 0.22s cubic-bezier(0.55, 0, 1, 0.45) forwards;
-      }
+  .fiche-img.slide-in {
+    animation: slideIn 0.28s cubic-bezier(0, 0.55, 0.45, 1) forwards;
+  }
 
-      .fiche-img.slide-in {
-        animation: slideIn 0.28s cubic-bezier(0, 0.55, 0.45, 1) forwards;
-      }
+  @keyframes slideOut {
+    0%   { transform: translateX(0);     opacity: 1; }
+    100% { transform: translateX(-108%); opacity: 0.4; }
+  }
 
-      @keyframes slideOut {
-        0% {
-          transform: translateX(0);
-          opacity: 1;
-        }
-        100% {
-          transform: translateX(-108%);
-          opacity: 0.4;
-        }
-      }
+  @keyframes slideIn {
+    0%   { transform: translateX(108%);  opacity: 0.4; }
+    100% { transform: translateX(0);     opacity: 1; }
+  }
 
-      @keyframes slideIn {
-        0% {
-          transform: translateX(108%);
-          opacity: 0.4;
-        }
-        100% {
-          transform: translateX(0);
-          opacity: 1;
-        }
-      }
+  /* ── SKIP BUTTON ── */
+  .skip-btn {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    z-index: 30;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: rgba(200,134,42,0.45);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    padding: 8px 4px;
+    transition: color 0.2s;
+  }
 
-      /* ── SKIP BUTTON ── */
-      .skip-btn {
-        position: absolute;
-        top: 18px;
-        right: 20px;
-        z-index: 30;
-        font-family: "Courier New", monospace;
-        font-size: 10px;
-        letter-spacing: 0.3em;
-        color: rgba(200, 134, 42, 0.45);
-        background: none;
-        border: none;
-        cursor: pointer;
-        text-transform: uppercase;
-        padding: 8px 4px;
-        transition: color 0.2s;
-      }
+  .skip-btn:hover {
+    color: rgba(200,134,42,0.9);
+  }
 
-      .skip-btn:hover {
-        color: rgba(200, 134, 42, 0.9);
-      }
+  /* ── NEXT BUTTON ── */
+  .next-btn {
+    position: absolute;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 30;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    color: rgba(200,134,42,0.6);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    padding: 12px 24px;
+    transition: color 0.2s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-      /* ── NEXT BUTTON ── */
-      .next-btn {
-        position: absolute;
-        bottom: 28px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 30;
-        font-family: "Courier New", monospace;
-        font-size: 11px;
-        letter-spacing: 0.4em;
-        color: rgba(200, 134, 42, 0.6);
-        background: none;
-        border: none;
-        cursor: pointer;
-        text-transform: uppercase;
-        padding: 12px 24px;
-        transition: color 0.2s;
-        user-select: none;
-        -webkit-tap-highlight-color: transparent;
-      }
+  .next-btn:hover, .next-btn:active {
+    color: rgba(200,134,42,1);
+  }
 
-      .next-btn:hover,
-      .next-btn:active {
-        color: rgba(200, 134, 42, 1);
-      }
+  .next-btn .arrow {
+    display: inline-block;
+    margin-left: 6px;
+    animation: arrow-pulse 1.8s ease-in-out infinite;
+  }
 
-      .next-btn .arrow {
-        display: inline-block;
-        margin-left: 6px;
-        animation: arrow-pulse 1.8s ease-in-out infinite;
-      }
+  @keyframes arrow-pulse {
+    0%, 100% { opacity: 0.4; transform: translateX(0); }
+    50%       { opacity: 1;   transform: translateX(4px); }
+  }
 
-      @keyframes arrow-pulse {
-        0%,
-        100% {
-          opacity: 0.4;
-          transform: translateX(0);
-        }
-        50% {
-          opacity: 1;
-          transform: translateX(4px);
-        }
-      }
+  /* ── EMPTY GATE LAMP BLOOM ── */
+  .gate::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: radial-gradient(ellipse at center,
+      rgba(200,134,42,0.18) 0%,
+      rgba(180,110,20,0.08) 35%,
+      transparent 70%
+    );
+    opacity: 1;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
 
-      /* ── EMPTY GATE LAMP BLOOM ── */
-      .gate::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: 1;
-        background: radial-gradient(
-          ellipse at center,
-          rgba(200, 134, 42, 0.35) 0%,
-          rgba(180, 110, 20, 0.2) 35%,
-          transparent 70%
-        );
-        opacity: 1;
-        transition: opacity 0.4s ease;
-        pointer-events: none;
-      }
+  .gate.loaded::before {
+    opacity: 0;
+  }
 
-      .gate.loaded::before {
-        opacity: 0;
-      }
-      @keyframes lamp-flicker {
-        0% {
-          filter: brightness(1);
-        }
-        10% {
-          filter: brightness(0.6);
-        }
-        20% {
-          filter: brightness(0.9);
-        }
-        35% {
-          filter: brightness(0.3);
-        }
-        50% {
-          filter: brightness(1.1);
-        }
-        65% {
-          filter: brightness(0.7);
-        }
-        80% {
-          filter: brightness(1);
-        }
-        90% {
-          filter: brightness(0.5);
-        }
-        100% {
-          filter: brightness(1);
-        }
-      }
+  /* ── MAGNIFIER LOUPE ── */
+  .loupe {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 80px;
+    z-index: 25;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
 
-      .gate.flickering .fiche-img {
-        animation: lamp-flicker 0.6s ease-in-out forwards;
-      }
+  .loupe.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
 
-      /* ── HAIR IN GATE ── */
-      .hair {
-        position: absolute;
-        z-index: 15;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.05s;
-      }
+  .loupe-glass {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-top: 1px solid rgba(200,134,42,0.6);
+    border-bottom: 1px solid rgba(200,134,42,0.6);
+    box-shadow:
+      0 0 0 1px rgba(200,134,42,0.15),
+      inset 0 0 20px rgba(200,134,42,0.06);
+    background: rgba(0,0,0,0.15);
+  }
 
-      .hair.visible {
-        opacity: 1;
-      }
+  .loupe-glass img {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    transform-origin: top left;
+  }
 
-      /* ── NOISE CANVAS (transition effect) ── */
-      #noise-canvas {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 20;
-        opacity: 0;
-        pointer-events: none;
-      }
+  .loupe-edge-top,
+  .loupe-edge-bottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 14px;
+    pointer-events: none;
+    z-index: 2;
+  }
 
-      #noise-canvas.active {
-        pointer-events: auto;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="machine">
-      <div class="gate" id="gate">
-        <!-- Film image -->
-        <img class="fiche-img" id="fiche-img" src="" alt="" />
+  .loupe-edge-top {
+    top: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.35), transparent);
+  }
 
-        <!-- Overlays -->
-        <div class="scanlines"></div>
-        <div class="vignette"></div>
-        <canvas class="grain" id="grain-canvas"></canvas>
+  .loupe-edge-bottom {
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.35), transparent);
+  }
 
-        <!-- Hair in gate (SVG line) -->
-        <svg
-          class="hair"
-          id="hair"
-          width="3"
-          height="100%"
-          viewBox="0 0 3 800"
-          preserveAspectRatio="none"
-          style="top: 0; left: 38%"
-        >
-          <path
-            d="M1.5 0 Q1.8 200 1.2 400 Q1.6 600 1.4 800"
-            stroke="rgba(180,160,100,0.7)"
-            stroke-width="1.2"
-            fill="none"
-          />
-        </svg>
+  .loupe-btn {
+    position: absolute;
+    bottom: 68px;
+    right: 20px;
+    z-index: 30;
+    font-size: 20px;
+    color: rgba(200,134,42,0.4);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    line-height: 1;
+    transition: color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-        <!-- Controls -->
-        <button class="skip-btn" id="skip-btn">SKIP ALL ▶▶▶</button>
-        <button class="next-btn" id="next-btn">
-          NEXT <span class="arrow">▶▶</span>
-        </button>
+  .loupe-btn.active {
+    color: rgba(200,134,42,1);
+  }
+
+  @keyframes lamp-flicker {
+    0%   { filter: brightness(1); }
+    10%  { filter: brightness(0.6); }
+    20%  { filter: brightness(0.9); }
+    35%  { filter: brightness(0.3); }
+    50%  { filter: brightness(1.1); }
+    65%  { filter: brightness(0.7); }
+    80%  { filter: brightness(1); }
+    90%  { filter: brightness(0.5); }
+    100% { filter: brightness(1); }
+  }
+
+  .gate.flickering .fiche-img {
+    animation: lamp-flicker 0.6s ease-in-out forwards;
+  }
+
+  /* ── HAIR IN GATE ── */
+  .hair {
+    position: absolute;
+    z-index: 15;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.05s;
+  }
+
+  .hair.visible {
+    opacity: 1;
+  }
+
+  /* ── NOISE CANVAS (transition effect) ── */
+  #noise-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 20;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  #noise-canvas.active {
+    pointer-events: auto;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="machine">
+  <div class="gate" id="gate">
+
+    <!-- Film image injected by JS when src is ready -->
+
+    <!-- Overlays -->
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+    <canvas class="grain" id="grain-canvas"></canvas>
+
+    <!-- Hair in gate (SVG line) -->
+    <svg class="hair" id="hair" width="3" height="100%" viewBox="0 0 3 800" preserveAspectRatio="none"
+         style="top:0; left: 38%;">
+      <path d="M1.5 0 Q1.8 200 1.2 400 Q1.6 600 1.4 800"
+            stroke="rgba(180,160,100,0.7)" stroke-width="1.2" fill="none"/>
+    </svg>
+
+    <!-- Magnifier loupe -->
+    <div class="loupe" id="loupe">
+      <div class="loupe-glass" id="loupe-glass">
+        <img id="loupe-img" src="" alt="" />
+        <div class="loupe-edge-top"></div>
+        <div class="loupe-edge-bottom"></div>
       </div>
     </div>
 
-    <script>
-      // ── SEQUENCE ──────────────────────────────────────────────────────────────
-      const SEQUENCE = [
-        {
-          card: "cover",
-          img: "/imagebank/preamble/cover.png",
-          next: "prologue",
-        },
-        {
-          card: "prologue",
-          img: "/imagebank/preamble/prologue.png",
-          next: "difference-1",
-        },
-        {
-          card: "difference-1",
-          img: "/imagebank/preamble/difference-1.png",
-          next: "difference-2",
-        },
-        {
-          card: "difference-2",
-          img: "/imagebank/preamble/difference-2.png",
-          next: "charter-1",
-        },
-        {
-          card: "charter-1",
-          img: "/imagebank/preamble/charter-1.png",
-          next: "charter-2",
-        },
-        {
-          card: "charter-2",
-          img: "/imagebank/preamble/charter-2.png",
-          next: "charter-3",
-        },
-        {
-          card: "charter-3",
-          img: "/imagebank/preamble/charter-3.png",
-          next: "charter-4",
-        },
-        {
-          card: "charter-4",
-          img: "/imagebank/preamble/charter-4.png",
-          next: "charter-5",
-        },
-        {
-          card: "charter-5",
-          img: "/imagebank/preamble/charter-5.png",
-          next: "charter-6",
-        },
-        {
-          card: "charter-6",
-          img: "/imagebank/preamble/charter-6.png",
-          next: "charter-7",
-        },
-        {
-          card: "charter-7",
-          img: "/imagebank/preamble/charter-7.png",
-          next: "charter-8",
-        },
-        {
-          card: "charter-8",
-          img: "/imagebank/preamble/charter-8.png",
-          next: null,
-        },
-      ];
+    <!-- Controls -->
+    <button class="skip-btn" id="skip-btn">SKIP ALL ▶▶▶</button>
+    <button class="loupe-btn" id="loupe-btn" title="Magnifier">⊕</button>
+    <button class="next-btn" id="next-btn">NEXT <span class="arrow">▶▶</span></button>
 
-      const LANDING = "/landing";
-      const AUDIO_SRC = "/audio/fiche-advance.wav";
+  </div>
+</div>
 
-      // ── PARSE URL PARAMS ──────────────────────────────────────────────────────
-      function getParams() {
-        const p = new URLSearchParams(window.location.search);
-        return {
-          card: p.get("card") || "cover",
-          preview: p.get("preview") === "1",
-        };
-      }
+<script>
+// ── SEQUENCE ──────────────────────────────────────────────────────────────
+const SEQUENCE = [
+  { card: 'cover',         img: '/imagebank/preamble/cover.png',        next: 'prologue' },
+  { card: 'prologue',      img: '/imagebank/preamble/prologue.png',      next: 'difference-1' },
+  { card: 'difference-1',  img: '/imagebank/preamble/difference-1.png',  next: 'difference-2' },
+  { card: 'difference-2',  img: '/imagebank/preamble/difference-2.png',  next: 'charter-1' },
+  { card: 'charter-1',     img: '/imagebank/preamble/charter-1.png',     next: 'charter-2' },
+  { card: 'charter-2',     img: '/imagebank/preamble/charter-2.png',     next: 'charter-3' },
+  { card: 'charter-3',     img: '/imagebank/preamble/charter-3.png',     next: 'charter-4' },
+  { card: 'charter-4',     img: '/imagebank/preamble/charter-4.png',     next: 'charter-5' },
+  { card: 'charter-5',     img: '/imagebank/preamble/charter-5.png',     next: 'charter-6' },
+  { card: 'charter-6',     img: '/imagebank/preamble/charter-6.png',     next: 'charter-7' },
+  { card: 'charter-7',     img: '/imagebank/preamble/charter-7.png',     next: 'charter-8' },
+  { card: 'charter-8',     img: '/imagebank/preamble/charter-8.png',     next: null },
+];
 
-      // ── STATE ─────────────────────────────────────────────────────────────────
-      const params = getParams();
-      let currentEntry =
-        SEQUENCE.find((s) => s.card === params.card) || SEQUENCE[0];
+const LANDING = '/landing';
+const AUDIO_SRC = '/audio/fiche-advance.wav';
 
-      // ── ELEMENTS ──────────────────────────────────────────────────────────────
-      const ficheImg = document.getElementById("fiche-img");
-      const nextBtn = document.getElementById("next-btn");
-      const skipBtn = document.getElementById("skip-btn");
-      const gate = document.getElementById("gate");
-      const hair = document.getElementById("hair");
-      const grainCvs = document.getElementById("grain-canvas");
-      const gCtx = grainCvs.getContext("2d");
+// ── PARSE URL PARAMS ──────────────────────────────────────────────────────
+function getParams() {
+  const p = new URLSearchParams(window.location.search);
+  return {
+    card: p.get('card') || 'cover',
+    preview: p.get('preview') === '1',
+  };
+}
 
-      // ── AUDIO ─────────────────────────────────────────────────────────────────
-      let audioCtx = null;
-      let audioBuffer = null;
+// ── STATE ─────────────────────────────────────────────────────────────────
+const params = getParams();
+let currentEntry = SEQUENCE.find(s => s.card === params.card) || SEQUENCE[0];
 
-      async function loadAudio() {
-        try {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-          const res = await fetch(AUDIO_SRC);
-          const arr = await res.arrayBuffer();
-          audioBuffer = await audioCtx.decodeAudioData(arr);
-        } catch (e) {
-          // Audio optional — fail silently
-        }
-      }
+// ── ELEMENTS ──────────────────────────────────────────────────────────────
+const nextBtn    = document.getElementById('next-btn');
+const skipBtn    = document.getElementById('skip-btn');
+const gate       = document.getElementById('gate');
+const hair       = document.getElementById('hair');
+const grainCvs   = document.getElementById('grain-canvas');
+const gCtx       = grainCvs.getContext('2d');
 
-      function playAdvanceSound() {
-        if (!audioCtx || !audioBuffer) return;
-        if (audioCtx.state === "suspended") audioCtx.resume();
-        const src = audioCtx.createBufferSource();
-        src.buffer = audioBuffer;
-        src.connect(audioCtx.destination);
-        src.start(0);
-      }
+// Create fiche image element only via JS — no empty src artifact
+const ficheImg = document.createElement('img');
+ficheImg.className = 'fiche-img';
+ficheImg.alt = '';
+gate.insertBefore(ficheImg, gate.firstChild);
 
-      // ── RESIZE CANVASES ───────────────────────────────────────────────────────
-      function resizeCanvases() {
-        grainCvs.width = window.innerWidth;
-        grainCvs.height = window.innerHeight;
-      }
-      window.addEventListener("resize", resizeCanvases);
-      resizeCanvases();
+// ── AUDIO ─────────────────────────────────────────────────────────────────
+let audioCtx = null;
+let audioBuffer = null;
 
-      // ── GRAIN ANIMATION ───────────────────────────────────────────────────────
-      function drawGrain() {
-        const w = grainCvs.width,
-          h = grainCvs.height;
-        const imgd = gCtx.createImageData(w, h);
-        const d = imgd.data;
-        for (let i = 0; i < d.length; i += 4) {
-          const v = (Math.random() * 255) | 0;
-          d[i] = d[i + 1] = d[i + 2] = v;
-          d[i + 3] = 12;
-        }
-        gCtx.putImageData(imgd, 0, 0);
-        requestAnimationFrame(drawGrain);
-      }
-      drawGrain();
+async function loadAudio() {
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const res = await fetch(AUDIO_SRC);
+    const arr = await res.arrayBuffer();
+    audioBuffer = await audioCtx.decodeAudioData(arr);
+  } catch(e) {
+    // Audio optional — fail silently
+  }
+}
 
-      // ── SLIDE TRANSITION ──────────────────────────────────────────────────────
-      // Audio fires → current card slides out left → bloom visible → new card slides in from right
-      function runSlideTransition(callback) {
-        // Lock button during transition
-        nextBtn.disabled = true;
+function playAdvanceSound() {
+  if (!audioCtx || !audioBuffer) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const src = audioCtx.createBufferSource();
+  src.buffer = audioBuffer;
+  src.connect(audioCtx.destination);
+  src.start(0);
+}
 
-        // Show bloom during the gap
-        gate.classList.remove("loaded");
+// ── RESIZE CANVASES ───────────────────────────────────────────────────────
+function resizeCanvases() {
+  grainCvs.width     = window.innerWidth;
+  grainCvs.height    = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvases);
+resizeCanvases();
 
-        // Phase 1: slide current image out
-        ficheImg.classList.remove("slide-in");
-        ficheImg.classList.add("slide-out");
+// ── GRAIN ANIMATION ───────────────────────────────────────────────────────
+function drawGrain() {
+  const w = grainCvs.width, h = grainCvs.height;
+  const imgd = gCtx.createImageData(w, h);
+  const d = imgd.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const v = Math.random() * 255 | 0;
+    d[i] = d[i+1] = d[i+2] = v;
+    d[i+3] = 12;
+  }
+  gCtx.putImageData(imgd, 0, 0);
+  requestAnimationFrame(drawGrain);
+}
+drawGrain();
 
-        // After slide-out completes (~220ms), swap image and slide in
-        setTimeout(() => {
-          ficheImg.classList.remove("slide-out");
-          ficheImg.style.opacity = "0";
-          ficheImg.style.transform = "translateX(108%)";
+// ── SLIDE TRANSITION ──────────────────────────────────────────────────────
+// Audio fires → current card slides out left → bloom visible → new card slides in from right
+function runSlideTransition(callback) {
+  // Lock button during transition
+  nextBtn.disabled = true;
 
-          // Swap the image source
-          callback();
+  // Show bloom during the gap
+  gate.classList.remove('loaded');
 
-          // Small buffer for image to be ready, then slide in
-          setTimeout(() => {
-            ficheImg.style.opacity = "";
-            ficheImg.style.transform = "";
-            ficheImg.classList.add("slide-in");
+  // Phase 1: slide current image out
+  ficheImg.classList.remove('slide-in');
+  ficheImg.classList.add('slide-out');
 
-            // After slide-in completes, clean up and hide bloom
-            setTimeout(() => {
-              ficheImg.classList.remove("slide-in");
-              ficheImg.classList.add("visible");
-              gate.classList.add("loaded");
-              nextBtn.disabled = false;
-            }, 300);
-          }, 60);
-        }, 230);
-      }
+  // After slide-out completes (~220ms), swap image and slide in
+  setTimeout(() => {
+    ficheImg.classList.remove('slide-out');
+    ficheImg.style.opacity = '0';
+    ficheImg.style.transform = 'translateX(108%)';
 
-      // ── LOAD CARD ─────────────────────────────────────────────────────────────
-      function loadCard(entry, withTransition) {
-        if (withTransition) {
-          playAdvanceSound();
-          runSlideTransition(() => {
-            ficheImg.src = entry.img;
-            currentEntry = entry;
-            updateNextButton(entry);
-          });
-        } else {
-          // First load — empty gate, then noise into first image
-          ficheImg.src = "";
-          ficheImg.style.opacity = "0";
-          ficheImg.style.transform = "";
-          currentEntry = entry;
-          updateNextButton(entry);
+    // Swap the image source
+    callback();
+    if (window._loupeSync) window._loupeSync();
+    setTimeout(() => {
+      ficheImg.style.opacity = '';
+      ficheImg.style.transform = '';
+      ficheImg.classList.add('slide-in');
 
-          // Brief pause on empty machine, then retrieve first record
-          setTimeout(() => {
-            playAdvanceSound();
-            runSlideTransition(() => {
-              ficheImg.src = entry.img;
-              gate.classList.add("loaded");
-            });
-          }, 900);
-        }
-      }
+      // After slide-in completes, clean up and hide bloom
+      setTimeout(() => {
+        ficheImg.classList.remove('slide-in');
+        gate.classList.add('loaded');
+        nextBtn.disabled = false;
+      }, 300);
+    }, 60);
 
-      function updateNextButton(entry) {
-        if (!entry.next) {
-          nextBtn.textContent = "ENTER ▶▶";
-        }
-      }
+  }, 230);
+}
 
-      // ── NAVIGATION ────────────────────────────────────────────────────────────
-      function advance() {
-        if (!currentEntry.next) {
-          // Last card — go to landing
-          playAdvanceSound();
-          setTimeout(() => {
-            window.location.href = LANDING;
-          }, 400);
-          return;
-        }
-        const next = SEQUENCE.find((s) => s.card === currentEntry.next);
-        if (!next) return;
+// ── LOAD CARD ─────────────────────────────────────────────────────────────
+function loadCard(entry, withTransition) {
+  if (withTransition) {
+    playAdvanceSound();
+    runSlideTransition(() => {
+      ficheImg.src = entry.img;
+      currentEntry = entry;
+      updateNextButton(entry);
+    });
+  } else {
+    // First load — empty gate, then noise into first image
+    ficheImg.src = '';
+    ficheImg.style.opacity = '0';
+    ficheImg.style.transform = '';
+    currentEntry = entry;
+    updateNextButton(entry);
 
-        // Update URL without reload
-        const url = new URL(window.location.href);
-        url.searchParams.set("card", next.card);
-        window.history.pushState({}, "", url.toString());
-
-        loadCard(next, true);
-      }
-
-      nextBtn.addEventListener("click", advance);
-
-      skipBtn.addEventListener("click", () => {
-        window.location.href = LANDING;
+    // Brief pause on empty machine, then retrieve first record
+    setTimeout(() => {
+      playAdvanceSound();
+      runSlideTransition(() => {
+        ficheImg.src = entry.img;
+        gate.classList.add('loaded');
       });
+    }, 900);
+  }
+}
 
-      // Browser back button
-      window.addEventListener("popstate", () => {
-        const p = new URLSearchParams(window.location.search);
-        const card = p.get("card") || "cover";
-        const entry = SEQUENCE.find((s) => s.card === card) || SEQUENCE[0];
-        loadCard(entry, false);
-      });
+function updateNextButton(entry) {
+  if (!entry.next) {
+    nextBtn.textContent = 'ENTER ▶▶';
+  }
+}
 
-      // ── HAIR IN GATE ──────────────────────────────────────────────────────────
-      (function hairSystem() {
-        const isPreview = params.preview;
-        let hairVisible = false;
-        let pullTimer = null;
-        let returnTimer = null;
+// ── NAVIGATION ────────────────────────────────────────────────────────────
+function advance() {
+  if (!currentEntry.next) {
+    // Last card — go to landing
+    playAdvanceSound();
+    setTimeout(() => { window.location.href = LANDING; }, 400);
+    return;
+  }
+  const next = SEQUENCE.find(s => s.card === currentEntry.next);
+  if (!next) return;
 
-        function showHair() {
-          hair.classList.add("visible");
-          hairVisible = true;
-          // Schedule pull
-          const pullDelay = isPreview ? 2000 : (20 + Math.random() * 70) * 1000;
-          pullTimer = setTimeout(pullHair, pullDelay);
-        }
+  // Update URL without reload
+  const url = new URL(window.location.href);
+  url.searchParams.set('card', next.card);
+  window.history.pushState({}, '', url.toString());
 
-        function pullHair() {
-          hair.style.transition = "opacity 0.08s";
-          hair.classList.remove("visible");
-          hairVisible = false;
-          // Schedule return
-          const returnDelay = isPreview
-            ? 3000
-            : (120 + Math.random() * 360) * 1000;
-          returnTimer = setTimeout(showHair, returnDelay);
-        }
+  loadCard(next, true);
+}
 
-        // Present on load immediately
-        if (isPreview) {
-          setTimeout(showHair, 500);
-        } else {
-          showHair();
-        }
-      })();
+nextBtn.addEventListener('click', advance);
 
-      // ── LAMP FLICKER ──────────────────────────────────────────────────────────
-      (function lampSystem() {
-        const isPreview = params.preview;
+skipBtn.addEventListener('click', () => {
+  window.location.href = LANDING;
+});
 
-        function flicker() {
-          gate.classList.add("flickering");
-          setTimeout(() => gate.classList.remove("flickering"), 700);
-          const next = isPreview ? 5000 : (45 + Math.random() * 45) * 1000;
-          setTimeout(flicker, next);
-        }
+// Browser back button
+window.addEventListener('popstate', () => {
+  const p = new URLSearchParams(window.location.search);
+  const card = p.get('card') || 'cover';
+  const entry = SEQUENCE.find(s => s.card === card) || SEQUENCE[0];
+  loadCard(entry, false);
+});
 
-        const firstFire = isPreview ? 1000 : (20 + Math.random() * 20) * 1000;
-        setTimeout(flicker, firstFire);
-      })();
+// ── HAIR IN GATE ──────────────────────────────────────────────────────────
+(function hairSystem() {
+  const isPreview = params.preview;
+  let hairVisible = false;
+  let pullTimer = null;
+  let returnTimer = null;
 
-      // ── INIT ──────────────────────────────────────────────────────────────────
-      loadAudio();
-      loadCard(currentEntry, false);
-    </script>
-  </body>
+  function showHair() {
+    hair.classList.add('visible');
+    hairVisible = true;
+    // Schedule pull
+    const pullDelay = isPreview ? 2000 : (20 + Math.random() * 70) * 1000;
+    pullTimer = setTimeout(pullHair, pullDelay);
+  }
+
+  function pullHair() {
+    hair.style.transition = 'opacity 0.08s';
+    hair.classList.remove('visible');
+    hairVisible = false;
+    // Schedule return
+    const returnDelay = isPreview ? 3000 : (120 + Math.random() * 360) * 1000;
+    returnTimer = setTimeout(showHair, returnDelay);
+  }
+
+  // Present on load immediately
+  if (isPreview) {
+    setTimeout(showHair, 500);
+  } else {
+    showHair();
+  }
+})();
+
+// ── LAMP FLICKER ──────────────────────────────────────────────────────────
+(function lampSystem() {
+  const isPreview = params.preview;
+
+  function flicker() {
+    gate.classList.add('flickering');
+    setTimeout(() => gate.classList.remove('flickering'), 700);
+    const next = isPreview ? 5000 : (45 + Math.random() * 45) * 1000;
+    setTimeout(flicker, next);
+  }
+
+  const firstFire = isPreview ? 1000 : (20 + Math.random() * 20) * 1000;
+  setTimeout(flicker, firstFire);
+})();
+
+// ── LOUPE SYSTEM ──────────────────────────────────────────────────────────
+(function loupeSystem() {
+  const loupe     = document.getElementById('loupe');
+  const loupeGlass= document.getElementById('loupe-glass');
+  const loupeImg  = document.getElementById('loupe-img');
+  const loupeBtn  = document.getElementById('loupe-btn');
+
+  const LOUPE_HEIGHT = 80;   // px — height of the magnifier strip
+  const ZOOM         = 2.5;  // magnification factor
+
+  let loupeActive = false;
+  let loupeY = 0;            // current center Y of loupe on screen
+  let dragging = false;
+
+  function syncLoupeImage() {
+    // Mirror the current fiche image into the loupe
+    loupeImg.src = ficheImg.src;
+    updateLoupeView();
+  }
+
+  function updateLoupeView() {
+    if (!loupeActive) return;
+
+    const gateRect = gate.getBoundingClientRect();
+    const imgRect  = ficheImg.getBoundingClientRect();
+
+    // Clamp loupe position within gate
+    const clampedY = Math.max(LOUPE_HEIGHT / 2, Math.min(gateRect.height - LOUPE_HEIGHT / 2, loupeY));
+    loupe.style.top       = clampedY + 'px';
+    loupe.style.transform = 'translateY(-50%)';
+
+    // Y position within the displayed image
+    const imgTop     = imgRect.top - gateRect.top;
+    const relativeY  = clampedY - imgTop;
+
+    // X offset of image within gate
+    const imgLeft    = imgRect.left - gateRect.left;
+
+    // Zoomed image dimensions
+    const zoomedW    = imgRect.width * ZOOM;
+
+    // Position zoomed image so the correct region is centered in the loupe strip
+    const zoomedLeft = imgLeft - (imgLeft * (ZOOM - 1));
+    const zoomedTop  = -(relativeY * ZOOM) + LOUPE_HEIGHT / 2;
+
+    loupeImg.style.width  = zoomedW + 'px';
+    loupeImg.style.height = 'auto';
+    loupeImg.style.left   = zoomedLeft + 'px';
+    loupeImg.style.top    = zoomedTop + 'px';
+  }
+
+  function setLoupeY(clientY) {
+    const gateRect = gate.getBoundingClientRect();
+    loupeY = clientY - gateRect.top;
+    updateLoupeView();
+  }
+
+  // Toggle
+  loupeBtn.addEventListener('click', () => {
+    loupeActive = !loupeActive;
+    loupe.classList.toggle('active', loupeActive);
+    loupeBtn.classList.toggle('active', loupeActive);
+    if (loupeActive) {
+      loupeY = gate.getBoundingClientRect().height / 2;
+      syncLoupeImage();
+    }
+  });
+
+  // Drag on touch
+  loupe.addEventListener('touchstart', (e) => {
+    dragging = true;
+    setLoupeY(e.touches[0].clientY);
+  }, { passive: true });
+
+  window.addEventListener('touchmove', (e) => {
+    if (!dragging || !loupeActive) return;
+    setLoupeY(e.touches[0].clientY);
+  }, { passive: true });
+
+  window.addEventListener('touchend', () => { dragging = false; });
+
+  // Drag on mouse
+  loupe.addEventListener('mousedown', (e) => {
+    dragging = true;
+    setLoupeY(e.clientY);
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!dragging || !loupeActive) return;
+    setLoupeY(e.clientY);
+  });
+
+  window.addEventListener('mouseup', () => { dragging = false; });
+
+  // Also allow dragging anywhere on gate when loupe active
+  gate.addEventListener('touchstart', (e) => {
+    if (!loupeActive) return;
+    if (e.target === loupeBtn || e.target === nextBtn || e.target === skipBtn) return;
+    dragging = true;
+    setLoupeY(e.touches[0].clientY);
+  }, { passive: true });
+
+  // Sync image when card changes
+  const origLoadCard = loadCard;
+  window._loupeSync = syncLoupeImage;
+})();
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+loadAudio();
+loadCard(currentEntry, false);
+</script>
+</body>
 </html>
