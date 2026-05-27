@@ -105,23 +105,6 @@
   }
 
   /* ── SLIDE TRANSITION ── */
-  .fiche-img.slide-out {
-    animation: slideOut 0.22s cubic-bezier(0.55, 0, 1, 0.45) forwards;
-  }
-
-  .fiche-img.slide-in {
-    animation: slideIn 0.28s cubic-bezier(0, 0.55, 0.45, 1) forwards;
-  }
-
-  @keyframes slideOut {
-    0%   { transform: translateX(0);     opacity: 1; }
-    100% { transform: translateX(-108%); opacity: 0.4; }
-  }
-
-  @keyframes slideIn {
-    0%   { transform: translateX(108%);  opacity: 0.4; }
-    100% { transform: translateX(0);     opacity: 1; }
-  }
 
   /* ── SKIP BUTTON ── */
   .skip-btn {
@@ -456,39 +439,41 @@ function drawGrain() {
 drawGrain();
 
 // ── SLIDE TRANSITION ──────────────────────────────────────────────────────
-// Audio fires → current card slides out left → bloom visible → new card slides in from right
 function runSlideTransition(callback) {
-  // Lock button during transition
   nextBtn.disabled = true;
-
-  // Show bloom during the gap
   gate.classList.remove('loaded');
 
-  // Phase 1: slide current image out
-  ficheImg.classList.remove('slide-in');
-  ficheImg.classList.add('slide-out');
+  // Slide out: move left and fade
+  ficheImg.style.transition = 'transform 0.22s cubic-bezier(0.55,0,1,0.45), opacity 0.22s ease';
+  ficheImg.style.transform  = 'translateX(-108%)';
+  ficheImg.style.opacity    = '0';
 
-  // After slide-out completes (~220ms), swap image and slide in
   setTimeout(() => {
-    ficheImg.classList.remove('slide-out');
-    ficheImg.style.opacity = '0';
-    ficheImg.style.transform = 'translateX(108%)';
+    // Kill transition, position new card off-screen right
+    ficheImg.style.transition = 'none';
+    ficheImg.style.transform  = 'translateX(108%)';
+    ficheImg.style.opacity    = '0';
 
-    // Swap the image source
+    // Swap image
     callback();
     if (window._loupeSync) window._loupeSync();
-    setTimeout(() => {
-      ficheImg.style.opacity = '';
-      ficheImg.style.transform = '';
-      ficheImg.classList.add('slide-in');
 
-      // After slide-in completes, clean up and hide bloom
-      setTimeout(() => {
-        ficheImg.classList.remove('slide-in');
-        gate.classList.add('loaded');
-        nextBtn.disabled = false;
-      }, 300);
-    }, 60);
+    // Force reflow so browser registers the position before animating in
+    ficheImg.offsetHeight;
+
+    // Slide in
+    ficheImg.style.transition = 'transform 0.28s cubic-bezier(0,0.55,0.45,1), opacity 0.28s ease';
+    ficheImg.style.transform  = 'translateX(0)';
+    ficheImg.style.opacity    = '1';
+
+    setTimeout(() => {
+      // Clean up inline styles
+      ficheImg.style.transition = '';
+      ficheImg.style.transform  = '';
+      ficheImg.style.opacity    = '1';
+      gate.classList.add('loaded');
+      nextBtn.disabled = false;
+    }, 300);
 
   }, 230);
 }
