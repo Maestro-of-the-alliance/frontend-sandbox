@@ -721,7 +721,11 @@
         const { firstLoad = false, updateUrl = false } = options;
         nextBtn.disabled = true;
         gate.classList.remove("loaded");
+
+        window.NCEArchive?.deactivateLoupe?.();
+
         playAdvanceSound();
+        window.NCEArchive?.deactivateLoupe?.();
 
         if (!firstLoad) {
           ficheStage.style.transition = "opacity 130ms ease, filter 130ms ease";
@@ -1000,6 +1004,12 @@
         window.NCEArchive = window.NCEArchive || {};
         window.NCEArchive.syncLoupe = syncLoupe;
         window.NCEArchive.isLoupeActive = () => active;
+        window.NCEArchive.deactivateLoupe = () => {
+          active = false;
+          dragging = false;
+          loupe.classList.remove("active");
+          loupeBtn.classList.remove("active");
+        };
       })();
 
       (function lampSystem() {
