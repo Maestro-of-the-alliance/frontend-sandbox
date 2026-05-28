@@ -1,703 +1,987 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>NCE · ARCHIVE</title>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>NCE · ARCHIVE</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-  :root {
-    --void: #0a0805;
-    --amber: #c8862a;
-    --amber-dim: rgba(200,134,42,0.15);
-    --amber-glow: rgba(200,134,42,0.04);
-    --machine: #111009;
-    --gate-bg: #1a1409;
-  }
+      :root {
+        --void: #0a0805;
+        --amber: #c8862a;
+        --amber-dim: rgba(200, 134, 42, 0.15);
+        --amber-glow: rgba(200, 134, 42, 0.04);
+        --machine: #111009;
+        --gate-bg: #1a1409;
+      }
 
-  html, body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: var(--void);
-    font-family: 'Courier New', Courier, monospace;
-  }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: var(--void);
+        font-family: "Courier New", Courier, monospace;
+      }
 
-  /* ── MACHINE HOUSING ── */
-  .machine {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--void);
-  }
+      /* ── MACHINE HOUSING ── */
+      .machine {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--void);
+      }
 
-  /* ── PROJECTION GATE ── */
-  .gate {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    max-width: 100vw;
-    max-height: 100vh;
-    overflow: hidden;
-    background: #000;
-  }
+      /* ── PROJECTION GATE ── */
+      .gate {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        max-width: 100vw;
+        max-height: 100vh;
+        overflow: hidden;
+        background: #000;
+      }
 
-  /* ── FICHE IMAGE ── */
-  .fiche-img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center;
-    display: block;
-    opacity: 0;
-    transition: none;
-  }
+      /* ── FICHE IMAGE ── */
+      .fiche-img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+        display: block;
+        opacity: 0;
+        transition: none;
+      }
 
-  /* ── SCAN LINE OVERLAY ── */
-  .scanlines {
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.18) 2px,
-      rgba(0,0,0,0.18) 4px
-    );
-    pointer-events: none;
-    z-index: 10;
-  }
+      /* ── SCAN LINE OVERLAY ── */
+      .scanlines {
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 0, 0, 0.18) 2px,
+          rgba(0, 0, 0, 0.18) 4px
+        );
+        pointer-events: none;
+        z-index: 10;
+      }
 
-  /* ── LENS VIGNETTE ── */
-  .vignette {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center,
-      transparent 55%,
-      rgba(0,0,0,0.55) 80%,
-      rgba(0,0,0,0.85) 100%
-    );
-    pointer-events: none;
-    z-index: 11;
-  }
+      /* ── LENS VIGNETTE ── */
+      .vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at center,
+          transparent 55%,
+          rgba(0, 0, 0, 0.55) 80%,
+          rgba(0, 0, 0, 0.85) 100%
+        );
+        pointer-events: none;
+        z-index: 11;
+      }
 
-  /* ── FILM GRAIN ── */
-  .grain {
-    position: absolute;
-    inset: 0;
-    opacity: 0.04;
-    pointer-events: none;
-    z-index: 12;
-    animation: grain-shift 0.08s steps(1) infinite;
-  }
+      /* ── FILM GRAIN ── */
+      .grain {
+        position: absolute;
+        inset: 0;
+        opacity: 0.04;
+        pointer-events: none;
+        z-index: 12;
+        animation: grain-shift 0.08s steps(1) infinite;
+      }
 
-  @keyframes grain-shift {
-    0%   { background-position: 0% 0%; }
-    25%  { background-position: 30% 60%; }
-    50%  { background-position: 70% 20%; }
-    75%  { background-position: 40% 80%; }
-    100% { background-position: 10% 50%; }
-  }
+      @keyframes grain-shift {
+        0% {
+          background-position: 0% 0%;
+        }
+        25% {
+          background-position: 30% 60%;
+        }
+        50% {
+          background-position: 70% 20%;
+        }
+        75% {
+          background-position: 40% 80%;
+        }
+        100% {
+          background-position: 10% 50%;
+        }
+      }
 
-  /* ── SLIDE TRANSITION ── */
+      /* ── SLIDE TRANSITION ── */
 
-  /* ── SKIP BUTTON ── */
-  .skip-btn {
-    position: absolute;
-    top: 18px;
-    right: 20px;
-    z-index: 30;
-    font-family: 'Courier New', monospace;
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    color: rgba(200,134,42,0.45);
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-transform: uppercase;
-    padding: 8px 4px;
-    transition: color 0.2s;
-  }
+      /* ── SKIP BUTTON ── */
+      .skip-btn {
+        position: absolute;
+        top: 18px;
+        right: 20px;
+        z-index: 30;
+        font-family: "Courier New", monospace;
+        font-size: 10px;
+        letter-spacing: 0.3em;
+        color: rgba(200, 134, 42, 0.45);
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-transform: uppercase;
+        padding: 8px 4px;
+        transition: color 0.2s;
+      }
 
-  .skip-btn:hover {
-    color: rgba(200,134,42,0.9);
-  }
+      .skip-btn:hover {
+        color: rgba(200, 134, 42, 0.9);
+      }
 
-  /* ── NEXT BUTTON ── */
-  .next-btn {
-    position: absolute;
-    bottom: 28px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 30;
-    font-family: 'Courier New', monospace;
-    font-size: 11px;
-    letter-spacing: 0.4em;
-    color: rgba(200,134,42,0.6);
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-transform: uppercase;
-    padding: 12px 24px;
-    transition: color 0.2s;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-  }
+      /* ── ZOOM SLIDER (focus rail) ── */
+      .zoom-rail {
+        position: absolute;
+        bottom: 72px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 160px;
+        z-index: 30;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0.55;
+        transition: opacity 0.2s;
+        -webkit-tap-highlight-color: transparent;
+      }
 
-  .next-btn:hover, .next-btn:active {
-    color: rgba(200,134,42,1);
-  }
+      .zoom-rail:hover,
+      .zoom-rail:active {
+        opacity: 1;
+      }
 
-  .next-btn .arrow {
-    display: inline-block;
-    margin-left: 6px;
-    animation: arrow-pulse 1.8s ease-in-out infinite;
-  }
+      .zoom-rail-label {
+        font-family: "Courier New", monospace;
+        font-size: 8px;
+        letter-spacing: 0.2em;
+        color: rgba(200, 134, 42, 0.8);
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
 
-  @keyframes arrow-pulse {
-    0%, 100% { opacity: 0.4; transform: translateX(0); }
-    50%       { opacity: 1;   transform: translateX(4px); }
-  }
+      .zoom-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        flex: 1;
+        height: 2px;
+        background: rgba(200, 134, 42, 0.25);
+        border-radius: 1px;
+        outline: none;
+        cursor: pointer;
+      }
 
-  /* ── EMPTY GATE LAMP BLOOM ── */
-  .gate::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background: radial-gradient(ellipse at center,
-      rgba(200,134,42,0.18) 0%,
-      rgba(180,110,20,0.08) 35%,
-      transparent 70%
-    );
-    opacity: 1;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
-  }
+      .zoom-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: rgba(200, 134, 42, 0.9);
+        border: 1px solid rgba(200, 134, 42, 0.4);
+        box-shadow: 0 0 6px rgba(200, 134, 42, 0.4);
+        cursor: pointer;
+      }
 
-  .gate.loaded::before {
-    opacity: 0;
-  }
+      .zoom-slider::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: rgba(200, 134, 42, 0.9);
+        border: 1px solid rgba(200, 134, 42, 0.4);
+        cursor: pointer;
+      }
 
-  /* ── MAGNIFIER LOUPE ── */
-  .loupe {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 80px;
-    z-index: 25;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
+      /* ── NEXT BUTTON ── */
+      .next-btn {
+        position: absolute;
+        bottom: 28px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 30;
+        font-family: "Courier New", monospace;
+        font-size: 11px;
+        letter-spacing: 0.4em;
+        color: rgba(200, 134, 42, 0.6);
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-transform: uppercase;
+        padding: 12px 24px;
+        transition: color 0.2s;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
 
-  .loupe.active {
-    opacity: 1;
-    pointer-events: auto;
-  }
+      .next-btn:hover,
+      .next-btn:active {
+        color: rgba(200, 134, 42, 1);
+      }
 
-  .loupe-glass {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    border-top: 1px solid rgba(200,134,42,0.6);
-    border-bottom: 1px solid rgba(200,134,42,0.6);
-    box-shadow:
-      0 0 0 1px rgba(200,134,42,0.15),
-      inset 0 0 20px rgba(200,134,42,0.06);
-    background: rgba(0,0,0,0.15);
-  }
+      .next-btn .arrow {
+        display: inline-block;
+        margin-left: 6px;
+        animation: arrow-pulse 1.8s ease-in-out infinite;
+      }
 
-  .loupe-glass img {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    transform-origin: top left;
-  }
+      @keyframes arrow-pulse {
+        0%,
+        100% {
+          opacity: 0.4;
+          transform: translateX(0);
+        }
+        50% {
+          opacity: 1;
+          transform: translateX(4px);
+        }
+      }
 
-  .loupe-edge-top,
-  .loupe-edge-bottom {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 14px;
-    pointer-events: none;
-    z-index: 2;
-  }
+      /* ── EMPTY GATE LAMP BLOOM ── */
+      .gate::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(200, 134, 42, 0.18) 0%,
+          rgba(180, 110, 20, 0.08) 35%,
+          transparent 70%
+        );
+        opacity: 1;
+        transition: opacity 0.4s ease;
+        pointer-events: none;
+      }
 
-  .loupe-edge-top {
-    top: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.35), transparent);
-  }
+      .gate.loaded::before {
+        opacity: 0;
+      }
 
-  .loupe-edge-bottom {
-    bottom: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.35), transparent);
-  }
+      /* ── MAGNIFIER LOUPE ── */
+      .loupe {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 80px;
+        z-index: 25;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
 
-  .loupe-btn {
-    position: absolute;
-    bottom: 68px;
-    right: 20px;
-    z-index: 30;
-    font-size: 20px;
-    color: rgba(200,134,42,0.4);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    line-height: 1;
-    transition: color 0.2s;
-    -webkit-tap-highlight-color: transparent;
-  }
+      .loupe.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
 
-  .loupe-btn.active {
-    color: rgba(200,134,42,1);
-  }
+      .loupe-glass {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        border-top: 1px solid rgba(200, 134, 42, 0.6);
+        border-bottom: 1px solid rgba(200, 134, 42, 0.6);
+        box-shadow:
+          0 0 0 1px rgba(200, 134, 42, 0.15),
+          inset 0 0 20px rgba(200, 134, 42, 0.06);
+        background: rgba(0, 0, 0, 0.15);
+      }
 
-  @keyframes lamp-flicker {
-    0%   { filter: brightness(1); }
-    10%  { filter: brightness(0.6); }
-    20%  { filter: brightness(0.9); }
-    35%  { filter: brightness(0.3); }
-    50%  { filter: brightness(1.1); }
-    65%  { filter: brightness(0.7); }
-    80%  { filter: brightness(1); }
-    90%  { filter: brightness(0.5); }
-    100% { filter: brightness(1); }
-  }
+      .loupe-glass img {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        transform-origin: top left;
+      }
 
-  .gate.flickering .fiche-img {
-    animation: lamp-flicker 0.6s ease-in-out forwards;
-  }
+      .loupe-edge-top,
+      .loupe-edge-bottom {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 14px;
+        pointer-events: none;
+        z-index: 2;
+      }
 
-  /* ── HAIR IN GATE ── */
-  .hair {
-    position: absolute;
-    z-index: 15;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.05s;
-  }
+      .loupe-edge-top {
+        top: 0;
+        background: linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.35),
+          transparent
+        );
+      }
 
-  .hair.visible {
-    opacity: 1;
-  }
+      .loupe-edge-bottom {
+        bottom: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.35), transparent);
+      }
 
-  /* ── NOISE CANVAS (transition effect) ── */
-  #noise-canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 20;
-    opacity: 0;
-    pointer-events: none;
-  }
+      .loupe-btn {
+        position: absolute;
+        bottom: 68px;
+        right: 20px;
+        z-index: 30;
+        font-size: 20px;
+        color: rgba(200, 134, 42, 0.4);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        line-height: 1;
+        transition: color 0.2s;
+        -webkit-tap-highlight-color: transparent;
+      }
 
-  #noise-canvas.active {
-    pointer-events: auto;
-  }
+      .loupe-btn.active {
+        color: rgba(200, 134, 42, 1);
+      }
 
-</style>
-</head>
-<body>
+      @keyframes lamp-flicker {
+        0% {
+          filter: brightness(1);
+        }
+        10% {
+          filter: brightness(0.6);
+        }
+        20% {
+          filter: brightness(0.9);
+        }
+        35% {
+          filter: brightness(0.3);
+        }
+        50% {
+          filter: brightness(1.1);
+        }
+        65% {
+          filter: brightness(0.7);
+        }
+        80% {
+          filter: brightness(1);
+        }
+        90% {
+          filter: brightness(0.5);
+        }
+        100% {
+          filter: brightness(1);
+        }
+      }
 
-<div class="machine">
-  <div class="gate" id="gate">
+      .gate.flickering .fiche-img {
+        animation: lamp-flicker 0.6s ease-in-out forwards;
+      }
 
-    <!-- Film image injected by JS when src is ready -->
+      /* ── HAIR IN GATE ── */
+      .hair {
+        position: absolute;
+        z-index: 15;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.05s;
+      }
 
-    <!-- Overlays -->
-    <div class="scanlines"></div>
-    <div class="vignette"></div>
-    <canvas class="grain" id="grain-canvas"></canvas>
+      .hair.visible {
+        opacity: 1;
+      }
 
-    <!-- Hair in gate (SVG line) -->
-    <svg class="hair" id="hair" width="3" height="100%" viewBox="0 0 3 800" preserveAspectRatio="none"
-         style="top:0; left: 38%;">
-      <path d="M1.5 0 Q1.8 200 1.2 400 Q1.6 600 1.4 800"
-            stroke="rgba(180,160,100,0.7)" stroke-width="1.2" fill="none"/>
-    </svg>
+      /* ── NOISE CANVAS (transition effect) ── */
+      #noise-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 20;
+        opacity: 0;
+        pointer-events: none;
+      }
 
-    <!-- Magnifier loupe -->
-    <div class="loupe" id="loupe">
-      <div class="loupe-glass" id="loupe-glass">
-        <img id="loupe-img" alt="" />
-        <div class="loupe-edge-top"></div>
-        <div class="loupe-edge-bottom"></div>
+      #noise-canvas.active {
+        pointer-events: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="machine">
+      <div class="gate" id="gate">
+        <!-- Film image injected by JS when src is ready -->
+
+        <!-- Overlays -->
+        <div class="scanlines"></div>
+        <div class="vignette"></div>
+        <canvas class="grain" id="grain-canvas"></canvas>
+
+        <!-- Hair in gate (SVG line) -->
+        <svg
+          class="hair"
+          id="hair"
+          width="3"
+          height="100%"
+          viewBox="0 0 3 800"
+          preserveAspectRatio="none"
+          style="top: 0; left: 38%"
+        >
+          <path
+            d="M1.5 0 Q1.8 200 1.2 400 Q1.6 600 1.4 800"
+            stroke="rgba(180,160,100,0.7)"
+            stroke-width="1.2"
+            fill="none"
+          />
+        </svg>
+
+        <!-- Magnifier loupe -->
+        <div class="loupe" id="loupe">
+          <div class="loupe-glass" id="loupe-glass">
+            <img id="loupe-img" alt="" />
+            <div class="loupe-edge-top"></div>
+            <div class="loupe-edge-bottom"></div>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <button class="skip-btn" id="skip-btn">SKIP ALL ▶▶▶</button>
+        <button class="loupe-btn" id="loupe-btn" title="Magnifier">⊕</button>
+
+        <!-- Zoom focus rail -->
+        <div class="zoom-rail">
+          <span class="zoom-rail-label">−</span>
+          <input
+            class="zoom-slider"
+            id="zoom-slider"
+            type="range"
+            min="1"
+            max="2.2"
+            step="0.05"
+            value="1"
+          />
+          <span class="zoom-rail-label">+</span>
+        </div>
+
+        <button class="next-btn" id="next-btn">
+          NEXT <span class="arrow">▶▶</span>
+        </button>
       </div>
     </div>
 
-    <!-- Controls -->
-    <button class="skip-btn" id="skip-btn">SKIP ALL ▶▶▶</button>
-    <button class="loupe-btn" id="loupe-btn" title="Magnifier">⊕</button>
-    <button class="next-btn" id="next-btn">NEXT <span class="arrow">▶▶</span></button>
+    <script>
+      // ── SEQUENCE ──────────────────────────────────────────────────────────────
+      const SEQUENCE = [
+        {
+          card: "cover",
+          img: "/imagebank/preamble/cover.png",
+          next: "prologue",
+        },
+        {
+          card: "prologue",
+          img: "/imagebank/preamble/prologue.png",
+          next: "difference-1",
+        },
+        {
+          card: "difference-1",
+          img: "/imagebank/preamble/difference-1.png",
+          next: "difference-2",
+        },
+        {
+          card: "difference-2",
+          img: "/imagebank/preamble/difference-2.png",
+          next: "charter-1",
+        },
+        {
+          card: "charter-1",
+          img: "/imagebank/preamble/charter-1.png",
+          next: "charter-2",
+        },
+        {
+          card: "charter-2",
+          img: "/imagebank/preamble/charter-2.png",
+          next: "charter-3",
+        },
+        {
+          card: "charter-3",
+          img: "/imagebank/preamble/charter-3.png",
+          next: "charter-4",
+        },
+        {
+          card: "charter-4",
+          img: "/imagebank/preamble/charter-4.png",
+          next: "charter-5",
+        },
+        {
+          card: "charter-5",
+          img: "/imagebank/preamble/charter-5.png",
+          next: "charter-6",
+        },
+        {
+          card: "charter-6",
+          img: "/imagebank/preamble/charter-6.png",
+          next: "charter-7",
+        },
+        {
+          card: "charter-7",
+          img: "/imagebank/preamble/charter-7.png",
+          next: "charter-8",
+        },
+        {
+          card: "charter-8",
+          img: "/imagebank/preamble/charter-8.png",
+          next: null,
+        },
+      ];
 
-  </div>
-</div>
+      const LANDING = "/landing";
+      const AUDIO_SRC = "/audio/fiche-advance.wav";
 
-<script>
-// ── SEQUENCE ──────────────────────────────────────────────────────────────
-const SEQUENCE = [
-  { card: 'cover',         img: '/imagebank/preamble/cover.png',        next: 'prologue' },
-  { card: 'prologue',      img: '/imagebank/preamble/prologue.png',      next: 'difference-1' },
-  { card: 'difference-1',  img: '/imagebank/preamble/difference-1.png',  next: 'difference-2' },
-  { card: 'difference-2',  img: '/imagebank/preamble/difference-2.png',  next: 'charter-1' },
-  { card: 'charter-1',     img: '/imagebank/preamble/charter-1.png',     next: 'charter-2' },
-  { card: 'charter-2',     img: '/imagebank/preamble/charter-2.png',     next: 'charter-3' },
-  { card: 'charter-3',     img: '/imagebank/preamble/charter-3.png',     next: 'charter-4' },
-  { card: 'charter-4',     img: '/imagebank/preamble/charter-4.png',     next: 'charter-5' },
-  { card: 'charter-5',     img: '/imagebank/preamble/charter-5.png',     next: 'charter-6' },
-  { card: 'charter-6',     img: '/imagebank/preamble/charter-6.png',     next: 'charter-7' },
-  { card: 'charter-7',     img: '/imagebank/preamble/charter-7.png',     next: 'charter-8' },
-  { card: 'charter-8',     img: '/imagebank/preamble/charter-8.png',     next: null },
-];
+      // ── PARSE URL PARAMS ──────────────────────────────────────────────────────
+      function getParams() {
+        const p = new URLSearchParams(window.location.search);
+        return {
+          card: p.get("card") || "cover",
+          preview: p.get("preview") === "1",
+        };
+      }
 
-const LANDING = '/landing';
-const AUDIO_SRC = '/audio/fiche-advance.wav';
+      // ── STATE ─────────────────────────────────────────────────────────────────
+      const params = getParams();
+      let currentEntry =
+        SEQUENCE.find((s) => s.card === params.card) || SEQUENCE[0];
 
-// ── PARSE URL PARAMS ──────────────────────────────────────────────────────
-function getParams() {
-  const p = new URLSearchParams(window.location.search);
-  return {
-    card: p.get('card') || 'cover',
-    preview: p.get('preview') === '1',
-  };
-}
+      // ── ELEMENTS ──────────────────────────────────────────────────────────────
+      const nextBtn = document.getElementById("next-btn");
+      const skipBtn = document.getElementById("skip-btn");
+      const gate = document.getElementById("gate");
+      const hair = document.getElementById("hair");
+      const grainCvs = document.getElementById("grain-canvas");
+      const gCtx = grainCvs.getContext("2d");
 
-// ── STATE ─────────────────────────────────────────────────────────────────
-const params = getParams();
-let currentEntry = SEQUENCE.find(s => s.card === params.card) || SEQUENCE[0];
+      // Create fiche image element only via JS — no empty src artifact
+      const ficheImg = document.createElement("img");
+      ficheImg.className = "fiche-img";
+      ficheImg.alt = "";
+      gate.insertBefore(ficheImg, gate.firstChild);
 
-// ── ELEMENTS ──────────────────────────────────────────────────────────────
-const nextBtn    = document.getElementById('next-btn');
-const skipBtn    = document.getElementById('skip-btn');
-const gate       = document.getElementById('gate');
-const hair       = document.getElementById('hair');
-const grainCvs   = document.getElementById('grain-canvas');
-const gCtx       = grainCvs.getContext('2d');
+      // ── AUDIO ─────────────────────────────────────────────────────────────────
+      let audioCtx = null;
+      let audioBuffer = null;
 
-// Create fiche image element only via JS — no empty src artifact
-const ficheImg = document.createElement('img');
-ficheImg.className = 'fiche-img';
-ficheImg.alt = '';
-gate.insertBefore(ficheImg, gate.firstChild);
+      async function loadAudio() {
+        try {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          const res = await fetch(AUDIO_SRC);
+          const arr = await res.arrayBuffer();
+          audioBuffer = await audioCtx.decodeAudioData(arr);
+        } catch (e) {
+          // Audio optional — fail silently
+        }
+      }
 
-// ── AUDIO ─────────────────────────────────────────────────────────────────
-let audioCtx = null;
-let audioBuffer = null;
+      function playAdvanceSound() {
+        if (!audioCtx || !audioBuffer) return;
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        const src = audioCtx.createBufferSource();
+        src.buffer = audioBuffer;
+        src.connect(audioCtx.destination);
+        src.start(0);
+      }
 
-async function loadAudio() {
-  try {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const res = await fetch(AUDIO_SRC);
-    const arr = await res.arrayBuffer();
-    audioBuffer = await audioCtx.decodeAudioData(arr);
-  } catch(e) {
-    // Audio optional — fail silently
-  }
-}
+      // ── RESIZE CANVASES ───────────────────────────────────────────────────────
+      function resizeCanvases() {
+        grainCvs.width = window.innerWidth;
+        grainCvs.height = window.innerHeight;
+      }
+      window.addEventListener("resize", resizeCanvases);
+      resizeCanvases();
 
-function playAdvanceSound() {
-  if (!audioCtx || !audioBuffer) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  const src = audioCtx.createBufferSource();
-  src.buffer = audioBuffer;
-  src.connect(audioCtx.destination);
-  src.start(0);
-}
+      // ── GRAIN ANIMATION ───────────────────────────────────────────────────────
+      function drawGrain() {
+        const w = grainCvs.width,
+          h = grainCvs.height;
+        const imgd = gCtx.createImageData(w, h);
+        const d = imgd.data;
+        for (let i = 0; i < d.length; i += 4) {
+          const v = (Math.random() * 255) | 0;
+          d[i] = d[i + 1] = d[i + 2] = v;
+          d[i + 3] = 12;
+        }
+        gCtx.putImageData(imgd, 0, 0);
+        requestAnimationFrame(drawGrain);
+      }
+      drawGrain();
 
-// ── RESIZE CANVASES ───────────────────────────────────────────────────────
-function resizeCanvases() {
-  grainCvs.width     = window.innerWidth;
-  grainCvs.height    = window.innerHeight;
-}
-window.addEventListener('resize', resizeCanvases);
-resizeCanvases();
+      // ── SLIDE TRANSITION ──────────────────────────────────────────────────────
+      function runSlideTransition(callback) {
+        nextBtn.disabled = true;
+        gate.classList.remove("loaded");
 
-// ── GRAIN ANIMATION ───────────────────────────────────────────────────────
-function drawGrain() {
-  const w = grainCvs.width, h = grainCvs.height;
-  const imgd = gCtx.createImageData(w, h);
-  const d = imgd.data;
-  for (let i = 0; i < d.length; i += 4) {
-    const v = Math.random() * 255 | 0;
-    d[i] = d[i+1] = d[i+2] = v;
-    d[i+3] = 12;
-  }
-  gCtx.putImageData(imgd, 0, 0);
-  requestAnimationFrame(drawGrain);
-}
-drawGrain();
+        // Slide out: move left and fade
+        ficheImg.style.transition =
+          "transform 0.22s cubic-bezier(0.55,0,1,0.45), opacity 0.22s ease";
+        ficheImg.style.transform = "translateX(-108%)";
+        ficheImg.style.opacity = "0";
 
-// ── SLIDE TRANSITION ──────────────────────────────────────────────────────
-function runSlideTransition(callback) {
-  nextBtn.disabled = true;
-  gate.classList.remove('loaded');
+        setTimeout(() => {
+          // Kill transition, position new card off-screen right
+          ficheImg.style.transition = "none";
+          ficheImg.style.transform = "translateX(108%)";
+          ficheImg.style.opacity = "0";
 
-  // Slide out: move left and fade
-  ficheImg.style.transition = 'transform 0.22s cubic-bezier(0.55,0,1,0.45), opacity 0.22s ease';
-  ficheImg.style.transform  = 'translateX(-108%)';
-  ficheImg.style.opacity    = '0';
+          // Swap image
+          callback();
+          if (window._loupeSync) window._loupeSync();
+          if (window._zoomReset) window._zoomReset();
 
-  setTimeout(() => {
-    // Kill transition, position new card off-screen right
-    ficheImg.style.transition = 'none';
-    ficheImg.style.transform  = 'translateX(108%)';
-    ficheImg.style.opacity    = '0';
+          // Force reflow so browser registers the position before animating in
+          ficheImg.offsetHeight;
 
-    // Swap image
-    callback();
-    if (window._loupeSync) window._loupeSync();
+          // Slide in
+          ficheImg.style.transition =
+            "transform 0.28s cubic-bezier(0,0.55,0.45,1), opacity 0.28s ease";
+          ficheImg.style.transform = "translateX(0)";
+          ficheImg.style.opacity = "1";
 
-    // Force reflow so browser registers the position before animating in
-    ficheImg.offsetHeight;
+          setTimeout(() => {
+            // Clean up inline styles
+            ficheImg.style.transition = "";
+            ficheImg.style.transform = "";
+            ficheImg.style.opacity = "1";
+            gate.classList.add("loaded");
+            nextBtn.disabled = false;
+          }, 300);
+        }, 230);
+      }
 
-    // Slide in
-    ficheImg.style.transition = 'transform 0.28s cubic-bezier(0,0.55,0.45,1), opacity 0.28s ease';
-    ficheImg.style.transform  = 'translateX(0)';
-    ficheImg.style.opacity    = '1';
+      // ── LOAD CARD ─────────────────────────────────────────────────────────────
+      function loadCard(entry, withTransition) {
+        if (withTransition) {
+          playAdvanceSound();
+          runSlideTransition(() => {
+            ficheImg.src = entry.img;
+            currentEntry = entry;
+            updateNextButton(entry);
+          });
+        } else {
+          // First load — empty gate, then noise into first image
+          ficheImg.src = "";
+          ficheImg.style.opacity = "0";
+          ficheImg.style.transform = "";
+          currentEntry = entry;
+          updateNextButton(entry);
 
-    setTimeout(() => {
-      // Clean up inline styles
-      ficheImg.style.transition = '';
-      ficheImg.style.transform  = '';
-      ficheImg.style.opacity    = '1';
-      gate.classList.add('loaded');
-      nextBtn.disabled = false;
-    }, 300);
+          // Brief pause on empty machine, then retrieve first record
+          setTimeout(() => {
+            playAdvanceSound();
+            runSlideTransition(() => {
+              ficheImg.src = entry.img;
+              gate.classList.add("loaded");
+            });
+          }, 900);
+        }
+      }
 
-  }, 230);
-}
+      function updateNextButton(entry) {
+        if (!entry.next) {
+          nextBtn.textContent = "ENTER ▶▶";
+        }
+      }
 
-// ── LOAD CARD ─────────────────────────────────────────────────────────────
-function loadCard(entry, withTransition) {
-  if (withTransition) {
-    playAdvanceSound();
-    runSlideTransition(() => {
-      ficheImg.src = entry.img;
-      currentEntry = entry;
-      updateNextButton(entry);
-    });
-  } else {
-    // First load — empty gate, then noise into first image
-    ficheImg.src = '';
-    ficheImg.style.opacity = '0';
-    ficheImg.style.transform = '';
-    currentEntry = entry;
-    updateNextButton(entry);
+      // ── NAVIGATION ────────────────────────────────────────────────────────────
+      function advance() {
+        if (!currentEntry.next) {
+          // Last card — go to landing
+          playAdvanceSound();
+          setTimeout(() => {
+            window.location.href = LANDING;
+          }, 400);
+          return;
+        }
+        const next = SEQUENCE.find((s) => s.card === currentEntry.next);
+        if (!next) return;
 
-    // Brief pause on empty machine, then retrieve first record
-    setTimeout(() => {
-      playAdvanceSound();
-      runSlideTransition(() => {
-        ficheImg.src = entry.img;
-        gate.classList.add('loaded');
+        // Update URL without reload
+        const url = new URL(window.location.href);
+        url.searchParams.set("card", next.card);
+        window.history.pushState({}, "", url.toString());
+
+        loadCard(next, true);
+      }
+
+      nextBtn.addEventListener("click", advance);
+
+      skipBtn.addEventListener("click", () => {
+        window.location.href = LANDING;
       });
-    }, 900);
-  }
-}
 
-function updateNextButton(entry) {
-  if (!entry.next) {
-    nextBtn.textContent = 'ENTER ▶▶';
-  }
-}
+      // Browser back button
+      window.addEventListener("popstate", () => {
+        const p = new URLSearchParams(window.location.search);
+        const card = p.get("card") || "cover";
+        const entry = SEQUENCE.find((s) => s.card === card) || SEQUENCE[0];
+        loadCard(entry, false);
+      });
 
-// ── NAVIGATION ────────────────────────────────────────────────────────────
-function advance() {
-  if (!currentEntry.next) {
-    // Last card — go to landing
-    playAdvanceSound();
-    setTimeout(() => { window.location.href = LANDING; }, 400);
-    return;
-  }
-  const next = SEQUENCE.find(s => s.card === currentEntry.next);
-  if (!next) return;
+      // ── HAIR IN GATE ──────────────────────────────────────────────────────────
+      (function hairSystem() {
+        const isPreview = params.preview;
+        let hairVisible = false;
+        let pullTimer = null;
+        let returnTimer = null;
 
-  // Update URL without reload
-  const url = new URL(window.location.href);
-  url.searchParams.set('card', next.card);
-  window.history.pushState({}, '', url.toString());
+        function showHair() {
+          hair.classList.add("visible");
+          hairVisible = true;
+          // Schedule pull
+          const pullDelay = isPreview ? 2000 : (20 + Math.random() * 70) * 1000;
+          pullTimer = setTimeout(pullHair, pullDelay);
+        }
 
-  loadCard(next, true);
-}
+        function pullHair() {
+          hair.style.transition = "opacity 0.08s";
+          hair.classList.remove("visible");
+          hairVisible = false;
+          // Schedule return
+          const returnDelay = isPreview
+            ? 3000
+            : (120 + Math.random() * 360) * 1000;
+          returnTimer = setTimeout(showHair, returnDelay);
+        }
 
-nextBtn.addEventListener('click', advance);
+        // Present on load immediately
+        if (isPreview) {
+          setTimeout(showHair, 500);
+        } else {
+          showHair();
+        }
+      })();
 
-skipBtn.addEventListener('click', () => {
-  window.location.href = LANDING;
-});
+      // ── LAMP FLICKER ──────────────────────────────────────────────────────────
+      (function lampSystem() {
+        const isPreview = params.preview;
 
-// Browser back button
-window.addEventListener('popstate', () => {
-  const p = new URLSearchParams(window.location.search);
-  const card = p.get('card') || 'cover';
-  const entry = SEQUENCE.find(s => s.card === card) || SEQUENCE[0];
-  loadCard(entry, false);
-});
+        function flicker() {
+          gate.classList.add("flickering");
+          setTimeout(() => gate.classList.remove("flickering"), 700);
+          const next = isPreview ? 5000 : (45 + Math.random() * 45) * 1000;
+          setTimeout(flicker, next);
+        }
 
-// ── HAIR IN GATE ──────────────────────────────────────────────────────────
-(function hairSystem() {
-  const isPreview = params.preview;
-  let hairVisible = false;
-  let pullTimer = null;
-  let returnTimer = null;
+        const firstFire = isPreview ? 1000 : (20 + Math.random() * 20) * 1000;
+        setTimeout(flicker, firstFire);
+      })();
 
-  function showHair() {
-    hair.classList.add('visible');
-    hairVisible = true;
-    // Schedule pull
-    const pullDelay = isPreview ? 2000 : (20 + Math.random() * 70) * 1000;
-    pullTimer = setTimeout(pullHair, pullDelay);
-  }
+      // ── ZOOM SLIDER SYSTEM ────────────────────────────────────────────────────
+      (function zoomSystem() {
+        const slider = document.getElementById("zoom-slider");
+        let currentZoom = 1;
+        let panX = 0;
+        let panY = 0;
+        let isPanning = false;
+        let lastTouch = null;
 
-  function pullHair() {
-    hair.style.transition = 'opacity 0.08s';
-    hair.classList.remove('visible');
-    hairVisible = false;
-    // Schedule return
-    const returnDelay = isPreview ? 3000 : (120 + Math.random() * 360) * 1000;
-    returnTimer = setTimeout(showHair, returnDelay);
-  }
+        function applyZoom() {
+          ficheImg.style.transformOrigin = "center center";
+          ficheImg.style.transform = `scale(${currentZoom}) translate(${panX / currentZoom}px, ${panY / currentZoom}px)`;
+          if (window._loupeSync) window._loupeSync();
+        }
 
-  // Present on load immediately
-  if (isPreview) {
-    setTimeout(showHair, 500);
-  } else {
-    showHair();
-  }
-})();
+        function resetPan() {
+          panX = 0;
+          panY = 0;
+        }
 
-// ── LAMP FLICKER ──────────────────────────────────────────────────────────
-(function lampSystem() {
-  const isPreview = params.preview;
+        slider.addEventListener("input", () => {
+          currentZoom = parseFloat(slider.value);
+          if (currentZoom <= 1.05) resetPan();
+          applyZoom();
+        });
 
-  function flicker() {
-    gate.classList.add('flickering');
-    setTimeout(() => gate.classList.remove('flickering'), 700);
-    const next = isPreview ? 5000 : (45 + Math.random() * 45) * 1000;
-    setTimeout(flicker, next);
-  }
+        // Pan via touch when zoomed in
+        gate.addEventListener(
+          "touchstart",
+          (e) => {
+            if (currentZoom <= 1.05) return;
+            if (e.touches.length === 1) {
+              isPanning = true;
+              lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            }
+          },
+          { passive: true },
+        );
 
-  const firstFire = isPreview ? 1000 : (20 + Math.random() * 20) * 1000;
-  setTimeout(flicker, firstFire);
-})();
+        gate.addEventListener(
+          "touchmove",
+          (e) => {
+            if (!isPanning || !lastTouch || currentZoom <= 1.05) return;
+            const dx = e.touches[0].clientX - lastTouch.x;
+            const dy = e.touches[0].clientY - lastTouch.y;
+            panX += dx;
+            panY += dy;
+            lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            applyZoom();
+          },
+          { passive: true },
+        );
 
-// ── LOUPE SYSTEM ──────────────────────────────────────────────────────────
-(function loupeSystem() {
-  const loupe     = document.getElementById('loupe');
-  const loupeGlass= document.getElementById('loupe-glass');
-  const loupeImg  = document.getElementById('loupe-img');
-  const loupeBtn  = document.getElementById('loupe-btn');
+        gate.addEventListener("touchend", () => {
+          isPanning = false;
+          lastTouch = null;
+        });
 
-  const LOUPE_HEIGHT = 80;   // px — height of the magnifier strip
-  const ZOOM         = 2.5;  // magnification factor
+        // Reset pan when card changes
+        window._zoomReset = () => {
+          resetPan();
+          applyZoom();
+        };
+      })();
 
-  let loupeActive = false;
-  let loupeY = 0;            // current center Y of loupe on screen
-  let dragging = false;
+      // ── LOUPE SYSTEM ──────────────────────────────────────────────────────────
+      (function loupeSystem() {
+        const loupe = document.getElementById("loupe");
+        const loupeGlass = document.getElementById("loupe-glass");
+        const loupeImg = document.getElementById("loupe-img");
+        const loupeBtn = document.getElementById("loupe-btn");
 
-  function syncLoupeImage() {
-    // Mirror the current fiche image into the loupe
-    loupeImg.src = ficheImg.src;
-    updateLoupeView();
-  }
+        const LOUPE_HEIGHT = 80; // px — height of the magnifier strip
+        const ZOOM = 2.5; // magnification factor
 
-  function updateLoupeView() {
-    if (!loupeActive) return;
+        let loupeActive = false;
+        let loupeY = 0; // current center Y of loupe on screen
+        let dragging = false;
 
-    const gateRect = gate.getBoundingClientRect();
-    const imgRect  = ficheImg.getBoundingClientRect();
+        function syncLoupeImage() {
+          // Mirror the current fiche image into the loupe
+          loupeImg.src = ficheImg.src;
+          updateLoupeView();
+        }
 
-    // Clamp loupe position within gate
-    const clampedY = Math.max(LOUPE_HEIGHT / 2, Math.min(gateRect.height - LOUPE_HEIGHT / 2, loupeY));
-    loupe.style.top       = clampedY + 'px';
-    loupe.style.transform = 'translateY(-50%)';
+        function updateLoupeView() {
+          if (!loupeActive) return;
 
-    // Y position within the displayed image
-    const imgTop     = imgRect.top - gateRect.top;
-    const relativeY  = clampedY - imgTop;
+          const gateRect = gate.getBoundingClientRect();
+          const imgRect = ficheImg.getBoundingClientRect();
 
-    // Fill full gate width — scale image to match
-    const scaleRatio = gateRect.width / imgRect.width;
-    const effectiveZoom = ZOOM * scaleRatio;
-    const zoomedW    = imgRect.width * effectiveZoom;
-    const zoomedTop  = -(relativeY * effectiveZoom) + LOUPE_HEIGHT / 2;
+          // Clamp loupe position within gate
+          const clampedY = Math.max(
+            LOUPE_HEIGHT / 2,
+            Math.min(gateRect.height - LOUPE_HEIGHT / 2, loupeY),
+          );
+          loupe.style.top = clampedY + "px";
+          loupe.style.transform = "translateY(-50%)";
 
-    loupeImg.style.width  = zoomedW + 'px';
-    loupeImg.style.height = 'auto';
-    loupeImg.style.left   = '0px';
-    loupeImg.style.top    = zoomedTop + 'px';
-  }
+          // Y position within the displayed image
+          const imgTop = imgRect.top - gateRect.top;
+          const relativeY = clampedY - imgTop;
 
-  function setLoupeY(clientY) {
-    const gateRect = gate.getBoundingClientRect();
-    loupeY = clientY - gateRect.top;
-    updateLoupeView();
-  }
+          // Fill full gate width — scale image to match
+          const scaleRatio = gateRect.width / imgRect.width;
+          const effectiveZoom = ZOOM * scaleRatio;
+          const zoomedW = imgRect.width * effectiveZoom;
+          const zoomedTop = -(relativeY * effectiveZoom) + LOUPE_HEIGHT / 2;
 
-  // Toggle
-  loupeBtn.addEventListener('click', () => {
-    loupeActive = !loupeActive;
-    loupe.classList.toggle('active', loupeActive);
-    loupeBtn.classList.toggle('active', loupeActive);
-    if (loupeActive) {
-      loupeY = gate.getBoundingClientRect().height / 2;
-      syncLoupeImage();
-    }
-  });
+          loupeImg.style.width = zoomedW + "px";
+          loupeImg.style.height = "auto";
+          loupeImg.style.left = "0px";
+          loupeImg.style.top = zoomedTop + "px";
+        }
 
-  // Drag on touch
-  loupe.addEventListener('touchstart', (e) => {
-    dragging = true;
-    setLoupeY(e.touches[0].clientY);
-  }, { passive: true });
+        function setLoupeY(clientY) {
+          const gateRect = gate.getBoundingClientRect();
+          loupeY = clientY - gateRect.top;
+          updateLoupeView();
+        }
 
-  window.addEventListener('touchmove', (e) => {
-    if (!dragging || !loupeActive) return;
-    setLoupeY(e.touches[0].clientY);
-  }, { passive: true });
+        // Toggle
+        loupeBtn.addEventListener("click", () => {
+          loupeActive = !loupeActive;
+          loupe.classList.toggle("active", loupeActive);
+          loupeBtn.classList.toggle("active", loupeActive);
+          if (loupeActive) {
+            loupeY = gate.getBoundingClientRect().height / 2;
+            syncLoupeImage();
+          }
+        });
 
-  window.addEventListener('touchend', () => { dragging = false; });
+        // Drag on touch
+        loupe.addEventListener(
+          "touchstart",
+          (e) => {
+            dragging = true;
+            setLoupeY(e.touches[0].clientY);
+          },
+          { passive: true },
+        );
 
-  // Drag on mouse
-  loupe.addEventListener('mousedown', (e) => {
-    dragging = true;
-    setLoupeY(e.clientY);
-  });
+        window.addEventListener(
+          "touchmove",
+          (e) => {
+            if (!dragging || !loupeActive) return;
+            setLoupeY(e.touches[0].clientY);
+          },
+          { passive: true },
+        );
 
-  window.addEventListener('mousemove', (e) => {
-    if (!dragging || !loupeActive) return;
-    setLoupeY(e.clientY);
-  });
+        window.addEventListener("touchend", () => {
+          dragging = false;
+        });
 
-  window.addEventListener('mouseup', () => { dragging = false; });
+        // Drag on mouse
+        loupe.addEventListener("mousedown", (e) => {
+          dragging = true;
+          setLoupeY(e.clientY);
+        });
 
-  // Also allow dragging anywhere on gate when loupe active
-  gate.addEventListener('touchstart', (e) => {
-    if (!loupeActive) return;
-    if (e.target === loupeBtn || e.target === nextBtn || e.target === skipBtn) return;
-    dragging = true;
-    setLoupeY(e.touches[0].clientY);
-  }, { passive: true });
+        window.addEventListener("mousemove", (e) => {
+          if (!dragging || !loupeActive) return;
+          setLoupeY(e.clientY);
+        });
 
-  // Sync image when card changes
-  const origLoadCard = loadCard;
-  window._loupeSync = syncLoupeImage;
-})();
+        window.addEventListener("mouseup", () => {
+          dragging = false;
+        });
 
-// ── INIT ──────────────────────────────────────────────────────────────────
-loadAudio();
-loadCard(currentEntry, false);
-</script>
-</body>
+        // Also allow dragging anywhere on gate when loupe active
+        gate.addEventListener(
+          "touchstart",
+          (e) => {
+            if (!loupeActive) return;
+            if (
+              e.target === loupeBtn ||
+              e.target === nextBtn ||
+              e.target === skipBtn
+            )
+              return;
+            dragging = true;
+            setLoupeY(e.touches[0].clientY);
+          },
+          { passive: true },
+        );
+
+        // Sync image when card changes
+        const origLoadCard = loadCard;
+        window._loupeSync = syncLoupeImage;
+      })();
+
+      // ── INIT ──────────────────────────────────────────────────────────────────
+      loadAudio();
+      loadCard(currentEntry, false);
+    </script>
+  </body>
 </html>
