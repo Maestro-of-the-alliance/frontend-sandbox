@@ -780,6 +780,7 @@
         projectionFrame.addEventListener("pointerdown", (e) => {
           if (viewState.zoom <= 1.05) return;
           if (e.target.closest(".loupe")) return;
+          if (window.NCEArchive?.isLoupeActive?.()) return;
           viewState.panning = true;
           viewState.lastPointer = { x: e.clientX, y: e.clientY };
           projectionFrame.setPointerCapture(e.pointerId);
@@ -805,11 +806,12 @@
         projectionFrame.addEventListener("pointercancel", endPan);
       })();
 
-      // ── Horizontal reader loupe. Samples the current rendered image safely. ──
+      // ── Horizontal reader loupe. Registered optical strip. ──────────────────
       (function loupeSystem() {
         const loupe = document.getElementById("loupe");
         const loupeImg = document.getElementById("loupe-img");
         const loupeBtn = document.getElementById("loupe-btn");
+
         const LOUPE_HEIGHT = 86;
         const LOUPE_ZOOM = 2.25;
 
@@ -817,36 +819,77 @@
         let centerY = 0;
         let dragging = false;
 
+        function getContainedImageRect() {
+          const frame = projectionFrame.getBoundingClientRect();
+
+          const naturalW = ficheImg.naturalWidth || 1;
+          const naturalH = ficheImg.naturalHeight || 1;
+
+          const frameRatio = frame.width / frame.height;
+          const imgRatio = naturalW / naturalH;
+
+          let baseW;
+          let baseH;
+
+          if (imgRatio > frameRatio) {
+            baseW = frame.width;
+            baseH = frame.width / imgRatio;
+          } else {
+            baseH = frame.height;
+            baseW = frame.height * imgRatio;
+          }
+
+          const baseLeft = (frame.width - baseW) / 2;
+          const baseTop = (frame.height - baseH) / 2;
+
+          const z = viewState.zoom;
+          const renderedW = baseW * z;
+          const renderedH = baseH * z;
+
+          const renderedLeft =
+            baseLeft - (renderedW - baseW) / 2 + viewState.panX;
+          const renderedTop =
+            baseTop - (renderedH - baseH) / 2 + viewState.panY;
+
+          return {
+            frame,
+            renderedW,
+            renderedH,
+            renderedLeft,
+            renderedTop,
+          };
+        }
+
         function syncLoupe() {
-          if (loupeImg.src !== ficheImg.src) loupeImg.src = ficheImg.src;
+          if (loupeImg.src !== ficheImg.src) {
+            loupeImg.src = ficheImg.src;
+          }
           updateLoupe();
         }
 
         function updateLoupe() {
           if (!active) return;
 
-          const frame = projectionFrame.getBoundingClientRect();
-          const img = ficheImg.getBoundingClientRect();
+          const r = getContainedImageRect();
 
           centerY = Math.max(
             LOUPE_HEIGHT / 2,
             Math.min(
-              frame.height - LOUPE_HEIGHT / 2,
-              centerY || frame.height / 2,
+              r.frame.height - LOUPE_HEIGHT / 2,
+              centerY || r.frame.height / 2,
             ),
           );
+
           loupe.style.top = `${centerY}px`;
 
-          const imgLeft = img.left - frame.left;
-          const imgTop = img.top - frame.top;
-          const relativeY = centerY - imgTop;
+          const sourceX = r.frame.width / 2;
+          const sourceY = centerY;
 
-          const zoomedW = img.width * LOUPE_ZOOM;
-          const zoomedH = img.height * LOUPE_ZOOM;
+          const zoomedW = r.renderedW * LOUPE_ZOOM;
+          const zoomedH = r.renderedH * LOUPE_ZOOM;
 
-          // Center horizontally so the strip reads like a line-wide lens.
-          const left = (frame.width - zoomedW) / 2 + imgLeft * 0.08;
-          const top = LOUPE_HEIGHT / 2 - relativeY * LOUPE_ZOOM;
+          const left = sourceX - (sourceX - r.renderedLeft) * LOUPE_ZOOM;
+          const top = LOUPE_HEIGHT / 2 - (sourceY - r.renderedTop) * LOUPE_ZOOM;
 
           loupeImg.style.width = `${zoomedW}px`;
           loupeImg.style.height = `${zoomedH}px`;
@@ -885,12 +928,14 @@
         function stopDrag() {
           dragging = false;
         }
+
         projectionFrame.addEventListener("pointerup", stopDrag);
         projectionFrame.addEventListener("pointercancel", stopDrag);
         window.addEventListener("resize", updateLoupe);
 
         window.NCEArchive = window.NCEArchive || {};
         window.NCEArchive.syncLoupe = syncLoupe;
+        window.NCEArchive.isLoupeActive = () => active;
       })();
 
       // ── Simple built-in lamp effect. External randanime owns gate hair. ─
