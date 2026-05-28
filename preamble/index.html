@@ -330,7 +330,7 @@
     <!-- Magnifier loupe -->
     <div class="loupe" id="loupe">
       <div class="loupe-glass" id="loupe-glass">
-        <img id="loupe-img" src="" alt="" />
+        <img id="loupe-img" alt="" />
         <div class="loupe-edge-top"></div>
         <div class="loupe-edge-bottom"></div>
       </div>
@@ -627,19 +627,15 @@ window.addEventListener('popstate', () => {
     const imgTop     = imgRect.top - gateRect.top;
     const relativeY  = clampedY - imgTop;
 
-    // X offset of image within gate
-    const imgLeft    = imgRect.left - gateRect.left;
-
-    // Zoomed image dimensions
-    const zoomedW    = imgRect.width * ZOOM;
-
-    // Position zoomed image so the correct region is centered in the loupe strip
-    const zoomedLeft = imgLeft - (imgLeft * (ZOOM - 1));
-    const zoomedTop  = -(relativeY * ZOOM) + LOUPE_HEIGHT / 2;
+    // Fill full gate width — scale image to match
+    const scaleRatio = gateRect.width / imgRect.width;
+    const effectiveZoom = ZOOM * scaleRatio;
+    const zoomedW    = imgRect.width * effectiveZoom;
+    const zoomedTop  = -(relativeY * effectiveZoom) + LOUPE_HEIGHT / 2;
 
     loupeImg.style.width  = zoomedW + 'px';
     loupeImg.style.height = 'auto';
-    loupeImg.style.left   = zoomedLeft + 'px';
+    loupeImg.style.left   = '0px';
     loupeImg.style.top    = zoomedTop + 'px';
   }
 
