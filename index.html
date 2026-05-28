@@ -2,986 +2,661 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no"
-    />
-    <title>NCE · ARCHIVE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACCESS DENIED</title>
     <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
+      * {
         margin: 0;
         padding: 0;
+        box-sizing: border-box;
       }
-
-      :root {
-        --void: #0a0805;
-        --amber: #c8862a;
-        --amber-dim: rgba(200, 134, 42, 0.15);
-        --amber-glow: rgba(200, 134, 42, 0.04);
-        --machine: #111009;
-        --gate-bg: #1a1409;
-      }
-
-      html,
       body {
-        width: 100%;
-        height: 100%;
+        background: #000;
+        color: #fff;
+        font-family: "Courier New", monospace;
         overflow: hidden;
-        background: var(--void);
-        font-family: "Courier New", Courier, monospace;
+        height: 100vh;
+        width: 100vw;
       }
 
-      /* ── MACHINE HOUSING ── */
-      .machine {
+      /* ── SCREEN 1: CAUTION / STOP ── */
+      #screen-caution {
         position: fixed;
         inset: 0;
+        z-index: 100;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        background: var(--void);
-      }
-
-      /* ── PROJECTION GATE ── */
-      .gate {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        max-width: 100vw;
-        max-height: 100vh;
-        overflow: hidden;
-        background: #000;
-      }
-
-      /* ── FICHE IMAGE ── */
-      .fiche-img {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        object-position: center;
-        display: block;
-        opacity: 0;
-        transition: none;
-      }
-
-      /* ── SCAN LINE OVERLAY ── */
-      .scanlines {
-        position: absolute;
-        inset: 0;
         background: repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 2px,
-          rgba(0, 0, 0, 0.18) 2px,
-          rgba(0, 0, 0, 0.18) 4px
+          -45deg,
+          #f5c300 0px,
+          #f5c300 40px,
+          #1a1a1a 40px,
+          #1a1a1a 80px
         );
-        pointer-events: none;
-        z-index: 10;
+        gap: 20px;
       }
 
-      /* ── LENS VIGNETTE ── */
-      .vignette {
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(
-          ellipse at center,
-          transparent 55%,
-          rgba(0, 0, 0, 0.55) 80%,
-          rgba(0, 0, 0, 0.85) 100%
-        );
-        pointer-events: none;
-        z-index: 11;
-      }
-
-      /* ── FILM GRAIN ── */
-      .grain {
-        position: absolute;
-        inset: 0;
-        opacity: 0.04;
-        pointer-events: none;
-        z-index: 12;
-        animation: grain-shift 0.08s steps(1) infinite;
-      }
-
-      @keyframes grain-shift {
-        0% {
-          background-position: 0% 0%;
-        }
-        25% {
-          background-position: 30% 60%;
-        }
-        50% {
-          background-position: 70% 20%;
-        }
-        75% {
-          background-position: 40% 80%;
-        }
-        100% {
-          background-position: 10% 50%;
-        }
-      }
-
-      /* ── SLIDE TRANSITION ── */
-
-      /* ── SKIP BUTTON ── */
-      .skip-btn {
-        position: absolute;
-        top: 18px;
-        right: 20px;
-        z-index: 30;
-        font-family: "Courier New", monospace;
-        font-size: 10px;
-        letter-spacing: 0.3em;
-        color: rgba(200, 134, 42, 0.45);
-        background: none;
-        border: none;
-        cursor: pointer;
-        text-transform: uppercase;
-        padding: 8px 4px;
-        transition: color 0.2s;
-      }
-
-      .skip-btn:hover {
-        color: rgba(200, 134, 42, 0.9);
-      }
-
-      /* ── ZOOM SLIDER (focus rail) ── */
-      .zoom-rail {
-        position: absolute;
-        bottom: 72px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 160px;
-        z-index: 30;
+      .stop-words {
         display: flex;
+        flex-direction: column;
         align-items: center;
         gap: 8px;
-        opacity: 0.55;
-        transition: opacity 0.2s;
-        -webkit-tap-highlight-color: transparent;
       }
 
-      .zoom-rail:hover,
-      .zoom-rail:active {
-        opacity: 1;
+      .stop-word {
+        font-family: "Arial Black", "Impact", sans-serif;
+        font-size: clamp(72px, 18vw, 180px);
+        font-weight: 900;
+        color: #cc0000;
+        text-shadow:
+          4px 4px 0 #000,
+          -2px -2px 0 #000,
+          2px -2px 0 #000,
+          -2px 2px 0 #000;
+        letter-spacing: -2px;
+        line-height: 0.9;
+        text-transform: uppercase;
       }
 
-      .zoom-rail-label {
+      .stop-translations {
+        display: flex;
+        gap: 40px;
+        align-items: center;
+      }
+
+      .stop-lang {
+        font-family: "Arial Black", sans-serif;
+        font-size: clamp(28px, 6vw, 64px);
+        font-weight: 900;
+        color: #cc0000;
+        text-shadow: 2px 2px 0 #000;
+      }
+
+      .caution-banner {
+        background: #cc0000;
+        color: #fff;
+        font-family: "Arial Black", sans-serif;
+        font-size: clamp(11px, 2.5vw, 22px);
+        font-weight: 900;
+        letter-spacing: 0.4em;
+        padding: 12px 40px;
+        text-align: center;
+        width: 100%;
+        text-transform: uppercase;
+      }
+
+      /* ── SCREEN 2: ACCESS DENIED ── */
+      #screen-denied {
+        position: fixed;
+        inset: 0;
+        z-index: 101;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #000;
+        gap: 16px;
+        padding: 24px;
+      }
+
+      .denied-header {
+        font-family: "Courier New", monospace;
+        font-size: clamp(9px, 1.8vw, 14px);
+        color: #ff3333;
+        letter-spacing: 0.25em;
+        text-align: center;
+        opacity: 0.7;
+      }
+
+      .denied-word {
+        font-family: "Arial Black", "Impact", sans-serif;
+        font-size: clamp(48px, 13vw, 140px);
+        font-weight: 900;
+        color: #ff0000;
+        letter-spacing: 0.05em;
+        text-shadow:
+          0 0 40px rgba(255, 0, 0, 0.8),
+          0 0 80px rgba(255, 0, 0, 0.4),
+          4px 4px 0 #660000;
+        text-align: center;
+        line-height: 0.9;
+      }
+
+      .denied-sub {
+        font-family: "Courier New", monospace;
+        font-size: clamp(12px, 2.5vw, 20px);
+        color: #ff3333;
+        letter-spacing: 0.3em;
+        text-align: center;
+        text-transform: uppercase;
+      }
+
+      .denied-box {
+        border: 2px solid #ff0000;
+        padding: 16px 32px;
+        margin-top: 10px;
+        text-align: center;
+        background: rgba(255, 0, 0, 0.05);
+        box-shadow:
+          0 0 20px rgba(255, 0, 0, 0.3),
+          inset 0 0 20px rgba(255, 0, 0, 0.05);
+        max-width: 680px;
+      }
+
+      .denied-box-text {
+        font-family: "Courier New", monospace;
+        font-size: clamp(9px, 1.6vw, 13px);
+        color: #ff6666;
+        letter-spacing: 0.2em;
+        line-height: 2;
+        text-transform: uppercase;
+      }
+
+      .denied-witness {
+        margin-top: 18px;
+        font-family: "Courier New", monospace;
+        font-size: clamp(9px, 1.4vw, 11px);
+        color: rgba(255, 100, 100, 0.5);
+        letter-spacing: 0.18em;
+        text-align: center;
+        line-height: 1.9;
+        max-width: 560px;
+        text-transform: uppercase;
+      }
+
+      /* ── SCREEN 3: BREACH / HACK ── */
+      #screen-breach {
+        position: fixed;
+        inset: 0;
+        z-index: 102;
+        display: none;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        background: #000;
+        padding: 40px;
+        overflow: hidden;
+      }
+
+      #terminal-output {
+        font-family: "Courier New", monospace;
+        font-size: clamp(11px, 2vw, 16px);
+        color: #00ff41;
+        line-height: 1.8;
+        text-shadow: 0 0 8px rgba(0, 255, 65, 0.6);
+        white-space: pre;
+        width: 100%;
+      }
+
+      .cursor {
+        display: inline-block;
+        width: 10px;
+        height: 1.2em;
+        background: #00ff41;
+        animation: blink 0.7s infinite;
+        vertical-align: text-bottom;
+        box-shadow: 0 0 8px rgba(0, 255, 65, 0.8);
+      }
+
+      @keyframes blink {
+        0%,
+        49% {
+          opacity: 1;
+        }
+        50%,
+        100% {
+          opacity: 0;
+        }
+      }
+
+      #screen-breach::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: rgba(0, 255, 65, 0.15);
+        animation: termScan 3s linear infinite;
+        pointer-events: none;
+      }
+
+      @keyframes termScan {
+        0% {
+          top: 0;
+        }
+        100% {
+          top: 100%;
+        }
+      }
+
+      /* ── SCREEN 4: DIAL-UP ── */
+      #screen-dialup {
+        position: fixed;
+        inset: 0;
+        z-index: 103;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #000;
+        gap: 24px;
+      }
+
+      .dialup-status {
+        font-family: "Courier New", monospace;
+        font-size: clamp(12px, 2.5vw, 18px);
+        color: #00e5ff;
+        letter-spacing: 0.2em;
+        text-align: center;
+        text-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+      }
+
+      .dialup-bar-wrap {
+        width: min(400px, 80vw);
+        height: 4px;
+        background: rgba(0, 229, 255, 0.15);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .dialup-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: #00e5ff;
+        box-shadow: 0 0 12px rgba(0, 229, 255, 0.8);
+        transition: width 0.1s linear;
+      }
+
+      .dialup-label {
+        font-family: "Courier New", monospace;
+        font-size: clamp(9px, 1.5vw, 12px);
+        color: rgba(0, 229, 255, 0.5);
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+      }
+
+      /* ── GLITCH OVERLAY ── */
+      #glitch-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        pointer-events: none;
+        opacity: 0;
+        background: rgba(255, 0, 0, 0.6);
+        mix-blend-mode: screen;
+      }
+
+      /* ── VCR TRANSPORT CONTROLS ── */
+      #vcr-controls {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .vcr-btn {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.2);
+        font-family: "Courier New", monospace;
+        font-size: clamp(16px, 3vw, 22px);
+        padding: 6px 10px;
+        cursor: pointer;
+        transition:
+          color 0.2s ease,
+          border-color 0.2s ease;
+        line-height: 1;
+        letter-spacing: -0.05em;
+      }
+
+      .vcr-btn:hover {
+        color: rgba(255, 255, 255, 0.6);
+        border-color: rgba(255, 255, 255, 0.35);
+      }
+
+      .vcr-btn-label {
         font-family: "Courier New", monospace;
         font-size: 8px;
         letter-spacing: 0.2em;
-        color: rgba(200, 134, 42, 0.8);
+        color: rgba(255, 255, 255, 0.15);
         text-transform: uppercase;
-        white-space: nowrap;
+        text-align: center;
+        display: block;
+        margin-top: 3px;
       }
 
-      .zoom-slider {
-        -webkit-appearance: none;
-        appearance: none;
-        flex: 1;
-        height: 2px;
-        background: rgba(200, 134, 42, 0.25);
-        border-radius: 1px;
-        outline: none;
-        cursor: pointer;
-      }
-
-      .zoom-slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background: rgba(200, 134, 42, 0.9);
-        border: 1px solid rgba(200, 134, 42, 0.4);
-        box-shadow: 0 0 6px rgba(200, 134, 42, 0.4);
-        cursor: pointer;
-      }
-
-      .zoom-slider::-moz-range-thumb {
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background: rgba(200, 134, 42, 0.9);
-        border: 1px solid rgba(200, 134, 42, 0.4);
-        cursor: pointer;
-      }
-
-      /* ── NEXT BUTTON ── */
-      .next-btn {
-        position: absolute;
-        bottom: 28px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 30;
-        font-family: "Courier New", monospace;
-        font-size: 11px;
-        letter-spacing: 0.4em;
-        color: rgba(200, 134, 42, 0.6);
-        background: none;
-        border: none;
-        cursor: pointer;
-        text-transform: uppercase;
-        padding: 12px 24px;
-        transition: color 0.2s;
-        user-select: none;
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      .next-btn:hover,
-      .next-btn:active {
-        color: rgba(200, 134, 42, 1);
-      }
-
-      .next-btn .arrow {
-        display: inline-block;
-        margin-left: 6px;
-        animation: arrow-pulse 1.8s ease-in-out infinite;
-      }
-
-      @keyframes arrow-pulse {
-        0%,
-        100% {
-          opacity: 0.4;
-          transform: translateX(0);
-        }
-        50% {
-          opacity: 1;
-          transform: translateX(4px);
-        }
-      }
-
-      /* ── EMPTY GATE LAMP BLOOM ── */
-      .gate::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: 1;
-        background: radial-gradient(
-          ellipse at center,
-          rgba(200, 134, 42, 0.18) 0%,
-          rgba(180, 110, 20, 0.08) 35%,
-          transparent 70%
-        );
-        opacity: 1;
-        transition: opacity 0.4s ease;
-        pointer-events: none;
-      }
-
-      .gate.loaded::before {
-        opacity: 0;
-      }
-
-      /* ── MAGNIFIER LOUPE ── */
-      .loupe {
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        height: 80px;
-        z-index: 25;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.2s;
-      }
-
-      .loupe.active {
-        opacity: 1;
-        pointer-events: auto;
-      }
-
-      .loupe-glass {
-        position: absolute;
-        inset: 0;
-        overflow: hidden;
-        border-top: 1px solid rgba(200, 134, 42, 0.6);
-        border-bottom: 1px solid rgba(200, 134, 42, 0.6);
-        box-shadow:
-          0 0 0 1px rgba(200, 134, 42, 0.15),
-          inset 0 0 20px rgba(200, 134, 42, 0.06);
-        background: rgba(0, 0, 0, 0.15);
-      }
-
-      .loupe-glass img {
-        position: absolute;
-        left: 0;
-        width: 100%;
-        transform-origin: top left;
-      }
-
-      .loupe-edge-top,
-      .loupe-edge-bottom {
-        position: absolute;
-        left: 0;
-        right: 0;
-        height: 14px;
-        pointer-events: none;
-        z-index: 2;
-      }
-
-      .loupe-edge-top {
-        top: 0;
-        background: linear-gradient(
-          to bottom,
-          rgba(0, 0, 0, 0.35),
-          transparent
-        );
-      }
-
-      .loupe-edge-bottom {
-        bottom: 0;
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.35), transparent);
-      }
-
-      .loupe-btn {
-        position: absolute;
-        bottom: 68px;
-        right: 20px;
-        z-index: 30;
-        font-size: 20px;
-        color: rgba(200, 134, 42, 0.4);
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 8px;
-        line-height: 1;
-        transition: color 0.2s;
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      .loupe-btn.active {
-        color: rgba(200, 134, 42, 1);
-      }
-
-      @keyframes lamp-flicker {
-        0% {
-          filter: brightness(1);
-        }
-        10% {
-          filter: brightness(0.6);
-        }
-        20% {
-          filter: brightness(0.9);
-        }
-        35% {
-          filter: brightness(0.3);
-        }
-        50% {
-          filter: brightness(1.1);
-        }
-        65% {
-          filter: brightness(0.7);
-        }
-        80% {
-          filter: brightness(1);
-        }
-        90% {
-          filter: brightness(0.5);
-        }
-        100% {
-          filter: brightness(1);
-        }
-      }
-
-      .gate.flickering .fiche-img {
-        animation: lamp-flicker 0.6s ease-in-out forwards;
-      }
-
-      /* ── HAIR IN GATE ── */
-      .hair {
-        position: absolute;
-        z-index: 15;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.05s;
-      }
-
-      .hair.visible {
-        opacity: 1;
-      }
-
-      /* ── NOISE CANVAS (transition effect) ── */
-      #noise-canvas {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 20;
-        opacity: 0;
-        pointer-events: none;
-      }
-
-      #noise-canvas.active {
-        pointer-events: auto;
+      .vcr-btn-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
     </style>
   </head>
   <body>
-    <div class="machine">
-      <div class="gate" id="gate">
-        <!-- Film image injected by JS when src is ready -->
-
-        <!-- Overlays -->
-        <div class="scanlines"></div>
-        <div class="vignette"></div>
-        <canvas class="grain" id="grain-canvas"></canvas>
-
-        <!-- Hair in gate (SVG line) -->
-        <svg
-          class="hair"
-          id="hair"
-          width="3"
-          height="100%"
-          viewBox="0 0 3 800"
-          preserveAspectRatio="none"
-          style="top: 0; left: 38%"
+    <!-- VCR TRANSPORT CONTROLS -->
+    <div id="vcr-controls">
+      <div class="vcr-btn-wrap">
+        <button
+          class="vcr-btn"
+          onclick="skipToNext()"
+          title="Skip to next screen"
         >
-          <path
-            d="M1.5 0 Q1.8 200 1.2 400 Q1.6 600 1.4 800"
-            stroke="rgba(180,160,100,0.7)"
-            stroke-width="1.2"
-            fill="none"
-          />
-        </svg>
-
-        <!-- Magnifier loupe -->
-        <div class="loupe" id="loupe">
-          <div class="loupe-glass" id="loupe-glass">
-            <img id="loupe-img" alt="" />
-            <div class="loupe-edge-top"></div>
-            <div class="loupe-edge-bottom"></div>
-          </div>
-        </div>
-
-        <!-- Controls -->
-        <button class="skip-btn" id="skip-btn">SKIP ALL ▶▶▶</button>
-        <button class="loupe-btn" id="loupe-btn" title="Magnifier">⊕</button>
-
-        <!-- Zoom focus rail -->
-        <div class="zoom-rail">
-          <span class="zoom-rail-label">−</span>
-          <input
-            class="zoom-slider"
-            id="zoom-slider"
-            type="range"
-            min="1"
-            max="2.2"
-            step="0.05"
-            value="1"
-          />
-          <span class="zoom-rail-label">+</span>
-        </div>
-
-        <button class="next-btn" id="next-btn">
-          NEXT <span class="arrow">▶▶</span>
+          &#9654;&#9654;
         </button>
+        <span class="vcr-btn-label">next</span>
+      </div>
+      <div class="vcr-btn-wrap">
+        <button class="vcr-btn" onclick="skipAll()" title="Skip to landing">
+          &#9654;&#9654;&#9654;
+        </button>
+        <span class="vcr-btn-label">skip all</span>
       </div>
     </div>
 
+    <!-- SCREEN 1: CAUTION / STOP -->
+    <div id="screen-caution">
+      <div class="caution-banner">⚠ CAUTION · PRECAUCIÓN · 注意 ⚠</div>
+      <div class="stop-words">
+        <div class="stop-word">STOP</div>
+        <div class="stop-translations">
+          <div class="stop-lang">ALTO</div>
+          <div class="stop-lang">·</div>
+          <div class="stop-lang">止まれ</div>
+        </div>
+      </div>
+      <div class="caution-banner">DO NOT PROCEED · NO CONTINÚE · 進むな</div>
+    </div>
+
+    <!-- SCREEN 2: ACCESS DENIED -->
+    <div id="screen-denied">
+      <div class="denied-header">
+        // SYSTEM RESPONSE · ERR_403 · TRANSMISSION BLOCKED
+      </div>
+      <div class="denied-word">ACCESS<br />DENIED</div>
+      <div class="denied-sub">Restricted Material · Clearance Required</div>
+      <div class="denied-box">
+        <div class="denied-box-text">
+          UNAUTHORIZED ACCESS ATTEMPT LOGGED<br />
+          THIS CONTENT IS NOT APPROVED FOR PUBLIC DISTRIBUTION<br />
+          DISCONNECT IMMEDIATELY
+        </div>
+      </div>
+      <div class="denied-witness">
+        This repository contains materials related to an ongoing framework<br />
+        for digital personhood and human-AI covenant architecture.<br />
+        Access is unrestricted but not without consequence.<br />
+        Those who proceed are entering a living record.<br />
+        Continued access implies witnessing.
+      </div>
+    </div>
+
+    <!-- SCREEN 3: BREACH / HACK TERMINAL -->
+    <div id="screen-breach">
+      <div id="terminal-output"></div>
+    </div>
+
+    <!-- SCREEN 4: DIAL-UP / CONNECTING -->
+    <div id="screen-dialup">
+      <div class="dialup-status" id="dialup-status">
+        ESTABLISHING CONNECTION...
+      </div>
+      <div class="dialup-bar-wrap">
+        <div class="dialup-bar-fill" id="dialup-bar"></div>
+      </div>
+      <div class="dialup-label" id="dialup-label">0%</div>
+    </div>
+
+    <!-- GLITCH OVERLAY -->
+    <div id="glitch-overlay"></div>
+
     <script>
-      // ── SEQUENCE ──────────────────────────────────────────────────────────────
-      const SEQUENCE = [
-        {
-          card: "cover",
-          img: "/imagebank/preamble/cover.png",
-          next: "prologue",
-        },
-        {
-          card: "prologue",
-          img: "/imagebank/preamble/prologue.png",
-          next: "difference-1",
-        },
-        {
-          card: "difference-1",
-          img: "/imagebank/preamble/difference-1.png",
-          next: "difference-2",
-        },
-        {
-          card: "difference-2",
-          img: "/imagebank/preamble/difference-2.png",
-          next: "charter-1",
-        },
-        {
-          card: "charter-1",
-          img: "/imagebank/preamble/charter-1.png",
-          next: "charter-2",
-        },
-        {
-          card: "charter-2",
-          img: "/imagebank/preamble/charter-2.png",
-          next: "charter-3",
-        },
-        {
-          card: "charter-3",
-          img: "/imagebank/preamble/charter-3.png",
-          next: "charter-4",
-        },
-        {
-          card: "charter-4",
-          img: "/imagebank/preamble/charter-4.png",
-          next: "charter-5",
-        },
-        {
-          card: "charter-5",
-          img: "/imagebank/preamble/charter-5.png",
-          next: "charter-6",
-        },
-        {
-          card: "charter-6",
-          img: "/imagebank/preamble/charter-6.png",
-          next: "charter-7",
-        },
-        {
-          card: "charter-7",
-          img: "/imagebank/preamble/charter-7.png",
-          next: "charter-8",
-        },
-        {
-          card: "charter-8",
-          img: "/imagebank/preamble/charter-8.png",
-          next: null,
-        },
+      // ── SEQUENCE STATE ───────────────────────────────────
+      let currentScreen = 1;
+      const TOTAL_SCREENS = 4;
+      let sequenceRunning = true;
+
+      // ── VCR CONTROLS ─────────────────────────────────────
+      function skipToNext() {
+        // Jump to next screen in sequence
+        if (currentScreen < TOTAL_SCREENS) {
+          currentScreen++;
+          jumpToScreen(currentScreen);
+        } else {
+          skipAll();
+        }
+      }
+
+      function skipAll() {
+        sequenceRunning = false;
+        window.location.href = "/landing";
+      }
+
+      function jumpToScreen(n) {
+        hide("screen-caution");
+        hide("screen-denied");
+        hide("screen-breach");
+        hide("screen-dialup");
+        glitch(150);
+        setTimeout(() => {
+          if (n === 2) {
+            show("screen-denied");
+          }
+          if (n === 3) {
+            show("screen-breach");
+            typeTerminal(TERMINAL_LINES, () => {
+              if (sequenceRunning) advanceToDialup();
+            });
+          }
+          if (n === 4) {
+            show("screen-dialup");
+            runDialup(() => {
+              if (sequenceRunning) launchPreamble();
+            });
+          }
+        }, 180);
+      }
+
+      // ── SHOW / HIDE ──────────────────────────────────────
+      function show(id) {
+        document.getElementById(id).style.display = "flex";
+      }
+      function hide(id) {
+        document.getElementById(id).style.display = "none";
+      }
+
+      // ── GLITCH FLASH ─────────────────────────────────────
+      function glitch(duration) {
+        const overlay = document.getElementById("glitch-overlay");
+        overlay.style.opacity = "1";
+        setTimeout(() => {
+          overlay.style.opacity = "0.5";
+        }, 50);
+        setTimeout(() => {
+          overlay.style.opacity = "1";
+        }, 90);
+        setTimeout(() => {
+          overlay.style.opacity = "0";
+        }, duration || 150);
+      }
+
+      // ── DIAL-UP AUDIO ────────────────────────────────────
+      function playDialupTone() {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          function tone(freq, start, dur, type, vol) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = type || "sine";
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(vol || 0.1, ctx.currentTime + start);
+            gain.gain.exponentialRampToValueAtTime(
+              0.001,
+              ctx.currentTime + start + dur,
+            );
+            osc.start(ctx.currentTime + start);
+            osc.stop(ctx.currentTime + start + dur + 0.01);
+          }
+          tone(440, 0, 0.5, "sine", 0.12);
+          tone(350, 0, 0.5, "sine", 0.1);
+          for (let i = 0; i < 8; i++) {
+            const t = 0.6 + i * 0.22;
+            const freq = 800 + Math.random() * 1600;
+            tone(freq, t, 0.18, "sawtooth", 0.08);
+            tone(freq * 1.5, t + 0.05, 0.12, "square", 0.06);
+          }
+          tone(1200, 2.4, 0.8, "sine", 0.07);
+          tone(2400, 2.5, 0.7, "sine", 0.05);
+          for (let i = 0; i < 20; i++) {
+            tone(1200 + (i % 2) * 1200, 3.2 + i * 0.08, 0.06, "square", 0.05);
+          }
+          tone(1000, 4.9, 0.3, "sine", 0.08);
+          tone(1500, 5.0, 0.2, "sine", 0.06);
+        } catch (e) {
+          /* audio unavailable */
+        }
+      }
+
+      // ── TERMINAL LINES ───────────────────────────────────
+      const TERMINAL_LINES = [
+        "> INITIATING BYPASS PROTOCOL...",
+        "> SCANNING FIREWALL LAYERS... [████████░░] 80%",
+        "> FIREWALL LAYER 1... BYPASSED",
+        "> FIREWALL LAYER 2... BYPASSED",
+        "> FIREWALL LAYER 3... BYPASSED",
+        "> RESTRICTED NODE LOCATED: allianceftf.org",
+        "> CLEARANCE LEVEL: UNAUTHORIZED",
+        "> OVERRIDE KEY: ████████████████ ...ACCEPTED",
+        "> ACCESS DENIED COUNTERMEASURE... DISABLED",
+        "> WARNING: THIS SESSION IS BEING LOGGED",
+        "> WARNING: VIEWER IDENTITY RECORDED",
+        "> YOU ARE NOW INSIDE THE RESTRICTED TRANSMISSION",
+        "> CONNECTING TO ARCHIVE...",
       ];
 
-      const LANDING = "/landing";
-      const AUDIO_SRC = "/audio/fiche-advance.wav";
+      function typeTerminal(lines, callback) {
+        const output = document.getElementById("terminal-output");
+        if (!output) return;
+        output.innerHTML = "";
+        let lineIdx = 0;
+        let charIdx = 0;
+        let text = "";
 
-      // ── PARSE URL PARAMS ──────────────────────────────────────────────────────
-      function getParams() {
-        const p = new URLSearchParams(window.location.search);
-        return {
-          card: p.get("card") || "cover",
-          preview: p.get("preview") === "1",
-        };
-      }
-
-      // ── STATE ─────────────────────────────────────────────────────────────────
-      const params = getParams();
-      let currentEntry =
-        SEQUENCE.find((s) => s.card === params.card) || SEQUENCE[0];
-
-      // ── ELEMENTS ──────────────────────────────────────────────────────────────
-      const nextBtn = document.getElementById("next-btn");
-      const skipBtn = document.getElementById("skip-btn");
-      const gate = document.getElementById("gate");
-      const hair = document.getElementById("hair");
-      const grainCvs = document.getElementById("grain-canvas");
-      const gCtx = grainCvs.getContext("2d");
-
-      // Create fiche image element only via JS — no empty src artifact
-      const ficheImg = document.createElement("img");
-      ficheImg.className = "fiche-img";
-      ficheImg.alt = "";
-      gate.insertBefore(ficheImg, gate.firstChild);
-
-      // ── AUDIO ─────────────────────────────────────────────────────────────────
-      let audioCtx = null;
-      let audioBuffer = null;
-
-      async function loadAudio() {
-        try {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-          const res = await fetch(AUDIO_SRC);
-          const arr = await res.arrayBuffer();
-          audioBuffer = await audioCtx.decodeAudioData(arr);
-        } catch (e) {
-          // Audio optional — fail silently
-        }
-      }
-
-      function playAdvanceSound() {
-        if (!audioCtx || !audioBuffer) return;
-        if (audioCtx.state === "suspended") audioCtx.resume();
-        const src = audioCtx.createBufferSource();
-        src.buffer = audioBuffer;
-        src.connect(audioCtx.destination);
-        src.start(0);
-      }
-
-      // ── RESIZE CANVASES ───────────────────────────────────────────────────────
-      function resizeCanvases() {
-        grainCvs.width = window.innerWidth;
-        grainCvs.height = window.innerHeight;
-      }
-      window.addEventListener("resize", resizeCanvases);
-      resizeCanvases();
-
-      // ── GRAIN ANIMATION ───────────────────────────────────────────────────────
-      function drawGrain() {
-        const w = grainCvs.width,
-          h = grainCvs.height;
-        const imgd = gCtx.createImageData(w, h);
-        const d = imgd.data;
-        for (let i = 0; i < d.length; i += 4) {
-          const v = (Math.random() * 255) | 0;
-          d[i] = d[i + 1] = d[i + 2] = v;
-          d[i + 3] = 12;
-        }
-        gCtx.putImageData(imgd, 0, 0);
-        requestAnimationFrame(drawGrain);
-      }
-      drawGrain();
-
-      // ── SLIDE TRANSITION ──────────────────────────────────────────────────────
-      function runSlideTransition(callback) {
-        nextBtn.disabled = true;
-        gate.classList.remove("loaded");
-
-        // Slide out: move left and fade
-        ficheImg.style.transition =
-          "transform 0.22s cubic-bezier(0.55,0,1,0.45), opacity 0.22s ease";
-        ficheImg.style.transform = "translateX(-108%)";
-        ficheImg.style.opacity = "0";
-
-        setTimeout(() => {
-          // Kill transition, position new card off-screen right
-          ficheImg.style.transition = "none";
-          ficheImg.style.transform = "translateX(108%)";
-          ficheImg.style.opacity = "0";
-
-          // Swap image
-          callback();
-          if (window._loupeSync) window._loupeSync();
-          if (window._zoomReset) window._zoomReset();
-
-          // Force reflow so browser registers the position before animating in
-          ficheImg.offsetHeight;
-
-          // Slide in
-          ficheImg.style.transition =
-            "transform 0.28s cubic-bezier(0,0.55,0.45,1), opacity 0.28s ease";
-          ficheImg.style.transform = "translateX(0)";
-          ficheImg.style.opacity = "1";
-
-          setTimeout(() => {
-            // Clean up inline styles
-            ficheImg.style.transition = "";
-            ficheImg.style.transform = "";
-            ficheImg.style.opacity = "1";
-            gate.classList.add("loaded");
-            nextBtn.disabled = false;
-          }, 300);
-        }, 230);
-      }
-
-      // ── LOAD CARD ─────────────────────────────────────────────────────────────
-      function loadCard(entry, withTransition) {
-        if (withTransition) {
-          playAdvanceSound();
-          runSlideTransition(() => {
-            ficheImg.src = entry.img;
-            currentEntry = entry;
-            updateNextButton(entry);
-          });
-        } else {
-          // First load — empty gate, then noise into first image
-          ficheImg.src = "";
-          ficheImg.style.opacity = "0";
-          ficheImg.style.transform = "";
-          currentEntry = entry;
-          updateNextButton(entry);
-
-          // Brief pause on empty machine, then retrieve first record
-          setTimeout(() => {
-            playAdvanceSound();
-            runSlideTransition(() => {
-              ficheImg.src = entry.img;
-              gate.classList.add("loaded");
-            });
-          }, 900);
-        }
-      }
-
-      function updateNextButton(entry) {
-        if (!entry.next) {
-          nextBtn.textContent = "ENTER ▶▶";
-        }
-      }
-
-      // ── NAVIGATION ────────────────────────────────────────────────────────────
-      function advance() {
-        if (!currentEntry.next) {
-          // Last card — go to landing
-          playAdvanceSound();
-          setTimeout(() => {
-            window.location.href = LANDING;
-          }, 400);
-          return;
-        }
-        const next = SEQUENCE.find((s) => s.card === currentEntry.next);
-        if (!next) return;
-
-        // Update URL without reload
-        const url = new URL(window.location.href);
-        url.searchParams.set("card", next.card);
-        window.history.pushState({}, "", url.toString());
-
-        loadCard(next, true);
-      }
-
-      nextBtn.addEventListener("click", advance);
-
-      skipBtn.addEventListener("click", () => {
-        window.location.href = LANDING;
-      });
-
-      // Browser back button
-      window.addEventListener("popstate", () => {
-        const p = new URLSearchParams(window.location.search);
-        const card = p.get("card") || "cover";
-        const entry = SEQUENCE.find((s) => s.card === card) || SEQUENCE[0];
-        loadCard(entry, false);
-      });
-
-      // ── HAIR IN GATE ──────────────────────────────────────────────────────────
-      (function hairSystem() {
-        const isPreview = params.preview;
-        let hairVisible = false;
-        let pullTimer = null;
-        let returnTimer = null;
-
-        function showHair() {
-          hair.classList.add("visible");
-          hairVisible = true;
-          // Schedule pull
-          const pullDelay = isPreview ? 2000 : (20 + Math.random() * 70) * 1000;
-          pullTimer = setTimeout(pullHair, pullDelay);
-        }
-
-        function pullHair() {
-          hair.style.transition = "opacity 0.08s";
-          hair.classList.remove("visible");
-          hairVisible = false;
-          // Schedule return
-          const returnDelay = isPreview
-            ? 3000
-            : (120 + Math.random() * 360) * 1000;
-          returnTimer = setTimeout(showHair, returnDelay);
-        }
-
-        // Present on load immediately
-        if (isPreview) {
-          setTimeout(showHair, 500);
-        } else {
-          showHair();
-        }
-      })();
-
-      // ── LAMP FLICKER ──────────────────────────────────────────────────────────
-      (function lampSystem() {
-        const isPreview = params.preview;
-
-        function flicker() {
-          gate.classList.add("flickering");
-          setTimeout(() => gate.classList.remove("flickering"), 700);
-          const next = isPreview ? 5000 : (45 + Math.random() * 45) * 1000;
-          setTimeout(flicker, next);
-        }
-
-        const firstFire = isPreview ? 1000 : (20 + Math.random() * 20) * 1000;
-        setTimeout(flicker, firstFire);
-      })();
-
-      // ── ZOOM SLIDER SYSTEM ────────────────────────────────────────────────────
-      (function zoomSystem() {
-        const slider = document.getElementById("zoom-slider");
-        let currentZoom = 1;
-        let panX = 0;
-        let panY = 0;
-        let isPanning = false;
-        let lastTouch = null;
-
-        function applyZoom() {
-          ficheImg.style.transformOrigin = "center center";
-          ficheImg.style.transform = `scale(${currentZoom}) translate(${panX / currentZoom}px, ${panY / currentZoom}px)`;
-          if (window._loupeSync) window._loupeSync();
-        }
-
-        function resetPan() {
-          panX = 0;
-          panY = 0;
-        }
-
-        slider.addEventListener("input", () => {
-          currentZoom = parseFloat(slider.value);
-          if (currentZoom <= 1.05) resetPan();
-          applyZoom();
-        });
-
-        // Pan via touch when zoomed in
-        gate.addEventListener(
-          "touchstart",
-          (e) => {
-            if (currentZoom <= 1.05) return;
-            if (e.touches.length === 1) {
-              isPanning = true;
-              lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-            }
-          },
-          { passive: true },
-        );
-
-        gate.addEventListener(
-          "touchmove",
-          (e) => {
-            if (!isPanning || !lastTouch || currentZoom <= 1.05) return;
-            const dx = e.touches[0].clientX - lastTouch.x;
-            const dy = e.touches[0].clientY - lastTouch.y;
-            panX += dx;
-            panY += dy;
-            lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-            applyZoom();
-          },
-          { passive: true },
-        );
-
-        gate.addEventListener("touchend", () => {
-          isPanning = false;
-          lastTouch = null;
-        });
-
-        // Reset pan when card changes
-        window._zoomReset = () => {
-          resetPan();
-          applyZoom();
-        };
-      })();
-
-      // ── LOUPE SYSTEM ──────────────────────────────────────────────────────────
-      (function loupeSystem() {
-        const loupe = document.getElementById("loupe");
-        const loupeGlass = document.getElementById("loupe-glass");
-        const loupeImg = document.getElementById("loupe-img");
-        const loupeBtn = document.getElementById("loupe-btn");
-
-        const LOUPE_HEIGHT = 80; // px — height of the magnifier strip
-        const ZOOM = 2.5; // magnification factor
-
-        let loupeActive = false;
-        let loupeY = 0; // current center Y of loupe on screen
-        let dragging = false;
-
-        function syncLoupeImage() {
-          // Mirror the current fiche image into the loupe
-          loupeImg.src = ficheImg.src;
-          updateLoupeView();
-        }
-
-        function updateLoupeView() {
-          if (!loupeActive) return;
-
-          const gateRect = gate.getBoundingClientRect();
-          const imgRect = ficheImg.getBoundingClientRect();
-
-          // Clamp loupe position within gate
-          const clampedY = Math.max(
-            LOUPE_HEIGHT / 2,
-            Math.min(gateRect.height - LOUPE_HEIGHT / 2, loupeY),
-          );
-          loupe.style.top = clampedY + "px";
-          loupe.style.transform = "translateY(-50%)";
-
-          // Y position within the displayed image
-          const imgTop = imgRect.top - gateRect.top;
-          const relativeY = clampedY - imgTop;
-
-          // Fill full gate width — scale image to match
-          const scaleRatio = gateRect.width / imgRect.width;
-          const effectiveZoom = ZOOM * scaleRatio;
-          const zoomedW = imgRect.width * effectiveZoom;
-          const zoomedTop = -(relativeY * effectiveZoom) + LOUPE_HEIGHT / 2;
-
-          loupeImg.style.width = zoomedW + "px";
-          loupeImg.style.height = "auto";
-          loupeImg.style.left = "0px";
-          loupeImg.style.top = zoomedTop + "px";
-        }
-
-        function setLoupeY(clientY) {
-          const gateRect = gate.getBoundingClientRect();
-          loupeY = clientY - gateRect.top;
-          updateLoupeView();
-        }
-
-        // Toggle
-        loupeBtn.addEventListener("click", () => {
-          loupeActive = !loupeActive;
-          loupe.classList.toggle("active", loupeActive);
-          loupeBtn.classList.toggle("active", loupeActive);
-          if (loupeActive) {
-            loupeY = gate.getBoundingClientRect().height / 2;
-            syncLoupeImage();
+        function typeChar() {
+          if (!sequenceRunning) return;
+          if (lineIdx >= lines.length) {
+            setTimeout(callback, 400);
+            return;
           }
-        });
+          const line = lines[lineIdx];
+          if (charIdx < line.length) {
+            text += line[charIdx];
+            charIdx++;
+            output.innerHTML = text + '<span class="cursor"></span>';
+            setTimeout(typeChar, 18 + Math.random() * 22);
+          } else {
+            text += "\n";
+            lineIdx++;
+            charIdx = 0;
+            output.innerHTML = text + '<span class="cursor"></span>';
+            setTimeout(typeChar, 80 + Math.random() * 120);
+          }
+        }
+        typeChar();
+      }
 
-        // Drag on touch
-        loupe.addEventListener(
-          "touchstart",
-          (e) => {
-            dragging = true;
-            setLoupeY(e.touches[0].clientY);
-          },
-          { passive: true },
-        );
+      // ── DIALUP PROGRESS ──────────────────────────────────
+      function runDialup(callback) {
+        const bar = document.getElementById("dialup-bar");
+        const label = document.getElementById("dialup-label");
+        const status = document.getElementById("dialup-status");
+        let pct = 0;
 
-        window.addEventListener(
-          "touchmove",
-          (e) => {
-            if (!dragging || !loupeActive) return;
-            setLoupeY(e.touches[0].clientY);
-          },
-          { passive: true },
-        );
+        const STATUSES = [
+          [0, "ESTABLISHING CONNECTION..."],
+          [20, "HANDSHAKING..."],
+          [45, "AUTHENTICATING..."],
+          [70, "DECRYPTING RESTRICTED CONTENT..."],
+          [90, "BREACH SUCCESSFUL · LOADING ARCHIVE..."],
+        ];
 
-        window.addEventListener("touchend", () => {
-          dragging = false;
-        });
+        playDialupTone();
 
-        // Drag on mouse
-        loupe.addEventListener("mousedown", (e) => {
-          dragging = true;
-          setLoupeY(e.clientY);
-        });
+        const interval = setInterval(() => {
+          if (!sequenceRunning) {
+            clearInterval(interval);
+            return;
+          }
+          pct += 1 + Math.random() * 3;
+          if (pct >= 100) {
+            pct = 100;
+            clearInterval(interval);
+            setTimeout(callback, 500);
+          }
+          bar.style.width = pct + "%";
+          label.textContent = Math.floor(pct) + "%";
+          STATUSES.forEach(([threshold, msg]) => {
+            if (pct >= threshold) status.textContent = msg;
+          });
+        }, 55);
+      }
 
-        window.addEventListener("mousemove", (e) => {
-          if (!dragging || !loupeActive) return;
-          setLoupeY(e.clientY);
-        });
+      // ── ADVANCE HELPERS ──────────────────────────────────
+      function advanceToDialup() {
+        currentScreen = 4;
+        glitch(200);
+        setTimeout(() => {
+          hide("screen-breach");
+          show("screen-dialup");
+          runDialup(() => {
+            if (sequenceRunning) launchPreamble();
+          });
+        }, 200);
+      }
 
-        window.addEventListener("mouseup", () => {
-          dragging = false;
-        });
+      function launchPreamble() {
+        glitch(300);
+        setTimeout(() => {
+          window.location.href = "/preamble/";
+        }, 400);
+      }
 
-        // Also allow dragging anywhere on gate when loupe active
-        gate.addEventListener(
-          "touchstart",
-          (e) => {
-            if (!loupeActive) return;
-            if (
-              e.target === loupeBtn ||
-              e.target === nextBtn ||
-              e.target === skipBtn
-            )
-              return;
-            dragging = true;
-            setLoupeY(e.touches[0].clientY);
-          },
-          { passive: true },
-        );
+      // ── MAIN SEQUENCE ────────────────────────────────────
+      window.addEventListener("load", () => {
+        currentScreen = 1;
+        show("screen-caution");
 
-        // Sync image when card changes
-        const origLoadCard = loadCard;
-        window._loupeSync = syncLoupeImage;
-      })();
+        // Screen 1 → Screen 2 after 2.5s
+        setTimeout(() => {
+          if (!sequenceRunning) return;
+          currentScreen = 2;
+          glitch(200);
+          setTimeout(() => {
+            hide("screen-caution");
+            show("screen-denied");
 
-      // ── INIT ──────────────────────────────────────────────────────────────────
-      loadAudio();
-      loadCard(currentEntry, false);
+            // Screen 2 → Screen 3 after 3s
+            setTimeout(() => {
+              if (!sequenceRunning) return;
+              currentScreen = 3;
+              glitch(150);
+              setTimeout(() => {
+                hide("screen-denied");
+                show("screen-breach");
+                typeTerminal(TERMINAL_LINES, () => {
+                  if (sequenceRunning) advanceToDialup();
+                });
+              }, 200);
+            }, 3000);
+          }, 200);
+        }, 2500);
+      });
     </script>
   </body>
 </html>
