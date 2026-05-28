@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
     <title>NCE · ARCHIVE</title>
     <style>
@@ -17,12 +17,13 @@
       }
 
       :root {
-        --void: #0a0805;
+        --void: #070604;
         --amber: #c8862a;
-        --amber-dim: rgba(200, 134, 42, 0.15);
-        --amber-glow: rgba(200, 134, 42, 0.04);
-        --machine: #111009;
-        --gate-bg: #1a1409;
+        --amber-soft: rgba(200, 134, 42, 0.72);
+        --amber-dim: rgba(200, 134, 42, 0.28);
+        --amber-faint: rgba(200, 134, 42, 0.12);
+        --reader-top-safe: env(safe-area-inset-top, 0px);
+        --reader-bottom-safe: env(safe-area-inset-bottom, 0px);
       }
 
       html,
@@ -32,262 +33,201 @@
         overflow: hidden;
         background: var(--void);
         font-family: "Courier New", Courier, monospace;
+        touch-action: none;
       }
 
-      /* ── MACHINE HOUSING ── */
+      button,
+      input {
+        font-family: inherit;
+      }
+
       .machine {
         position: fixed;
         inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--void);
+        overflow: hidden;
+        background:
+          radial-gradient(
+            ellipse at center,
+            rgba(80, 50, 14, 0.1),
+            transparent 55%
+          ),
+          #000;
       }
 
-      /* ── PROJECTION GATE ── */
       .gate {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        max-width: 100vw;
-        max-height: 100vh;
+        position: absolute;
+        inset: 0;
         overflow: hidden;
         background: #000;
+        isolation: isolate;
       }
 
-      /* ── FICHE IMAGE ── */
-      .fiche-img {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        object-position: center;
-        display: block;
-        opacity: 0;
-        transition: none;
-      }
-
-      /* ── SCAN LINE OVERLAY ── */
-      .scanlines {
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 2px,
-          rgba(0, 0, 0, 0.18) 2px,
-          rgba(0, 0, 0, 0.18) 4px
-        );
-        pointer-events: none;
-        z-index: 10;
-      }
-
-      /* ── LENS VIGNETTE ── */
-      .vignette {
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(
-          ellipse at center,
-          transparent 55%,
-          rgba(0, 0, 0, 0.55) 80%,
-          rgba(0, 0, 0, 0.85) 100%
-        );
-        pointer-events: none;
-        z-index: 11;
-      }
-
-      /* ── FILM GRAIN ── */
-      .grain {
-        position: absolute;
-        inset: 0;
-        opacity: 0.04;
-        pointer-events: none;
-        z-index: 12;
-        animation: grain-shift 0.08s steps(1) infinite;
-      }
-
-      @keyframes grain-shift {
-        0% {
-          background-position: 0% 0%;
-        }
-        25% {
-          background-position: 30% 60%;
-        }
-        50% {
-          background-position: 70% 20%;
-        }
-        75% {
-          background-position: 40% 80%;
-        }
-        100% {
-          background-position: 10% 50%;
-        }
-      }
-
-      /* ── SLIDE TRANSITION ── */
-
-      /* ── SKIP BUTTON ── */
-      .skip-btn {
-        position: absolute;
-        top: 18px;
-        right: 20px;
-        z-index: 30;
-        font-family: "Courier New", monospace;
-        font-size: 10px;
-        letter-spacing: 0.3em;
-        color: rgba(200, 134, 42, 0.45);
-        background: none;
-        border: none;
-        cursor: pointer;
-        text-transform: uppercase;
-        padding: 8px 4px;
-        transition: color 0.2s;
-      }
-
-      .skip-btn:hover {
-        color: rgba(200, 134, 42, 0.9);
-      }
-
-      /* ── ZOOM SLIDER (focus rail) ── */
-      .zoom-rail {
-        position: absolute;
-        bottom: 72px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 160px;
-        z-index: 30;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        opacity: 0.55;
-        transition: opacity 0.2s;
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      .zoom-rail:hover,
-      .zoom-rail:active {
-        opacity: 1;
-      }
-
-      .zoom-rail-label {
-        font-family: "Courier New", monospace;
-        font-size: 8px;
-        letter-spacing: 0.2em;
-        color: rgba(200, 134, 42, 0.8);
-        text-transform: uppercase;
-        white-space: nowrap;
-      }
-
-      .zoom-slider {
-        -webkit-appearance: none;
-        appearance: none;
-        flex: 1;
-        height: 2px;
-        background: rgba(200, 134, 42, 0.25);
-        border-radius: 1px;
-        outline: none;
-        cursor: pointer;
-      }
-
-      .zoom-slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background: rgba(200, 134, 42, 0.9);
-        border: 1px solid rgba(200, 134, 42, 0.4);
-        box-shadow: 0 0 6px rgba(200, 134, 42, 0.4);
-        cursor: pointer;
-      }
-
-      .zoom-slider::-moz-range-thumb {
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background: rgba(200, 134, 42, 0.9);
-        border: 1px solid rgba(200, 134, 42, 0.4);
-        cursor: pointer;
-      }
-
-      /* ── NEXT BUTTON ── */
-      .next-btn {
-        position: absolute;
-        bottom: 28px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 30;
-        font-family: "Courier New", monospace;
-        font-size: 11px;
-        letter-spacing: 0.4em;
-        color: rgba(200, 134, 42, 0.6);
-        background: none;
-        border: none;
-        cursor: pointer;
-        text-transform: uppercase;
-        padding: 12px 24px;
-        transition: color 0.2s;
-        user-select: none;
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      .next-btn:hover,
-      .next-btn:active {
-        color: rgba(200, 134, 42, 1);
-      }
-
-      .next-btn .arrow {
-        display: inline-block;
-        margin-left: 6px;
-        animation: arrow-pulse 1.8s ease-in-out infinite;
-      }
-
-      @keyframes arrow-pulse {
-        0%,
-        100% {
-          opacity: 0.4;
-          transform: translateX(0);
-        }
-        50% {
-          opacity: 1;
-          transform: translateX(4px);
-        }
-      }
-
-      /* ── EMPTY GATE LAMP BLOOM ── */
       .gate::before {
         content: "";
         position: absolute;
         inset: 0;
         z-index: 1;
+        pointer-events: none;
         background: radial-gradient(
           ellipse at center,
-          rgba(200, 134, 42, 0.18) 0%,
-          rgba(180, 110, 20, 0.08) 35%,
+          rgba(200, 134, 42, 0.16) 0%,
+          rgba(120, 70, 18, 0.06) 38%,
           transparent 70%
         );
         opacity: 1;
-        transition: opacity 0.4s ease;
-        pointer-events: none;
+        transition: opacity 420ms ease;
       }
 
       .gate.loaded::before {
         opacity: 0;
       }
 
-      /* ── MAGNIFIER LOUPE ── */
+      /*
+        Authoritative scanner window.
+        The document never owns the browser viewport anymore.
+        The scanner window owns the document.
+      */
+      .projection-frame {
+        position: absolute;
+        z-index: 5;
+        left: 50%;
+        top: calc(50% - 18px);
+        transform: translate(-50%, -50%);
+        width: min(90vw, 68vh);
+        aspect-ratio: 3 / 4;
+        overflow: hidden;
+        background: #000;
+        box-shadow:
+          0 28px 84px rgba(0, 0, 0, 0.82),
+          inset 0 0 0 1px rgba(255, 220, 140, 0.08),
+          inset 0 0 72px rgba(0, 0, 0, 0.42);
+      }
+
+      @media (orientation: landscape) {
+        .projection-frame {
+          width: min(62vw, 70vh);
+          top: 50%;
+        }
+      }
+
+      @media (max-height: 720px) {
+        .projection-frame {
+          width: min(86vw, 64vh);
+          top: calc(50% - 10px);
+        }
+      }
+
+      .fiche-stage {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        overflow: hidden;
+        opacity: 0;
+        filter: brightness(0.8) contrast(1.05);
+        transition: none;
+        will-change: opacity, filter;
+      }
+
+      .fiche-stage.visible {
+        opacity: 1;
+        filter: brightness(1) contrast(1);
+      }
+
+      .fiche-img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: contain;
+        object-position: center;
+        opacity: 1;
+        transform-origin: center center;
+        will-change: transform, filter;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+
+      .scanlines,
+      .vignette,
+      .grain {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      .scanlines {
+        z-index: 10;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent 0px,
+          transparent 2px,
+          rgba(0, 0, 0, 0.2) 2px,
+          rgba(0, 0, 0, 0.2) 4px
+        );
+        mix-blend-mode: multiply;
+      }
+
+      .vignette {
+        z-index: 11;
+        background: radial-gradient(
+          ellipse at center,
+          transparent 48%,
+          rgba(0, 0, 0, 0.4) 78%,
+          rgba(0, 0, 0, 0.78) 100%
+        );
+      }
+
+      .grain {
+        z-index: 12;
+        width: 180px;
+        height: 180px;
+        opacity: 0.08;
+        image-rendering: pixelated;
+        transform: scale(12);
+        transform-origin: top left;
+      }
+
+      .gate.flickering .fiche-stage {
+        animation: lamp-flicker 620ms ease-in-out forwards;
+      }
+
+      @keyframes lamp-flicker {
+        0% {
+          filter: brightness(1) contrast(1);
+        }
+        10% {
+          filter: brightness(0.68) contrast(1.04);
+        }
+        20% {
+          filter: brightness(0.95) contrast(1.02);
+        }
+        35% {
+          filter: brightness(0.52) contrast(1.08);
+        }
+        50% {
+          filter: brightness(1.08) contrast(0.98);
+        }
+        65% {
+          filter: brightness(0.78) contrast(1.06);
+        }
+        100% {
+          filter: brightness(1) contrast(1);
+        }
+      }
+
+      /* ── Horizontal reader loupe ── */
       .loupe {
         position: absolute;
         left: 0;
         right: 0;
         top: 50%;
+        height: 86px;
         transform: translateY(-50%);
-        height: 80px;
         z-index: 25;
-        pointer-events: none;
         opacity: 0;
-        transition: opacity 0.2s;
+        pointer-events: none;
+        transition: opacity 160ms ease;
       }
 
       .loupe.active {
@@ -299,19 +239,22 @@
         position: absolute;
         inset: 0;
         overflow: hidden;
-        border-top: 1px solid rgba(200, 134, 42, 0.6);
-        border-bottom: 1px solid rgba(200, 134, 42, 0.6);
+        border-top: 1px solid rgba(200, 134, 42, 0.72);
+        border-bottom: 1px solid rgba(200, 134, 42, 0.72);
+        background: rgba(12, 8, 2, 0.12);
         box-shadow:
-          0 0 0 1px rgba(200, 134, 42, 0.15),
-          inset 0 0 20px rgba(200, 134, 42, 0.06);
-        background: rgba(0, 0, 0, 0.15);
+          0 0 0 1px rgba(200, 134, 42, 0.14),
+          0 0 16px rgba(200, 134, 42, 0.1),
+          inset 0 0 22px rgba(200, 134, 42, 0.05);
       }
 
       .loupe-glass img {
         position: absolute;
-        left: 0;
-        width: 100%;
+        max-width: none;
+        height: auto;
         transform-origin: top left;
+        user-select: none;
+        -webkit-user-drag: none;
       }
 
       .loupe-edge-top,
@@ -320,150 +263,218 @@
         left: 0;
         right: 0;
         height: 14px;
-        pointer-events: none;
         z-index: 2;
+        pointer-events: none;
       }
 
       .loupe-edge-top {
         top: 0;
         background: linear-gradient(
           to bottom,
-          rgba(0, 0, 0, 0.35),
+          rgba(0, 0, 0, 0.38),
           transparent
         );
       }
 
       .loupe-edge-bottom {
         bottom: 0;
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.35), transparent);
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.38), transparent);
       }
 
+      .loupe-center-mark {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        height: 1px;
+        background: rgba(200, 134, 42, 0.12);
+        z-index: 3;
+        pointer-events: none;
+      }
+
+      /* ── Controls ── */
+      .skip-btn,
+      .next-btn,
       .loupe-btn {
         position: absolute;
-        bottom: 68px;
-        right: 20px;
         z-index: 30;
-        font-size: 20px;
-        color: rgba(200, 134, 42, 0.4);
+        color: var(--amber-dim);
         background: none;
         border: none;
         cursor: pointer;
-        padding: 8px;
-        line-height: 1;
-        transition: color 0.2s;
+        text-transform: uppercase;
+        user-select: none;
         -webkit-tap-highlight-color: transparent;
       }
 
-      .loupe-btn.active {
-        color: rgba(200, 134, 42, 1);
+      .skip-btn {
+        top: calc(18px + var(--reader-top-safe));
+        right: 22px;
+        font-size: 10px;
+        letter-spacing: 0.32em;
+        padding: 8px 4px;
       }
 
-      @keyframes lamp-flicker {
-        0% {
-          filter: brightness(1);
-        }
-        10% {
-          filter: brightness(0.6);
-        }
-        20% {
-          filter: brightness(0.9);
-        }
-        35% {
-          filter: brightness(0.3);
+      .next-btn {
+        bottom: calc(26px + var(--reader-bottom-safe));
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 11px;
+        letter-spacing: 0.42em;
+        padding: 14px 26px;
+      }
+
+      .next-btn[disabled] {
+        opacity: 0.35;
+        pointer-events: none;
+      }
+
+      .loupe-btn {
+        right: 20px;
+        bottom: calc(68px + var(--reader-bottom-safe));
+        font-size: 23px;
+        line-height: 1;
+        padding: 10px;
+      }
+
+      .skip-btn:hover,
+      .skip-btn:active,
+      .next-btn:hover,
+      .next-btn:active,
+      .loupe-btn:hover,
+      .loupe-btn:active,
+      .loupe-btn.active {
+        color: var(--amber-soft);
+      }
+
+      .next-btn .arrow {
+        display: inline-block;
+        margin-left: 7px;
+        animation: arrow-pulse 1.8s ease-in-out infinite;
+      }
+
+      @keyframes arrow-pulse {
+        0%,
+        100% {
+          opacity: 0.45;
+          transform: translateX(0);
         }
         50% {
-          filter: brightness(1.1);
-        }
-        65% {
-          filter: brightness(0.7);
-        }
-        80% {
-          filter: brightness(1);
-        }
-        90% {
-          filter: brightness(0.5);
-        }
-        100% {
-          filter: brightness(1);
+          opacity: 1;
+          transform: translateX(4px);
         }
       }
 
-      .gate.flickering .fiche-img {
-        animation: lamp-flicker 0.6s ease-in-out forwards;
-      }
-
-      /* ── HAIR IN GATE ── */
-      .hair {
+      .zoom-rail {
         position: absolute;
-        z-index: 15;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.05s;
+        z-index: 30;
+        bottom: calc(77px + var(--reader-bottom-safe));
+        left: 50%;
+        width: min(180px, 42vw);
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        opacity: 0.58;
+        transition: opacity 160ms ease;
       }
 
-      .hair.visible {
+      .zoom-rail:hover,
+      .zoom-rail:active {
         opacity: 1;
       }
 
-      /* ── NOISE CANVAS (transition effect) ── */
-      #noise-canvas {
+      .zoom-rail-label {
+        font-size: 9px;
+        letter-spacing: 0.2em;
+        color: rgba(200, 134, 42, 0.72);
+      }
+
+      .zoom-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        flex: 1;
+        height: 2px;
+        border-radius: 2px;
+        background: rgba(200, 134, 42, 0.26);
+        outline: none;
+      }
+
+      .zoom-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        border: 1px solid rgba(200, 134, 42, 0.45);
+        background: rgba(200, 134, 42, 0.9);
+        box-shadow: 0 0 9px rgba(200, 134, 42, 0.36);
+      }
+
+      .zoom-slider::-moz-range-thumb {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        border: 1px solid rgba(200, 134, 42, 0.45);
+        background: rgba(200, 134, 42, 0.9);
+      }
+
+      .retrieval-caption {
         position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 20;
-        opacity: 0;
+        z-index: 30;
+        left: 22px;
+        bottom: calc(22px + var(--reader-bottom-safe));
+        max-width: 42vw;
+        font-size: 9px;
+        letter-spacing: 0.22em;
+        line-height: 1.5;
+        color: rgba(200, 134, 42, 0.22);
+        text-transform: uppercase;
         pointer-events: none;
       }
 
-      #noise-canvas.active {
-        pointer-events: auto;
+      @media (max-width: 640px) {
+        .retrieval-caption {
+          display: none;
+        }
       }
     </style>
   </head>
   <body>
     <div class="machine">
       <div class="gate" id="gate">
-        <!-- Film image injected by JS when src is ready -->
+        <div class="projection-frame fiche-document" id="projection-frame">
+          <div class="fiche-stage" id="fiche-stage">
+            <img class="fiche-img" id="fiche-img" alt="" draggable="false" />
+          </div>
 
-        <!-- Overlays -->
-        <div class="scanlines"></div>
-        <div class="vignette"></div>
-        <canvas class="grain" id="grain-canvas"></canvas>
+          <div class="scanlines"></div>
+          <div class="vignette"></div>
+          <canvas class="grain" id="grain-canvas"></canvas>
 
-        <!-- Hair in gate (SVG line) -->
-        <svg
-          class="hair"
-          id="hair"
-          width="3"
-          height="100%"
-          viewBox="0 0 3 800"
-          preserveAspectRatio="none"
-          style="top: 0; left: 38%"
-        >
-          <path
-            d="M1.5 0 Q1.8 200 1.2 400 Q1.6 600 1.4 800"
-            stroke="rgba(180,160,100,0.7)"
-            stroke-width="1.2"
-            fill="none"
-          />
-        </svg>
-
-        <!-- Magnifier loupe -->
-        <div class="loupe" id="loupe">
-          <div class="loupe-glass" id="loupe-glass">
-            <img id="loupe-img" alt="" />
-            <div class="loupe-edge-top"></div>
-            <div class="loupe-edge-bottom"></div>
+          <div class="loupe" id="loupe" aria-hidden="true">
+            <div class="loupe-glass" id="loupe-glass">
+              <img id="loupe-img" alt="" draggable="false" />
+              <div class="loupe-edge-top"></div>
+              <div class="loupe-edge-bottom"></div>
+              <div class="loupe-center-mark"></div>
+            </div>
           </div>
         </div>
 
-        <!-- Controls -->
-        <button class="skip-btn" id="skip-btn">SKIP ALL ▶▶▶</button>
-        <button class="loupe-btn" id="loupe-btn" title="Magnifier">⊕</button>
+        <button class="skip-btn" id="skip-btn" type="button">
+          SKIP ALL ▶▶▶
+        </button>
+        <button
+          class="loupe-btn"
+          id="loupe-btn"
+          type="button"
+          title="Toggle horizontal reader magnifier"
+        >
+          ⊕
+        </button>
 
-        <!-- Zoom focus rail -->
-        <div class="zoom-rail">
+        <div class="zoom-rail" aria-label="Document zoom controls">
           <span class="zoom-rail-label">−</span>
           <input
             class="zoom-slider"
@@ -473,18 +484,22 @@
             max="2.2"
             step="0.05"
             value="1"
+            aria-label="Zoom"
           />
           <span class="zoom-rail-label">+</span>
         </div>
 
-        <button class="next-btn" id="next-btn">
+        <button class="next-btn" id="next-btn" type="button">
           NEXT <span class="arrow">▶▶</span>
         </button>
+
+        <div class="retrieval-caption">
+          Frame alignment · emulsion stable · retrieval continuing
+        </div>
       </div>
     </div>
 
     <script>
-      // ── SEQUENCE ──────────────────────────────────────────────────────────────
       const SEQUENCE = [
         {
           card: "cover",
@@ -551,7 +566,6 @@
       const LANDING = "/landing";
       const AUDIO_SRC = "/audio/fiche-advance.wav";
 
-      // ── PARSE URL PARAMS ──────────────────────────────────────────────────────
       function getParams() {
         const p = new URLSearchParams(window.location.search);
         return {
@@ -560,28 +574,29 @@
         };
       }
 
-      // ── STATE ─────────────────────────────────────────────────────────────────
       const params = getParams();
       let currentEntry =
         SEQUENCE.find((s) => s.card === params.card) || SEQUENCE[0];
 
-      // ── ELEMENTS ──────────────────────────────────────────────────────────────
+      const gate = document.getElementById("gate");
+      const projectionFrame = document.getElementById("projection-frame");
+      const ficheStage = document.getElementById("fiche-stage");
+      const ficheImg = document.getElementById("fiche-img");
       const nextBtn = document.getElementById("next-btn");
       const skipBtn = document.getElementById("skip-btn");
-      const gate = document.getElementById("gate");
-      const hair = document.getElementById("hair");
       const grainCvs = document.getElementById("grain-canvas");
-      const gCtx = grainCvs.getContext("2d");
+      const gCtx = grainCvs.getContext("2d", { willReadFrequently: true });
 
-      // Create fiche image element only via JS — no empty src artifact
-      const ficheImg = document.createElement("img");
-      ficheImg.className = "fiche-img";
-      ficheImg.alt = "";
-      gate.insertBefore(ficheImg, gate.firstChild);
-
-      // ── AUDIO ─────────────────────────────────────────────────────────────────
       let audioCtx = null;
       let audioBuffer = null;
+
+      const viewState = {
+        zoom: 1,
+        panX: 0,
+        panY: 0,
+        panning: false,
+        lastPointer: null,
+      };
 
       async function loadAudio() {
         try {
@@ -589,9 +604,7 @@
           const res = await fetch(AUDIO_SRC);
           const arr = await res.arrayBuffer();
           audioBuffer = await audioCtx.decodeAudioData(arr);
-        } catch (e) {
-          // Audio optional — fail silently
-        }
+        } catch (_e) {}
       }
 
       function playAdvanceSound() {
@@ -603,385 +616,315 @@
         src.start(0);
       }
 
-      // ── RESIZE CANVASES ───────────────────────────────────────────────────────
-      function resizeCanvases() {
-        grainCvs.width = window.innerWidth;
-        grainCvs.height = window.innerHeight;
+      function resizeGrain() {
+        grainCvs.width = 180;
+        grainCvs.height = 180;
       }
-      window.addEventListener("resize", resizeCanvases);
-      resizeCanvases();
 
-      // ── GRAIN ANIMATION ───────────────────────────────────────────────────────
       function drawGrain() {
-        const w = grainCvs.width,
-          h = grainCvs.height;
+        const w = grainCvs.width;
+        const h = grainCvs.height;
         const imgd = gCtx.createImageData(w, h);
         const d = imgd.data;
         for (let i = 0; i < d.length; i += 4) {
           const v = (Math.random() * 255) | 0;
           d[i] = d[i + 1] = d[i + 2] = v;
-          d[i + 3] = 12;
+          d[i + 3] = 18;
         }
         gCtx.putImageData(imgd, 0, 0);
-        requestAnimationFrame(drawGrain);
+        setTimeout(() => requestAnimationFrame(drawGrain), 70);
       }
-      drawGrain();
 
-      // ── SLIDE TRANSITION ──────────────────────────────────────────────────────
-      function runSlideTransition(callback) {
+      function setNextLabel(entry) {
+        if (!entry.next) {
+          nextBtn.innerHTML = 'ENTER <span class="arrow">▶▶</span>';
+        } else {
+          nextBtn.innerHTML = 'NEXT <span class="arrow">▶▶</span>';
+        }
+      }
+
+      function resetZoom() {
+        viewState.zoom = 1;
+        viewState.panX = 0;
+        viewState.panY = 0;
+        document.getElementById("zoom-slider").value = "1";
+        applyImageTransform();
+      }
+
+      function applyImageTransform() {
+        // Only the image owns zoom/pan transform. No transition system touches this.
+        const z = viewState.zoom;
+        ficheImg.style.transform = `translate(${viewState.panX}px, ${viewState.panY}px) scale(${z})`;
+        window.NCEArchive?.syncLoupe?.();
+      }
+
+      function clampPan() {
+        if (viewState.zoom <= 1.05) {
+          viewState.panX = 0;
+          viewState.panY = 0;
+          return;
+        }
+        const frame = projectionFrame.getBoundingClientRect();
+        const maxX = (frame.width * (viewState.zoom - 1)) / 2;
+        const maxY = (frame.height * (viewState.zoom - 1)) / 2;
+        viewState.panX = Math.max(-maxX, Math.min(maxX, viewState.panX));
+        viewState.panY = Math.max(-maxY, Math.min(maxY, viewState.panY));
+      }
+
+      function preloadImage(src) {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(src);
+          img.onerror = reject;
+          img.src = src;
+        });
+      }
+
+      async function mechanicalAdvanceTo(entry, options = {}) {
+        const { firstLoad = false, updateUrl = false } = options;
         nextBtn.disabled = true;
         gate.classList.remove("loaded");
+        playAdvanceSound();
 
-        // Slide out: move left and fade
-        ficheImg.style.transition =
-          "transform 0.22s cubic-bezier(0.55,0,1,0.45), opacity 0.22s ease";
-        ficheImg.style.transform = "translateX(-108%)";
-        ficheImg.style.opacity = "0";
-
-        setTimeout(() => {
-          // Kill transition, position new card off-screen right
-          ficheImg.style.transition = "none";
-          ficheImg.style.transform = "translateX(108%)";
-          ficheImg.style.opacity = "0";
-
-          // Swap image
-          callback();
-          if (window._loupeSync) window._loupeSync();
-          if (window._zoomReset) window._zoomReset();
-
-          // Force reflow so browser registers the position before animating in
-          ficheImg.offsetHeight;
-
-          // Slide in
-          ficheImg.style.transition =
-            "transform 0.28s cubic-bezier(0,0.55,0.45,1), opacity 0.28s ease";
-          ficheImg.style.transform = "translateX(0)";
-          ficheImg.style.opacity = "1";
-
-          setTimeout(() => {
-            // Clean up inline styles
-            ficheImg.style.transition = "";
-            ficheImg.style.transform = "";
-            ficheImg.style.opacity = "1";
-            gate.classList.add("loaded");
-            nextBtn.disabled = false;
-          }, 300);
-        }, 230);
-      }
-
-      // ── LOAD CARD ─────────────────────────────────────────────────────────────
-      function loadCard(entry, withTransition) {
-        if (withTransition) {
-          playAdvanceSound();
-          runSlideTransition(() => {
-            ficheImg.src = entry.img;
-            currentEntry = entry;
-            updateNextButton(entry);
-          });
+        if (!firstLoad) {
+          ficheStage.style.transition = "opacity 130ms ease, filter 130ms ease";
+          ficheStage.style.opacity = "0";
+          ficheStage.style.filter = "brightness(0.38) contrast(1.18)";
+          await wait(140);
         } else {
-          // First load — empty gate, then noise into first image
-          ficheImg.src = "";
-          ficheImg.style.opacity = "0";
-          ficheImg.style.transform = "";
-          currentEntry = entry;
-          updateNextButton(entry);
-
-          // Brief pause on empty machine, then retrieve first record
-          setTimeout(() => {
-            playAdvanceSound();
-            runSlideTransition(() => {
-              ficheImg.src = entry.img;
-              gate.classList.add("loaded");
-            });
-          }, 900);
+          await wait(450);
         }
+
+        try {
+          await preloadImage(entry.img);
+        } catch (_e) {
+          // If image fails, still attempt to show path so the broken asset is obvious.
+        }
+
+        currentEntry = entry;
+        setNextLabel(entry);
+        resetZoom();
+        ficheImg.src = entry.img;
+        window.NCEArchive?.syncLoupe?.();
+
+        if (updateUrl) {
+          const url = new URL(window.location.href);
+          url.searchParams.set("card", entry.card);
+          window.history.pushState({}, "", url.toString());
+        }
+
+        // Mechanical settle: dark, flicker, stabilize. No sliding. No transform collision.
+        ficheStage.classList.remove("visible");
+        ficheStage.style.transition = "none";
+        ficheStage.style.opacity = "0";
+        ficheStage.style.filter = "brightness(0.55) contrast(1.2) blur(0.35px)";
+        ficheStage.offsetHeight;
+
+        ficheStage.style.transition = "opacity 240ms ease, filter 360ms ease";
+        ficheStage.style.opacity = "1";
+        ficheStage.style.filter = "brightness(1.04) contrast(1.02) blur(0)";
+        await wait(380);
+
+        ficheStage.classList.add("visible");
+        ficheStage.style.transition = "";
+        ficheStage.style.opacity = "";
+        ficheStage.style.filter = "";
+        gate.classList.add("loaded");
+        nextBtn.disabled = false;
       }
 
-      function updateNextButton(entry) {
-        if (!entry.next) {
-          nextBtn.textContent = "ENTER ▶▶";
-        }
+      function wait(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
       }
 
-      // ── NAVIGATION ────────────────────────────────────────────────────────────
-      function advance() {
+      async function advance() {
+        if (nextBtn.disabled) return;
         if (!currentEntry.next) {
-          // Last card — go to landing
+          nextBtn.disabled = true;
           playAdvanceSound();
-          setTimeout(() => {
-            window.location.href = LANDING;
-          }, 400);
+          await wait(420);
+          window.location.href = LANDING;
           return;
         }
         const next = SEQUENCE.find((s) => s.card === currentEntry.next);
         if (!next) return;
-
-        // Update URL without reload
-        const url = new URL(window.location.href);
-        url.searchParams.set("card", next.card);
-        window.history.pushState({}, "", url.toString());
-
-        loadCard(next, true);
+        await mechanicalAdvanceTo(next, { updateUrl: true });
       }
 
       nextBtn.addEventListener("click", advance);
-
       skipBtn.addEventListener("click", () => {
         window.location.href = LANDING;
       });
 
-      // Browser back button
       window.addEventListener("popstate", () => {
         const p = new URLSearchParams(window.location.search);
         const card = p.get("card") || "cover";
         const entry = SEQUENCE.find((s) => s.card === card) || SEQUENCE[0];
-        loadCard(entry, false);
+        mechanicalAdvanceTo(entry, { firstLoad: false, updateUrl: false });
       });
 
-      // ── HAIR IN GATE ──────────────────────────────────────────────────────────
-      (function hairSystem() {
-        const isPreview = params.preview;
-        let hairVisible = false;
-        let pullTimer = null;
-        let returnTimer = null;
-
-        function showHair() {
-          hair.classList.add("visible");
-          hairVisible = true;
-          // Schedule pull
-          const pullDelay = isPreview ? 2000 : (20 + Math.random() * 70) * 1000;
-          pullTimer = setTimeout(pullHair, pullDelay);
-        }
-
-        function pullHair() {
-          hair.style.transition = "opacity 0.08s";
-          hair.classList.remove("visible");
-          hairVisible = false;
-          // Schedule return
-          const returnDelay = isPreview
-            ? 3000
-            : (120 + Math.random() * 360) * 1000;
-          returnTimer = setTimeout(showHair, returnDelay);
-        }
-
-        // Present on load immediately
-        if (isPreview) {
-          setTimeout(showHair, 500);
-        } else {
-          showHair();
-        }
-      })();
-
-      // ── LAMP FLICKER ──────────────────────────────────────────────────────────
-      (function lampSystem() {
-        const isPreview = params.preview;
-
-        function flicker() {
-          gate.classList.add("flickering");
-          setTimeout(() => gate.classList.remove("flickering"), 700);
-          const next = isPreview ? 5000 : (45 + Math.random() * 45) * 1000;
-          setTimeout(flicker, next);
-        }
-
-        const firstFire = isPreview ? 1000 : (20 + Math.random() * 20) * 1000;
-        setTimeout(flicker, firstFire);
-      })();
-
-      // ── ZOOM SLIDER SYSTEM ────────────────────────────────────────────────────
+      // ── Zoom and pan: only ficheImg transform is touched here. ───────────────
       (function zoomSystem() {
         const slider = document.getElementById("zoom-slider");
-        let currentZoom = 1;
-        let panX = 0;
-        let panY = 0;
-        let isPanning = false;
-        let lastTouch = null;
-
-        function applyZoom() {
-          ficheImg.style.transformOrigin = "center center";
-          ficheImg.style.transform = `scale(${currentZoom}) translate(${panX / currentZoom}px, ${panY / currentZoom}px)`;
-          if (window._loupeSync) window._loupeSync();
-        }
-
-        function resetPan() {
-          panX = 0;
-          panY = 0;
-        }
 
         slider.addEventListener("input", () => {
-          currentZoom = parseFloat(slider.value);
-          if (currentZoom <= 1.05) resetPan();
-          applyZoom();
+          viewState.zoom = parseFloat(slider.value);
+          if (viewState.zoom <= 1.05) {
+            viewState.panX = 0;
+            viewState.panY = 0;
+          }
+          clampPan();
+          applyImageTransform();
         });
 
-        // Pan via touch when zoomed in
-        gate.addEventListener(
-          "touchstart",
-          (e) => {
-            if (currentZoom <= 1.05) return;
-            if (e.touches.length === 1) {
-              isPanning = true;
-              lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-            }
-          },
-          { passive: true },
-        );
-
-        gate.addEventListener(
-          "touchmove",
-          (e) => {
-            if (!isPanning || !lastTouch || currentZoom <= 1.05) return;
-            const dx = e.touches[0].clientX - lastTouch.x;
-            const dy = e.touches[0].clientY - lastTouch.y;
-            panX += dx;
-            panY += dy;
-            lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-            applyZoom();
-          },
-          { passive: true },
-        );
-
-        gate.addEventListener("touchend", () => {
-          isPanning = false;
-          lastTouch = null;
+        projectionFrame.addEventListener("pointerdown", (e) => {
+          if (viewState.zoom <= 1.05) return;
+          if (e.target.closest(".loupe")) return;
+          viewState.panning = true;
+          viewState.lastPointer = { x: e.clientX, y: e.clientY };
+          projectionFrame.setPointerCapture(e.pointerId);
         });
 
-        // Reset pan when card changes
-        window._zoomReset = () => {
-          resetPan();
-          applyZoom();
-        };
+        projectionFrame.addEventListener("pointermove", (e) => {
+          if (!viewState.panning || !viewState.lastPointer) return;
+          const dx = e.clientX - viewState.lastPointer.x;
+          const dy = e.clientY - viewState.lastPointer.y;
+          viewState.panX += dx;
+          viewState.panY += dy;
+          viewState.lastPointer = { x: e.clientX, y: e.clientY };
+          clampPan();
+          applyImageTransform();
+        });
+
+        function endPan() {
+          viewState.panning = false;
+          viewState.lastPointer = null;
+        }
+
+        projectionFrame.addEventListener("pointerup", endPan);
+        projectionFrame.addEventListener("pointercancel", endPan);
       })();
 
-      // ── LOUPE SYSTEM ──────────────────────────────────────────────────────────
+      // ── Horizontal reader loupe. Samples the current rendered image safely. ──
       (function loupeSystem() {
         const loupe = document.getElementById("loupe");
-        const loupeGlass = document.getElementById("loupe-glass");
         const loupeImg = document.getElementById("loupe-img");
         const loupeBtn = document.getElementById("loupe-btn");
+        const LOUPE_HEIGHT = 86;
+        const LOUPE_ZOOM = 2.25;
 
-        const LOUPE_HEIGHT = 80; // px — height of the magnifier strip
-        const ZOOM = 2.5; // magnification factor
-
-        let loupeActive = false;
-        let loupeY = 0; // current center Y of loupe on screen
+        let active = false;
+        let centerY = 0;
         let dragging = false;
 
-        function syncLoupeImage() {
-          // Mirror the current fiche image into the loupe
-          loupeImg.src = ficheImg.src;
-          updateLoupeView();
+        function syncLoupe() {
+          if (loupeImg.src !== ficheImg.src) loupeImg.src = ficheImg.src;
+          updateLoupe();
         }
 
-        function updateLoupeView() {
-          if (!loupeActive) return;
+        function updateLoupe() {
+          if (!active) return;
 
-          const gateRect = gate.getBoundingClientRect();
-          const imgRect = ficheImg.getBoundingClientRect();
+          const frame = projectionFrame.getBoundingClientRect();
+          const img = ficheImg.getBoundingClientRect();
 
-          // Clamp loupe position within gate
-          const clampedY = Math.max(
+          centerY = Math.max(
             LOUPE_HEIGHT / 2,
-            Math.min(gateRect.height - LOUPE_HEIGHT / 2, loupeY),
+            Math.min(
+              frame.height - LOUPE_HEIGHT / 2,
+              centerY || frame.height / 2,
+            ),
           );
-          loupe.style.top = clampedY + "px";
-          loupe.style.transform = "translateY(-50%)";
+          loupe.style.top = `${centerY}px`;
 
-          // Y position within the displayed image
-          const imgTop = imgRect.top - gateRect.top;
-          const relativeY = clampedY - imgTop;
+          const imgLeft = img.left - frame.left;
+          const imgTop = img.top - frame.top;
+          const relativeY = centerY - imgTop;
 
-          // Fill full gate width — scale image to match
-          const scaleRatio = gateRect.width / imgRect.width;
-          const effectiveZoom = ZOOM * scaleRatio;
-          const zoomedW = imgRect.width * effectiveZoom;
-          const zoomedTop = -(relativeY * effectiveZoom) + LOUPE_HEIGHT / 2;
+          const zoomedW = img.width * LOUPE_ZOOM;
+          const zoomedH = img.height * LOUPE_ZOOM;
 
-          loupeImg.style.width = zoomedW + "px";
-          loupeImg.style.height = "auto";
-          loupeImg.style.left = "0px";
-          loupeImg.style.top = zoomedTop + "px";
+          // Center horizontally so the strip reads like a line-wide lens.
+          const left = (frame.width - zoomedW) / 2 + imgLeft * 0.08;
+          const top = LOUPE_HEIGHT / 2 - relativeY * LOUPE_ZOOM;
+
+          loupeImg.style.width = `${zoomedW}px`;
+          loupeImg.style.height = `${zoomedH}px`;
+          loupeImg.style.left = `${left}px`;
+          loupeImg.style.top = `${top}px`;
         }
 
-        function setLoupeY(clientY) {
-          const gateRect = gate.getBoundingClientRect();
-          loupeY = clientY - gateRect.top;
-          updateLoupeView();
+        function setY(clientY) {
+          const frame = projectionFrame.getBoundingClientRect();
+          centerY = clientY - frame.top;
+          updateLoupe();
         }
 
-        // Toggle
         loupeBtn.addEventListener("click", () => {
-          loupeActive = !loupeActive;
-          loupe.classList.toggle("active", loupeActive);
-          loupeBtn.classList.toggle("active", loupeActive);
-          if (loupeActive) {
-            loupeY = gate.getBoundingClientRect().height / 2;
-            syncLoupeImage();
+          active = !active;
+          loupe.classList.toggle("active", active);
+          loupeBtn.classList.toggle("active", active);
+          if (active) {
+            centerY = projectionFrame.getBoundingClientRect().height / 2;
+            syncLoupe();
           }
         });
 
-        // Drag on touch
-        loupe.addEventListener(
-          "touchstart",
-          (e) => {
-            dragging = true;
-            setLoupeY(e.touches[0].clientY);
-          },
-          { passive: true },
-        );
-
-        window.addEventListener(
-          "touchmove",
-          (e) => {
-            if (!dragging || !loupeActive) return;
-            setLoupeY(e.touches[0].clientY);
-          },
-          { passive: true },
-        );
-
-        window.addEventListener("touchend", () => {
-          dragging = false;
-        });
-
-        // Drag on mouse
-        loupe.addEventListener("mousedown", (e) => {
+        projectionFrame.addEventListener("pointerdown", (e) => {
+          if (!active) return;
           dragging = true;
-          setLoupeY(e.clientY);
+          setY(e.clientY);
+          projectionFrame.setPointerCapture(e.pointerId);
         });
 
-        window.addEventListener("mousemove", (e) => {
-          if (!dragging || !loupeActive) return;
-          setLoupeY(e.clientY);
+        projectionFrame.addEventListener("pointermove", (e) => {
+          if (!active || !dragging) return;
+          setY(e.clientY);
         });
 
-        window.addEventListener("mouseup", () => {
+        function stopDrag() {
           dragging = false;
-        });
+        }
+        projectionFrame.addEventListener("pointerup", stopDrag);
+        projectionFrame.addEventListener("pointercancel", stopDrag);
+        window.addEventListener("resize", updateLoupe);
 
-        // Also allow dragging anywhere on gate when loupe active
-        gate.addEventListener(
-          "touchstart",
-          (e) => {
-            if (!loupeActive) return;
-            if (
-              e.target === loupeBtn ||
-              e.target === nextBtn ||
-              e.target === skipBtn
-            )
-              return;
-            dragging = true;
-            setLoupeY(e.touches[0].clientY);
-          },
-          { passive: true },
-        );
-
-        // Sync image when card changes
-        const origLoadCard = loadCard;
-        window._loupeSync = syncLoupeImage;
+        window.NCEArchive = window.NCEArchive || {};
+        window.NCEArchive.syncLoupe = syncLoupe;
       })();
 
-      // ── INIT ──────────────────────────────────────────────────────────────────
+      // ── Simple built-in lamp effect. External randanime owns gate hair. ─
+
+      (function lampSystem() {
+        function flicker() {
+          gate.classList.add("flickering");
+          setTimeout(() => gate.classList.remove("flickering"), 700);
+          const next = params.preview ? 5000 : (45 + Math.random() * 45) * 1000;
+          setTimeout(flicker, next);
+        }
+        setTimeout(
+          flicker,
+          params.preview ? 1000 : (20 + Math.random() * 20) * 1000,
+        );
+      })();
+
+      // ── Public API for companion ambient script. ─────────────────────────────
+      window.NCEArchive = window.NCEArchive || {};
+      Object.assign(window.NCEArchive, {
+        gate,
+        projectionFrame,
+        ficheStage,
+        ficheImg,
+        getCurrentEntry: () => currentEntry,
+        syncLoupe: window.NCEArchive.syncLoupe,
+      });
+
+      // ── Init ────────────────────────────────────────────────────────────────
+      resizeGrain();
+      drawGrain();
       loadAudio();
-      loadCard(currentEntry, false);
+      mechanicalAdvanceTo(currentEntry, { firstLoad: true, updateUrl: false });
     </script>
+    <script src="/randanime_preamble.js"></script>
   </body>
 </html>
