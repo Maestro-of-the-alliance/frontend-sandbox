@@ -489,7 +489,7 @@
       // ── AUDIO ────────────────────────────────────────────
       const sfxDenied  = new Audio("/audio/node.mp3");
       const sfxDialup  = new Audio("/audio/dialup-modem.m4a");
-      sfxDialup.loop   = true;
+      sfxDialup.loop   = false;
 
       function playAccessDenied() {
         try { sfxDenied.currentTime = 0; sfxDenied.play(); } catch(e) {}
@@ -620,7 +620,7 @@
           setTimeout(() => {
             hide("screen-caution");
             show("screen-denied");
-            startDialup();
+            setTimeout(() => { startDialup(); }, 1500);
 
             // Screen 2 → Screen 3 after 3s
             setTimeout(() => {
