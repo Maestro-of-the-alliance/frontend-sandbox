@@ -493,6 +493,24 @@
           display: none;
         }
       }
+      .gate.advancing::before {
+        opacity: 1;
+        animation: reader-sweep 760ms ease-in-out forwards;
+      }
+
+      @keyframes reader-sweep {
+        0% {
+          opacity: 0.15;
+          transform: translateY(-18%);
+        }
+        35% {
+          opacity: 0.95;
+        }
+        100% {
+          opacity: 0.22;
+          transform: translateY(18%);
+        }
+      }
     </style>
   </head>
   <body>
@@ -721,6 +739,7 @@
         const { firstLoad = false, updateUrl = false } = options;
         nextBtn.disabled = true;
         gate.classList.remove("loaded");
+        gate.classList.add("advancing");
 
         window.NCEArchive?.deactivateLoupe?.();
 
@@ -767,6 +786,7 @@
         ficheStage.style.transition = "";
         ficheStage.style.opacity = "";
         ficheStage.style.filter = "";
+        gate.classList.remove("advancing");
         gate.classList.add("loaded");
         nextBtn.disabled = false;
       }
