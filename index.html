@@ -487,29 +487,20 @@
       }
 
       // ── AUDIO ────────────────────────────────────────────
-      const sfxDenied = new Audio("/audio/node.mp3");
-      const sfxDialup = new Audio("/audio/dialup-modem.mp3");
-      sfxDialup.loop = true;
+      const sfxDenied  = new Audio("/audio/node.mp3");
+      const sfxDialup  = new Audio("/audio/dialup-modem.m4a");
+      sfxDialup.loop   = true;
 
       function playAccessDenied() {
-        try {
-          sfxDenied.currentTime = 0;
-          sfxDenied.play();
-        } catch (e) {}
+        try { sfxDenied.currentTime = 0; sfxDenied.play(); } catch(e) {}
       }
 
       function startDialup() {
-        try {
-          sfxDialup.currentTime = 0;
-          sfxDialup.play();
-        } catch (e) {}
+        try { sfxDialup.currentTime = 0; sfxDialup.play(); } catch(e) {}
       }
 
       function stopDialup() {
-        try {
-          sfxDialup.pause();
-          sfxDialup.currentTime = 0;
-        } catch (e) {}
+        try { sfxDialup.pause(); sfxDialup.currentTime = 0; } catch(e) {}
       }
 
       // ── TERMINAL LINES ───────────────────────────────────
@@ -619,6 +610,7 @@
       window.addEventListener("load", () => {
         currentScreen = 1;
         show("screen-caution");
+        playAccessDenied();
 
         // Screen 1 → Screen 2 after 2.5s
         setTimeout(() => {
@@ -628,7 +620,6 @@
           setTimeout(() => {
             hide("screen-caution");
             show("screen-denied");
-            playAccessDenied();
 
             // Screen 2 → Screen 3 after 3s
             setTimeout(() => {
