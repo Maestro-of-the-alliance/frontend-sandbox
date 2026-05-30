@@ -493,8 +493,53 @@
           display: none;
         }
       }
-      .gate.advancing::before {
+      /* Projector lamp revealed inside the reader frame while cards change. */
+      .projection-frame::before {
+        content: "";
+        position: absolute;
+        inset: -14%;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0;
+        background:
+          radial-gradient(
+            ellipse at center,
+            rgba(255, 225, 150, 0.42) 0%,
+            rgba(200, 134, 42, 0.24) 34%,
+            rgba(85, 48, 12, 0.1) 62%,
+            transparent 78%
+          ),
+          radial-gradient(
+            ellipse at center,
+            rgba(255, 248, 220, 0.18) 0%,
+            transparent 48%
+          );
+        filter: blur(0.35px);
+        transition: opacity 140ms ease;
+      }
+
+      .gate.advancing .projection-frame::before {
         opacity: 1;
+        animation: exposed-projector-lamp 760ms ease-in-out forwards;
+      }
+
+      @keyframes exposed-projector-lamp {
+        0% {
+          opacity: 0.12;
+          filter: blur(1.2px) brightness(0.75);
+        }
+        22% {
+          opacity: 0.9;
+          filter: blur(0.35px) brightness(1.18);
+        }
+        58% {
+          opacity: 0.72;
+          filter: blur(0.55px) brightness(1);
+        }
+        100% {
+          opacity: 0.18;
+          filter: blur(1px) brightness(0.82);
+        }
       }
     </style>
   </head>
