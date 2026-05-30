@@ -495,21 +495,6 @@
       }
       .gate.advancing::before {
         opacity: 1;
-        animation: reader-sweep 760ms ease-in-out forwards;
-      }
-
-      @keyframes reader-sweep {
-        0% {
-          opacity: 0.15;
-          transform: translateY(-18%);
-        }
-        35% {
-          opacity: 0.95;
-        }
-        100% {
-          opacity: 0.22;
-          transform: translateY(18%);
-        }
       }
     </style>
   </head>
@@ -744,7 +729,6 @@
         window.NCEArchive?.deactivateLoupe?.();
 
         playAdvanceSound();
-        window.NCEArchive?.deactivateLoupe?.();
 
         if (!firstLoad) {
           ficheStage.style.transition = "opacity 130ms ease, filter 130ms ease";
@@ -1029,6 +1013,8 @@
           dragging = false;
           loupe.classList.remove("active");
           loupeBtn.classList.remove("active");
+          focusSwitch.classList.remove("active");
+
           if (ctx && loupeCanvas) {
             ctx.clearRect(0, 0, loupeCanvas.width, loupeCanvas.height);
           }
