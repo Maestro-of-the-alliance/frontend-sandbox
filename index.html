@@ -624,12 +624,13 @@
             // Screen 2 → Screen 3 after 3s
             setTimeout(() => {
               if (!sequenceRunning) return;
+              // Start dialup 2s early — bleeds under ACCESS DENIED
+              setTimeout(() => { startDialup(); }, 1000);
               currentScreen = 3;
               glitch(150);
               setTimeout(() => {
                 hide("screen-denied");
                 show("screen-breach");
-                startDialup();
                 typeTerminal(TERMINAL_LINES, () => {
                   if (sequenceRunning) advanceToDialup();
                 });
