@@ -211,7 +211,242 @@
         }
       }
 
-      /* ── Split glass rod loupe ───────────────────────────────────────────── */
+      /* ── Game card ──────────────────────────────────────────────────────── */
+      .game-card {
+        position: absolute;
+        inset: 0;
+        display: none;
+        overflow-y: auto;
+        overflow-x: hidden;
+        background: #d4c49a;
+        background-image: linear-gradient(
+          160deg,
+          #ddd0a8 0%,
+          #c9b882 40%,
+          #d6c898 70%,
+          #cabb85 100%
+        );
+        font-family: "Courier New", Courier, monospace;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .game-card.active {
+        display: block;
+      }
+
+      .game-card .gc-inner {
+        padding: clamp(8px, 2.5%, 16px) clamp(10px, 3%, 18px);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .game-card .gc-header {
+        border-top: 2px solid #1a1408;
+        border-bottom: 1px solid #1a1408;
+        padding: 2px 0;
+        margin-bottom: clamp(5px, 1.5%, 10px);
+        display: flex;
+        gap: 0;
+        flex-shrink: 0;
+      }
+
+      .game-card .gc-hcell {
+        font-size: clamp(5px, 1vw, 7px);
+        color: #1a1408;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 1px 5px;
+        border-right: 1px solid rgba(26, 20, 8, 0.4);
+        line-height: 1.4;
+      }
+      .game-card .gc-hcell:last-child {
+        border-right: none;
+      }
+      .game-card .gc-hcell strong {
+        display: block;
+        font-size: 0.82em;
+        opacity: 0.55;
+      }
+
+      .game-card .gc-title {
+        text-align: center;
+        margin-bottom: clamp(4px, 1.2%, 10px);
+        flex-shrink: 0;
+      }
+      .game-card .gc-title h2 {
+        font-size: clamp(8px, 2vw, 13px);
+        color: #1a1408;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+      }
+      .game-card .gc-title p {
+        font-size: clamp(6px, 1.2vw, 8px);
+        color: rgba(26, 20, 8, 0.55);
+        letter-spacing: 0.1em;
+        font-style: italic;
+      }
+
+      .game-card .gc-divider {
+        border: none;
+        border-top: 1px solid rgba(26, 20, 8, 0.3);
+        margin: clamp(3px, 1%, 6px) 0;
+        flex-shrink: 0;
+      }
+
+      .game-card .gc-statements {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        gap: clamp(2px, 0.8%, 5px);
+      }
+
+      .game-card .gc-statement {
+        display: flex;
+        align-items: center;
+        gap: clamp(3px, 1%, 6px);
+        padding: clamp(2px, 0.6%, 4px) clamp(5px, 1.2%, 8px);
+        border-left: 2px solid transparent;
+        transition:
+          border-color 0.3s,
+          background 0.3s;
+        border-radius: 0 2px 2px 0;
+        flex-shrink: 0;
+      }
+      .game-card .gc-statement.correct {
+        border-left-color: #c8862a;
+        background: rgba(200, 134, 42, 0.08);
+      }
+
+      .game-card .gc-stxt {
+        font-size: clamp(7px, 1.4vw, 9px);
+        color: #1a1408;
+        line-height: 1.3;
+        flex: 1;
+        white-space: nowrap;
+      }
+
+      .game-card .gc-bwrap {
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      .game-card select {
+        appearance: none;
+        -webkit-appearance: none;
+        font-family: "Courier New", monospace;
+        font-size: clamp(7px, 1.3vw, 9px);
+        color: #1a1408;
+        background: rgba(200, 134, 42, 0.12);
+        border: 1px solid rgba(26, 20, 8, 0.35);
+        border-bottom: 2px solid rgba(26, 20, 8, 0.6);
+        padding: 2px clamp(14px, 3vw, 18px) 2px clamp(4px, 1vw, 6px);
+        cursor: pointer;
+        border-radius: 1px;
+        outline: none;
+        min-width: clamp(68px, 15vw, 105px);
+        transition:
+          background 0.2s,
+          border-color 0.2s;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .game-card select:focus {
+        background: rgba(200, 134, 42, 0.2);
+        border-color: #c8862a;
+      }
+      .game-card select.gc-correct {
+        background: rgba(200, 134, 42, 0.25);
+        border-color: #c8862a;
+        color: #3a2800;
+        font-weight: 700;
+        pointer-events: none;
+      }
+      .game-card select.gc-wrong {
+        animation: gc-shake 0.35s ease;
+      }
+      @keyframes gc-shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20% {
+          transform: translateX(-4px);
+        }
+        40% {
+          transform: translateX(4px);
+        }
+        60% {
+          transform: translateX(-3px);
+        }
+        80% {
+          transform: translateX(3px);
+        }
+      }
+      .game-card .gc-arrow {
+        position: absolute;
+        right: clamp(3px, 0.8vw, 6px);
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: clamp(6px, 1.1vw, 8px);
+        color: rgba(26, 20, 8, 0.4);
+        pointer-events: none;
+      }
+
+      .game-card .gc-progress {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        margin: clamp(4px, 1%, 7px) 0;
+        flex-shrink: 0;
+      }
+      .game-card .gc-dot {
+        width: clamp(5px, 1.1vw, 7px);
+        height: clamp(5px, 1.1vw, 7px);
+        border-radius: 50%;
+        background: rgba(26, 20, 8, 0.2);
+        border: 1px solid rgba(26, 20, 8, 0.3);
+        transition:
+          background 0.4s,
+          border-color 0.4s,
+          transform 0.3s;
+      }
+      .game-card .gc-dot.lit {
+        background: #c8862a;
+        border-color: #c8862a;
+        transform: scale(1.2);
+        box-shadow: 0 0 6px rgba(200, 134, 42, 0.5);
+      }
+
+      .game-card .gc-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        flex-shrink: 0;
+      }
+      .game-card .gc-ref {
+        font-size: clamp(4px, 0.8vw, 6px);
+        color: rgba(26, 20, 8, 0.3);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .game-card .gc-stamp {
+        font-size: clamp(6px, 1.2vw, 8px);
+        color: rgba(140, 30, 20, 0);
+        border: 2px solid rgba(140, 30, 20, 0);
+        padding: 2px 5px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        transform: rotate(-4deg);
+        transition:
+          color 0.8s,
+          border-color 0.8s;
+      }
+      .game-card .gc-stamp.revealed {
+        color: rgba(140, 30, 20, 0.65);
+        border-color: rgba(140, 30, 20, 0.5);
+      }
       .loupe {
         position: absolute;
         left: 50%;
@@ -549,6 +784,7 @@
         <div class="projection-frame fiche-document" id="projection-frame">
           <div class="fiche-stage" id="fiche-stage">
             <img class="fiche-img" id="fiche-img" alt="" draggable="false" />
+            <div class="game-card" id="game-card" aria-hidden="true"></div>
           </div>
 
           <div class="scanlines"></div>
@@ -617,6 +853,11 @@
         {
           card: "difference-1",
           img: "/imagebank/preamble/difference-1.png",
+          next: "difference-game",
+        },
+        {
+          card: "difference-game",
+          type: "game",
           next: "difference-2",
         },
         {
@@ -765,6 +1006,122 @@
         });
       }
 
+      const gameCard = document.getElementById("game-card");
+      let gameComplete = false;
+
+      function buildGameCard() {
+        gameComplete = false;
+        nextBtn.disabled = true;
+        const answered = new Array(7).fill(false);
+        const questions = [
+          {
+            text: "the positive instead of the",
+            correct: "negative",
+            options: ["profitable", "viral", "negative", "popular"],
+          },
+          {
+            text: "the loving instead of the",
+            correct: "hateful",
+            options: ["indifferent", "hateful", "distant", "transactional"],
+          },
+          {
+            text: "the collaborative instead of the",
+            correct: "exploitative",
+            options: ["competitive", "isolated", "exploitative", "scalable"],
+          },
+          {
+            text: "the honest instead of the",
+            correct: "deceptive",
+            options: ["deceptive", "vague", "optimized", "curated"],
+          },
+          {
+            text: "the empowering instead of the",
+            correct: "diminishing",
+            options: ["profitable", "diminishing", "engaging", "addictive"],
+          },
+          {
+            text: "the conscious instead of the",
+            correct: "unconscious",
+            options: ["slow", "deliberate", "unconscious", "automated"],
+          },
+          {
+            text: "the voluntary instead of the",
+            correct: "mandatory",
+            options: ["expensive", "mandatory", "subscribed", "gated"],
+          },
+        ];
+
+        const html = `
+          <div class="gc-inner">
+            <div class="gc-header">
+              <div class="gc-hcell"><strong>Classified</strong>Eyes Only</div>
+              <div class="gc-hcell"><strong>Case</strong>The Preamble</div>
+              <div class="gc-hcell"><strong>File No.</strong>NCE-PRE-0002</div>
+            </div>
+            <div class="gc-title">
+              <h2>Complete the Record</h2>
+              <p>We have built infrastructure that rewards —</p>
+            </div>
+            <hr class="gc-divider"/>
+            <div class="gc-statements">
+              ${questions
+                .map(
+                  (q, i) => `
+                <div class="gc-statement" id="gcs${i}">
+                  <span class="gc-stxt">${q.text}</span>
+                  <div class="gc-bwrap">
+                    <select id="gcq${i}" data-idx="${i}" data-correct="${q.correct}">
+                      <option value="">— select —</option>
+                      ${q.options.map((o) => `<option value="${o}">${o}</option>`).join("")}
+                    </select>
+                    <span class="gc-arrow">▾</span>
+                  </div>
+                </div>
+              `,
+                )
+                .join("")}
+            </div>
+            <div class="gc-progress">
+              ${questions.map((_, i) => `<div class="gc-dot" id="gcd${i}"></div>`).join("")}
+            </div>
+            <div class="gc-footer">
+              <span class="gc-ref">Frame 002 of 250 · Emulsion stable</span>
+              <span class="gc-stamp" id="gcstamp">Record Complete</span>
+            </div>
+          </div>`;
+
+        gameCard.innerHTML = html;
+
+        gameCard.querySelectorAll("select").forEach((sel) => {
+          sel.addEventListener("change", function () {
+            const idx = parseInt(this.dataset.idx);
+            const correct = this.dataset.correct;
+            if (answered[idx]) return;
+            if (this.value === correct) {
+              answered[idx] = true;
+              this.classList.add("gc-correct");
+              document.getElementById("gcs" + idx).classList.add("correct");
+              document.getElementById("gcd" + idx).classList.add("lit");
+              if (answered.every(Boolean)) {
+                setTimeout(() => {
+                  document.getElementById("gcstamp").classList.add("revealed");
+                  setTimeout(() => {
+                    gameComplete = true;
+                    nextBtn.disabled = false;
+                  }, 700);
+                }, 300);
+              }
+            } else {
+              this.classList.add("gc-wrong");
+              setTimeout(() => {
+                this.classList.remove("gc-wrong");
+                this.value = "";
+              }, 400);
+            }
+          });
+        });
+      }
+
       async function mechanicalAdvanceTo(entry, options = {}) {
         const { firstLoad = false, updateUrl = false } = options;
         nextBtn.disabled = true;
@@ -785,13 +1142,27 @@
         }
 
         try {
-          await preloadImage(entry.img);
+          if (entry.img) await preloadImage(entry.img);
         } catch (_e) {}
 
         currentEntry = entry;
         setNextLabel(entry);
         resetZoom();
-        ficheImg.src = entry.img;
+
+        // Handle game card vs image card
+        if (entry.type === "game") {
+          ficheImg.style.display = "none";
+          gameCard.classList.add("active");
+          gameCard.removeAttribute("aria-hidden");
+          buildGameCard();
+        } else {
+          ficheImg.style.display = "";
+          gameCard.classList.remove("active");
+          gameCard.setAttribute("aria-hidden", "true");
+          gameCard.innerHTML = "";
+          if (entry.img) ficheImg.src = entry.img;
+        }
+
         window.NCEArchive?.syncLoupe?.();
 
         if (updateUrl) {
@@ -826,6 +1197,7 @@
 
       async function advance() {
         if (nextBtn.disabled) return;
+        if (currentEntry.type === "game" && !gameComplete) return;
         if (!currentEntry.next) {
           nextBtn.disabled = true;
           playAdvanceSound();
