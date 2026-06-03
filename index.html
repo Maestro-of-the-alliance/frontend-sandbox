@@ -487,20 +487,29 @@
       }
 
       // ── AUDIO ────────────────────────────────────────────
-      const sfxDenied  = new Audio("/audio/node.mp3");
-      const sfxDialup  = new Audio("/audio/dialup-modem.m4a");
-      sfxDialup.loop   = false;
+      const sfxDenied = new Audio("/audio/node.mp3");
+      const sfxDialup = new Audio("/audio/dialup-modem.mp3");
+      sfxDialup.loop = false;
 
       function playAccessDenied() {
-        try { sfxDenied.currentTime = 0; sfxDenied.play(); } catch(e) {}
+        try {
+          sfxDenied.currentTime = 0;
+          sfxDenied.play();
+        } catch (e) {}
       }
 
       function startDialup() {
-        try { sfxDialup.currentTime = 0; sfxDialup.play(); } catch(e) {}
+        try {
+          sfxDialup.currentTime = 0;
+          sfxDialup.play();
+        } catch (e) {}
       }
 
       function stopDialup() {
-        try { sfxDialup.pause(); sfxDialup.currentTime = 0; } catch(e) {}
+        try {
+          sfxDialup.pause();
+          sfxDialup.currentTime = 0;
+        } catch (e) {}
       }
 
       // ── TERMINAL LINES ───────────────────────────────────
@@ -620,7 +629,9 @@
           setTimeout(() => {
             hide("screen-caution");
             show("screen-denied");
-            setTimeout(() => { startDialup(); }, 1500);
+            setTimeout(() => {
+              startDialup();
+            }, 1500);
 
             // Screen 2 → Screen 3 after 3s
             setTimeout(() => {
