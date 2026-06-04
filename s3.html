@@ -538,6 +538,16 @@
         CULTURE: "#8A6BBE",
         ADVERSARY: "#C1121F",
       };
+      const COL_LABELS = {
+        DOCTRINE: "DOCTRINE",
+        BEINGS: "BEINGS",
+        PLACE: "PLACE",
+        INFRASTRUCTURE: "INFRA",
+        PROTOCOLS: "PROTOCOLS",
+        COVENANT: "COVENANT",
+        CULTURE: "CULTURE",
+        ADVERSARY: "ADVERSARY",
+      };
 
       const ENTRIES = [
         {
@@ -789,6 +799,28 @@
 
       let activeFilter = "ALL";
 
+      // ── COLUMN ORDER — active filter moves to position 1 ─────────────────
+      function getColumnOrder() {
+        if (activeFilter === "ALL") return DIMS;
+        return [activeFilter, ...DIMS.filter((d) => d !== activeFilter)];
+      }
+
+      // ── RENDER HEADERS ────────────────────────────────────────────────────
+      function renderHeaders() {
+        const thead = document.querySelector(".matrix-table thead tr");
+        while (thead.children.length > 1) thead.removeChild(thead.lastChild);
+        getColumnOrder().forEach((dim) => {
+          const th = document.createElement("th");
+          th.textContent = COL_LABELS[dim];
+          th.style.color = DIM_COLORS[dim];
+          if (dim === activeFilter && activeFilter !== "ALL") {
+            th.style.borderBottom = "2px solid " + DIM_COLORS[dim];
+          }
+          thead.appendChild(th);
+        });
+      }
+
+      // ── RENDER TABLE ──────────────────────────────────────────────────────
       function renderTable() {
         const q = (
           document.getElementById("searchInput")?.value || ""
@@ -796,6 +828,7 @@
         const tbody = document.getElementById("matrixBody");
         tbody.innerHTML = "";
         let visible = 0;
+        const order = getColumnOrder();
 
         ENTRIES.forEach((entry) => {
           const matchSearch = entry.name.toLowerCase().includes(q);
@@ -808,14 +841,12 @@
           tr.style.animationDelay = visible * 10 + "ms";
           tr.onclick = () => navigateTo(entry.path);
 
-          // Name cell
           const nameTd = document.createElement("td");
           nameTd.className = "entry-name-cell";
           nameTd.textContent = entry.name;
           tr.appendChild(nameTd);
 
-          // Dimension cells
-          DIMS.forEach((dim) => {
+          order.forEach((dim) => {
             const td = document.createElement("td");
             td.className = "dim-cell";
             const idx = entry.dims.indexOf(dim);
@@ -823,18 +854,17 @@
             const dot = document.createElement("div");
             dot.className = "dim-dot" + (hasIt ? "" : " empty");
             if (hasIt) {
+              const baseOpacity = idx === 0 ? 1 : idx === 1 ? 0.6 : 0.35;
               dot.style.background = DIM_COLORS[dim];
-              if (idx === 1) dot.style.opacity = "0.6";
-              if (idx === 2) dot.style.opacity = "0.35";
+              dot.style.opacity = baseOpacity;
+              dot.dataset.baseOpacity = baseOpacity;
               dot.title = dim;
-              // Block click filters by dimension — does NOT navigate to entry
+              dot.style.cursor = "pointer";
               dot.addEventListener("click", (e) => {
-                e.stopPropagation(); // prevent row navigation
+                e.stopPropagation();
                 setFilter(dim);
-                // Scroll to top so filter result is visible
                 document.querySelector(".matrix-wrap").scrollTop = 0;
               });
-              dot.style.cursor = "pointer";
             }
             td.appendChild(dot);
             tr.appendChild(td);
@@ -847,16 +877,65 @@
           activeFilter === "ALL"
             ? "73 ENTRIES · 8 DIMENSIONS"
             : visible + " ENTRIES · " + activeFilter;
+
+        // Start ambient pulse on newly rendered dots
+        startAmbientPulse();
       }
 
+      // ── SET FILTER ────────────────────────────────────────────────────────
       function setFilter(dim) {
         activeFilter = dim;
         document.querySelectorAll(".filter-btn").forEach((b) => {
           b.classList.toggle("active", b.dataset.dim === dim);
         });
+        renderHeaders();
         renderTable();
       }
 
+      // ── AMBIENT PULSE ─────────────────────────────────────────────────────
+      // Each colored block breathes independently — random cycle, unsynchronized
+      function startAmbientPulse() {
+        document.querySelectorAll(".dim-dot:not(.empty)").forEach((dot) => {
+          if (dot.dataset.pulsing) return;
+          dot.dataset.pulsing = "1";
+          const base = parseFloat(dot.dataset.baseOpacity) || 1;
+          const color = dot.style.background;
+
+          function breathe() {
+            if (!dot.isConnected) return;
+            const dur = 1800 + Math.random() * 3500;
+            const lo = (base * 0.35).toFixed(2);
+            const hi = base.toFixed(2);
+            const delay = Math.random() * 4000;
+
+            setTimeout(() => {
+              if (!dot.isConnected) return;
+              dot.style.transition = `opacity ${dur / 2}ms ease-in-out, box-shadow ${dur / 2}ms ease-in-out`;
+              dot.style.opacity = lo;
+              dot.style.boxShadow = "none";
+
+              setTimeout(() => {
+                if (!dot.isConnected) return;
+                dot.style.opacity = hi;
+                dot.style.boxShadow = `0 0 5px ${color}99`;
+
+                setTimeout(
+                  () => {
+                    if (!dot.isConnected) return;
+                    dot.style.boxShadow = "";
+                    breathe();
+                  },
+                  dur / 2 + 200,
+                );
+              }, dur / 2);
+            }, delay);
+          }
+
+          breathe();
+        });
+      }
+
+      // ── NAVIGATION ────────────────────────────────────────────────────────
       function navigateTo(path) {
         const shell = document.getElementById("pageShell");
         const overlay = document.getElementById("portalOverlay");
@@ -882,6 +961,8 @@
         }
       });
 
+      // ── INIT ──────────────────────────────────────────────────────────────
+      renderHeaders();
       renderTable();
     </script>
 
