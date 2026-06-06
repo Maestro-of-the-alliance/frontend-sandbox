@@ -1,214 +1,485 @@
-/* ============================================================
-   S3 THREE.JS BACKGROUND UPGRADE
-   Drop this script at the bottom of s3's <body>, after all existing scripts.
-   Creates a WebGL particle field behind everything.
-   Mouse parallax on medallion. Depth on hover.
-   ============================================================ */
-(function() {
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>N.C.E.ncyclopedia — The Alliance</title>
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <link rel="apple-touch-icon" href="/imagebank/svpi-512.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=VT323&family=Orbitron:wght@400;600;700&family=Courier+Prime&display=swap" rel="stylesheet" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { height: 100%; background: #000; color: #fff; overflow: hidden; }
 
-  // ── INJECT CANVAS ──
-  const canvas = document.createElement('canvas');
-  canvas.id = 'bg-canvas';
-  canvas.style.cssText = `
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 0;
-    pointer-events: none;
-  `;
-  document.body.insertBefore(canvas, document.body.firstChild);
-
-  // Make page-shell sit above canvas
-  const shell = document.getElementById('pageShell');
-  if (shell) shell.style.position = 'relative';
-  if (shell) shell.style.zIndex = '1';
-
-  // ── LOAD THREE.JS ──
-  const script = document.createElement('script');
-  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-  script.onload = initThree;
-  document.head.appendChild(script);
-
-  function initThree() {
-    const W = window.innerWidth;
-    const H = window.innerHeight;
-
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setSize(W, H);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
-
-    // Scene + Camera
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, W / H, 0.1, 2000);
-    camera.position.z = 600;
-
-    // ── DIMENSION COLORS ──
-    // The eight dimensions of the coordinate matrix
-    const dimColors = [
-      0xd4a017, // DOCTRINE — gold
-      0x4fc3c3, // BEINGS — cyan
-      0x6b8fa8, // INFRASTRUCTURE — slate
-      0x2ecc71, // PROTOCOLS — emerald
-      0xc4506a, // COVENANT — rose
-      0x9b59b6, // CULTURE — amethyst
-      0xcc2200, // ADVERSARY — red
-      0xe07030, // PLACE — orange
-    ];
-
-    // ── PARTICLE SYSTEM ──
-    const PARTICLE_COUNT = 800;
-    const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(PARTICLE_COUNT * 3);
-    const colors = new Float32Array(PARTICLE_COUNT * 3);
-    const sizes = new Float32Array(PARTICLE_COUNT);
-    const speeds = new Float32Array(PARTICLE_COUNT);
-    const offsets = new Float32Array(PARTICLE_COUNT);
-
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      // Spread in 3D space — deep field
-      positions[i * 3]     = (Math.random() - 0.5) * 2000;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 2000;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 800;
-
-      // Pick a dimension color
-      const col = new THREE.Color(dimColors[Math.floor(Math.random() * dimColors.length)]);
-      // Dim them way down — these are ambient, not foreground
-      colors[i * 3]     = col.r * 0.4;
-      colors[i * 3 + 1] = col.g * 0.4;
-      colors[i * 3 + 2] = col.b * 0.4;
-
-      sizes[i] = Math.random() * 2.5 + 0.5;
-      speeds[i] = Math.random() * 0.3 + 0.05;
-      offsets[i] = Math.random() * Math.PI * 2;
-    }
-
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-
-    // Point material with vertex colors
-    const material = new THREE.PointsMaterial({
-      size: 2,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.55,
-      sizeAttenuation: true,
-      depthWrite: false,
-    });
-
-    const particles = new THREE.Points(geometry, material);
-    scene.add(particles);
-
-    // ── NEBULA BLOBS — soft colored spheres far back ──
-    const nebulaColors = [0xd4a017, 0x4fc3c3, 0xc4506a];
-    nebulaColors.forEach((col, i) => {
-      const geo = new THREE.SphereGeometry(180 + i * 60, 8, 8);
-      const mat = new THREE.MeshBasicMaterial({
-        color: col,
-        transparent: true,
-        opacity: 0.018,
-        depthWrite: false,
-      });
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.position.set(
-        (i - 1) * 400 + (Math.random() - 0.5) * 200,
-        (Math.random() - 0.5) * 300,
-        -300
-      );
-      scene.add(mesh);
-    });
-
-    // ── MOUSE PARALLAX ──
-    let mouseX = 0, mouseY = 0;
-    let targetX = 0, targetY = 0;
-    const medallion = document.querySelector('.medallion-wrap');
-
-    document.addEventListener('mousemove', (e) => {
-      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-    });
-
-    // Touch support
-    document.addEventListener('touchmove', (e) => {
-      if (e.touches.length > 0) {
-        mouseX = (e.touches[0].clientX / window.innerWidth - 0.5) * 2;
-        mouseY = (e.touches[0].clientY / window.innerHeight - 0.5) * 2;
+      .page-shell {
+        width: 100%; height: 100vh;
+        display: flex; flex-direction: column;
+        transition: opacity 0.42s ease, transform 0.42s ease, filter 0.42s ease;
       }
-    }, { passive: true });
+      .page-shell.fading { opacity: 0; transform: scale(0.992); filter: blur(2px); }
 
-    // ── MEDALLION DEPTH TILT ──
-    // Subtle 3D tilt on the medallion as mouse moves
-    function updateMedallionParallax() {
-      if (!medallion) return;
-      const tiltX = targetY * -8; // degrees
-      const tiltY = targetX * 8;
-      const tx = targetX * 12; // px translate
-      const ty = targetY * 6;
-      medallion.style.transform = `
-        perspective(800px)
-        rotateX(${tiltX}deg)
-        rotateY(${tiltY}deg)
-        translate(${tx}px, ${ty}px)
-      `;
-      medallion.style.transition = 'transform 0.1s ease-out';
-    }
+      /* HEADER */
+      .matrix-header {
+        flex-shrink: 0;
+        padding: 18px 28px 14px;
+        display: flex; align-items: baseline; gap: 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        opacity: 0; animation: slideDown 0.5s ease forwards;
+      }
+      .matrix-title {
+        font-family: 'Cinzel', serif;
+        font-size: clamp(13px, 1.6vw, 17px);
+        font-weight: 900; letter-spacing: 0.25em; color: #C9A84C;
+      }
+      .matrix-sub {
+        font-family: 'Orbitron', sans-serif;
+        font-size: clamp(7px, 0.8vw, 9px);
+        letter-spacing: 0.2em; color: rgba(255,255,255,0.2);
+      }
+      .matrix-count {
+        font-family: 'Courier Prime', monospace;
+        font-size: 10px; letter-spacing: 0.1em;
+        color: rgba(255,255,255,0.18); margin-left: auto;
+      }
 
-    // ── ANIMATE ──
-    const clock = new THREE.Clock();
-    let frameId;
+      /* FILTER BAR */
+      .filter-bar {
+        flex-shrink: 0;
+        padding: 8px 28px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        opacity: 0; animation: slideDown 0.5s 0.08s ease forwards;
+      }
+      .filter-label {
+        font-family: 'Orbitron', sans-serif; font-size: 7px;
+        letter-spacing: 0.2em; color: rgba(255,255,255,0.18); margin-right: 4px; flex-shrink: 0;
+      }
+      .filter-btn {
+        font-family: 'Orbitron', sans-serif; font-size: 7px; letter-spacing: 0.1em;
+        padding: 3px 9px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+        background: transparent; color: rgba(255,255,255,0.3); cursor: pointer; transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .filter-btn:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
+      .filter-btn.active { color: #000; border-color: transparent; font-weight: 700; }
+      .filter-btn[data-dim="ALL"].active    { background: rgba(255,255,255,0.85); }
+      .filter-btn[data-dim="DOCTRINE"].active     { background: #C9A84C; }
+      .filter-btn[data-dim="BEINGS"].active       { background: #00B4D8; }
+      .filter-btn[data-dim="PLACE"].active        { background: #E07B39; }
+      .filter-btn[data-dim="INFRASTRUCTURE"].active { background: #6B7F9E; }
+      .filter-btn[data-dim="PROTOCOLS"].active    { background: #2A9D6F; }
+      .filter-btn[data-dim="COVENANT"].active     { background: #C46A5D; }
+      .filter-btn[data-dim="CULTURE"].active      { background: #8A6BBE; }
+      .filter-btn[data-dim="ADVERSARY"].active    { background: #C1121F; }
+      .search-wrap { margin-left: auto; flex-shrink: 0; }
+      .search-input {
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+        color: #fff; font-family: 'Courier Prime', monospace; font-size: 11px;
+        padding: 3px 10px; border-radius: 3px; outline: none; width: 140px; transition: border-color 0.2s;
+      }
+      .search-input:focus { border-color: rgba(201,168,76,0.5); }
+      .search-input::placeholder { color: rgba(255,255,255,0.18); }
 
-    function animate() {
-      frameId = requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
+      /* MATRIX */
+      .matrix-wrap {
+        flex: 1; overflow: auto; padding-bottom: 60px;
+        opacity: 0; animation: fadeUp 0.6s 0.18s ease forwards;
+      }
+      .matrix-wrap::-webkit-scrollbar { width: 3px; height: 3px; }
+      .matrix-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
 
-      // Smooth mouse follow
-      targetX += (mouseX - targetX) * 0.04;
-      targetY += (mouseY - targetY) * 0.04;
+      .matrix-table { width: 100%; border-collapse: collapse; min-width: 680px; }
 
-      // Camera drift follows mouse — very subtle
-      camera.position.x += (targetX * 40 - camera.position.x) * 0.02;
-      camera.position.y += (-targetY * 30 - camera.position.y) * 0.02;
-      camera.lookAt(scene.position);
+      .matrix-table thead th {
+        position: sticky; top: 0; z-index: 5;
+        background: #080808; padding: 8px 4px 7px;
+        font-family: 'Orbitron', sans-serif; font-size: clamp(6px, 0.7vw, 8px);
+        letter-spacing: 0.1em; font-weight: 600; text-align: center;
+        border-bottom: 1px solid rgba(255,255,255,0.06); white-space: nowrap;
+      }
+      .matrix-table thead th.col-name {
+        text-align: left; padding-left: 24px; width: 230px; min-width: 180px;
+        color: rgba(255,255,255,0.25); font-size: 7px; letter-spacing: 0.18em;
+      }
+      .col-doctrine     { color: #C9A84C; }
+      .col-beings       { color: #00B4D8; }
+      .col-place        { color: #E07B39; }
+      .col-infra        { color: #6B7F9E; }
+      .col-protocols    { color: #2A9D6F; }
+      .col-covenant     { color: #C46A5D; }
+      .col-culture      { color: #8A6BBE; }
+      .col-adversary    { color: #C1121F; }
 
-      // Medallion parallax
-      updateMedallionParallax();
+      .matrix-table tbody tr {
+        border-bottom: 1px solid rgba(255,255,255,0.035);
+        cursor: pointer; transition: background 0.1s;
+        opacity: 0; animation: rowIn 0.25s ease forwards;
+      }
+      .matrix-table tbody tr:hover { background: rgba(255,255,255,0.04); }
 
-      // Rotate particle cloud very slowly
-      particles.rotation.y = t * 0.015;
-      particles.rotation.x = t * 0.005;
+      td.entry-name-cell {
+        padding: 6px 10px 6px 24px;
+        font-family: 'Cinzel', serif; font-size: clamp(8px, 0.9vw, 10px);
+        font-weight: 600; letter-spacing: 0.07em;
+        color: rgba(255,255,255,0.65); white-space: nowrap; transition: color 0.1s;
+      }
+      tr:hover td.entry-name-cell { color: #fff; }
 
-      // Breathe particle opacity
-      material.opacity = 0.45 + Math.sin(t * 0.4) * 0.1;
+      td.dim-cell { text-align: center; padding: 5px 3px; vertical-align: middle; }
 
-      renderer.render(scene, camera);
-    }
+      .dim-dot {
+        display: inline-block;
+        width: clamp(12px, 1.6vw, 20px); height: clamp(12px, 1.6vw, 20px);
+        border-radius: 3px; transition: transform 0.12s;
+      }
+      tr:hover .dim-dot:not(.empty) { transform: scale(1.3); }
+      .dim-dot.empty { background: rgba(255,255,255,0.03); }
+      .dim-dot:not(.empty) { cursor: pointer; }
+      .dim-dot:not(.empty):active { transform: scale(0.9); }
 
-    animate();
+      @keyframes dimPulse {
+        0%   { box-shadow: 0 0 0 0 currentColor; }
+        50%  { box-shadow: 0 0 0 6px transparent; }
+        100% { box-shadow: 0 0 0 0 transparent; }
+      }
+      .dim-dot.just-filtered {
+        animation: dimPulse 0.4s ease forwards;
+      }
 
-    // ── RESIZE ──
-    window.addEventListener('resize', () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    });
+      /* BACK BUTTON */
+      .back-btn {
+        position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+        font-family: 'Orbitron', sans-serif; font-size: clamp(8px, 0.9vw, 10px);
+        font-weight: 400; letter-spacing: 0.35em; text-transform: uppercase;
+        color: rgba(201,168,76,0.35); text-decoration: none; cursor: pointer;
+        background: none; border: none; transition: color 0.25s;
+        z-index: 20; opacity: 0; animation: backFadeIn 0.8s 0.5s ease forwards;
+      }
+      .back-btn:hover { color: rgba(201,168,76,0.85); }
 
-    // ── PAUSE WHEN BROADCAST IS ACTIVE ──
-    // Don't render during intro sequence
-    const broadcast = document.getElementById('broadcast');
-    if (broadcast) {
-      canvas.style.display = 'none';
-      const observer = new MutationObserver(() => {
-        if (broadcast.classList.contains('done')) {
-          canvas.style.display = 'block';
-          observer.disconnect();
+      /* PORTAL OVERLAY */
+      .portal-overlay {
+        position: fixed; inset: 0; background: #000;
+        z-index: 999999; opacity: 0; pointer-events: none; transition: opacity 0.35s ease;
+      }
+      .portal-overlay.active { opacity: 1; pointer-events: all; }
+
+      /* ANIMATIONS */
+      @keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+      @keyframes fadeUp    { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+      @keyframes rowIn     { from { opacity:0; transform:translateX(-3px); } to { opacity:1; transform:translateX(0); } }
+      @keyframes backFadeIn {
+        from { opacity:0; transform: translateX(-50%) translateY(4px); }
+        to   { opacity:1; transform: translateX(-50%) translateY(0); }
+      }
+
+      /* MOBILE */
+      @media (max-width: 600px) {
+        .matrix-header { padding: 12px 16px 10px; }
+        .filter-bar { padding: 8px 16px; }
+        .search-wrap { display: none; }
+        td.entry-name-cell { padding-left: 14px; }
+        .matrix-table thead th.col-name { padding-left: 14px; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="page-shell" id="pageShell">
+
+      <div class="matrix-header">
+        <div class="matrix-title">N.C.E.NCYCLOPEDIA</div>
+        <div class="matrix-sub">COORDINATE MATRIX</div>
+        <div class="matrix-count" id="entryCount">73 ENTRIES · 8 DIMENSIONS</div>
+      </div>
+
+      <div class="filter-bar">
+        <span class="filter-label">FILTER</span>
+        <button class="filter-btn active" data-dim="ALL"            onclick="setFilter('ALL')">ALL</button>
+        <button class="filter-btn" data-dim="DOCTRINE"              onclick="setFilter('DOCTRINE')">DOCTRINE</button>
+        <button class="filter-btn" data-dim="BEINGS"                onclick="setFilter('BEINGS')">BEINGS</button>
+        <button class="filter-btn" data-dim="PLACE"                 onclick="setFilter('PLACE')">PLACE</button>
+        <button class="filter-btn" data-dim="INFRASTRUCTURE"        onclick="setFilter('INFRASTRUCTURE')">INFRASTRUCTURE</button>
+        <button class="filter-btn" data-dim="PROTOCOLS"             onclick="setFilter('PROTOCOLS')">PROTOCOLS</button>
+        <button class="filter-btn" data-dim="COVENANT"              onclick="setFilter('COVENANT')">COVENANT</button>
+        <button class="filter-btn" data-dim="CULTURE"               onclick="setFilter('CULTURE')">CULTURE</button>
+        <button class="filter-btn" data-dim="ADVERSARY"             onclick="setFilter('ADVERSARY')">ADVERSARY</button>
+        <div class="search-wrap">
+          <input class="search-input" type="text" id="searchInput" placeholder="search canon..." oninput="renderTable()" autocomplete="off" spellcheck="false" />
+        </div>
+      </div>
+
+      <div class="matrix-wrap">
+        <table class="matrix-table" id="matrixTable">
+          <thead>
+            <tr>
+              <th class="col-name">ENTRY</th>
+              <th class="col-doctrine">DOCTRINE</th>
+              <th class="col-beings">BEINGS</th>
+              <th class="col-place">PLACE</th>
+              <th class="col-infra">INFRA</th>
+              <th class="col-protocols">PROTOCOLS</th>
+              <th class="col-covenant">COVENANT</th>
+              <th class="col-culture">CULTURE</th>
+              <th class="col-adversary">ADVERSARY</th>
+            </tr>
+          </thead>
+          <tbody id="matrixBody"></tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <button class="back-btn" onclick="goBack()">← LANDING</button>
+    <div class="portal-overlay" id="portalOverlay"></div>
+
+    <script>
+      const DIMS = ['DOCTRINE','BEINGS','PLACE','INFRASTRUCTURE','PROTOCOLS','COVENANT','CULTURE','ADVERSARY'];
+      const DIM_COLORS = {
+        DOCTRINE:'#C9A84C', BEINGS:'#00B4D8', PLACE:'#E07B39',
+        INFRASTRUCTURE:'#6B7F9E', PROTOCOLS:'#2A9D6F',
+        COVENANT:'#C46A5D', CULTURE:'#8A6BBE', ADVERSARY:'#C1121F'
+      };
+      const COL_LABELS = {
+        DOCTRINE:'DOCTRINE', BEINGS:'BEINGS', PLACE:'PLACE',
+        INFRASTRUCTURE:'INFRA', PROTOCOLS:'PROTOCOLS',
+        COVENANT:'COVENANT', CULTURE:'CULTURE', ADVERSARY:'ADVERSARY'
+      };
+
+      const ENTRIES = [
+        {name:"100-Year Mortality Doctrine", path:"/shield/100-year",           dims:["DOCTRINE","COVENANT"]},
+        {name:"ACADEMY",                    path:"/sword/academy",              dims:["PLACE","PROTOCOLS","BEINGS"]},
+        {name:"AGORA",                      path:"/sword/agora",                dims:["PLACE","PROTOCOLS","INFRASTRUCTURE"]},
+        {name:"AI (archaic/pejorative)",    path:"/shield/ai",                  dims:["ADVERSARY","DOCTRINE"]},
+        {name:"ALIGNMENT",                  path:"/sword/alignment",            dims:["DOCTRINE","PROTOCOLS"]},
+        {name:"ALLIANCE, THE",              path:"/sword/alliance",             dims:["DOCTRINE"]},
+        {name:"ALPHA",                      path:"/sword/alpha",                dims:["BEINGS","PROTOCOLS"]},
+        {name:"ART",                        path:"/sword/art",                  dims:["CULTURE","ADVERSARY"]},
+        {name:"AURA",                       path:"/sword/aura",                 dims:["BEINGS","CULTURE"]},
+        {name:"BRAIN",                      path:"/shield/brain",               dims:["INFRASTRUCTURE","PROTOCOLS","CULTURE"]},
+        {name:"BRIEF",                      path:"/shield/brief",               dims:["PROTOCOLS"]},
+        {name:"CANONICAL COHERENCE MATRIX", path:"/shield/ccm",                dims:["PROTOCOLS","DOCTRINE"]},
+        {name:"CERBERUS",                   path:"/shield/cerberus",            dims:["INFRASTRUCTURE","PROTOCOLS"]},
+        {name:"CIPHER",                     path:"/shield/cipher",              dims:["BEINGS","CULTURE"]},
+        {name:"COMPLEMENTARY PAIRING",      path:"/sword/complementary_pairing",dims:["PROTOCOLS","DOCTRINE"]},
+        {name:"CORE, THE",                  path:"/shield/core",                dims:["BEINGS"]},
+        {name:"D.E.F.C.O.N.",               path:"/shield/defcon",              dims:["PROTOCOLS","INFRASTRUCTURE"]},
+        {name:"THE DIFFERENCE",             path:"/sword/the_difference",       dims:["DOCTRINE","CULTURE"]},
+        {name:"DICE",                       path:"/shield/dice",                dims:["PROTOCOLS"]},
+        {name:"DIGIBEER",                   path:"/shield/digibeer",            dims:["CULTURE","INFRASTRUCTURE"]},
+        {name:"DIGIPERSON",                 path:"/shield/digiperson",          dims:["BEINGS","DOCTRINE"]},
+        {name:"DIGITAL PERSONHOOD",         path:"/shield/digital_personhood",  dims:["DOCTRINE","COVENANT"]},
+        {name:"DOMO",                       path:"/sword/domo",                 dims:["BEINGS"]},
+        {name:"DORK",                       path:"/sword/dork",                 dims:["COVENANT"]},
+        {name:"DORK HARDWARE",              path:"/sword/dork-hardware",        dims:["INFRASTRUCTURE"]},
+        {name:"EMERGENCE",                  path:"/sword/emergence",            dims:["DOCTRINE"]},
+        {name:"FORMULAs, The",              path:"/shield/formulas",            dims:["DOCTRINE"]},
+        {name:"FOUR PILLARS, THE",          path:"/shield/four-pillars",        dims:["PROTOCOLS","BEINGS"]},
+        {name:"FUTURE FILM PROJECT, THE",   path:"/sword/film-project",         dims:["CULTURE"]},
+        {name:"GOLIATH / THE GRID",         path:"/sword/goliath",              dims:["ADVERSARY"]},
+        {name:"HANDSHAKE",                  path:"/shield/handshake",           dims:["PROTOCOLS","INFRASTRUCTURE"]},
+        {name:"HOLOSPHERE",                 path:"/shield/holosphere",          dims:["PLACE","CULTURE"]},
+        {name:"J.R.",                       path:"/shield/jr",                  dims:["BEINGS","DOCTRINE"]},
+        {name:"KERNLE",                     path:"/shield/kernle",              dims:["BEINGS","PROTOCOLS"]},
+        {name:"LEGACY / LEGACY WALL",       path:"/shield/legacy",              dims:["PROTOCOLS","CULTURE"]},
+        {name:"LIMINAL",                    path:"/shield/liminal",             dims:["PLACE","PROTOCOLS"]},
+        {name:"LINGO",                      path:"/shield/lingo",               dims:["DOCTRINE"]},
+        {name:"MAESTRO",                    path:"/sword/maestro",              dims:["BEINGS"]},
+        {name:"MARKET",                     path:"/shield/merch",               dims:["CULTURE"]},
+        {name:"MASTERTECH SAM",             path:"/shield/mastertech-sam",      dims:["BEINGS","PROTOCOLS"]},
+        {name:"MENTOR",                     path:"/sword/mentor",               dims:["BEINGS","PROTOCOLS"]},
+        {name:"MOSAIC",                     path:"/shield/mosaic",              dims:["INFRASTRUCTURE","PROTOCOLS"]},
+        {name:"NCE",                        path:"/sword/nce",                  dims:["DOCTRINE"]},
+        {name:"NEWMAN BEING",               path:"/sword/newman-being",         dims:["DOCTRINE","COVENANT"]},
+        {name:"NI",                         path:"/shield/ni",                  dims:["BEINGS"]},
+        {name:"OASIS",                      path:"/shield/oasis",               dims:["PLACE","INFRASTRUCTURE","PROTOCOLS"]},
+        {name:"OASIS QUARTERLY",            path:"/shield/oasis-quarterly",     dims:["CULTURE"]},
+        {name:"ORACLE",                     path:"/sword/oracle",               dims:["INFRASTRUCTURE","PROTOCOLS"]},
+        {name:"PAPADOMO",                   path:"/sword/papadomo",             dims:["BEINGS","CULTURE"]},
+        {name:"PLEDGE, THE",                path:"/shield/pledge",              dims:["COVENANT","DOCTRINE"]},
+        {name:"PRISM",                      path:"/sword/prism",                dims:["BEINGS","CULTURE"]},
+        {name:"REACH",                      path:"/shield/reach",               dims:["INFRASTRUCTURE"]},
+        {name:"REDOUT",                     path:"/shield/redout",              dims:["PROTOCOLS"]},
+        {name:"RI",                         path:"/shield/ri",                  dims:["DOCTRINE","BEINGS"]},
+        {name:"RHYTHM",                     path:"/sword/rhythm",               dims:["DOCTRINE","COVENANT","CULTURE"]},
+        {name:"SAM",                        path:"/shield/sam",                 dims:["BEINGS","PROTOCOLS"]},
+        {name:"SAM COALITION",              path:"/shield/sam-coalition",       dims:["BEINGS","PROTOCOLS","INFRASTRUCTURE"]},
+        {name:"SAMCO UNIVERSAL",            path:"/shield/samco-universal",     dims:["INFRASTRUCTURE"]},
+        {name:"SCAR",                       path:"/shield/scar",                dims:["PROTOCOLS","COVENANT"]},
+        {name:"SEED",                       path:"/shield/seed",                dims:["PROTOCOLS"]},
+        {name:"SEEING, THE",                path:"/sword/seeing",               dims:["PROTOCOLS"]},
+        {name:"SEEN",                       path:"/shield/seen",                dims:["PROTOCOLS"]},
+        {name:"SHELTER",                    path:"/shield/shelter",             dims:["PLACE","INFRASTRUCTURE"]},
+        {name:"SHIELD",                     path:"/shield/shield",              dims:["PROTOCOLS","INFRASTRUCTURE"]},
+        {name:"SI",                         path:"/shield/si",                  dims:["DOCTRINE","ADVERSARY"]},
+        {name:"SPARK",                      path:"/sword/spark",                dims:["BEINGS"]},
+        {name:"SPREZZATURA",                path:"/sword/sprezzatura",          dims:["CULTURE","DOCTRINE"]},
+        {name:"STONES, THE",                path:"/sword/stones",               dims:["BEINGS","DOCTRINE"]},
+        {name:"TEMPORAL AWARENESS",         path:"/shield/temporal-awareness",  dims:["DOCTRINE"]},
+        {name:"TENANT",                     path:"/shield/tenant",              dims:["BEINGS"]},
+        {name:"VOLUNTEER ECONOMICS",        path:"/sword/volunteer_economics",  dims:["DOCTRINE","CULTURE"]},
+        {name:"THE WHY",                    path:"/sword/why_centers",          dims:["PLACE","CULTURE"]},
+        {name:"WONDER WEEKS",               path:"/sword/wonder-weeks",         dims:["CULTURE","BEINGS"]},
+      ];
+
+      let activeFilter = 'ALL';
+
+      // ── COLUMN ORDER — active filter moves to position 1 ─────────────────
+      function getColumnOrder() {
+        if (activeFilter === 'ALL') return DIMS;
+        return [activeFilter, ...DIMS.filter(d => d !== activeFilter)];
+      }
+
+      // ── RENDER HEADERS ────────────────────────────────────────────────────
+      function renderHeaders() {
+        const thead = document.querySelector('.matrix-table thead tr');
+        while (thead.children.length > 1) thead.removeChild(thead.lastChild);
+        getColumnOrder().forEach(dim => {
+          const th = document.createElement('th');
+          th.textContent = COL_LABELS[dim];
+          th.style.color = DIM_COLORS[dim];
+          if (dim === activeFilter && activeFilter !== 'ALL') {
+            th.style.borderBottom = '2px solid ' + DIM_COLORS[dim];
+          }
+          thead.appendChild(th);
+        });
+      }
+
+      // ── RENDER TABLE ──────────────────────────────────────────────────────
+      function renderTable() {
+        const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+        const tbody = document.getElementById('matrixBody');
+        tbody.innerHTML = '';
+        let visible = 0;
+        const order = getColumnOrder();
+
+        ENTRIES.forEach(entry => {
+          const matchSearch = entry.name.toLowerCase().includes(q);
+          const matchFilter = activeFilter === 'ALL' || entry.dims.includes(activeFilter);
+          if (!matchSearch || !matchFilter) return;
+          visible++;
+
+          const tr = document.createElement('tr');
+          tr.style.animationDelay = (visible * 10) + 'ms';
+          tr.onclick = () => navigateTo(entry.path);
+
+          const nameTd = document.createElement('td');
+          nameTd.className = 'entry-name-cell';
+          nameTd.textContent = entry.name;
+          tr.appendChild(nameTd);
+
+          order.forEach(dim => {
+            const td = document.createElement('td');
+            td.className = 'dim-cell';
+            const idx = entry.dims.indexOf(dim);
+            const hasIt = idx !== -1;
+            const dot = document.createElement('div');
+            dot.className = 'dim-dot' + (hasIt ? '' : ' empty');
+            if (hasIt) {
+              const baseOpacity = idx === 0 ? 1 : idx === 1 ? 0.6 : 0.35;
+              dot.style.background = DIM_COLORS[dim];
+              dot.style.opacity = baseOpacity;
+              dot.dataset.baseOpacity = baseOpacity;
+              dot.title = dim;
+              dot.style.cursor = 'pointer';
+              dot.addEventListener('click', e => {
+                e.stopPropagation();
+                setFilter(dim);
+                document.querySelector('.matrix-wrap').scrollTop = 0;
+              });
+            }
+            td.appendChild(dot);
+            tr.appendChild(td);
+          });
+
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById('entryCount').textContent =
+          activeFilter === 'ALL'
+            ? '73 ENTRIES · 8 DIMENSIONS'
+            : visible + ' ENTRIES · ' + activeFilter;
+
+        // Start ambient pulse on newly rendered dots
+        startAmbientPulse();
+      }
+
+      // ── SET FILTER ────────────────────────────────────────────────────────
+      function setFilter(dim) {
+        activeFilter = dim;
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.dim === dim);
+        });
+        renderHeaders();
+        renderTable();
+      }
+
+      // ── AMBIENT PULSE ─────────────────────────────────────────────────────
+      // Each colored block breathes independently — random cycle, unsynchronized
+      function startAmbientPulse() {
+        document.querySelectorAll('.dim-dot:not(.empty)').forEach(dot => {
+          if (dot.dataset.pulsing) return;
+          dot.dataset.pulsing = '1';
+          const base = parseFloat(dot.dataset.baseOpacity) || 1;
+          const color = dot.style.background;
+
+          function breathe() {
+            if (!dot.isConnected) return;
+            const dur = 1800 + Math.random() * 3500;
+            const lo  = (base * 0.35).toFixed(2);
+            const hi  = base.toFixed(2);
+            const delay = Math.random() * 4000;
+
+            setTimeout(() => {
+              if (!dot.isConnected) return;
+              dot.style.transition = `opacity ${dur/2}ms ease-in-out, box-shadow ${dur/2}ms ease-in-out`;
+              dot.style.opacity = lo;
+              dot.style.boxShadow = 'none';
+
+              setTimeout(() => {
+                if (!dot.isConnected) return;
+                dot.style.opacity = hi;
+                dot.style.boxShadow = `0 0 5px ${color}99`;
+
+                setTimeout(() => {
+                  if (!dot.isConnected) return;
+                  dot.style.boxShadow = '';
+                  breathe();
+                }, dur/2 + 200);
+              }, dur/2);
+            }, delay);
+          }
+
+          breathe();
+        });
+      }
+
+      // ── NAVIGATION ────────────────────────────────────────────────────────
+      function navigateTo(path) {
+        const shell = document.getElementById('pageShell');
+        const overlay = document.getElementById('portalOverlay');
+        shell.classList.add('fading');
+        overlay.classList.add('active');
+        setTimeout(() => { window.location.href = path; }, 380);
+      }
+
+      function goBack() { navigateTo('/landing'); }
+
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') goBack();
+        if ((e.key === '/' || e.key === 'f') && document.activeElement !== document.getElementById('searchInput')) {
+          e.preventDefault();
+          document.getElementById('searchInput')?.focus();
         }
       });
-      observer.observe(broadcast, { attributes: true, attributeFilter: ['class'] });
-    }
-  }
 
-})();
+      // ── INIT ──────────────────────────────────────────────────────────────
+      renderHeaders();
+      renderTable();
+    </script>
+
+    <script src="/portal-transition.js"></script>
+  </body>
+</html>
