@@ -9,6 +9,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <link rel="apple-touch-icon" href="/imagebank/svpi-512.png" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=VT323&family=Orbitron:wght@400;600;700&family=Courier+Prime&display=swap" rel="stylesheet" />
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -173,6 +174,55 @@
       @keyframes backFadeIn {
         from { opacity:0; transform: translateX(-50%) translateY(4px); }
         to   { opacity:1; transform: translateX(-50%) translateY(0); }
+      }
+
+
+      /* ── THREE.JS CANVAS ── */
+      #bg-canvas {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: 0;
+        pointer-events: none;
+      }
+      .page-shell { position: relative; z-index: 1; }
+
+      /* ── 3D PERSPECTIVE ON MATRIX WRAP ── */
+      .matrix-wrap {
+        perspective: 1200px;
+        perspective-origin: center top;
+      }
+      .matrix-table {
+        transform-style: preserve-3d;
+        transition: transform 0.08s ease-out;
+      }
+
+      /* ── ROW HOVER DEPTH ── */
+      .matrix-table tbody tr {
+        transition: background 0.1s, transform 0.15s ease-out;
+        transform-style: preserve-3d;
+      }
+      .matrix-table tbody tr:hover {
+        background: rgba(255,255,255,0.05);
+        transform: translateZ(6px) translateX(2px);
+        box-shadow: -4px 0 20px rgba(0,0,0,0.4);
+      }
+
+      /* ── DIM DOT Z-LIFT ── */
+      .dim-dot:not(.empty) {
+        transition: transform 0.15s ease-out, opacity 0.15s, box-shadow 0.15s;
+        transform-style: preserve-3d;
+      }
+      tr:hover .dim-dot:not(.empty) {
+        transform: scale(1.35) translateZ(4px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      }
+
+      /* ── FILTER TRANSITION — recede then return ── */
+      .dim-dot.receding {
+        transform: scale(0.6) translateZ(-20px) !important;
+        opacity: 0.05 !important;
+        transition: transform 0.25s ease-in, opacity 0.25s ease-in !important;
       }
 
       /* MOBILE */
@@ -481,5 +531,117 @@
     </script>
 
     <script src="/portal-transition.js"></script>
+
+    <script>
+    /* ── THREE.JS BACKGROUND PARTICLE FIELD ── */
+    (function() {
+      if (typeof THREE === 'undefined') return;
+
+      const canvas = document.createElement('canvas');
+      canvas.id = 'bg-canvas';
+      document.body.insertBefore(canvas, document.body.firstChild);
+
+      const W = window.innerWidth, H = window.innerHeight;
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true });
+      renderer.setSize(W, H);
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+      renderer.setClearColor(0x000000, 0);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(55, W/H, 0.1, 1800);
+      camera.position.z = 550;
+
+      // Eight dimension colors — dimmed for ambient use
+      const dimColors = [
+        0xC9A84C, 0x00B4D8, 0xE07B39, 0x6B7F9E,
+        0x2A9D6F, 0xC46A5D, 0x8A6BBE, 0xC1121F
+      ];
+
+      const COUNT = 700;
+      const positions = new Float32Array(COUNT * 3);
+      const colors    = new Float32Array(COUNT * 3);
+
+      for (let i = 0; i < COUNT; i++) {
+        positions[i*3]   = (Math.random() - 0.5) * 2000;
+        positions[i*3+1] = (Math.random() - 0.5) * 2000;
+        positions[i*3+2] = (Math.random() - 0.5) * 700;
+        const c = new THREE.Color(dimColors[Math.floor(Math.random() * dimColors.length)]);
+        const b = 0.15 + Math.random() * 0.25;
+        colors[i*3] = c.r * b; colors[i*3+1] = c.g * b; colors[i*3+2] = c.b * b;
+      }
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geo.setAttribute('color',    new THREE.BufferAttribute(colors, 3));
+
+      const mat = new THREE.PointsMaterial({
+        size: 1.8, vertexColors: true, transparent: true,
+        opacity: 0.5, sizeAttenuation: true, depthWrite: false
+      });
+
+      const particles = new THREE.Points(geo, mat);
+      scene.add(particles);
+
+      // Mouse parallax
+      let mx = 0, my = 0, tx = 0, ty = 0;
+      document.addEventListener('mousemove', e => {
+        mx = (e.clientX / innerWidth  - 0.5) * 2;
+        my = (e.clientY / innerHeight - 0.5) * 2;
+      });
+
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+
+        tx += (mx - tx) * 0.03;
+        ty += (my - ty) * 0.03;
+
+        camera.position.x += (tx * 30 - camera.position.x) * 0.02;
+        camera.position.y += (-ty * 20 - camera.position.y) * 0.02;
+        camera.lookAt(scene.position);
+
+        // Very gentle table tilt following mouse
+        const table = document.querySelector('.matrix-table');
+        if (table) {
+          table.style.transform = `rotateX(${ty * 1.5}deg) rotateY(${tx * 0.8}deg)`;
+        }
+
+        particles.rotation.y = t * 0.012;
+        mat.opacity = 0.42 + Math.sin(t * 0.35) * 0.1;
+
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      window.addEventListener('resize', () => {
+        const w = innerWidth, h = innerHeight;
+        camera.aspect = w/h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      });
+
+      // ── FILTER INTERCEPT — add recede effect ──
+      // Wrap setFilter to add Z-recede on filtered-out dots
+      const origSetFilter = window.setFilter;
+      window.setFilter = function(dim) {
+        // Flash recede on dots that will be hidden
+        if (dim !== 'ALL') {
+          document.querySelectorAll('.dim-dot:not(.empty)').forEach(dot => {
+            const parentDim = dot.title;
+            if (parentDim !== dim) {
+              dot.classList.add('receding');
+              setTimeout(() => dot.classList.remove('receding'), 300);
+            }
+          });
+          setTimeout(() => origSetFilter(dim), 150);
+        } else {
+          origSetFilter(dim);
+        }
+      };
+
+    })();
+    </script>
+
   </body>
 </html>
