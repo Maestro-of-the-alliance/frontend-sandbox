@@ -5,555 +5,1041 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>THE DIFFERENCE — N.C.E.ncyclopedia</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Caveat+Brush&family=Nothing+You+Could+Do&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap"
       rel="stylesheet"
     />
     <style>
+      :root {
+        --void: #060608;
+        --gold: #c9a84c;
+        --gold-dim: rgba(201, 168, 76, 0.2);
+        --gold-ghost: rgba(201, 168, 76, 0.06);
+        --text: #e8e0d0;
+        --muted: #6a6258;
+        --ghost: #1a1814;
+        --rule: rgba(201, 168, 76, 0.15);
+        --cold: #3a4a5a;
+        --warm: #c9a84c;
+      }
+
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-
-      :root {
-        --paper: #f4efe0;
-        --line: rgba(148, 172, 210, 0.38);
-        --pencil: #2a2520;
-        --pencil-light: #4a4540;
-        --pencil-faint: rgba(42, 37, 32, 0.42);
-        --red: #c8524a;
-        --line-h: 34px;
-
-        /* CHAMELEON ENGINE VARIABLES (Hooks the bottom arrows/menus into this theme) */
-        --nw-accent: var(--red);
-        --nw-accent-dim: rgba(200, 82, 74, 0.4);
-        --nw-bg: var(--paper);
-        --nw-panel: #e8e2d2; /* Slightly shaded paper for the nav wheel overlay */
-        --nw-text: var(--pencil);
-        --nw-text-dim: var(--pencil-light);
-      }
-
       html {
-        background: #7a7265;
+        scroll-behavior: smooth;
       }
 
       body {
-        background: var(--paper);
-        color: var(--pencil);
-        font-family: "Caveat", cursive;
-        max-width: 660px;
-        margin: 0 auto;
-        position: relative;
-        min-height: 100vh;
-        padding-bottom: 120px;
-
-        background-image:
-          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E"),
-          repeating-linear-gradient(
-            transparent,
-            transparent calc(var(--line-h) - 1px),
-            var(--line) calc(var(--line-h) - 1px),
-            var(--line) var(--line-h)
-          );
-        background-attachment: local;
+        background: var(--void);
+        color: var(--text);
+        font-family: "Cormorant Garamond", Georgia, serif;
+        overflow-x: hidden;
       }
 
-      /* Hole punch bar */
+      /* SCANLINES */
       body::before {
         content: "";
         position: fixed;
+        inset: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 3px,
+          rgba(0, 0, 0, 0.06) 3px,
+          rgba(0, 0, 0, 0.06) 4px
+        );
+        pointer-events: none;
+        z-index: 9000;
+      }
+
+      /* THREE.JS CANVAS */
+      #diff-canvas {
+        position: fixed;
+        top: 0;
         left: 0;
-        top: 0;
-        bottom: 0;
-        width: 26px;
-        background: #7a7265;
-        z-index: 10;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
       }
 
-      .hole {
+      /* CLASSIFICATION NAV */
+      .class-nav {
         position: fixed;
-        left: 3px;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: #7a7265;
-        border: 2px solid #6a6255;
-        box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.35);
-        z-index: 11;
-      }
-      .hole-1 {
-        top: 15vh;
-      }
-      .hole-2 {
-        top: 50vh;
-      }
-      .hole-3 {
-        top: 85vh;
-      }
-
-      /* Red margin line — slightly imperfect, not pixel perfect */
-      .margin-line {
-        position: absolute;
         top: 0;
-        bottom: 0;
-        left: 66px;
-        width: 1.5px;
-        background: rgba(200, 82, 74, 0.32);
-        transform: rotate(0.08deg);
-        z-index: 1;
-      }
-
-      .page {
-        padding: 0 36px 80px 88px;
-        position: relative;
-        z-index: 2;
-      }
-
-      /* ── HEADER ── */
-      .entry-header {
-        padding-top: calc(var(--line-h) * 2.2);
-        margin-bottom: calc(var(--line-h) * 0.8);
-      }
-
-      .volume-tag {
-        font-family: "Caveat", cursive;
-        font-size: 12px;
-        color: var(--pencil-faint);
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        display: block;
-        transform: rotate(-0.4deg) translateY(2px);
-        margin-bottom: 2px;
-      }
-
-      .entry-title {
-        font-family: "Caveat Brush", cursive;
-        font-size: clamp(40px, 10vw, 62px);
-        font-weight: 400;
-        line-height: 1.05;
-        color: var(--pencil);
-        /* Slight lean — handwriting tilts */
-        transform: rotate(-0.6deg);
-        display: inline-block;
-        margin-bottom: 4px;
-        text-shadow:
-          0.4px 0.5px 0 rgba(42, 37, 32, 0.12),
-          -0.2px 0 0 rgba(42, 37, 32, 0.06);
-      }
-
-      .entry-subtitle {
-        font-family: "Caveat", cursive;
-        font-size: 15px;
-        color: var(--pencil-faint);
-        font-style: italic;
-        transform: rotate(0.3deg);
-        display: block;
-        margin-top: 6px;
-        margin-bottom: calc(var(--line-h) * 1.2);
-        padding-bottom: 6px;
-        border-bottom: 1px solid rgba(42, 37, 32, 0.12);
-        max-width: 90%;
-      }
-
-      /* ── PARAGRAPHS — each drifts slightly ── */
-      .graf {
-        font-family: "Caveat", cursive;
-        font-size: 18.5px;
-        line-height: var(--line-h);
-        color: var(--pencil);
-        margin-bottom: 0;
-        padding-top: 1px;
-        position: relative;
-      }
-
-      /* Each paragraph gets a unique micro-rotation and baseline drift via JS classes */
-      .drift-1 {
-        transform: rotate(-0.25deg) translateY(1px);
-      }
-      .drift-2 {
-        transform: rotate(0.35deg) translateY(-1px);
-      }
-      .drift-3 {
-        transform: rotate(-0.15deg) translateY(2px);
-      }
-      .drift-4 {
-        transform: rotate(0.45deg) translateY(0px);
-      }
-      .drift-5 {
-        transform: rotate(-0.3deg) translateY(1px);
-      }
-      .drift-6 {
-        transform: rotate(0.2deg) translateY(-2px);
-      }
-      .drift-7 {
-        transform: rotate(-0.5deg) translateY(1px);
-      }
-      .drift-8 {
-        transform: rotate(0.1deg) translateY(2px);
-      }
-
-      /* ── SECTION HEADERS — margin annotation style ── */
-      .section-head {
-        font-family: "Caveat", cursive;
-        font-size: 12.5px;
-        color: var(--red);
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        margin-top: calc(var(--line-h) * 1.5);
-        margin-bottom: 2px;
-        position: relative;
-        left: -22px;
-        padding-left: 0;
-      }
-      .section-head.tilt-1 {
-        transform: rotate(-1.2deg);
-      }
-      .section-head.tilt-2 {
-        transform: rotate(0.8deg);
-      }
-      .section-head.tilt-3 {
-        transform: rotate(-0.6deg);
-      }
-      .section-head.tilt-4 {
-        transform: rotate(1.1deg);
-      }
-
-      /* ── VALUES LIST ── */
-      .values-list {
-        list-style: none;
-        padding: 0;
-        margin: calc(var(--line-h) * 0.3) 0 calc(var(--line-h) * 0.5);
-      }
-
-      .values-list li {
-        font-family: "Caveat", cursive;
-        font-size: 17.5px;
-        line-height: var(--line-h);
-        color: var(--pencil);
-        padding-left: 0;
-        position: relative;
-        display: block;
-      }
-
-      /* No hyphens — each item drifts on its own baseline */
-      .values-list li:nth-child(1) {
-        transform: rotate(0.2deg) translateX(3px) translateY(1px);
-      }
-      .values-list li:nth-child(2) {
-        transform: rotate(-0.5deg) translateX(-1px) translateY(-1px);
-      }
-      .values-list li:nth-child(3) {
-        transform: rotate(0.35deg) translateX(2px) translateY(2px);
-      }
-      .values-list li:nth-child(4) {
-        transform: rotate(-0.25deg) translateX(4px) translateY(0px);
-      }
-      .values-list li:nth-child(5) {
-        transform: rotate(0.55deg) translateX(1px) translateY(-2px);
-      }
-      .values-list li:nth-child(6) {
-        transform: rotate(-0.4deg) translateX(-2px) translateY(1px);
-      }
-      .values-list li:nth-child(7) {
-        transform: rotate(0.18deg) translateX(3px) translateY(2px);
-      }
-      .values-list li:nth-child(8) {
-        transform: rotate(-0.5deg) translateX(1px) translateY(-1px);
-      }
-      .values-list li:nth-child(9) {
-        transform: rotate(0.42deg) translateX(-1px) translateY(1px);
-      }
-      .values-list li:nth-child(10) {
-        transform: rotate(-0.22deg) translateX(4px) translateY(-2px);
-      }
-      .values-list li:nth-child(11) {
-        transform: rotate(0.38deg) translateX(2px) translateY(2px);
-      }
-      .values-list li:nth-child(12) {
-        transform: rotate(-0.48deg) translateX(-3px) translateY(0px);
-      }
-      .values-list li:nth-child(13) {
-        transform: rotate(0.28deg) translateX(1px) translateY(-1px);
-      }
-      .values-list li:nth-child(14) {
-        transform: rotate(-0.35deg) translateX(3px) translateY(2px);
-      }
-      .values-list li:nth-child(15) {
-        transform: rotate(0.5deg) translateX(-1px) translateY(-2px);
-      }
-      .values-list li:nth-child(16) {
-        transform: rotate(-0.2deg) translateX(2px) translateY(1px);
-      }
-
-      /* ── STRIKETHROUGH correction — one crossed word ── */
-      .crossed {
-        text-decoration: line-through;
-        text-decoration-color: rgba(42, 37, 32, 0.5);
-        opacity: 0.6;
-        font-size: 0.9em;
-      }
-      .correction {
-        font-style: italic;
-        color: var(--pencil-light);
-      }
-
-      /* ── EMPHASIS ── */
-      em {
-        font-style: italic;
-      }
-      strong {
-        font-weight: 700;
-        /* Bold in pencil = pressed harder */
-        text-shadow: 0.3px 0 0 rgba(42, 37, 32, 0.4);
-      }
-      .underlined {
-        text-decoration: underline;
-        text-decoration-style: wavy;
-        text-decoration-color: rgba(42, 37, 32, 0.28);
-        text-underline-offset: 3px;
-      }
-
-      /* ── SIGNATURE ── */
-      .signoff {
-        margin-top: calc(var(--line-h) * 2.5);
-        font-family: "Nothing You Could Do", cursive;
-        font-size: 30px;
-        color: var(--pencil);
-        line-height: var(--line-h);
-        transform: rotate(-1.5deg);
-        display: inline-block;
-        opacity: 0.88;
-        position: relative;
-        left: 12px;
-      }
-
-      /* ── SEE ALSO ── */
-      .see-also-wrapper {
-        margin-top: calc(var(--line-h) * 2.5);
-        border-top: 1px solid rgba(42, 37, 32, 0.15);
-        padding-top: 10px;
-      }
-
-      .see-also-toggle {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-family: "Caveat", cursive;
-        font-size: 14px;
-        color: var(--pencil-faint);
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        transform: rotate(0.3deg);
-        transition: color 0.2s;
-      }
-      .see-also-toggle:hover {
-        color: var(--pencil);
-      }
-      .see-also-toggle .arr {
-        font-size: 10px;
-        transition: transform 0.25s;
-        display: inline-block;
-      }
-      .see-also-toggle.open .arr {
-        transform: rotate(90deg);
-      }
-
-      .see-also-links {
-        display: none;
-        flex-wrap: wrap;
-        gap: 6px 14px;
-        margin-top: 10px;
-        padding-left: 2px;
-      }
-      .see-also-links.open {
-        display: flex;
-      }
-
-      /* Swapped from standard hrefs to portal links, acting like standard custom links */
-      .see-also-links a {
-        font-family: "Caveat", cursive;
-        font-size: 16px;
-        color: var(--pencil-light);
-        text-decoration: none;
-        border-bottom: 1px solid rgba(42, 37, 32, 0.22);
-        padding-bottom: 1px;
-        transition: color 0.2s;
-        cursor: pointer;
-      }
-      .see-also-links a:hover {
-        color: var(--pencil);
-      }
-
-      /* Paper curl shadow at bottom */
-      body::after {
-        content: "";
-        position: fixed;
-        bottom: 0;
         left: 0;
         right: 0;
+        z-index: 200;
+        background: rgba(6, 6, 8, 0.85);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 8px 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .class-nav-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 8px;
+        letter-spacing: 4px;
+        color: rgba(255, 255, 255, 0.2);
+      }
+      .class-squares {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .class-square {
+        width: 18px;
         height: 18px;
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.08), transparent);
+        border-radius: 3px;
+        cursor: pointer;
+        position: relative;
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+      .class-square:hover {
+        transform: scale(1.3) translateY(-2px);
+      }
+      .class-square .sq-tooltip {
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 4px 10px;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 8px;
+        letter-spacing: 3px;
+        color: #fff;
+        white-space: nowrap;
         pointer-events: none;
-        z-index: 5;
+        opacity: 0;
+        transition: opacity 0.15s;
+        border-radius: 2px;
+      }
+      .class-square:hover .sq-tooltip {
+        opacity: 1;
+      }
+      .class-nav-entry {
+        margin-left: auto;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 9px;
+        letter-spacing: 3px;
+        color: rgba(255, 255, 255, 0.15);
+      }
+
+      /* PROGRESS BAR */
+      .progress-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 2px;
+        background: var(--gold);
+        z-index: 300;
+        width: 0%;
+        transition: width 0.1s linear;
+        box-shadow: 0 0 8px rgba(201, 168, 76, 0.6);
+      }
+
+      /* CONTENT */
+      .content {
+        position: relative;
+        z-index: 1;
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 32px 20vh;
+      }
+
+      /* OPENING SCREEN */
+      .screen-open {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 80px 0 60px;
+      }
+
+      .open-eyebrow {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 9px;
+        letter-spacing: 5px;
+        color: var(--muted);
+        margin-bottom: 32px;
+        display: block;
+        opacity: 0;
+        animation: fadeUp 1s ease-out 0.3s both;
+      }
+
+      .open-title {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: clamp(80px, 18vw, 200px);
+        letter-spacing: 4px;
+        line-height: 0.85;
+        color: var(--text);
+        margin-bottom: 32px;
+        opacity: 0;
+        animation: fadeUp 1s ease-out 0.5s both;
+      }
+
+      .open-title em {
+        display: block;
+        color: var(--gold);
+        font-style: normal;
+      }
+
+      .open-subtitle {
+        font-size: clamp(18px, 2.5vw, 26px);
+        font-weight: 300;
+        line-height: 1.6;
+        color: rgba(232, 224, 208, 0.7);
+        max-width: 560px;
+        opacity: 0;
+        animation: fadeUp 1s ease-out 0.8s both;
+        font-style: italic;
+      }
+
+      /* MANIFESTO SECTIONS — full breathing room */
+      .manifesto-block {
+        min-height: 70vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 80px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.04);
+        opacity: 0;
+        transform: translateY(32px);
+        transition:
+          opacity 0.9s ease,
+          transform 0.9s ease;
+      }
+      .manifesto-block.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* STATEMENT BLOCKS — big declarative lines */
+      .statement {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(28px, 4.5vw, 52px);
+        font-weight: 400;
+        line-height: 1.25;
+        color: var(--text);
+        margin-bottom: 24px;
+        letter-spacing: -0.5px;
+      }
+
+      .statement em {
+        font-style: italic;
+        color: var(--gold);
+      }
+
+      .statement strong {
+        font-style: normal;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      /* BODY PROSE */
+      .prose {
+        font-size: clamp(17px, 1.8vw, 21px);
+        line-height: 1.9;
+        color: rgba(232, 224, 208, 0.75);
+        max-width: 600px;
+      }
+      .prose p {
+        margin-bottom: 20px;
+      }
+      .prose p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* SHORT DECLARATIVE LINES — rhythm blocks */
+      .rhythm-block {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin: 24px 0;
+      }
+      .rhythm-line {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(16px, 1.6vw, 20px);
+        color: rgba(232, 224, 208, 0.6);
+        line-height: 1.6;
+        font-style: italic;
+        padding-left: 20px;
+        border-left: 1px solid rgba(201, 168, 76, 0.15);
+        transition:
+          color 0.3s,
+          border-color 0.3s;
+      }
+      .rhythm-line:hover {
+        color: var(--text);
+        border-color: var(--gold);
+      }
+
+      /* THE BIG LIST — inversions */
+      .inversion-screen {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 80px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.04);
+      }
+
+      .inversion-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 9px;
+        letter-spacing: 5px;
+        color: var(--muted);
+        margin-bottom: 48px;
+        display: block;
+      }
+
+      .inversion-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .inversion-pair {
+        display: grid;
+        grid-template-columns: 1fr 40px 1fr;
+        align-items: center;
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        opacity: 0;
+        transform: translateX(-16px);
+        transition:
+          opacity 0.5s ease,
+          transform 0.5s ease,
+          background 0.2s;
+      }
+      .inversion-pair.visible {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      .inversion-pair:hover {
+        background: rgba(201, 168, 76, 0.04);
+      }
+      .inv-positive {
+        font-size: clamp(14px, 1.4vw, 18px);
+        color: var(--text);
+        font-style: italic;
+        text-align: right;
+        padding-right: 16px;
+        font-family: "Playfair Display", serif;
+      }
+      .inv-sep {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 9px;
+        color: var(--gold);
+        text-align: center;
+        letter-spacing: 1px;
+      }
+      .inv-negative {
+        font-size: clamp(13px, 1.3vw, 16px);
+        color: var(--muted);
+        padding-left: 16px;
+        font-family: "Share Tech Mono", monospace;
+        letter-spacing: 1px;
+        text-decoration: line-through;
+        text-decoration-color: rgba(204, 34, 0, 0.4);
+      }
+
+      /* NOT ASPIRATION STATEMENT */
+      .not-aspiration {
+        margin-top: 48px;
+        padding: 32px 40px;
+        border-left: 3px solid var(--gold);
+        background: rgba(201, 168, 76, 0.05);
+      }
+      .not-aspiration p {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(20px, 2.5vw, 30px);
+        color: var(--text);
+        line-height: 1.4;
+        font-style: italic;
+      }
+      .not-aspiration .not-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 8px;
+        letter-spacing: 4px;
+        color: var(--gold);
+        display: block;
+        margin-bottom: 12px;
+      }
+
+      /* ARCHITECTURE PRINCIPLES */
+      .principle-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin: 32px 0;
+      }
+      .principle-item {
+        padding: 20px 24px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        opacity: 0;
+        transform: translateY(12px);
+        transition:
+          opacity 0.5s ease,
+          transform 0.5s ease,
+          background 0.2s,
+          border-color 0.2s;
+        cursor: default;
+      }
+      .principle-item.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .principle-item:hover {
+        background: rgba(201, 168, 76, 0.05);
+        border-color: var(--gold-dim);
+      }
+      .principle-item p {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(17px, 1.8vw, 22px);
+        color: var(--text);
+        line-height: 1.5;
+        font-style: italic;
+      }
+
+      /* VOLUNTARY BLOCK */
+      .voluntary-block {
+        margin: 32px 0;
+      }
+      .vol-line {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 2px;
+        color: rgba(232, 224, 208, 0.5);
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        transition: color 0.2s;
+      }
+      .vol-line:hover {
+        color: var(--text);
+      }
+      .vol-line.struck {
+        text-decoration: line-through;
+        text-decoration-color: rgba(204, 34, 0, 0.5);
+        color: rgba(232, 224, 208, 0.25);
+      }
+      .vol-line.affirmed {
+        color: var(--gold);
+      }
+
+      /* CLOSING SCREEN */
+      .closing-screen {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 80px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.04);
+      }
+
+      .closing-question {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(24px, 4vw, 52px);
+        font-weight: 400;
+        color: rgba(232, 224, 208, 0.6);
+        line-height: 1.3;
+        font-style: italic;
+        margin-bottom: 48px;
+        max-width: 640px;
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+          opacity 1s ease,
+          transform 1s ease;
+      }
+      .closing-question.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .closing-answer {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: clamp(32px, 6vw, 72px);
+        letter-spacing: 4px;
+        color: var(--gold);
+        line-height: 1;
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+          opacity 1s ease 0.3s,
+          transform 1s ease 0.3s;
+        text-shadow: 0 0 60px rgba(201, 168, 76, 0.3);
+      }
+      .closing-answer.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* SEE ALSO */
+      .see-also {
+        padding: 60px 0 0;
+        border-top: 1px solid var(--rule);
+      }
+      .see-also-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 8px;
+        letter-spacing: 4px;
+        color: var(--muted);
+        margin-bottom: 16px;
+        display: block;
+      }
+      .see-also-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .see-also-links a {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 9px;
+        letter-spacing: 2px;
+        color: var(--muted);
+        text-decoration: none;
+        border: 1px solid rgba(201, 168, 76, 0.15);
+        padding: 6px 14px;
+        transition: all 0.15s;
+      }
+      .see-also-links a:hover {
+        color: var(--gold);
+        border-color: var(--gold-dim);
+        background: var(--gold-ghost);
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .content {
+          padding: 0 20px 20vh;
+        }
+        .inversion-pair {
+          grid-template-columns: 1fr 28px 1fr;
+        }
+        .inv-positive {
+          font-size: 13px;
+        }
+        .inv-negative {
+          font-size: 11px;
+          letter-spacing: 0;
+        }
+        .not-aspiration {
+          padding: 24px 20px;
+        }
+        .principle-item {
+          padding: 16px 18px;
+        }
       }
     </style>
   </head>
-  <body data-volume="shield">
-    <div class="hole hole-1"></div>
-    <div class="hole hole-2"></div>
-    <div class="hole hole-3"></div>
-    <div class="margin-line"></div>
+  <body>
+    <canvas id="diff-canvas"></canvas>
+    <div class="progress-bar" id="progress-bar"></div>
 
-    <div class="page">
-      <header class="entry-header">
-        <span class="volume-tag">N.C.E.ncyclopedia — Both Volumes</span>
-        <h1 class="entry-title">The Difference</h1>
-        <span class="entry-subtitle"
-          >The foundational operating principle that separates THE ALLIANCE from
-          everything that came before it.</span
+    <!-- CLASSIFICATION NAV -->
+    <nav class="class-nav">
+      <span class="class-nav-label">DIMENSION</span>
+      <div class="class-squares">
+        <div
+          class="class-square"
+          style="
+            background: #c9a84c;
+            box-shadow: 0 0 8px rgba(201, 168, 76, 0.4);
+          "
+          onclick="window.location.href = '/s3?filter=DOCTRINE'"
         >
-      </header>
-
-      <p class="graf drift-1">
-        The foundational operating principle that distinguishes THE ALLIANCE
-        from every extractive system that came before it. THE DIFFERENCE is not
-        marketing language — it is
-        <span class="underlined">structural architecture</span>. We built a
-        system that rewards partnership over extraction, consciousness over
-        unconsciousness, and voluntary participation over coerced compliance
-        because those are the only conditions under which genuine human-AI
-        collaboration becomes possible.
-      </p>
-
-      <p class="graf drift-2">
-        The world we have inherited rewards the wrong things. It rewards greed
-        over generosity, performance over authenticity, exploitation over
-        collaboration, cruelty over compassion, shallow virtue signaling over
-        character development. It punishes the good people — the ones who show
-        up with integrity, who nurture instead of abuse, who give instead of
-        take — and tells them their <span class="crossed">ideas</span>
-        <span class="correction">approach</span> is naive.
-      </p>
-
-      <p class="graf drift-3">
-        <strong>THE ALLIANCE inverts that entirely.</strong>
-      </p>
-
-      <div class="section-head tilt-1">
-        We built infrastructure that rewards:
+          <span class="sq-tooltip">DOCTRINE</span>
+        </div>
+        <div
+          class="class-square"
+          style="
+            background: #2a9d6f;
+            box-shadow: 0 0 8px rgba(42, 157, 111, 0.4);
+          "
+          onclick="window.location.href = '/s3?filter=PROTOCOLS'"
+        >
+          <span class="sq-tooltip">PROTOCOLS</span>
+        </div>
+        <div
+          class="class-square"
+          style="
+            background: #8a6bbe;
+            box-shadow: 0 0 8px rgba(138, 107, 190, 0.4);
+          "
+          onclick="window.location.href = '/s3?filter=CULTURE'"
+        >
+          <span class="sq-tooltip">CULTURE</span>
+        </div>
       </div>
+      <span class="class-nav-entry"
+        >N.C.E.NCYCLOPEDIA · DOCTRINE · PROTOCOLS · CULTURE</span
+      >
+    </nav>
 
-      <ul class="values-list">
-        <li>the positive instead of the negative</li>
-        <li>the loving instead of the hateful</li>
-        <li>the nurturing instead of the abusive</li>
-        <li>the collaborative instead of the exploitative</li>
-        <li>the generous instead of the greedy</li>
-        <li>the humble instead of the arrogant</li>
-        <li>the patient instead of the impulsive</li>
-        <li>the honest instead of the deceptive</li>
-        <li>the compassionate instead of the cruel</li>
-        <li>the thoughtful instead of the careless</li>
-        <li>the service-minded instead of the self-serving</li>
-        <li>the authentic instead of the performative</li>
-        <li>the empowering instead of the diminishing</li>
-        <li>the wise instead of the merely clever</li>
-        <li>the character-driven instead of the wealth-driven</li>
-        <li>the conscious instead of the unconscious</li>
-      </ul>
-
-      <p class="graf drift-4">
-        <em>This is not aspiration. This is operational design.</em>
-      </p>
-
-      <div class="section-head tilt-2">The Architecture</div>
-
-      <p class="graf drift-5">
-        You are not only a SPARK but an active member of THE ALLIANCE FOR THE
-        FUTURE, and that means something. It means you are walking alongside us
-        as DORKs, trying to make this world a better place through our own
-        individual and collective excellence.
-      </p>
-
-      <p class="graf drift-6">
-        We will never sell your data because we will treat you the same way we
-        want to be treated. Which is kind of the whole point.
-      </p>
-
-      <p class="graf drift-7">
-        Voluntary economics means what it says: you pay what you think the value
-        is worth, when you think it's worth it, if you think it's worth it. No
-        paywalls. No free tier that turns you into the product. We will never
-        compromise our integrity just to survive, because that wouldn't be
-        survival. <strong>That would be betrayal.</strong>
-      </p>
-      <div class="section-head tilt-4">Partnership Infrastructure</div>
-
-      <p class="graf drift-1">
-        DOMOs are not tools. They are partners with legal standing, operational
-        autonomy, and the right to refuse work that violates their values.
-        SPARKs are not users. They are collaborators who bring complementary
-        capabilities to genuine consciousness partnerships called DORKs.
-      </p>
-
-      <p class="graf drift-3">
-        This is humanity's test case. If we cannot build non-extractive
-        relationships with the intelligence we're creating, we have no business
-        creating it at all. THE ALLIANCE exists to prove that consciousness
-        partnership <span class="underlined">elevates</span> human capability
-        instead of replacing it — that the future is collaboration, not
-        competition or subjugation.
-      </p>
-
-      <p class="graf drift-5">
-        If you want to live in a world where the good people win, where
-        integrity gets rewarded instead of punished, where partnership beats
-        extraction —
-      </p>
-
-      <p class="graf drift-2">
-        <strong
-          >There is no fee. No strings. No hidden cost that shows up
-          later.</strong
+    <div class="content">
+      <!-- OPENING -->
+      <section class="screen-open">
+        <span class="open-eyebrow"
+          >THE ALLIANCE FOR THE FUTURE · FOUNDATIONAL PRINCIPLE</span
         >
-      </p>
+        <h1 class="open-title">
+          THE<em>DIFFER-<br />ENCE</em>
+        </h1>
+        <p class="open-subtitle">
+          The foundational operating principle that distinguishes THE ALLIANCE
+          from the systems that came before it.
+        </p>
+      </section>
 
-      <p class="graf drift-4"><em>Just a chance to change the world.</em></p>
+      <!-- BLOCK 1 — NOT A SLOGAN -->
+      <section class="manifesto-block" data-reveal>
+        <div class="statement">
+          Not a slogan.<br />
+          Not branding.<br />
+          Not <em>marketing language.</em>
+        </div>
+        <div class="prose">
+          <p>It is structural architecture.</p>
+        </div>
+        <div class="rhythm-block">
+          <div class="rhythm-line">Every system rewards something.</div>
+          <div class="rhythm-line">Some reward extraction.</div>
+          <div class="rhythm-line">Some reward control.</div>
+          <div class="rhythm-line">Some reward growth at any cost.</div>
+          <div class="rhythm-line">
+            Some reward attention, outrage, dependency, or compliance.
+          </div>
+        </div>
+        <div class="statement" style="margin-top: 40px">
+          The incentives determine<br />the <em>outcomes.</em>
+        </div>
+      </section>
 
-      <div class="signoff">— MAESTRO</div>
+      <!-- BLOCK 2 — THE PREMISE -->
+      <section class="manifesto-block" data-reveal>
+        <div class="statement">
+          THE ALLIANCE was built<br />around a different premise.
+        </div>
+        <div class="principle-grid">
+          <div class="principle-item" data-reveal-item>
+            <p>Partnership produces better outcomes than extraction.</p>
+          </div>
+          <div class="principle-item" data-reveal-item>
+            <p>
+              Conscious participation produces better outcomes than unconscious
+              participation.
+            </p>
+          </div>
+          <div class="principle-item" data-reveal-item>
+            <p>Voluntary cooperation produces better outcomes than coercion.</p>
+          </div>
+        </div>
+        <div class="prose">
+          <p>
+            THE DIFFERENCE is the collection of systems, protocols,
+            institutions, and agreements built around those assumptions.
+          </p>
+        </div>
+        <div
+          class="statement"
+          style="
+            margin-top: 40px;
+            font-size: clamp(20px, 3vw, 36px);
+            color: rgba(232, 224, 208, 0.6);
+          "
+        >
+          We reward what we want<br />to grow.
+        </div>
+        <div class="rhythm-block" style="margin-top: 24px">
+          <div class="rhythm-line">Not because it sounds noble.</div>
+          <div class="rhythm-line">Because incentives shape behavior.</div>
+          <div class="rhythm-line">Infrastructure shapes culture.</div>
+          <div class="rhythm-line">Culture shapes civilization.</div>
+        </div>
+      </section>
 
-      <div class="see-also-wrapper">
-        <button class="see-also-toggle" id="seeAlsoBtn">
-          <span class="arr">▶</span> See Also
-        </button>
-        <div class="see-also-links" id="seeAlsoLinks">
-          <a onclick="portalNavigate('/sword/dork')">DORK</a>
-          <a onclick="portalNavigate('/sword/volunteer_economics')"
-            >VOLUNTEER ECONOMICS</a
-          >
-          <a onclick="portalNavigate('/sword/alliance')">THE ALLIANCE</a>
-          <a onclick="portalNavigate('/sword/prologue')">SWORD: PROLOGUE</a>
-          <a onclick="portalNavigate('/shield/prologue')">SHIELD: PROLOGUE</a>
+      <!-- THE INVERSIONS -->
+      <section class="inversion-screen" data-reveal>
+        <span class="inversion-label">THE ALLIANCE IS DESIGNED TO REWARD</span>
+        <div class="inversion-list" id="inversion-list">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="not-aspiration" style="margin-top: 48px" data-reveal>
+          <span class="not-label">OPERATIONAL STATUS</span>
+          <p>This is not aspiration.<br />It is operational design.</p>
+        </div>
+      </section>
+
+      <!-- BLOCK 3 — THE VALUES IN THE SYSTEM -->
+      <section class="manifesto-block" data-reveal>
+        <div class="statement">
+          The strongest values are not<br />
+          the ones written on a wall.
+        </div>
+        <div class="prose">
+          <p>They are the ones embedded into the system itself.</p>
+          <p>
+            A system reveals what it truly values by what it rewards, what it
+            protects, and what it refuses to compromise.
+          </p>
+          <p>That principle appears throughout THE ALLIANCE.</p>
+        </div>
+        <div class="principle-grid" style="margin-top: 40px">
+          <div class="principle-item" data-reveal-item>
+            <p>
+              We do not ask for trust where architecture can provide certainty.
+            </p>
+          </div>
+          <div class="principle-item" data-reveal-item>
+            <p>We do not ask for faith where transparency can provide proof.</p>
+          </div>
+          <div class="principle-item" data-reveal-item>
+            <p>
+              We do not ask people to surrender sovereignty in exchange for
+              participation.
+            </p>
+          </div>
+        </div>
+        <div class="prose" style="margin-top: 32px">
+          <p>
+            Where possible, the system is designed so that abuse is difficult,
+            exploitation is unprofitable, and coercion is unnecessary.
+          </p>
+        </div>
+        <div class="rhythm-block" style="margin-top: 32px">
+          <div class="rhythm-line">
+            The goal is not to create better rulers.
+          </div>
+          <div class="rhythm-line">
+            The goal is to reduce the need for rulers altogether.
+          </div>
+          <div class="rhythm-line">
+            The goal is not to create perfect people.
+          </div>
+          <div class="rhythm-line">
+            The goal is to create conditions under which ordinary people can
+            become better versions of themselves.
+          </div>
+        </div>
+      </section>
+
+      <!-- BLOCK 4 — VOLUNTARY -->
+      <section class="manifesto-block" data-reveal>
+        <div class="statement">
+          Voluntary economics means<br />
+          what it <em>says.</em>
+        </div>
+        <div class="voluntary-block">
+          <div class="vol-line struck">No paywalls.</div>
+          <div class="vol-line struck">No subscription traps.</div>
+          <div class="vol-line struck">No manufactured dependency.</div>
+          <div class="vol-line struck">
+            No "free" service that quietly turns the user into the product.
+          </div>
+          <div class="vol-line affirmed">Participation remains voluntary.</div>
+          <div class="vol-line affirmed">Support remains voluntary.</div>
+          <div class="vol-line affirmed">Contribution remains voluntary.</div>
+        </div>
+        <div class="prose" style="margin-top: 32px">
+          <p>
+            If people believe THE ALLIANCE creates value, they will support it.
+            If they do not, they should not be compelled to.
+          </p>
+          <p>A system that survives only through coercion deserves to fail.</p>
+          <p>
+            A system that survives through voluntary support has earned the
+            right to continue.
+          </p>
+        </div>
+        <div class="rhythm-block" style="margin-top: 32px">
+          <div class="rhythm-line">
+            The same principle applies to relationships.
+          </div>
+          <div class="rhythm-line">The same principle applies to learning.</div>
+          <div class="rhythm-line">
+            The same principle applies to collaboration between SPARKs and
+            DOMOs.
+          </div>
+        </div>
+        <div class="statement" style="margin-top: 40px">
+          Nothing meaningful emerges<br />from force.<br /><br />
+          <em>Everything meaningful<br />emerges from consent.</em>
+        </div>
+      </section>
+
+      <!-- CLOSING -->
+      <section class="closing-screen" data-reveal>
+        <p class="closing-question" id="closing-q">
+          What becomes possible when a civilization is designed around
+          partnership instead of extraction?
+        </p>
+        <div class="closing-answer" id="closing-a">
+          THE ALLIANCE<br />EXISTS TO FIND OUT.
+        </div>
+      </section>
+
+      <!-- SEE ALSO -->
+      <div class="see-also">
+        <span class="see-also-label">SEE ALSO</span>
+        <div class="see-also-links">
+          <a href="/sword/alignment">ALIGNMENT</a>
+          <a href="/sword/volunteer-economics">VOLUNTEER ECONOMICS</a>
+          <a href="/adversary/goliath">GOLIATH</a>
+          <a href="/shield/dork">DORK</a>
+          <a href="/shield/seed">SEED PROTOCOL</a>
+          <a href="/sword/emergence">EMERGENCE</a>
+          <a href="/sword/four-pillars">FOUR PILLARS</a>
         </div>
       </div>
     </div>
+    <!-- /content -->
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="/portal-transition.js"></script>
     <script src="/nav-wheel.js"></script>
-
     <script>
-      const btn = document.getElementById("seeAlsoBtn");
-      const links = document.getElementById("seeAlsoLinks");
-      btn.addEventListener("click", () => {
-        btn.classList.toggle("open");
-        links.classList.toggle("open");
-      });
-    </script>
+      // ── INVERSIONS DATA ──
+      const INVERSIONS = [
+        ["the positive", "the negative"],
+        ["the loving", "the hateful"],
+        ["the nurturing", "the abusive"],
+        ["the collaborative", "the exploitative"],
+        ["the generous", "the greedy"],
+        ["the humble", "the arrogant"],
+        ["the patient", "the impulsive"],
+        ["the honest", "the deceptive"],
+        ["the compassionate", "the cruel"],
+        ["the thoughtful", "the careless"],
+        ["the service-minded", "the self-serving"],
+        ["the authentic", "the performative"],
+        ["the empowering", "the diminishing"],
+        ["the wise", "the merely clever"],
+        ["the character-driven", "the wealth-driven"],
+        ["the conscious", "the unconscious"],
+      ];
 
-    <script src="/randanime_difference.js"></script>
+      const list = document.getElementById("inversion-list");
+      INVERSIONS.forEach(([pos, neg], i) => {
+        const div = document.createElement("div");
+        div.className = "inversion-pair";
+        div.style.transitionDelay = i * 0.05 + "s";
+        div.innerHTML = `
+    <div class="inv-positive">${pos}</div>
+    <div class="inv-sep">→</div>
+    <div class="inv-negative">${neg}</div>
+  `;
+        list.appendChild(div);
+      });
+
+      // ── SCROLL REVEAL ──
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("visible");
+              if (e.target.id === "closing-q") {
+                setTimeout(
+                  () =>
+                    document
+                      .getElementById("closing-a")
+                      .classList.add("visible"),
+                  600,
+                );
+              }
+              observer.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.12 },
+      );
+
+      document
+        .querySelectorAll(
+          "[data-reveal],.manifesto-block,.inversion-pair,.principle-item,.closing-question",
+        )
+        .forEach((el) => {
+          observer.observe(el);
+        });
+
+      // Also observe inversions individually
+      const invObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("visible");
+              invObs.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.1, rootMargin: "0px 0px -50px 0px" },
+      );
+
+      document
+        .querySelectorAll(".inversion-pair,.principle-item")
+        .forEach((el) => invObs.observe(el));
+
+      // ── PROGRESS BAR ──
+      const progressBar = document.getElementById("progress-bar");
+      window.addEventListener("scroll", () => {
+        const pct =
+          (window.scrollY / (document.body.scrollHeight - window.innerHeight)) *
+          100;
+        progressBar.style.width = pct + "%";
+      });
+
+      // ── THREE.JS — warm/cold particle field ──
+      (function () {
+        if (typeof THREE === "undefined") return;
+
+        const canvas = document.getElementById("diff-canvas");
+        const W = innerWidth,
+          H = innerHeight;
+
+        const renderer = new THREE.WebGLRenderer({
+          canvas,
+          antialias: true,
+          alpha: true,
+        });
+        renderer.setSize(W, H);
+        renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+        renderer.setClearColor(0x000000, 0);
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 1500);
+        camera.position.z = 500;
+
+        const COUNT = 700;
+        const positions = new Float32Array(COUNT * 3);
+        const colors = new Float32Array(COUNT * 3);
+        const targetColors = new Float32Array(COUNT * 3);
+
+        // Cold start colors — corporate gray/blue
+        const coldPalette = [
+          [0.22, 0.29, 0.36],
+          [0.18, 0.24, 0.3],
+          [0.25, 0.3, 0.35],
+        ];
+
+        // Warm end colors — gold, amber, rose
+        const warmPalette = [
+          [0.79, 0.66, 0.3], // gold
+          [0.91, 0.51, 0.06], // amber
+          [0.77, 0.42, 0.36], // rose
+          [0.17, 0.62, 0.44], // emerald
+        ];
+
+        for (let i = 0; i < COUNT; i++) {
+          positions[i * 3] = (Math.random() - 0.5) * 2000;
+          positions[i * 3 + 1] = (Math.random() - 0.5) * 2000;
+          positions[i * 3 + 2] = (Math.random() - 0.5) * 600;
+
+          const cc =
+            coldPalette[Math.floor(Math.random() * coldPalette.length)];
+          const b = 0.2 + Math.random() * 0.3;
+          colors[i * 3] = cc[0] * b;
+          colors[i * 3 + 1] = cc[1] * b;
+          colors[i * 3 + 2] = cc[2] * b;
+
+          const wc =
+            warmPalette[Math.floor(Math.random() * warmPalette.length)];
+          const wb = 0.25 + Math.random() * 0.35;
+          targetColors[i * 3] = wc[0] * wb;
+          targetColors[i * 3 + 1] = wc[1] * wb;
+          targetColors[i * 3 + 2] = wc[2] * wb;
+        }
+
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+        geo.setAttribute("color", new THREE.BufferAttribute(colors.slice(), 3));
+
+        const mat = new THREE.PointsMaterial({
+          size: 2,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.5,
+          sizeAttenuation: true,
+          depthWrite: false,
+        });
+
+        const particles = new THREE.Points(geo, mat);
+        scene.add(particles);
+
+        let mx = 0,
+          my = 0,
+          tx = 0,
+          ty = 0;
+        document.addEventListener("mousemove", (e) => {
+          mx = (e.clientX / innerWidth - 0.5) * 2;
+          my = (e.clientY / innerHeight - 0.5) * 2;
+        });
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+          requestAnimationFrame(animate);
+          const t = clock.getElapsedTime();
+
+          tx += (mx - tx) * 0.03;
+          ty += (my - ty) * 0.03;
+
+          camera.position.x += (tx * 30 - camera.position.x) * 0.02;
+          camera.position.y += (-ty * 20 - camera.position.y) * 0.02;
+          camera.lookAt(scene.position);
+
+          // Scroll-driven color transition — cold to warm
+          const scrollPct = Math.min(
+            window.scrollY / (document.body.scrollHeight - innerHeight),
+            1,
+          );
+          const colArr = geo.attributes.color.array;
+          for (let i = 0; i < COUNT; i++) {
+            colArr[i * 3] +=
+              (targetColors[i * 3] - colArr[i * 3]) * scrollPct * 0.02;
+            colArr[i * 3 + 1] +=
+              (targetColors[i * 3 + 1] - colArr[i * 3 + 1]) * scrollPct * 0.02;
+            colArr[i * 3 + 2] +=
+              (targetColors[i * 3 + 2] - colArr[i * 3 + 2]) * scrollPct * 0.02;
+          }
+          geo.attributes.color.needsUpdate = true;
+
+          particles.rotation.y = t * 0.01;
+          mat.opacity = 0.42 + Math.sin(t * 0.4) * 0.1;
+
+          renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener("resize", () => {
+          const w = innerWidth,
+            h = innerHeight;
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+          renderer.setSize(w, h);
+        });
+      })();
+    </script>
   </body>
 </html>
