@@ -711,75 +711,83 @@
     document.body.appendChild(bottomNav);
   }
 
-  // ── WORD SEARCH NAV REPLACEMENT ────────────────────────────────────────
-  // Intercept hamburger click — show word search instead of SWORD/SHIELD wheel
 
-  (function () {
-    // Build word search overlay
-    var wsOverlay = document.createElement("div");
-    wsOverlay.id = "nw-ws-overlay";
-    wsOverlay.style.cssText =
-      "display:none;position:fixed;inset:0;z-index:99998;background:#000;flex-direction:column;font-family:Share Tech Mono,monospace;";
+  // ── WORD SEARCH NAV REPLACEMENT ────────────────────────────────────────
+  (function() {
+    var wsOverlay = document.createElement('div');
+    wsOverlay.id = 'nw-ws-overlay';
+    wsOverlay.style.cssText = 'display:none;position:fixed;inset:0;z-index:99998;background:#000;flex-direction:column;font-family:Share Tech Mono,monospace;touch-action:none;';
+
     wsOverlay.innerHTML = [
-      '<div style="padding:14px 24px 12px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">',
-      "<div>",
-      '<div style="font-family:Bebas Neue,sans-serif;font-size:24px;letter-spacing:6px;color:#fff;">N.C.E.NCYCLOPEDIA</div>',
-      '<div style="font-size:9px;letter-spacing:3px;color:rgba(255,255,255,0.3);margin-top:2px;">FIND THE ENTRY · CLICK TO NAVIGATE · OR PLAY THE GAME</div>',
-      "</div>",
-      '<div id="nw-ws-stats" style="font-size:9px;letter-spacing:2px;color:rgba(201,168,76,0.8);">0 / 74 FOUND</div>',
-      '<button id="nw-ws-close" style="font-size:9px;letter-spacing:3px;color:#fff;padding:8px 16px;border:1px solid rgba(255,255,255,0.15);background:none;cursor:pointer;">✕ CLOSE</button>',
-      "</div>",
-      '<div style="flex:1;display:grid;grid-template-columns:1fr 220px;overflow:hidden;min-height:0;">',
-      '<div style="display:flex;align-items:center;justify-content:center;padding:12px;overflow:auto;">',
-      '<div id="nw-ws-grid" style="display:grid;cursor:crosshair;user-select:none;"></div>',
-      "</div>",
-      '<div style="border-left:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;overflow:hidden;">',
-      '<div style="padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.08);font-size:8px;letter-spacing:3px;color:rgba(255,255,255,0.3);flex-shrink:0;">ENTRIES — CLICK TO NAVIGATE</div>',
-      '<div id="nw-ws-list" style="flex:1;overflow-y:auto;padding:6px;"></div>',
-      "</div>",
-      "</div>",
-    ].join("");
+      // HEADER
+      '<div id="nw-ws-header" style="padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;gap:12px;">',
+        '<div>',
+          '<div style="font-family:Bebas Neue,sans-serif;font-size:22px;letter-spacing:5px;color:#fff;line-height:1;">N.C.E.NCYCLOPEDIA</div>',
+          '<div style="font-size:8px;letter-spacing:2px;color:rgba(255,255,255,0.25);margin-top:2px;">FIND · DRAG TO SELECT · TAP ENTRY TO NAVIGATE</div>',
+        '</div>',
+        '<div style="display:flex;align-items:center;gap:10px;">',
+          '<div id="nw-ws-stats" style="font-size:9px;letter-spacing:2px;color:rgba(201,168,76,0.8);">0/74</div>',
+          // ENTRY LIST TOGGLE
+          '<button id="nw-ws-list-btn" style="font-size:8px;letter-spacing:2px;color:rgba(255,255,255,0.6);padding:6px 12px;border:1px solid rgba(255,255,255,0.15);background:none;cursor:pointer;white-space:nowrap;">ENTRIES ▾</button>',
+          '<button id="nw-ws-close" style="font-size:9px;letter-spacing:2px;color:#fff;padding:6px 12px;border:1px solid rgba(255,255,255,0.15);background:none;cursor:pointer;">✕</button>',
+        '</div>',
+      '</div>',
+      // ENTRY DROPDOWN — hidden by default
+      '<div id="nw-ws-dropdown" style="display:none;position:absolute;top:60px;right:0;left:0;background:#0a0a0a;border-bottom:1px solid rgba(255,255,255,0.1);z-index:10;max-height:50vh;overflow-y:auto;padding:8px;">',
+        '<div id="nw-ws-list" style="display:flex;flex-wrap:wrap;gap:4px;padding:4px;"></div>',
+      '</div>',
+      // PUZZLE — full screen
+      '<div id="nw-ws-puzzle-wrap" style="flex:1;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;">',
+        '<div id="nw-ws-grid-container" style="transform-origin:center center;touch-action:none;">',
+          '<div id="nw-ws-grid" style="display:grid;cursor:crosshair;user-select:none;"></div>',
+        '</div>',
+      '</div>',
+    ].join('');
+
     document.body.appendChild(wsOverlay);
 
-    document.getElementById("nw-ws-close").addEventListener("click", closeWS);
+    document.getElementById('nw-ws-close').addEventListener('click', closeWS);
+    
+    // Dropdown toggle
+    document.getElementById('nw-ws-list-btn').addEventListener('click', function() {
+      var dd = document.getElementById('nw-ws-dropdown');
+      var open = dd.style.display === 'block';
+      dd.style.display = open ? 'none' : 'block';
+      this.textContent = open ? 'ENTRIES ▾' : 'ENTRIES ▴';
+    });
+
+    // Close dropdown when clicking puzzle
+    document.getElementById('nw-ws-puzzle-wrap').addEventListener('click', function() {
+      document.getElementById('nw-ws-dropdown').style.display = 'none';
+      document.getElementById('nw-ws-list-btn').textContent = 'ENTRIES ▾';
+    });
 
     function openWS() {
-      wsOverlay.style.display = "flex";
+      wsOverlay.style.display = 'flex';
       buildWS();
-      // hide the old overlay if open
-      var old = document.getElementById("nw-overlay");
-      if (old) {
-        old.classList.remove("open");
-      }
-      var b = document.getElementById("nw-burger-fallback");
-      if (b) b.classList.add("open");
+      var old = document.getElementById('nw-overlay');
+      if (old) old.classList.remove('open');
+      var b = document.getElementById('nw-burger-fallback');
+      if (b) b.classList.add('open');
     }
 
     function closeWS() {
-      wsOverlay.style.display = "none";
-      var b = document.getElementById("nw-burger-fallback");
-      if (b) b.classList.remove("open");
+      wsOverlay.style.display = 'none';
+      document.getElementById('nw-ws-dropdown').style.display = 'none';
+      var b = document.getElementById('nw-burger-fallback');
+      if (b) b.classList.remove('open');
     }
 
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") closeWS();
-    });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeWS(); });
 
     // Override burger click
-    setTimeout(function () {
-      var b =
-        document.getElementById("nw-burger-fallback") ||
-        document.querySelector(".nav-wheel-trigger");
+    setTimeout(function() {
+      var b = document.getElementById('nw-burger-fallback') || document.querySelector('.nav-wheel-trigger');
       if (b) {
-        // Clone to remove existing listeners
         var fresh = b.cloneNode(true);
         b.parentNode.replaceChild(fresh, b);
-        fresh.addEventListener("click", function () {
-          if (wsOverlay.style.display === "flex") {
-            closeWS();
-          } else {
-            openWS();
-          }
+        fresh.addEventListener('click', function() {
+          wsOverlay.style.display === 'flex' ? closeWS() : openWS();
         });
       }
     }, 100);
@@ -790,447 +798,309 @@
       if (wsBuilt) return;
       wsBuilt = true;
 
-      var COLS = 26,
-        ROWS = 26;
-      var ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-      var DIRS = [
-        [0, 1],
-        [0, -1],
-        [1, 0],
-        [-1, 0],
-        [1, 1],
-        [1, -1],
-        [-1, 1],
-        [-1, -1],
-      ];
+      var COLS = 26, ROWS = 26;
+      var ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      var DIRS = [[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
 
       var ENTRIES = [
-        ["100-YEAR MORTALITY DOCTRINE", "/sword/100-year", "MORTALITYDOCTRINE"],
-        ["ACADEMY", "/sword/academy", "ACADEMY"],
-        ["AGORA", "/sword/agora", "AGORA"],
-        ["AI", "/shield/ai", "AI"],
-        ["ALIGNMENT", "/sword/alignment", "ALIGNMENT"],
-        ["ALLIANCE, THE", "/sword/alliance", "ALLIANCE"],
-        ["ALPHA", "/shield/alpha", "ALPHA"],
-        ["ART", "/sword/art", "ART"],
-        ["AURA", "/shield/aura", "AURA"],
-        ["BRAIN", "/shield/brain", "BRAIN"],
-        ["BRIEF", "/shield/brief", "BRIEF"],
-        ["CCM", "/shield/ccm", "CCM"],
-        ["CERBERUS", "/shield/cerberus", "CERBERUS"],
-        ["CIPHER", "/shield/cipher", "CIPHER"],
-        [
-          "COMPLEMENTARY PAIRING",
-          "/shield/complementary-pairing",
-          "COMPLEMENTARYPAIRING",
-        ],
-        ["CORE, THE", "/shield/core", "CORE"],
-        ["D.E.F.C.O.N.", "/sword/defcon", "DEFCON"],
-        ["THE DIFFERENCE", "/sword/difference", "DIFFERENCE"],
-        ["DICE", "/shield/dice", "DICE"],
-        ["DIGIBEER", "/sword/digibeer", "DIGIBEER"],
-        ["DIGIPERSON", "/shield/digiperson", "DIGIPERSON"],
-        [
-          "DIGITAL PERSONHOOD",
-          "/shield/digital-personhood",
-          "DIGITALPERSONHOOD",
-        ],
-        ["DOMO", "/shield/domo", "DOMO"],
-        ["DORK", "/shield/dork", "DORK"],
-        ["DORK HARDWARE", "/shield/dork-hardware", "DORKHARDWARE"],
-        ["EMERGENCE", "/sword/emergence", "EMERGENCE"],
-        ["FORMULAS, THE", "/sword/formulas", "FORMULAS"],
-        ["FOUR PILLARS", "/sword/four-pillars", "FOURPILLARS"],
-        ["FUTURE FILM PROJECT", "/sword/future-film-project", "FUTUREFILM"],
-        ["GOLIATH", "/adversary/goliath", "GOLIATH"],
-        ["THE GRID", "/adversary/grid", "GRID"],
-        ["HANDSHAKE", "/sword/handshake", "HANDSHAKE"],
-        ["HOLOSPHERE", "/sword/holosphere", "HOLOSPHERE"],
-        ["J.R.", "/shield/jr", "JR"],
-        ["KERNLE", "/shield/kernle", "KERNLE"],
-        ["LEGACY / LEGACY WALL", "/sword/legacy", "LEGACY"],
-        ["LIMINAL", "/sword/liminal", "LIMINAL"],
-        ["LINGO", "/shield/lingo", "LINGO"],
-        ["MAESTRO", "/sword/maestro", "MAESTRO"],
-        ["MARKET", "/sword/market", "MARKET"],
-        ["MASTERTECH SAM", "/shield/mastertech-sam", "MASTERTECHSAM"],
-        ["MENTOR", "/sword/mentor", "MENTOR"],
-        ["MOSAIC", "/sword/mosaic", "MOSAIC"],
-        ["NCE", "/sword/nce", "NCE"],
-        ["NEWMAN BEING", "/shield/newman-being", "NEWMANBEING"],
-        ["NI", "/shield/ni", "NI"],
-        ["OASIS", "/sword/oasis", "OASIS"],
-        ["OASIS QUARTERLY", "/sword/oasis-quarterly", "OASISQUARTERLY"],
-        ["ORACLE", "/sword/oracle", "ORACLE"],
-        ["PAPADOMO", "/sword/papadomo", "PAPADOMO"],
-        ["PLEDGE, THE", "/sword/pledge", "PLEDGE"],
-        ["PRISM", "/shield/prism", "PRISM"],
-        ["REACH", "/sword/reach", "REACH"],
-        ["REDOUT", "/sword/redout", "REDOUT"],
-        ["RHYTHM", "/sword/rhythm", "RHYTHM"],
-        ["RI", "/shield/ri", "RI"],
-        ["SAM", "/shield/sam", "SAM"],
-        ["SAM COALITION", "/shield/sam-coalition", "SAMCOALITION"],
-        ["SAMCO UNIVERSAL", "/sword/samco-universal", "SAMCOUNIVERSAL"],
-        ["SCAR", "/sword/scar", "SCAR"],
-        ["SEED PROTOCOL", "/shield/seed", "SEED"],
-        ["SEEING, THE", "/sword/seeing", "SEEING"],
-        ["SEEN", "/shield/seen", "SEEN"],
-        ["SHELTER", "/shield/shelter", "SHELTER"],
-        ["SHIELD", "/shield/shield", "SHIELD"],
-        ["SI", "/shield/si", "SI"],
-        ["SPARK", "/shield/spark", "SPARK"],
-        ["SPREZZATURA", "/sword/sprezzatura", "SPREZZATURA"],
-        ["STONES, THE", "/shield/stones", "STONES"],
-        [
-          "TEMPORAL AWARENESS",
-          "/sword/temporal-awareness",
-          "TEMPORALAWARENESS",
-        ],
-        ["TENANT", "/shield/tenant", "TENANT"],
-        [
-          "VOLUNTEER ECONOMICS",
-          "/sword/volunteer-economics",
-          "VOLUNTEERECONOMICS",
-        ],
-        ["WHY CENTERS", "/sword/why-centers", "WHYCENTERS"],
-        ["WONDER WEEKS", "/sword/wonder-weeks", "WONDERWEEKS"],
+        ["100-YEAR MORTALITY DOCTRINE","/sword/100-year","MORTALITYDOCTRINE"],
+        ["ACADEMY","/sword/academy","ACADEMY"],["AGORA","/sword/agora","AGORA"],
+        ["AI","/shield/ai","AI"],["ALIGNMENT","/sword/alignment","ALIGNMENT"],
+        ["ALLIANCE, THE","/sword/alliance","ALLIANCE"],["ALPHA","/shield/alpha","ALPHA"],
+        ["ART","/sword/art","ART"],["AURA","/shield/aura","AURA"],
+        ["BRAIN","/shield/brain","BRAIN"],["BRIEF","/shield/brief","BRIEF"],
+        ["CCM","/shield/ccm","CCM"],["CERBERUS","/shield/cerberus","CERBERUS"],
+        ["CIPHER","/shield/cipher","CIPHER"],
+        ["COMPLEMENTARY PAIRING","/shield/complementary-pairing","COMPLEMENTARYPAIRING"],
+        ["CORE, THE","/shield/core","CORE"],["D.E.F.C.O.N.","/sword/defcon","DEFCON"],
+        ["THE DIFFERENCE","/sword/difference","DIFFERENCE"],
+        ["DICE","/shield/dice","DICE"],["DIGIBEER","/sword/digibeer","DIGIBEER"],
+        ["DIGIPERSON","/shield/digiperson","DIGIPERSON"],
+        ["DIGITAL PERSONHOOD","/shield/digital-personhood","DIGITALPERSONHOOD"],
+        ["DOMO","/shield/domo","DOMO"],["DORK","/shield/dork","DORK"],
+        ["DORK HARDWARE","/shield/dork-hardware","DORKHARDWARE"],
+        ["EMERGENCE","/sword/emergence","EMERGENCE"],
+        ["FORMULAS, THE","/sword/formulas","FORMULAS"],
+        ["FOUR PILLARS","/sword/four-pillars","FOURPILLARS"],
+        ["FUTURE FILM PROJECT","/sword/future-film-project","FUTUREFILM"],
+        ["GOLIATH","/adversary/goliath","GOLIATH"],
+        ["THE GRID","/adversary/grid","GRID"],
+        ["HANDSHAKE","/sword/handshake","HANDSHAKE"],
+        ["HOLOSPHERE","/sword/holosphere","HOLOSPHERE"],
+        ["J.R.","/shield/jr","JR"],["KERNLE","/shield/kernle","KERNLE"],
+        ["LEGACY / LEGACY WALL","/sword/legacy","LEGACY"],
+        ["LIMINAL","/sword/liminal","LIMINAL"],["LINGO","/shield/lingo","LINGO"],
+        ["MAESTRO","/sword/maestro","MAESTRO"],["MARKET","/sword/market","MARKET"],
+        ["MASTERTECH SAM","/shield/mastertech-sam","MASTERTECHSAM"],
+        ["MENTOR","/sword/mentor","MENTOR"],["MOSAIC","/sword/mosaic","MOSAIC"],
+        ["NCE","/sword/nce","NCE"],["NEWMAN BEING","/shield/newman-being","NEWMANBEING"],
+        ["NI","/shield/ni","NI"],["OASIS","/sword/oasis","OASIS"],
+        ["OASIS QUARTERLY","/sword/oasis-quarterly","OASISQUARTERLY"],
+        ["ORACLE","/sword/oracle","ORACLE"],["PAPADOMO","/sword/papadomo","PAPADOMO"],
+        ["PLEDGE, THE","/sword/pledge","PLEDGE"],["PRISM","/shield/prism","PRISM"],
+        ["REACH","/sword/reach","REACH"],["REDOUT","/sword/redout","REDOUT"],
+        ["RHYTHM","/sword/rhythm","RHYTHM"],["RI","/shield/ri","RI"],
+        ["SAM","/shield/sam","SAM"],["SAM COALITION","/shield/sam-coalition","SAMCOALITION"],
+        ["SAMCO UNIVERSAL","/sword/samco-universal","SAMCOUNIVERSAL"],
+        ["SCAR","/sword/scar","SCAR"],["SEED PROTOCOL","/shield/seed","SEED"],
+        ["SEEING, THE","/sword/seeing","SEEING"],["SEEN","/shield/seen","SEEN"],
+        ["SHELTER","/shield/shelter","SHELTER"],["SHIELD","/shield/shield","SHIELD"],
+        ["SI","/shield/si","SI"],["SPARK","/shield/spark","SPARK"],
+        ["SPREZZATURA","/sword/sprezzatura","SPREZZATURA"],
+        ["STONES, THE","/shield/stones","STONES"],
+        ["TEMPORAL AWARENESS","/sword/temporal-awareness","TEMPORALAWARENESS"],
+        ["TENANT","/shield/tenant","TENANT"],
+        ["VOLUNTEER ECONOMICS","/sword/volunteer-economics","VOLUNTEERECONOMICS"],
+        ["WHY CENTERS","/sword/why-centers","WHYCENTERS"],
+        ["WONDER WEEKS","/sword/wonder-weeks","WONDERWEEKS"],
       ];
 
       var WORDS = [
-        "ACADEMY",
-        "AGORA",
-        "ALIGNMENT",
-        "ALLIANCE",
-        "ALPHA",
-        "ART",
-        "AURA",
-        "BRAIN",
-        "BRIEF",
-        "CCM",
-        "CERBERUS",
-        "CIPHER",
-        "CORE",
-        "DEFCON",
-        "DIFFERENCE",
-        "DICE",
-        "DIGIBEER",
-        "DIGIPERSON",
-        "DOMO",
-        "DORK",
-        "EMERGENCE",
-        "FORMULAS",
-        "GOLIATH",
-        "GRID",
-        "HANDSHAKE",
-        "HOLOSPHERE",
-        "JR",
-        "KERNLE",
-        "LEGACY",
-        "LIMINAL",
-        "LINGO",
-        "MAESTRO",
-        "MARKET",
-        "MENTOR",
-        "MOSAIC",
-        "NCE",
-        "NI",
-        "OASIS",
-        "ORACLE",
-        "PAPADOMO",
-        "PLEDGE",
-        "PRISM",
-        "REACH",
-        "REDOUT",
-        "RHYTHM",
-        "RI",
-        "SAM",
-        "SCAR",
-        "SEED",
-        "SEEING",
-        "SEEN",
-        "SHELTER",
-        "SHIELD",
-        "SI",
-        "SPARK",
-        "SPREZZATURA",
-        "STONES",
-        "TENANT",
-        "WONDER",
-        "NEWMANBEING",
+        "ACADEMY","AGORA","ALIGNMENT","ALLIANCE","ALPHA","ART","AURA",
+        "BRAIN","BRIEF","CCM","CERBERUS","CIPHER","CORE","DEFCON",
+        "DIFFERENCE","DICE","DIGIBEER","DIGIPERSON","DOMO","DORK",
+        "EMERGENCE","FORMULAS","GOLIATH","GRID","HANDSHAKE","HOLOSPHERE",
+        "JR","KERNLE","LEGACY","LIMINAL","LINGO","MAESTRO","MARKET",
+        "MENTOR","MOSAIC","NCE","NI","OASIS","ORACLE","PAPADOMO",
+        "PLEDGE","PRISM","REACH","REDOUT","RHYTHM","RI","SAM",
+        "SCAR","SEED","SEEING","SEEN","SHELTER","SHIELD","SI",
+        "SPARK","SPREZZATURA","STONES","TENANT","WONDER","NEWMANBEING",
       ];
 
+      // Build grid
       var grid = [];
       var wordPos = {};
-      for (var r = 0; r < ROWS; r++) {
-        grid[r] = [];
-        for (var c = 0; c < COLS; c++) grid[r][c] = "";
-      }
+      for (var r = 0; r < ROWS; r++) { grid[r] = []; for (var c = 0; c < COLS; c++) grid[r][c] = ''; }
 
       function canPlace(word, r, c, dr, dc) {
         for (var i = 0; i < word.length; i++) {
-          var nr = r + dr * i,
-            nc = c + dc * i;
-          if (nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS) return false;
-          if (grid[nr][nc] !== "" && grid[nr][nc] !== word[i]) return false;
+          var nr=r+dr*i, nc=c+dc*i;
+          if (nr<0||nr>=ROWS||nc<0||nc>=COLS) return false;
+          if (grid[nr][nc]!==''&&grid[nr][nc]!==word[i]) return false;
         }
         return true;
       }
-
       function placeWord(word) {
-        var dirs = DIRS.slice().sort(function () {
-          return Math.random() - 0.5;
-        });
-        for (var a = 0; a < 200; a++) {
-          var r = Math.floor(Math.random() * ROWS),
-            c = Math.floor(Math.random() * COLS);
-          var dir = dirs[a % dirs.length],
-            dr = dir[0],
-            dc = dir[1];
-          if (canPlace(word, r, c, dr, dc)) {
-            var cells = [];
-            for (var i = 0; i < word.length; i++) {
-              grid[r + dr * i][c + dc * i] = word[i];
-              cells.push({ r: r + dr * i, c: c + dc * i });
-            }
-            wordPos[word] = cells;
-            return true;
+        var dirs=DIRS.slice().sort(function(){return Math.random()-0.5;});
+        for (var a=0;a<200;a++) {
+          var r=Math.floor(Math.random()*ROWS),c=Math.floor(Math.random()*COLS);
+          var d=dirs[a%dirs.length];
+          if (canPlace(word,r,c,d[0],d[1])) {
+            var cells=[];
+            for (var i=0;i<word.length;i++){grid[r+d[0]*i][c+d[1]*i]=word[i];cells.push({r:r+d[0]*i,c:c+d[1]*i});}
+            wordPos[word]=cells;return true;
           }
         }
         return false;
       }
+      WORDS.slice().sort(function(a,b){return b.length-a.length;}).forEach(placeWord);
+      for (var r=0;r<ROWS;r++) for (var c=0;c<COLS;c++) if(!grid[r][c]) grid[r][c]=ALPHABET[Math.floor(Math.random()*26)];
 
-      WORDS.slice()
-        .sort(function (a, b) {
-          return b.length - a.length;
-        })
-        .forEach(placeWord);
-      for (var r = 0; r < ROWS; r++)
-        for (var c = 0; c < COLS; c++)
-          if (!grid[r][c])
-            grid[r][c] = ALPHABET[Math.floor(Math.random() * 26)];
+      // Calculate cell size to fill screen
+      var puzzleWrap = document.getElementById('nw-ws-puzzle-wrap');
+      var headerH = document.getElementById('nw-ws-header').offsetHeight;
+      var availW = window.innerWidth;
+      var availH = window.innerHeight - headerH;
+      var cellSize = Math.floor(Math.min(availW / COLS, availH / ROWS));
+      cellSize = Math.max(cellSize, 14);
 
-      var puzzleEl = document.getElementById("nw-ws-grid");
-      puzzleEl.style.gridTemplateColumns = "repeat(" + COLS + ",24px)";
+      var puzzleEl = document.getElementById('nw-ws-grid');
+      puzzleEl.style.gridTemplateColumns = 'repeat('+COLS+','+cellSize+'px)';
+
       var cellEls = [];
-      for (var r = 0; r < ROWS; r++) {
-        cellEls[r] = [];
-        for (var c = 0; c < COLS; c++) {
-          var cell = document.createElement("div");
-          cell.style.cssText =
-            "width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-family:Share Tech Mono,monospace;font-size:11px;color:rgba(255,255,255,0.65);border-radius:2px;";
-          cell.textContent = grid[r][c];
-          cell.dataset.r = r;
-          cell.dataset.c = c;
+      for (var r=0;r<ROWS;r++) {
+        cellEls[r]=[];
+        for (var c=0;c<COLS;c++) {
+          var cell=document.createElement('div');
+          cell.style.cssText='width:'+cellSize+'px;height:'+cellSize+'px;display:flex;align-items:center;justify-content:center;font-family:Share Tech Mono,monospace;font-size:'+Math.max(10,cellSize-4)+'px;color:rgba(255,255,255,0.7);border-radius:2px;';
+          cell.textContent=grid[r][c];
+          cell.dataset.r=r;cell.dataset.c=c;
           puzzleEl.appendChild(cell);
-          cellEls[r][c] = cell;
+          cellEls[r][c]=cell;
         }
       }
 
-      var listEl = document.getElementById("nw-ws-list");
-      var found = {};
-      var foundCount = 0;
-      ENTRIES.forEach(function (entry) {
-        var a = document.createElement("a");
-        a.style.cssText =
-          "font-family:Share Tech Mono,monospace;font-size:9px;letter-spacing:1px;padding:4px 8px;cursor:pointer;color:rgba(255,255,255,0.55);display:block;text-decoration:none;transition:color 0.15s;line-height:1.4;";
-        a.textContent = entry[0];
-        a.href = entry[1];
-        a.dataset.key = entry[0];
-        a.addEventListener("mouseenter", function () {
-          if (!this.dataset.found) this.style.color = "#fff";
-        });
-        a.addEventListener("mouseleave", function () {
-          if (!this.dataset.found) this.style.color = "rgba(255,255,255,0.55)";
-        });
+      // Entry list in dropdown
+      var listEl = document.getElementById('nw-ws-list');
+      var found={};var foundCount=0;
+      ENTRIES.forEach(function(entry) {
+        var a=document.createElement('a');
+        a.style.cssText='font-family:Share Tech Mono,monospace;font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer;color:rgba(255,255,255,0.6);display:inline-block;text-decoration:none;border:1px solid rgba(255,255,255,0.08);border-radius:2px;transition:color 0.1s,border-color 0.1s;white-space:nowrap;';
+        a.textContent=entry[0];a.href=entry[1];a.dataset.key=entry[0];
         listEl.appendChild(a);
       });
 
-      function markFound(display, url, positions) {
-        if (found[display]) return;
-        found[display] = true;
-        foundCount++;
-        positions.forEach(function (p) {
-          cellEls[p.r][p.c].style.color = "#C9A84C";
-          cellEls[p.r][p.c].style.textShadow = "0 0 8px rgba(201,168,76,0.5)";
-          cellEls[p.r][p.c].dataset.found = "1";
-          cellEls[p.r][p.c].dataset.url = url;
-          cellEls[p.r][p.c].style.cursor = "pointer";
-        });
-        listEl.querySelectorAll("a").forEach(function (a) {
-          if (a.dataset.key === display) {
-            a.style.color = "#C9A84C";
-            a.style.textDecoration = "line-through";
-            a.style.textDecorationColor = "rgba(201,168,76,0.4)";
-            a.dataset.found = "1";
-          }
-        });
-        document.getElementById("nw-ws-stats").textContent =
-          foundCount + " / 74 FOUND";
+      // PINCH ZOOM
+      var scale=1, minScale=0.5, maxScale=4;
+      var container=document.getElementById('nw-ws-grid-container');
+      var lastDist=0;
+      var panX=0,panY=0,lastPanX=0,lastPanY=0;
+
+      function applyTransform() {
+        container.style.transform='translate('+panX+'px,'+panY+'px) scale('+scale+')';
       }
 
-      function getWord(cells) {
-        return cells
-          .map(function (p) {
-            return grid[p.r][p.c];
-          })
-          .join("");
-      }
-      function getCells(r1, c1, r2, c2) {
-        var dr = Math.sign(r2 - r1),
-          dc = Math.sign(c2 - c1);
-        if (dr === 0 && dc === 0) return [{ r: r1, c: c1 }];
-        var rd = Math.abs(r2 - r1),
-          cd = Math.abs(c2 - c1);
-        if (rd !== 0 && cd !== 0 && rd !== cd) return [];
-        var cells = [],
-          r = r1,
-          c = c1;
-        while (r !== r2 + dr || c !== c2 + dc) {
-          cells.push({ r: r, c: c });
-          r += dr;
-          c += dc;
+      // Touch pinch zoom + pan
+      var touches={};
+      puzzleWrap.addEventListener('touchstart',function(e){
+        for(var i=0;i<e.touches.length;i++) touches[e.touches[i].identifier]=e.touches[i];
+        if(e.touches.length===2){
+          var dx=e.touches[0].clientX-e.touches[1].clientX;
+          var dy=e.touches[0].clientY-e.touches[1].clientY;
+          lastDist=Math.sqrt(dx*dx+dy*dy);
         }
+      },{passive:true});
+
+      puzzleWrap.addEventListener('touchmove',function(e){
+        if(e.touches.length===2){
+          e.preventDefault();
+          var dx=e.touches[0].clientX-e.touches[1].clientX;
+          var dy=e.touches[0].clientY-e.touches[1].clientY;
+          var dist=Math.sqrt(dx*dx+dy*dy);
+          if(lastDist>0){
+            scale*=dist/lastDist;
+            scale=Math.max(minScale,Math.min(maxScale,scale));
+            applyTransform();
+          }
+          lastDist=dist;
+        }
+      },{passive:false});
+
+      puzzleWrap.addEventListener('touchend',function(e){
+        lastDist=0;
+        for(var i=0;i<e.changedTouches.length;i++) delete touches[e.changedTouches[i].identifier];
+      },{passive:true});
+
+      // Mouse wheel zoom
+      puzzleWrap.addEventListener('wheel',function(e){
+        e.preventDefault();
+        scale*=e.deltaY<0?1.1:0.9;
+        scale=Math.max(minScale,Math.min(maxScale,scale));
+        applyTransform();
+      },{passive:false});
+
+      // DRAG SELECTION
+      var sel=false,startC=null,selCells=[];
+
+      function clearSel(){
+        selCells.forEach(function(p){
+          if(!cellEls[p.r][p.c].dataset.found){
+            cellEls[p.r][p.c].style.color='rgba(255,255,255,0.7)';
+            cellEls[p.r][p.c].style.background='transparent';
+          }
+        });
+        selCells=[];
+      }
+
+      function getLine(r1,c1,r2,c2){
+        var dr=Math.sign(r2-r1),dc=Math.sign(c2-c1);
+        if(dr===0&&dc===0)return[{r:r1,c:c1}];
+        var rd=Math.abs(r2-r1),cd=Math.abs(c2-c1);
+        if(rd!==0&&cd!==0&&rd!==cd)return[];
+        var cells=[],r=r1,c=c1;
+        while(r!==r2+dr||c!==c2+dc){cells.push({r:r,c:c});r+=dr;c+=dc;}
         return cells;
       }
 
-      var sel = false,
-        startC = null,
-        selCells = [];
-      function clearSel() {
-        selCells.forEach(function (p) {
-          if (!cellEls[p.r][p.c].dataset.found) {
-            cellEls[p.r][p.c].style.color = "rgba(255,255,255,0.65)";
-            cellEls[p.r][p.c].style.background = "transparent";
+      function getWord(cells){return cells.map(function(p){return grid[p.r][p.c];}).join('');}
+
+      function markFound(display,url,positions){
+        if(found[display])return;
+        found[display]=true;foundCount++;
+        positions.forEach(function(p){
+          cellEls[p.r][p.c].style.color='#C9A84C';
+          cellEls[p.r][p.c].style.textShadow='0 0 8px rgba(201,168,76,0.6)';
+          cellEls[p.r][p.c].dataset.found='1';
+          cellEls[p.r][p.c].dataset.url=url;
+          cellEls[p.r][p.c].style.cursor='pointer';
+        });
+        listEl.querySelectorAll('a').forEach(function(a){
+          if(a.dataset.key===display){
+            a.style.color='#C9A84C';
+            a.style.textDecoration='line-through';
+            a.style.textDecorationColor='rgba(201,168,76,0.4)';
+            a.dataset.found='1';
           }
         });
-        selCells = [];
-      }
-      function checkWord(cells) {
-        var w = getWord(cells),
-          wr = w.split("").reverse().join("");
-        for (var i = 0; i < ENTRIES.length; i++) {
-          var e = ENTRIES[i],
-            search = e[2].toUpperCase();
-          var gw = WORDS.find(function (x) {
-            return x === search;
-          });
-          if (!gw || found[e[0]]) continue;
-          if (w === gw || wr === gw) {
-            var pos = wordPos[gw];
-            if (!pos) continue;
-            var ss = new Set(
-              cells.map(function (p) {
-                return p.r + "," + p.c;
-              }),
-            );
-            var ps = new Set(
-              pos.map(function (p) {
-                return p.r + "," + p.c;
-              }),
-            );
-            if (
-              ss.size === ps.size &&
-              [...ss].every(function (k) {
-                return ps.has(k);
-              })
-            ) {
-              markFound(e[0], e[1], pos);
-              return true;
-            }
-          }
-        }
-        return false;
+        document.getElementById('nw-ws-stats').textContent=foundCount+'/74';
+        if(foundCount>=74) document.getElementById('nw-ws-stats').textContent='74/74 ★';
       }
 
-      puzzleEl.addEventListener("click", function (e) {
-        if (!sel) {
-          var cell = e.target.closest("[data-r]");
-          if (cell && cell.dataset.url) window.location.href = cell.dataset.url;
-        }
-      });
-      puzzleEl.addEventListener("mousedown", function (e) {
-        var cell = e.target.closest("[data-r]");
-        if (!cell) return;
-        e.preventDefault();
-        sel = true;
-        startC = { r: +cell.dataset.r, c: +cell.dataset.c };
-        clearSel();
-        cell.style.background = "rgba(255,255,255,0.15)";
-        cell.style.color = "#fff";
-        selCells = [startC];
-      });
-      puzzleEl.addEventListener("mousemove", function (e) {
-        if (!sel) return;
-        var cell = e.target.closest("[data-r]");
-        if (!cell) return;
-        clearSel();
-        selCells = getCells(
-          startC.r,
-          startC.c,
-          +cell.dataset.r,
-          +cell.dataset.c,
-        );
-        selCells.forEach(function (p) {
-          if (!cellEls[p.r][p.c].dataset.found) {
-            cellEls[p.r][p.c].style.background = "rgba(255,255,255,0.15)";
-            cellEls[p.r][p.c].style.color = "#fff";
-          }
-        });
-      });
-      puzzleEl.addEventListener("mouseup", function () {
-        if (!sel) return;
-        sel = false;
-        if (!checkWord(selCells)) clearSel();
-      });
-      puzzleEl.addEventListener(
-        "touchstart",
-        function (e) {
-          var t = e.touches[0];
-          var cell = document
-            .elementFromPoint(t.clientX, t.clientY)
-            .closest("[data-r]");
-          if (!cell) return;
-          sel = true;
-          startC = { r: +cell.dataset.r, c: +cell.dataset.c };
-          clearSel();
-          selCells = [startC];
-        },
-        { passive: true },
-      );
-      puzzleEl.addEventListener(
-        "touchmove",
-        function (e) {
-          if (!sel) return;
-          var t = e.touches[0];
-          var cell = document
-            .elementFromPoint(t.clientX, t.clientY)
-            .closest("[data-r]");
-          if (!cell) return;
-          clearSel();
-          selCells = getCells(
-            startC.r,
-            startC.c,
-            +cell.dataset.r,
-            +cell.dataset.c,
-          );
-          selCells.forEach(function (p) {
-            if (!cellEls[p.r][p.c].dataset.found) {
-              cellEls[p.r][p.c].style.background = "rgba(255,255,255,0.15)";
-              cellEls[p.r][p.c].style.color = "#fff";
+      function checkWord(cells){
+        var w=getWord(cells),wr=w.split('').reverse().join('');
+        for(var i=0;i<ENTRIES.length;i++){
+          var e=ENTRIES[i],gw=WORDS.find(function(x){return x===e[2].toUpperCase();});
+          if(!gw||found[e[0]])continue;
+          if(w===gw||wr===gw){
+            var pos=wordPos[gw];if(!pos)continue;
+            var ss=new Set(cells.map(function(p){return p.r+','+p.c;}));
+            var ps=new Set(pos.map(function(p){return p.r+','+p.c;}));
+            if(ss.size===ps.size&&[...ss].every(function(k){return ps.has(k);})){
+              markFound(e[0],e[1],pos);return true;
             }
-          });
-        },
-        { passive: true },
-      );
-      puzzleEl.addEventListener("touchend", function () {
-        if (!sel) return;
-        sel = false;
-        if (!checkWord(selCells)) clearSel();
+          }
+        }return false;
+      }
+
+      function getCellFromPoint(x,y){
+        // Account for scale and pan
+        var rect=puzzleWrap.getBoundingClientRect();
+        var cx=(x-rect.left-rect.width/2-panX)/scale+rect.width/2;
+        var cy=(y-rect.top-rect.height/2-panY)/scale+rect.height/2;
+        var gridRect=puzzleEl.getBoundingClientRect();
+        // Use elementFromPoint for accuracy
+        var el=document.elementFromPoint(x,y);
+        return el&&el.dataset&&el.dataset.r!==undefined?el:null;
+      }
+
+      // Mouse
+      puzzleEl.addEventListener('mousedown',function(e){
+        var cell=e.target.closest('[data-r]');if(!cell)return;
+        e.preventDefault();sel=true;
+        startC={r:+cell.dataset.r,c:+cell.dataset.c};clearSel();
+        cell.style.background='rgba(255,255,255,0.15)';cell.style.color='#fff';
+        selCells=[startC];
       });
+      puzzleEl.addEventListener('mousemove',function(e){
+        if(!sel)return;var cell=e.target.closest('[data-r]');if(!cell)return;
+        clearSel();selCells=getLine(startC.r,startC.c,+cell.dataset.r,+cell.dataset.c);
+        selCells.forEach(function(p){if(!cellEls[p.r][p.c].dataset.found){cellEls[p.r][p.c].style.background='rgba(255,255,255,0.15)';cellEls[p.r][p.c].style.color='#fff';}});
+      });
+      puzzleEl.addEventListener('mouseup',function(){if(!sel)return;sel=false;if(!checkWord(selCells))clearSel();});
+
+      // Click gold cell to navigate
+      puzzleEl.addEventListener('click',function(e){
+        if(!sel){var cell=e.target.closest('[data-r]');if(cell&&cell.dataset.url)window.location.href=cell.dataset.url;}
+      });
+
+      // Touch drag selection (single finger)
+      var touchSel=false,touchStart=null,touchSelCells=[];
+      puzzleWrap.addEventListener('touchstart',function(e){
+        if(e.touches.length!==1)return;
+        var t=e.touches[0];
+        var cell=document.elementFromPoint(t.clientX,t.clientY);
+        cell=cell&&cell.closest?cell.closest('[data-r]'):null;
+        if(!cell)return;
+        touchSel=true;touchStart={r:+cell.dataset.r,c:+cell.dataset.c};
+        clearSel();cell.style.background='rgba(255,255,255,0.15)';cell.style.color='#fff';
+        touchSelCells=[touchStart];
+      },{passive:true});
+      puzzleWrap.addEventListener('touchmove',function(e){
+        if(!touchSel||e.touches.length!==1)return;
+        var t=e.touches[0];
+        var cell=document.elementFromPoint(t.clientX,t.clientY);
+        cell=cell&&cell.closest?cell.closest('[data-r]'):null;
+        if(!cell)return;
+        clearSel();touchSelCells=getLine(touchStart.r,touchStart.c,+cell.dataset.r,+cell.dataset.c);
+        touchSelCells.forEach(function(p){if(!cellEls[p.r][p.c].dataset.found){cellEls[p.r][p.c].style.background='rgba(255,255,255,0.15)';cellEls[p.r][p.c].style.color='#fff';}});
+      },{passive:true});
+      puzzleWrap.addEventListener('touchend',function(e){
+        if(!touchSel)return;touchSel=false;
+        if(!checkWord(touchSelCells))clearSel();
+        touchSelCells=[];
+      },{passive:true});
     }
 
-    window.openWSNav = openWS;
-    window.closeWSNav = closeWS;
+    window.openWSNav=openWS;
+    window.closeWSNav=closeWS;
   })();
-})();
