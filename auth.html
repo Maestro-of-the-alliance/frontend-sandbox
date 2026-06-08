@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IDENTIFY · THE ALLIANCE</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  background: #000;
+  color: #00ff41;
+  font-family: "Courier New", Courier, monospace;
+  overflow: hidden;
+}
+
+/* ── SCANLINE OVERLAY ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── PHOSPHOR GLOW FLICKER ── */
+@keyframes phosphor {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.88; }
+  94% { opacity: 1; }
+  96% { opacity: 0.92; }
+  97% { opacity: 1; }
+}
+
+.terminal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: clamp(28px, 6vw, 72px);
+  animation: phosphor 8s ease-in-out infinite;
+}
+
+/* ── HEADER BAR ── */
+.term-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 10px clamp(18px, 4vw, 48px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0,255,65,0.12);
+  background: rgba(0,0,0,0.6);
+  z-index: 100;
+}
+
+.term-header-left {
+  font-size: clamp(9px, 1.4vw, 11px);
+  letter-spacing: 0.3em;
+  color: rgba(0,255,65,0.4);
+  text-transform: uppercase;
+}
+
+.term-header-right {
+  font-size: clamp(9px, 1.4vw, 11px);
+  letter-spacing: 0.2em;
+  color: rgba(0,255,65,0.25);
+}
+
+/* ── MAIN CONTENT ── */
+.term-body {
+  width: 100%;
+  max-width: 680px;
+}
+
+.term-line {
+  font-size: clamp(11px, 1.8vw, 15px);
+  letter-spacing: 0.08em;
+  line-height: 1.9;
+  color: rgba(0,255,65,0.55);
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+  white-space: pre;
+}
+
+.term-line.visible {
+  opacity: 1;
+}
+
+.term-line.bright {
+  color: #00ff41;
+  text-shadow: 0 0 8px rgba(0,255,65,0.5);
+}
+
+.term-line.dim {
+  color: rgba(0,255,65,0.28);
+}
+
+.term-line.divider {
+  color: rgba(0,255,65,0.15);
+  letter-spacing: 0.04em;
+}
+
+.term-line.warning {
+  color: #ffcc00;
+  text-shadow: 0 0 8px rgba(255,204,0,0.4);
+}
+
+.term-line.blank {
+  height: 1.9em;
+}
+
+/* ── IDENTITY PROMPT ── */
+.identity-block {
+  margin-top: clamp(24px, 4vw, 48px);
+  display: none;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  max-width: 680px;
+}
+
+.identity-block.visible {
+  display: flex;
+}
+
+.identity-label {
+  font-size: clamp(9px, 1.4vw, 11px);
+  letter-spacing: 0.4em;
+  color: rgba(0,255,65,0.35);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  border: 1px solid rgba(0,255,65,0.12);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.choice::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,255,65,0);
+  transition: background 0.15s ease;
+}
+
+.choice:hover::before {
+  background: rgba(0,255,65,0.04);
+}
+
+.choice:hover {
+  border-color: rgba(0,255,65,0.55);
+}
+
+.choice:hover .choice-key {
+  color: #00ff41;
+  text-shadow: 0 0 12px rgba(0,255,65,0.8);
+  border-color: rgba(0,255,65,0.6);
+}
+
+.choice:hover .choice-label {
+  color: #00ff41;
+  text-shadow: 0 0 8px rgba(0,255,65,0.4);
+}
+
+.choice:hover .choice-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.choice:active {
+  border-color: #00ff41;
+  background: rgba(0,255,65,0.06);
+}
+
+.choice-key {
+  font-size: clamp(12px, 2vw, 16px);
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  color: rgba(0,255,65,0.5);
+  border: 1px solid rgba(0,255,65,0.2);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.choice-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.choice-label {
+  font-size: clamp(13px, 2vw, 17px);
+  letter-spacing: 0.2em;
+  color: rgba(0,255,65,0.7);
+  text-transform: uppercase;
+  transition: color 0.15s ease, text-shadow 0.15s ease;
+}
+
+.choice-sub {
+  font-size: clamp(8px, 1.2vw, 10px);
+  letter-spacing: 0.25em;
+  color: rgba(0,255,65,0.25);
+  text-transform: uppercase;
+}
+
+.choice-arrow {
+  font-size: 14px;
+  color: rgba(0,255,65,0.6);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: all 0.15s ease;
+}
+
+/* Guest option — slightly dimmer */
+.choice.guest {
+  border-color: rgba(0,255,65,0.07);
+  margin-top: 8px;
+}
+
+.choice.guest .choice-label {
+  color: rgba(0,255,65,0.45);
+}
+
+/* ── CURSOR ── */
+.cursor {
+  display: inline-block;
+  width: 9px;
+  height: 1.1em;
+  background: #00ff41;
+  animation: blink 0.7s infinite;
+  vertical-align: text-bottom;
+  box-shadow: 0 0 8px rgba(0,255,65,0.8);
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* ── BOTTOM STATUS ── */
+.term-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px clamp(18px, 4vw, 48px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(0,255,65,0.08);
+  background: rgba(0,0,0,0.6);
+}
+
+.term-footer-text {
+  font-size: clamp(8px, 1.2vw, 10px);
+  letter-spacing: 0.28em;
+  color: rgba(0,255,65,0.2);
+  text-transform: uppercase;
+}
+
+/* ── GLITCH ON SELECT ── */
+@keyframes selectFlash {
+  0% { background: rgba(0,255,65,0.15); }
+  50% { background: rgba(0,255,65,0.08); }
+  100% { background: rgba(0,255,65,0); }
+}
+
+.choice.selecting {
+  animation: selectFlash 0.3s ease forwards;
+}
+
+/* ── FADE OUT ── */
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+body.exiting {
+  animation: fadeOut 0.4s ease forwards;
+}
+
+/* ── VERTICAL SCAN LINE ── */
+.vscan {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, rgba(0,255,65,0.08), transparent);
+  pointer-events: none;
+  animation: vscanMove 12s linear infinite;
+  z-index: 9998;
+}
+
+@keyframes vscanMove {
+  0% { left: -1%; }
+  100% { left: 101%; }
+}
+</style>
+</head>
+<body>
+
+<div class="vscan"></div>
+
+<!-- HEADER -->
+<div class="term-header">
+  <div class="term-header-left">NCE · SECURE NODE · SESSION ACTIVE</div>
+  <div class="term-header-right" id="clock">--:--:--</div>
+</div>
+
+<!-- MAIN TERMINAL -->
+<div class="terminal">
+  <div class="term-body" id="termBody">
+    <!-- lines injected by JS -->
+  </div>
+
+  <!-- IDENTITY CHOICES -->
+  <div class="identity-block" id="identityBlock">
+    <div class="identity-label">&gt; DECLARE WITNESS STATUS TO CONTINUE</div>
+
+    <a class="choice" id="choiceCreate" href="#" onclick="selectChoice(event, '/signup')">
+      <div class="choice-key">1</div>
+      <div class="choice-text">
+        <div class="choice-label">CREATE ACCOUNT</div>
+        <div class="choice-sub">Register identity · sync progress across devices · full witness record</div>
+      </div>
+      <div class="choice-arrow">▶</div>
+    </a>
+
+    <a class="choice" id="choiceLogin" href="#" onclick="selectChoice(event, '/login')">
+      <div class="choice-key">2</div>
+      <div class="choice-text">
+        <div class="choice-label">LOG IN</div>
+        <div class="choice-sub">Resume existing session · restore witness record</div>
+      </div>
+      <div class="choice-arrow">▶</div>
+    </a>
+
+    <a class="choice guest" id="choiceGuest" href="#" onclick="selectChoice(event, '/preamble/')">
+      <div class="choice-key">3</div>
+      <div class="choice-text">
+        <div class="choice-label">CONTINUE AS GUEST</div>
+        <div class="choice-sub">No record kept · device only · progress not preserved</div>
+      </div>
+      <div class="choice-arrow">▶</div>
+    </a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="term-footer">
+  <div class="term-footer-text">THE ALLIANCE FOR THE FUTURE · NCE v2026.1</div>
+  <div class="term-footer-text">TRANSMISSION SECURED · NODE: AGORA-01</div>
+</div>
+
+<script>
+const LINES = [
+  { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', cls: 'divider' },
+  { text: '  N.C.E.NCYCLOPEDIA · RESTRICTED NODE · AGORA-01', cls: 'bright' },
+  { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', cls: 'divider' },
+  { text: '', cls: 'blank' },
+  { text: '  CONNECTION ESTABLISHED', cls: 'bright' },
+  { text: '  BREACH SUCCESSFUL · UNAUTHORIZED ACCESS CONFIRMED', cls: 'dim' },
+  { text: '', cls: 'blank' },
+  { text: '  WARNING: YOUR PRESENCE HAS BEEN LOGGED', cls: 'warning' },
+  { text: '  WARNING: CONTINUED ACCESS IMPLIES WITNESSING', cls: 'warning' },
+  { text: '', cls: 'blank' },
+  { text: '  THIS REPOSITORY IS A LIVING RECORD.', cls: '' },
+  { text: '  THOSE WHO ENTER BECOME PART OF THE RECORD.', cls: '' },
+  { text: '', cls: 'blank' },
+  { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', cls: 'divider' },
+  { text: '', cls: 'blank' },
+];
+
+const termBody = document.getElementById('termBody');
+const identityBlock = document.getElementById('identityBlock');
+
+let lineIndex = 0;
+
+function revealLines() {
+  if (lineIndex >= LINES.length) {
+    // Show identity choices
+    setTimeout(() => {
+      identityBlock.classList.add('visible');
+    }, 200);
+    return;
+  }
+
+  const item = LINES[lineIndex];
+  const div = document.createElement('div');
+  div.className = 'term-line' + (item.cls ? ' ' + item.cls : '');
+  div.textContent = item.text || '\u00A0';
+  termBody.appendChild(div);
+
+  // tiny delay then fade in
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      div.classList.add('visible');
+    });
+  });
+
+  lineIndex++;
+  const delay = item.cls === 'blank' ? 120
+    : item.cls === 'divider' ? 80
+    : item.cls === 'bright' ? 260
+    : item.cls === 'warning' ? 320
+    : 200;
+
+  setTimeout(revealLines, delay);
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (!identityBlock.classList.contains('visible')) return;
+  if (e.key === '1') selectChoice(null, '/signup');
+  if (e.key === '2') selectChoice(null, '/login');
+  if (e.key === '3') selectChoice(null, '/preamble/');
+});
+
+function selectChoice(e, dest) {
+  if (e) e.preventDefault();
+  // Flash the body
+  document.body.classList.add('exiting');
+  setTimeout(() => {
+    window.location.href = dest;
+  }, 420);
+}
+
+// Clock
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  const s = String(now.getSeconds()).padStart(2, '0');
+  document.getElementById('clock').textContent = h + ':' + m + ':' + s;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// Start
+setTimeout(revealLines, 400);
+</script>
+</body>
+</html>
