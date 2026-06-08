@@ -1,3 +1,4 @@
+// @ts-nocheck
 /*!
  * NAV WHEEL — THE ALLIANCE
  * Universal adaptive navigation component (Chameleon Engine)
