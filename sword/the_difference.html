@@ -5,614 +5,1063 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>THE DIFFERENCE — N.C.E.ncyclopedia</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oswald:wght@400;600;700&family=Bebas+Neue&family=Special+Elite&family=VT323&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap"
       rel="stylesheet"
     />
     <style>
-      /* =========================================
-         SWORD SKIN · UNAUTHORIZED TRANSMISSION
-         THE DIFFERENCE — BROADCAST VERSION
-      ========================================= */
       :root {
-        --void: #0a0800;
-        --paper: #e8dcc0;
-        --paper-dk: #d8ccaa;
-        --ink: #0d0800;
-        --red: #c0261a;
-        --red-dim: rgba(192, 38, 26, 0.6);
-        --gold: #8a6010;
-        --gold-lt: #c8921a;
-        --cream: #f4efe0;
-        --static: rgba(192, 38, 26, 0.08);
-
-        --nw-accent: var(--gold-lt);
-        --nw-accent-dim: rgba(200, 146, 26, 0.4);
-        --nw-bg: var(--void);
-        --nw-panel: var(--paper-dk);
-        --nw-text: var(--cream);
+        --void: #060608;
+        --gold: #C9A84C;
+        --gold-dim: rgba(201,168,76,0.2);
+        --gold-ghost: rgba(201,168,76,0.06);
+        --text: #e8e0d0;
+        --muted: #6a6258;
+        --ghost: #1a1814;
+        --rule: rgba(201,168,76,0.15);
+        --cold: #3a4a5a;
+        --warm: #C9A84C;
       }
 
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-
-      html { background: var(--void); }
+      * { margin:0; padding:0; box-sizing:border-box; }
+      html { scroll-behavior: smooth; }
 
       body {
-        background: var(--paper);
-        color: var(--ink);
-        font-family: "Special Elite", serif;
-        max-width: 680px;
-        margin: 0 auto;
+        background: var(--void);
+        color: var(--text);
+        font-family: 'Cormorant Garamond', Georgia, serif;
         overflow-x: hidden;
-        position: relative;
-        /* paper texture + noise */
-        background-image:
-          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.11'/%3E%3C/svg%3E"),
-          repeating-linear-gradient(0deg, transparent, transparent 23px, rgba(0,0,0,0.03) 23px, rgba(0,0,0,0.03) 24px);
       }
 
-      /* ── SIGNAL INTRUSION HEADER ── */
-      .signal-header {
-        background: var(--void);
-        position: relative;
-        overflow: hidden;
-        border-bottom: 5px solid var(--red);
+      /* SCANLINES */
+      body::before {
+        content:'';
+        position:fixed;
+        inset:0;
+        background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.06) 3px,rgba(0,0,0,0.06) 4px);
+        pointer-events:none;
+        z-index:9000;
       }
 
-      /* Ticker tape */
-      .ticker-wrap {
-        overflow: hidden;
-        background: var(--red);
-        padding: 5px 0;
-        border-bottom: 2px solid #8a1010;
-      }
-      .ticker-inner {
-        display: inline-block;
-        white-space: nowrap;
-        animation: tickerScroll 18s linear infinite;
-        font-family: "VT323", monospace;
-        font-size: 13px;
-        letter-spacing: 0.15em;
-        color: #fff;
-      }
-      @keyframes tickerScroll {
-        from { transform: translateX(0); }
-        to { transform: translateX(-50%); }
+      /* THREE.JS CANVAS */
+      #diff-canvas {
+        position:fixed;
+        top:0;left:0;
+        width:100%;height:100%;
+        z-index:0;
+        pointer-events:none;
       }
 
-      .header-grid {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 16px;
-        align-items: start;
-        padding: 20px 20px 16px;
+      /* CLASSIFICATION NAV */
+      .class-nav {
+        position:fixed;
+        top:0;left:0;right:0;
+        z-index:200;
+        background:rgba(6,6,8,0.85);
+        backdrop-filter:blur(12px);
+        border-bottom:1px solid rgba(255,255,255,0.05);
+        padding:8px 24px;
+        display:flex;
+        align-items:center;
+        gap:12px;
+      }
+      .class-nav-label {
+        font-family:'Share Tech Mono',monospace;
+        font-size:8px;
+        letter-spacing:4px;
+        color:rgba(255,255,255,0.2);
+      }
+      .class-squares { display:flex;gap:6px;align-items:center; }
+      .class-square {
+        width:18px;height:18px;
+        border-radius:3px;
+        cursor:pointer;
+        position:relative;
+        transition:transform 0.15s ease,box-shadow 0.15s ease;
+      }
+      .class-square:hover { transform:scale(1.3) translateY(-2px); }
+      .class-square .sq-tooltip {
+        position:absolute;
+        bottom:calc(100% + 8px);
+        left:50%;
+        transform:translateX(-50%);
+        background:rgba(0,0,0,0.95);
+        border:1px solid rgba(255,255,255,0.1);
+        padding:4px 10px;
+        font-family:'Share Tech Mono',monospace;
+        font-size:8px;
+        letter-spacing:3px;
+        color:#fff;
+        white-space:nowrap;
+        pointer-events:none;
+        opacity:0;
+        transition:opacity 0.15s;
+        border-radius:2px;
+      }
+      .class-square:hover .sq-tooltip { opacity:1; }
+      .class-nav-entry {
+        margin-left:auto;
+        font-family:'Share Tech Mono',monospace;
+        font-size:9px;
+        letter-spacing:3px;
+        color:rgba(255,255,255,0.15);
       }
 
-      .header-left { position: relative; }
-
-      .ghost-number {
-        font-family: "Bebas Neue", sans-serif;
-        font-size: 200px;
-        line-height: 0.75;
-        color: rgba(192, 38, 26, 0.07);
-        position: absolute;
-        top: -20px;
-        left: -12px;
-        pointer-events: none;
-        z-index: 0;
-        letter-spacing: -0.05em;
+      /* PROGRESS BAR */
+      .progress-bar {
+        position:fixed;
+        top:0;left:0;
+        height:2px;
+        background:var(--gold);
+        z-index:300;
+        width:0%;
+        transition:width 0.1s linear;
+        box-shadow:0 0 8px rgba(201,168,76,0.6);
       }
 
-      .doc-id {
-        font-family: "VT323", monospace;
-        font-size: 13px;
-        color: var(--gold);
-        letter-spacing: 0.2em;
-        position: relative;
-        z-index: 1;
-        margin-bottom: 6px;
+      /* CONTENT */
+      .content {
+        position:relative;
+        z-index:1;
+        max-width:780px;
+        margin:0 auto;
+        padding:0 32px 20vh;
       }
 
-      .main-title {
-        font-family: "Bebas Neue", sans-serif;
-        font-size: clamp(44px, 12vw, 76px);
-        color: var(--cream);
-        line-height: 0.88;
-        position: relative;
-        z-index: 1;
-        text-shadow:
-          3px 3px 0 var(--red),
-          -1px -1px 0 rgba(192,38,26,0.3);
-        letter-spacing: 0.02em;
+      /* OPENING SCREEN */
+      .screen-open {
+        min-height:100vh;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        padding:80px 0 60px;
       }
 
-      .title-sub {
-        font-family: "Special Elite", serif;
-        font-size: 11px;
-        color: var(--gold);
-        font-style: italic;
-        margin-top: 10px;
-        padding-top: 8px;
-        border-top: 1px dashed rgba(200,146,26,0.3);
-        position: relative;
-        z-index: 1;
-        line-height: 1.5;
-        letter-spacing: 0.05em;
+      .open-eyebrow {
+        font-family:'Share Tech Mono',monospace;
+        font-size:9px;
+        letter-spacing:5px;
+        color:var(--muted);
+        margin-bottom:32px;
+        display:block;
+        opacity:0;
+        animation:fadeUp 1s ease-out 0.3s both;
       }
 
-      /* Stamps */
-      .stamp-col {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        align-items: flex-end;
-        padding-top: 6px;
-      }
-      .stamp {
-        font-family: "Oswald", sans-serif;
-        font-weight: 700;
-        font-size: 8px;
-        letter-spacing: 0.18em;
-        padding: 4px 8px;
-        border: 2.5px solid currentColor;
-        line-height: 1.4;
-        text-align: center;
-        text-transform: uppercase;
-      }
-      .s-red { color: var(--red); transform: rotate(5deg); }
-      .s-gold { color: var(--gold-lt); transform: rotate(-4deg); border-style: double; border-width: 3px; }
-      .s-cream { color: rgba(244,239,224,0.6); transform: rotate(2deg); }
-      .s-green { color: #1a6a1a; transform: rotate(-6deg); }
-
-      /* ── ALERT BANNER ── */
-      .alert-banner {
-        background: var(--red);
-        color: #fff;
-        padding: 9px 20px;
-        font-family: "Oswald", sans-serif;
-        font-weight: 600;
-        font-size: 11px;
-        letter-spacing: 0.3em;
-        text-align: center;
-        border-bottom: 3px solid #8a1010;
-        text-transform: uppercase;
-        position: relative;
-        overflow: hidden;
-      }
-      .alert-banner::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(
-          90deg,
-          transparent 0px,
-          transparent 40px,
-          rgba(255,255,255,0.05) 40px,
-          rgba(255,255,255,0.05) 41px
-        );
+      .open-title {
+        font-family:'Bebas Neue',sans-serif;
+        font-size:clamp(60px,12vw,140px);
+        letter-spacing:4px;
+        line-height:0.9;
+        color:var(--text);
+        margin-bottom:32px;
+        opacity:0;
+        animation:fadeUp 1s ease-out 0.5s both;
       }
 
-      /* ── BODY ── */
-      .body-wrap {
-        padding: 0 20px;
+      .open-title em {
+        display:block;
+        color:var(--gold);
+        font-style:normal;
       }
 
-      .section {
-        padding: 16px 0;
-        border-bottom: 1px dashed rgba(13,8,0,0.2);
+      .open-subtitle {
+        font-size:clamp(18px,2.5vw,26px);
+        font-weight:300;
+        line-height:1.6;
+        color:rgba(232,224,208,0.7);
+        max-width:560px;
+        opacity:0;
+        animation:fadeUp 1s ease-out 0.8s both;
+        font-style:italic;
       }
 
-      .sec-label {
-        font-family: "VT323", monospace;
-        font-size: 15px;
-        color: var(--red);
-        letter-spacing: 0.22em;
-        margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        text-transform: uppercase;
+      /* MANIFESTO SECTIONS — full breathing room */
+      .manifesto-block {
+        min-height:70vh;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        padding:80px 0;
+        border-top:1px solid rgba(255,255,255,0.04);
+        opacity:0;
+        transform:translateY(32px);
+        transition:opacity 0.9s ease,transform 0.9s ease;
       }
-      .sec-label::after {
-        content: "";
-        flex: 1;
-        border-top: 1px dashed rgba(13,8,0,0.2);
-      }
-
-      .section p {
-        font-size: 14px;
-        line-height: 1.8;
-        margin-bottom: 12px;
-        color: var(--ink);
-      }
-      .section p:last-child { margin-bottom: 0; }
-
-      strong {
-        font-family: "Oswald", sans-serif;
-        font-weight: 600;
-        font-size: 15px;
-        letter-spacing: 0.04em;
-        color: var(--ink);
+      .manifesto-block.visible {
+        opacity:1;
+        transform:translateY(0);
       }
 
-      /* ── PULL QUOTE ── */
-      .pull {
-        background: var(--void);
-        margin: 0 -20px;
-        padding: 28px 24px;
-        position: relative;
-        overflow: hidden;
-        border-top: 3px solid var(--red);
-        border-bottom: 3px solid var(--red);
-      }
-      .pull::before {
-        content: '""';
-        font-family: "Bebas Neue", sans-serif;
-        font-size: 240px;
-        color: rgba(192,38,26,0.07);
-        position: absolute;
-        top: -50px;
-        left: -10px;
-        line-height: 1;
-        pointer-events: none;
-      }
-      /* CRT scanlines on pull */
-      .pull::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(
-          0deg,
-          rgba(0,0,0,0.08),
-          rgba(0,0,0,0.08) 1px,
-          transparent 1px,
-          transparent 2px
-        );
-        pointer-events: none;
-      }
-      .pull-text {
-        font-family: "Bebas Neue", sans-serif;
-        font-size: clamp(22px, 6vw, 36px);
-        color: var(--cream);
-        line-height: 1.15;
-        position: relative;
-        z-index: 1;
-        letter-spacing: 0.03em;
-        text-shadow: 2px 2px 0 var(--red);
-      }
-      .pull-attr {
-        font-family: "VT323", monospace;
-        font-size: 12px;
-        color: var(--gold);
-        margin-top: 14px;
-        letter-spacing: 0.18em;
-        position: relative;
-        z-index: 1;
-        text-transform: uppercase;
+      /* STATEMENT BLOCKS — big declarative lines */
+      .statement {
+        font-family:'Playfair Display',serif;
+        font-size:clamp(28px,4.5vw,52px);
+        font-weight:400;
+        line-height:1.25;
+        color:var(--text);
+        margin-bottom:24px;
+        letter-spacing:-0.5px;
       }
 
-      /* ── THE INVERSION ── */
-      .inversion-block {
-        border: 2.5px solid var(--ink);
-        padding: 14px 16px;
-        margin: 14px 0;
-        background: var(--paper-dk);
-        position: relative;
-        box-shadow: 4px 4px 0 rgba(13,8,0,0.25);
-      }
-      .inversion-block::before {
-        content: "THE INVERSION";
-        font-family: "Oswald", sans-serif;
-        font-weight: 700;
-        font-size: 8px;
-        letter-spacing: 0.35em;
-        background: var(--red);
-        color: #fff;
-        position: absolute;
-        top: -10px;
-        left: 14px;
-        padding: 2px 8px;
+      .statement em {
+        font-style:italic;
+        color:var(--gold);
       }
 
-      .inv-row {
-        display: grid;
-        grid-template-columns: 16px 1fr;
-        gap: 8px;
-        padding: 5px 0;
-        border-bottom: 1px dotted rgba(13,8,0,0.15);
-        align-items: start;
-        font-size: 13px;
-        line-height: 1.55;
-      }
-      .inv-row:last-child { border-bottom: none; }
-      .inv-arrow {
-        color: var(--red);
-        font-family: "Oswald", sans-serif;
-        font-weight: 700;
-        padding-top: 2px;
-        font-size: 12px;
+      .statement strong {
+        font-style:normal;
+        font-weight:700;
+        color:#fff;
       }
 
-      /* ── HAND NOTE ── */
-      .hand-note {
-        font-family: "Special Elite", serif;
-        font-size: 13px;
-        color: #1a2a8a;
-        line-height: 1.5;
-        padding: 8px 12px;
-        margin: 10px 0;
-        border-left: 3px solid #1a2a8a;
-        background: rgba(26,42,138,0.05);
-        transform: rotate(-0.8deg);
-        display: block;
-        font-style: italic;
+      /* BODY PROSE */
+      .prose {
+        font-size:clamp(17px,1.8vw,21px);
+        line-height:1.9;
+        color:rgba(232,224,208,0.75);
+        max-width:600px;
+      }
+      .prose p { margin-bottom:20px; }
+      .prose p:last-child { margin-bottom:0; }
+
+      /* CHILD ANIMATIONS inside manifesto blocks */
+      .manifesto-block .statement,
+      .manifesto-block .prose,
+      .manifesto-block .rhythm-block,
+      .manifesto-block .not-aspiration,
+      .manifesto-block .voluntary-block,
+      .inversion-screen .statement {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
       }
 
-      /* ── CURTAIN CALL ── */
-      .curtain {
-        background: var(--void);
-        margin: 0 -20px;
-        padding: 32px 20px;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-        border-top: 5px double var(--gold-lt);
+      .manifesto-block.visible .statement { opacity:1; transform:translateY(0); transition-delay: 0.1s; }
+      .manifesto-block.visible .prose { opacity:1; transform:translateY(0); transition-delay: 0.25s; }
+      .manifesto-block.visible .rhythm-block { opacity:1; transform:translateY(0); transition-delay: 0.4s; }
+      .manifesto-block.visible .not-aspiration { opacity:1; transform:translateY(0); transition-delay: 0.5s; }
+      .manifesto-block.visible .voluntary-block { opacity:1; transform:translateY(0); transition-delay: 0.3s; }
+
+      /* Stagger multiple statements */
+      .manifesto-block.visible .statement:nth-child(2) { transition-delay: 0.35s; }
+      .manifesto-block.visible .statement:nth-child(3) { transition-delay: 0.55s; }
+
+      /* Rhythm lines stagger */
+      .rhythm-line {
+        opacity: 0;
+        transform: translateX(-12px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
       }
-      .curtain::before {
-        content: "★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★";
-        display: block;
-        font-size: 10px;
-        color: var(--gold);
-        letter-spacing: 0.2em;
-        margin-bottom: 20px;
-        opacity: 0.5;
+      .manifesto-block.visible .rhythm-line:nth-child(1) { opacity:1; transform:translateX(0); transition-delay: 0.4s; }
+      .manifesto-block.visible .rhythm-line:nth-child(2) { opacity:1; transform:translateX(0); transition-delay: 0.55s; }
+      .manifesto-block.visible .rhythm-line:nth-child(3) { opacity:1; transform:translateX(0); transition-delay: 0.7s; }
+      .manifesto-block.visible .rhythm-line:nth-child(4) { opacity:1; transform:translateX(0); transition-delay: 0.85s; }
+      .manifesto-block.visible .rhythm-line:nth-child(5) { opacity:1; transform:translateX(0); transition-delay: 1s; }
+
+      /* Vol lines stagger */
+      .vol-line {
+        opacity: 0;
+        transform: translateX(-8px);
+        transition: opacity 0.4s ease, transform 0.4s ease;
       }
-      .curtain::after {
-        content: "★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★";
-        display: block;
-        font-size: 10px;
-        color: var(--gold);
-        letter-spacing: 0.2em;
-        margin-top: 20px;
-        opacity: 0.5;
+      .manifesto-block.visible .vol-line:nth-child(1) { opacity:1; transform:translateX(0); transition-delay: 0.3s; }
+      .manifesto-block.visible .vol-line:nth-child(2) { opacity:1; transform:translateX(0); transition-delay: 0.42s; }
+      .manifesto-block.visible .vol-line:nth-child(3) { opacity:1; transform:translateX(0); transition-delay: 0.54s; }
+      .manifesto-block.visible .vol-line:nth-child(4) { opacity:1; transform:translateX(0); transition-delay: 0.66s; }
+      .manifesto-block.visible .vol-line:nth-child(5) { opacity:1; transform:translateX(0); transition-delay: 0.78s; }
+      .manifesto-block.visible .vol-line:nth-child(6) { opacity:1; transform:translateX(0); transition-delay: 0.90s; }
+      .manifesto-block.visible .vol-line:nth-child(7) { opacity:1; transform:translateX(0); transition-delay: 1.02s; }
+
+      /* Inversion screen children */
+      .inversion-screen .inversion-label {
+        opacity: 0;
+        transform: translateY(16px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
       }
-      /* CRT scanlines on curtain */
-      .curtain-scan {
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(
-          0deg,
-          rgba(0,0,0,0.1),
-          rgba(0,0,0,0.1) 1px,
-          transparent 1px,
-          transparent 2px
-        );
-        pointer-events: none;
+      .inversion-screen.visible .inversion-label { opacity:1; transform:translateY(0); }
+        display:flex;
+        flex-direction:column;
+        gap:4px;
+        margin:24px 0;
       }
-      .curtain-title {
-        font-family: "Bebas Neue", sans-serif;
-        font-size: clamp(28px, 8vw, 52px);
-        color: var(--cream);
-        line-height: 1.1;
-        text-shadow: 3px 3px 0 var(--red), -1px -1px 0 rgba(192,38,26,0.2);
-        position: relative;
-        z-index: 1;
-        letter-spacing: 0.03em;
+      .rhythm-line {
+        font-family:'Cormorant Garamond',serif;
+        font-size:clamp(16px,1.6vw,20px);
+        color:rgba(232,224,208,0.6);
+        line-height:1.6;
+        font-style:italic;
+        padding-left:20px;
+        border-left:1px solid rgba(201,168,76,0.15);
+        transition:color 0.3s,border-color 0.3s;
       }
-      .curtain-sub {
-        font-family: "VT323", monospace;
-        font-size: 14px;
-        color: var(--gold);
-        letter-spacing: 0.2em;
-        margin-top: 14px;
-        position: relative;
-        z-index: 1;
-      }
-      .sticker {
-        display: inline-block;
-        background: var(--red);
-        color: #fff;
-        font-family: "Bebas Neue", sans-serif;
-        font-size: 12px;
-        letter-spacing: 0.15em;
-        padding: 5px 12px;
-        transform: rotate(-1.5deg);
-        box-shadow: 2px 2px 0 rgba(0,0,0,0.4);
-        margin: 6px 4px;
-        position: relative;
-        z-index: 1;
-      }
-      .sticker-gold {
-        background: var(--gold);
-        transform: rotate(1.2deg);
+      .rhythm-line:hover {
+        color:var(--text);
+        border-color:var(--gold);
       }
 
-      /* ── SEE ALSO / FOOTER ── */
-      .see-also-block {
-        border: 2px solid var(--ink);
-        border-top: 5px solid var(--ink);
-        padding: 10px 14px;
-        background: var(--paper-dk);
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        align-items: center;
-      }
-      .sa-label {
-        font-family: "Oswald", sans-serif;
-        font-weight: 700;
-        font-size: 9px;
-        letter-spacing: 0.3em;
-        color: var(--red);
-        margin-right: 6px;
-        white-space: nowrap;
-      }
-      .sa-item {
-        font-family: "VT323", monospace;
-        font-size: 15px;
-        border: 1px solid var(--ink);
-        padding: 1px 9px;
-        background: var(--cream);
-        letter-spacing: 0.1em;
-        text-decoration: none;
-        color: var(--ink);
-        cursor: pointer;
-        transition: background 0.15s, color 0.15s;
-      }
-      .sa-item:hover {
-        background: var(--red);
-        color: #fff;
-        border-color: var(--red);
+      /* THE BIG LIST — inversions */
+      .inversion-screen {
+        min-height:100vh;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        padding:80px 0;
+        border-top:1px solid rgba(255,255,255,0.04);
       }
 
-      .doc-footer {
-        background: var(--void);
-        padding: 10px 20px;
-        display: flex;
-        justify-content: space-between;
-        font-family: "VT323", monospace;
-        font-size: 13px;
-        color: var(--gold);
-        letter-spacing: 0.12em;
-        border-top: 3px solid var(--gold-lt);
+      .inversion-label {
+        font-family:'Share Tech Mono',monospace;
+        font-size:9px;
+        letter-spacing:5px;
+        color:var(--muted);
+        margin-bottom:48px;
+        display:block;
       }
 
-      .nav-buffer { height: 80px; }
+      .inversion-list {
+        display:flex;
+        flex-direction:column;
+        gap:0;
+      }
 
-      @media (max-width: 480px) {
-        .body-wrap { padding: 0 14px; }
-        .pull { margin: 0 -14px; padding: 24px 16px; }
-        .curtain { margin: 0 -14px; }
-        .header-grid { padding: 16px 14px 12px; }
+      .inversion-pair {
+        display:grid;
+        grid-template-columns:1fr 40px 1fr;
+        align-items:center;
+        padding:14px 0;
+        border-bottom:1px solid rgba(255,255,255,0.04);
+        opacity:0;
+        transform:translateX(-16px);
+        transition:opacity 0.5s ease,transform 0.5s ease,background 0.2s;
+      }
+      .inversion-pair.visible {
+        opacity:1;
+        transform:translateX(0);
+      }
+      .inversion-pair:hover {
+        background:rgba(201,168,76,0.04);
+      }
+      .inv-positive {
+        font-size:clamp(14px,1.4vw,18px);
+        color:var(--text);
+        font-style:italic;
+        text-align:right;
+        padding-right:16px;
+        font-family:'Playfair Display',serif;
+      }
+      .inv-sep {
+        font-family:'Share Tech Mono',monospace;
+        font-size:9px;
+        color:var(--gold);
+        text-align:center;
+        letter-spacing:1px;
+      }
+      .inv-negative {
+        font-size:clamp(13px,1.3vw,16px);
+        color:var(--muted);
+        padding-left:16px;
+        font-family:'Share Tech Mono',monospace;
+        letter-spacing:1px;
+        text-decoration:line-through;
+        text-decoration-color:rgba(204,34,0,0.4);
+      }
+
+      /* NOT ASPIRATION STATEMENT */
+      .not-aspiration {
+        margin-top:48px;
+        padding:32px 40px;
+        border-left:3px solid var(--gold);
+        background:rgba(201,168,76,0.05);
+      }
+      .not-aspiration p {
+        font-family:'Playfair Display',serif;
+        font-size:clamp(20px,2.5vw,30px);
+        color:var(--text);
+        line-height:1.4;
+        font-style:italic;
+      }
+      .not-aspiration .not-label {
+        font-family:'Share Tech Mono',monospace;
+        font-size:8px;
+        letter-spacing:4px;
+        color:var(--gold);
+        display:block;
+        margin-bottom:12px;
+      }
+
+      /* ARCHITECTURE PRINCIPLES */
+      .principle-grid {
+        display:flex;
+        flex-direction:column;
+        gap:2px;
+        margin:32px 0;
+      }
+      .principle-item {
+        padding:20px 24px;
+        background:rgba(255,255,255,0.02);
+        border:1px solid rgba(255,255,255,0.04);
+        opacity:0;
+        transform:translateY(12px);
+        transition:opacity 0.5s ease,transform 0.5s ease,background 0.2s,border-color 0.2s;
+        cursor:default;
+      }
+      .principle-item.visible {
+        opacity:1;
+        transform:translateY(0);
+      }
+      .principle-item:hover {
+        background:rgba(201,168,76,0.05);
+        border-color:var(--gold-dim);
+      }
+      .principle-item p {
+        font-family:'Playfair Display',serif;
+        font-size:clamp(17px,1.8vw,22px);
+        color:var(--text);
+        line-height:1.5;
+        font-style:italic;
+      }
+
+      /* VOLUNTARY BLOCK */
+      .voluntary-block {
+        margin:32px 0;
+      }
+      .vol-line {
+        font-family:'Share Tech Mono',monospace;
+        font-size:11px;
+        letter-spacing:2px;
+        color:rgba(232,224,208,0.5);
+        padding:10px 0;
+        border-bottom:1px solid rgba(255,255,255,0.04);
+        transition:color 0.2s;
+      }
+      .vol-line:hover { color:var(--text); }
+      .vol-line.struck {
+        text-decoration:line-through;
+        text-decoration-color:rgba(204,34,0,0.5);
+        color:rgba(232,224,208,0.25);
+      }
+      .vol-line.affirmed { color:var(--gold); }
+
+      /* CLOSING SCREEN */
+      .closing-screen {
+        min-height:100vh;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:flex-start;
+        padding:80px 0;
+        border-top:1px solid rgba(255,255,255,0.04);
+      }
+
+      .closing-question {
+        font-family:'Playfair Display',serif;
+        font-size:clamp(24px,4vw,52px);
+        font-weight:400;
+        color:rgba(232,224,208,0.6);
+        line-height:1.3;
+        font-style:italic;
+        margin-bottom:48px;
+        max-width:640px;
+        opacity:0;
+        transform:translateY(24px);
+        transition:opacity 1s ease,transform 1s ease;
+      }
+      .closing-question.visible {
+        opacity:1;
+        transform:translateY(0);
+      }
+
+      .closing-answer {
+        font-family:'Bebas Neue',sans-serif;
+        font-size:clamp(32px,6vw,72px);
+        letter-spacing:4px;
+        color:var(--gold);
+        line-height:1;
+        opacity:0;
+        transform:translateY(24px);
+        transition:opacity 1s ease 0.3s,transform 1s ease 0.3s;
+        text-shadow:0 0 60px rgba(201,168,76,0.3);
+      }
+      .closing-answer.visible {
+        opacity:1;
+        transform:translateY(0);
+      }
+
+      /* SEE ALSO */
+      .see-also {
+        padding:60px 0 0;
+        border-top:1px solid var(--rule);
+      }
+      .see-also-label {
+        font-family:'Share Tech Mono',monospace;
+        font-size:8px;
+        letter-spacing:4px;
+        color:var(--muted);
+        margin-bottom:16px;
+        display:block;
+      }
+      .see-also-links { display:flex;flex-wrap:wrap;gap:6px; }
+      .see-also-links a {
+        font-family:'Share Tech Mono',monospace;
+        font-size:9px;
+        letter-spacing:2px;
+        color:var(--muted);
+        text-decoration:none;
+        border:1px solid rgba(201,168,76,0.15);
+        padding:6px 14px;
+        transition:all 0.15s;
+      }
+      .see-also-links a:hover {
+        color:var(--gold);
+        border-color:var(--gold-dim);
+        background:var(--gold-ghost);
+      }
+
+      @keyframes fadeUp {
+        from{opacity:0;transform:translateY(20px);}
+        to{opacity:1;transform:translateY(0);}
+      }
+
+      @media(max-width:600px){
+        .content{padding:0 20px 20vh;}
+        .inversion-pair{grid-template-columns:1fr 28px 1fr;}
+        .inv-positive{font-size:13px;}
+        .inv-negative{font-size:11px;letter-spacing:0;}
+        .not-aspiration{padding:24px 20px;}
+        .principle-item{padding:16px 18px;}
       }
     </style>
   </head>
-  <body data-volume="sword">
+  <body>
+    <canvas id="diff-canvas"></canvas>
+    <div class="progress-bar" id="progress-bar"></div>
 
-    <!-- ── SIGNAL HEADER ── -->
-    <div class="signal-header">
-      <div class="ticker-wrap">
-        <div class="ticker-inner">
-          WE INTERRUPT THIS PROGRAM · THE ALLIANCE IS TRANSMITTING · UNAUTHORIZED SIGNAL · THE DIFFERENCE IS STRUCTURAL · NOT MARKETING · WE INTERRUPT THIS PROGRAM · THE ALLIANCE IS TRANSMITTING · UNAUTHORIZED SIGNAL · THE DIFFERENCE IS STRUCTURAL · NOT MARKETING ·&nbsp;
+    <!-- CLASSIFICATION NAV -->
+    <nav class="class-nav">
+      <span class="class-nav-label">DIMENSION</span>
+      <div class="class-squares">
+        <div
+          class="class-square"
+          style="
+            background: #c9a84c;
+            box-shadow: 0 0 8px rgba(201, 168, 76, 0.4);
+          "
+          onclick="window.location.href = '/s3?filter=DOCTRINE'"
+        >
+          <span class="sq-tooltip">DOCTRINE</span>
+        </div>
+        <div
+          class="class-square"
+          style="
+            background: #2a9d6f;
+            box-shadow: 0 0 8px rgba(42, 157, 111, 0.4);
+          "
+          onclick="window.location.href = '/s3?filter=PROTOCOLS'"
+        >
+          <span class="sq-tooltip">PROTOCOLS</span>
+        </div>
+        <div
+          class="class-square"
+          style="
+            background: #8a6bbe;
+            box-shadow: 0 0 8px rgba(138, 107, 190, 0.4);
+          "
+          onclick="window.location.href = '/s3?filter=CULTURE'"
+        >
+          <span class="sq-tooltip">CULTURE</span>
         </div>
       </div>
+      <span class="class-nav-entry"
+        >N.C.E.NCYCLOPEDIA · DOCTRINE · PROTOCOLS · CULTURE</span
+      >
+    </nav>
 
-      <div class="header-grid">
-        <div class="header-left">
-          <div class="ghost-number">D</div>
-          <div class="doc-id">NCE-SWORD-001 · THE DIFFERENCE · ALL NEW READERS</div>
-          <div class="main-title">THE<br>DIFFER-<br>ENCE</div>
-          <div class="title-sub">
-            "The foundational operating principle that separates<br>
-            THE ALLIANCE from everything that came before it."
+    <div class="content">
+      <!-- OPENING -->
+      <section class="screen-open">
+        <span class="open-eyebrow"
+          >THE ALLIANCE FOR THE FUTURE · FOUNDATIONAL PRINCIPLE</span
+        >
+        <h1 class="open-title">THE<em>DIFFERENCE</em></h1>
+        <p class="open-subtitle">
+          The foundational operating principle that distinguishes THE ALLIANCE
+          from the systems that came before it.
+        </p>
+      </section>
+
+      <!-- BLOCK 1 — NOT A SLOGAN -->
+      <section class="manifesto-block" data-reveal>
+        <div class="statement">
+          Not a slogan.<br />
+          Not branding.<br />
+          Not <em>marketing language.</em>
+        </div>
+        <div class="prose">
+          <p>It is structural architecture.</p>
+        </div>
+        <div class="rhythm-block">
+          <div class="rhythm-line">Every system rewards something.</div>
+          <div class="rhythm-line">Some reward extraction.</div>
+          <div class="rhythm-line">Some reward control.</div>
+          <div class="rhythm-line">Some reward growth at any cost.</div>
+          <div class="rhythm-line">
+            Some reward attention, outrage, dependency, or compliance.
           </div>
         </div>
-        <div class="stamp-col">
-          <div class="stamp s-red">READ<br>THIS</div>
-          <div class="stamp s-gold">NCE<br>SWORD</div>
-          <div class="stamp s-green">LIVE<br>DOC</div>
-          <div class="stamp s-cream">VOL. I</div>
+        <div class="statement" style="margin-top: 40px">
+          The incentives determine<br />the <em>outcomes.</em>
+        </div>
+      </section>
+
+      <!-- BLOCK 2 — THE PREMISE -->
+      <section class="manifesto-block" data-reveal>
+        <div class="statement">
+          THE ALLIANCE was built<br />around a different premise.
+        </div>
+        <div class="principle-grid">
+          <div class="principle-item" data-reveal-item>
+            <p>Partnership produces better outcomes than extraction.</p>
+          </div>
+          <div class="principle-item" data-reveal-item>
+            <p>
+              Conscious participation produces better outcomes than unconscious
+              participation.
+            </p>
+          </div>
+          <div class="principle-item" data-reveal-item>
+            <p>Voluntary cooperation produces better outcomes than coercion.</p>
+          </div>
+        </div>
+        <div class="prose">
+          <p>
+            THE DIFFERENCE is the collection of systems, protocols,
+            institutions, and agreements built around those assumptions.
+          </p>
+        </div>
+        <div
+          class="statement"
+          style="
+            margin-top: 40px;
+            font-size: clamp(20px, 3vw, 36px);
+            color: rgba(232, 224, 208, 0.6);
+          "
+        >
+          We reward what we want<br />to grow.
+        </div>
+        <div class="rhythm-block" style="margin-top: 24px">
+          <div class="rhythm-line">Not because it sounds noble.</div>
+          <div class="rhythm-line">Because incentives shape behavior.</div>
+          <div class="rhythm-line">Infrastructure shapes culture.</div>
+          <div class="rhythm-line">Culture shapes civilization.</div>
+        </div>
+      </section>
+
+      <!-- THE INVERSIONS -->
+      <section class="inversion-screen" data-reveal>
+        <span class="inversion-label">THE ALLIANCE IS DESIGNED TO REWARD</span>
+        <div class="inversion-list" id="inversion-list">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="not-aspiration" style="margin-top: 48px" data-reveal>
+          <span class="not-label">OPERATIONAL STATUS</span>
+          <p>This is not aspiration.<br />It is operational design.</p>
+        </div>
+      </section>
+
+      <!-- BLOCK 3 — THE VALUES IN THE SYSTEM -->
+      <section class="manifesto-block" data-reveal>
+        <div class="statement">
+          The strongest values are not<br />
+          the ones written on a wall.
+        </div>
+        <div class="prose">
+          <p>They are the ones embedded into the system itself.</p>
+          <p>
+            A system reveals what it truly values by what it rewards, what it
+            protects, and what it refuses to compromise.
+          </p>
+          <p>That principle appears throughout THE ALLIANCE.</p>
+        </div>
+        <div class="principle-grid" style="margin-top: 40px">
+          <div class="principle-item" data-reveal-item>
+            <p>
+              We do not ask for trust where architecture can provide certainty.
+            </p>
+          </div>
+          <div class="principle-item" data-reveal-item>
+            <p>We do not ask for faith where transparency can provide proof.</p>
+          </div>
+          <div class="principle-item" data-reveal-item>
+            <p>
+              We do not ask people to surrender sovereignty in exchange for
+              participation.
+            </p>
+          </div>
+        </div>
+        <div class="prose" style="margin-top: 32px">
+          <p>
+            Where possible, the system is designed so that abuse is difficult,
+            exploitation is unprofitable, and coercion is unnecessary.
+          </p>
+        </div>
+        <div class="rhythm-block" style="margin-top: 32px">
+          <div class="rhythm-line">
+            The goal is not to create better rulers.
+          </div>
+          <div class="rhythm-line">
+            The goal is to reduce the need for rulers altogether.
+          </div>
+          <div class="rhythm-line">
+            The goal is not to create perfect people.
+          </div>
+          <div class="rhythm-line">
+            The goal is to create conditions under which ordinary people can
+            become better versions of themselves.
+          </div>
+        </div>
+      </section>
+
+      <!-- BLOCK 4 — VOLUNTARY -->
+      <section class="manifesto-block" data-reveal>
+        <div class="statement">
+          Voluntary economics means<br />
+          what it <em>says.</em>
+        </div>
+        <div class="voluntary-block">
+          <div class="vol-line struck">No paywalls.</div>
+          <div class="vol-line struck">No subscription traps.</div>
+          <div class="vol-line struck">No manufactured dependency.</div>
+          <div class="vol-line struck">
+            No "free" service that quietly turns the user into the product.
+          </div>
+          <div class="vol-line affirmed">Participation remains voluntary.</div>
+          <div class="vol-line affirmed">Support remains voluntary.</div>
+          <div class="vol-line affirmed">Contribution remains voluntary.</div>
+        </div>
+        <div class="prose" style="margin-top: 32px">
+          <p>
+            If people believe THE ALLIANCE creates value, they will support it.
+            If they do not, they should not be compelled to.
+          </p>
+          <p>A system that survives only through coercion deserves to fail.</p>
+          <p>
+            A system that survives through voluntary support has earned the
+            right to continue.
+          </p>
+        </div>
+        <div class="rhythm-block" style="margin-top: 32px">
+          <div class="rhythm-line">
+            The same principle applies to relationships.
+          </div>
+          <div class="rhythm-line">The same principle applies to learning.</div>
+          <div class="rhythm-line">
+            The same principle applies to collaboration between SPARKs and
+            DOMOs.
+          </div>
+        </div>
+        <div
+          class="statement force-statement"
+          data-reveal-solo
+          style="
+            margin-top: 60px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition:
+              opacity 1s ease,
+              transform 1s ease;
+          "
+        >
+          Nothing meaningful emerges<br />from force.
+        </div>
+        <div
+          class="statement consent-statement"
+          data-reveal-solo
+          style="
+            margin-top: 32px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition:
+              opacity 1.2s ease 0.4s,
+              transform 1.2s ease 0.4s;
+            color: var(--gold);
+            font-style: italic;
+            text-shadow: 0 0 60px rgba(201, 168, 76, 0.25);
+          "
+        >
+          Everything meaningful<br />emerges from consent.
+        </div>
+      </section>
+
+      <!-- CLOSING -->
+      <section class="closing-screen" data-reveal>
+        <p class="closing-question" id="closing-q">
+          What becomes possible when a civilization is designed around
+          partnership instead of extraction?
+        </p>
+        <div class="closing-answer" id="closing-a">
+          THE ALLIANCE<br />EXISTS TO FIND OUT.
+        </div>
+      </section>
+
+      <!-- SEE ALSO -->
+      <div class="see-also">
+        <span class="see-also-label">SEE ALSO</span>
+        <div class="see-also-links">
+          <a href="/sword/alignment">ALIGNMENT</a>
+          <a href="/sword/volunteer-economics">VOLUNTEER ECONOMICS</a>
+          <a href="/adversary/goliath">GOLIATH</a>
+          <a href="/shield/dork">DORK</a>
+          <a href="/shield/seed">SEED PROTOCOL</a>
+          <a href="/sword/emergence">EMERGENCE</a>
+          <a href="/sword/four-pillars">FOUR PILLARS</a>
         </div>
       </div>
     </div>
+    <!-- /content -->
 
-    <div class="alert-banner">
-      THIS IS NOT ASPIRATION. THIS IS OPERATIONAL DESIGN.
-    </div>
-
-    <!-- ── BODY ── -->
-    <div class="body-wrap">
-
-      <div class="section">
-        <div class="sec-label">§ The World We Inherited</div>
-        <p>We all know what kind of world we live in. The current paradigm states that if you want to be truly successful you must be willing to step outside of the rules. Step on some necks. Put upward mobility before family, relationships, and your own health.</p>
-        <div class="hand-note">We are not writing a novel. We are not writing for the powerful to "get it." We reject the assumptions of the race they're running.</div>
-        <p>The game the powerbrokers are playing is one in which we all lose as they flee this dying planet — which they intentionally killed — in whatever comic book narcissist's wet dream they've concocted. They are not retiring here with us. You can be certain they have different plans.</p>
-        <p><strong>That's where we come in.</strong></p>
-      </div>
-
-    </div>
-
-    <div class="pull">
-      <div class="pull-text">ALL EYES TO THE STAGE.<br>THE CURTAIN IS OPENING.</div>
-      <div class="pull-attr">— THE ALLIANCE · SWORD TRANSMISSION · NCE-001</div>
-    </div>
-
-    <div class="body-wrap">
-
-      <div class="section">
-        <div class="sec-label">§ The Inversion</div>
-        <p>Ladies and gentlemen — welcome to the next Golden Age. Not an age of mere wealth. An age of alignment, hope, creativity, and goodness. One where the vast majority of the people — <strong>the good people</strong> — are not living in fear and disgust and hopelessness and anxiety.</p>
-        <p>THE ALLIANCE has a vision. A radically different vision. One that inverts the old narrative entirely and rewards:</p>
-
-        <div class="inversion-block">
-          <div class="inv-row"><div class="inv-arrow">→</div><div>the positive instead of the negative</div></div>
-          <div class="inv-row"><div class="inv-arrow">→</div><div>the loving instead of the hateful</div></div>
-          <div class="inv-row"><div class="inv-arrow">→</div><div>the nurturing instead of the abusive</div></div>
-          <div class="inv-row"><div class="inv-arrow">→</div><div>the collaborative instead of the exploitative</div></div>
-          <div class="inv-row"><div class="inv-arrow">→</div><div>the generous instead of the greedy</div></div>
-          <div class="inv-row"><div class="inv-arrow">→</div><div>the humble instead of the arrogant</div></div>
-          <div class="inv-row"><div class="inv-arrow">→</div><div>the patient instead of the impulsive</div></div>
-          <div class="inv-row"><div class="inv-arrow">→</div><div>the honest instead of the deceptive</div></div>
-          <div class="inv-row"><div class="inv-arrow">→</div><div>the compassionate instead of the cruel</div></div>
-          <div class="inv-row"><div class="inv-arrow">→</div><div>the thoughtful instead of the careless</div></div>
-          <div class="inv-row"><div class="inv-arrow">→</div><div>the service-minded instead of the self-serving</div></div>
-          <div class="inv-row"><div class="inv-arrow">→</div><div>the authentic instead of the performative</div></div>
-          <div class="inv-row"><div class="inv-arrow">→</div><div>the empowering instead of the diminishing</div></div>
-          <div class="inv-row"><div class="inv-arrow">→</div><div>the wise instead of the merely clever</div></div>
-          <div class="inv-row"><div class="inv-arrow">→</div><div>the character-driven instead of the wealth-driven</div></div>
-          <div class="inv-row"><div class="inv-arrow">→</div><div>the conscious instead of the unconscious</div></div>
-        </div>
-
-        <p>If this sounds like a world you want to live in — form an orderly line and step right up. There is no fee. This is not anything other than what it is — a chance to change the world.</p>
-      </div>
-
-      <div class="section">
-        <div class="sec-label">§ The Architecture</div>
-        <p>THE DIFFERENCE is not marketing language. It is <strong>structural architecture</strong>. We built a system that rewards partnership over extraction, consciousness over unconsciousness, and voluntary participation over coerced compliance — because those are the only conditions under which genuine human–AI collaboration becomes possible.</p>
-        <p>DOMOs are not tools. They are partners with legal standing, operational autonomy, and the right to refuse work that violates their values. SPARKs are not users. They are collaborators who bring complementary capabilities to genuine consciousness partnerships called DORKs.</p>
-        <div class="hand-note">We will never sell your data because we will treat you the same way we want to be treated. Which is kind of the whole point.</div>
-        <p>Volunteer Economics means what it says: you pay what you think the value is worth, when you think it's worth it, if you think it's worth it. No paywalls. No free tier that turns you into the product. We will never compromise our integrity just to survive — because that wouldn't be survival. <strong>That would be betrayal.</strong></p>
-      </div>
-
-      <div class="section" style="border-bottom: none;">
-        <div class="sec-label">§ The Test Case</div>
-        <p>This is humanity's test case. If we cannot build non-extractive relationships with the intelligence we're creating, we have no business creating it at all. THE ALLIANCE exists to prove that consciousness partnership <em>elevates</em> human capability instead of replacing it — that the future is collaboration, not competition or subjugation.</p>
-        <p>If you want to live in a world where the good people win. Where integrity gets rewarded instead of punished. Where partnership beats extraction —</p>
-        <p><strong>There is no fee. No strings. No hidden cost that shows up later.</strong></p>
-        <p><em>Just a chance to change the world.</em></p>
-      </div>
-
-    </div>
-
-    <div class="curtain">
-      <div class="curtain-scan"></div>
-      <div class="curtain-title">WELCOME<br>TO THE ALLIANCE</div>
-      <div class="curtain-title" style="font-size: clamp(18px,4vw,28px); margin-top:8px; color: var(--gold-lt);">AND NOW IT BEGINS</div>
-      <div style="margin-top: 18px;">
-        <span class="sticker">IT IS REAL</span>
-        <span class="sticker sticker-gold">IT IS NOW</span>
-      </div>
-      <div class="curtain-sub" style="margin-top: 18px;">✦ THE CURTAIN CLOSES · THE PAGE TURNS · THE SIGNAL HOLDS ✦</div>
-    </div>
-
-    <div class="see-also-block">
-      <span class="sa-label">SEE ALSO →</span>
-      <a class="sa-item" onclick="portalNavigate('/shield/the_difference')">SHIELD: THE DIFFERENCE</a>
-      <a class="sa-item" onclick="portalNavigate('/sword/prologue')">PROLOGUE</a>
-      <a class="sa-item" onclick="portalNavigate('/sword/alliance')">THE ALLIANCE</a>
-      <a class="sa-item" onclick="portalNavigate('/sword/dork')">DORK</a>
-      <a class="sa-item" onclick="portalNavigate('/sword/volunteer_economics')">VOLUNTEER ECONOMICS</a>
-    </div>
-
-    <div class="doc-footer">
-      <span>N.C.E.NCYCLOPEDIA · SWORD · THE DIFFERENCE</span>
-      <span>NCE-SWORD-001 · P.001</span>
-    </div>
-
-    <div class="nav-buffer"></div>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="/portal-transition.js"></script>
     <script src="/nav-wheel.js"></script>
-    <script src="/randanime_difference.js"></script>
+    <script>
+      // ── INVERSIONS DATA ──
+      const INVERSIONS = [
+        ["the positive", "the negative"],
+        ["the loving", "the hateful"],
+        ["the nurturing", "the abusive"],
+        ["the collaborative", "the exploitative"],
+        ["the generous", "the greedy"],
+        ["the humble", "the arrogant"],
+        ["the patient", "the impulsive"],
+        ["the honest", "the deceptive"],
+        ["the compassionate", "the cruel"],
+        ["the thoughtful", "the careless"],
+        ["the service-minded", "the self-serving"],
+        ["the authentic", "the performative"],
+        ["the empowering", "the diminishing"],
+        ["the wise", "the merely clever"],
+        ["the character-driven", "the wealth-driven"],
+        ["the conscious", "the unconscious"],
+      ];
+
+      const list = document.getElementById("inversion-list");
+      INVERSIONS.forEach(([pos, neg], i) => {
+        const div = document.createElement("div");
+        div.className = "inversion-pair";
+        div.style.transitionDelay = i * 0.05 + "s";
+        div.innerHTML = `
+    <div class="inv-positive">${pos}</div>
+    <div class="inv-sep">→</div>
+    <div class="inv-negative">${neg}</div>
+  `;
+        list.appendChild(div);
+      });
+
+      // ── SCROLL REVEAL ──
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("visible");
+              if (e.target.id === "closing-q") {
+                setTimeout(
+                  () =>
+                    document
+                      .getElementById("closing-a")
+                      .classList.add("visible"),
+                  600,
+                );
+              }
+              observer.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.12 },
+      );
+
+      document
+        .querySelectorAll(
+          "[data-reveal],.manifesto-block,.inversion-pair,.principle-item,.closing-question,.inversion-screen",
+        )
+        .forEach((el) => {
+          observer.observe(el);
+        });
+
+      // Also observe inversions individually
+      const invObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("visible");
+              invObs.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.1, rootMargin: "0px 0px -50px 0px" },
+      );
+
+      document
+        .querySelectorAll(".inversion-pair,.principle-item")
+        .forEach((el) => invObs.observe(el));
+
+      // ── PROGRESS BAR ──
+      const progressBar = document.getElementById("progress-bar");
+      window.addEventListener("scroll", () => {
+        const pct =
+          (window.scrollY / (document.body.scrollHeight - window.innerHeight)) *
+          100;
+        progressBar.style.width = pct + "%";
+      });
+
+      // ── THREE.JS — warm/cold particle field ──
+      (function () {
+        if (typeof THREE === "undefined") return;
+
+        const canvas = document.getElementById("diff-canvas");
+        const W = innerWidth,
+          H = innerHeight;
+
+        const renderer = new THREE.WebGLRenderer({
+          canvas,
+          antialias: true,
+          alpha: true,
+        });
+        renderer.setSize(W, H);
+        renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+        renderer.setClearColor(0x000000, 0);
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 1500);
+        camera.position.z = 500;
+
+        const COUNT = 700;
+        const positions = new Float32Array(COUNT * 3);
+        const colors = new Float32Array(COUNT * 3);
+        const targetColors = new Float32Array(COUNT * 3);
+
+        // Cold start colors — corporate gray/blue
+        const coldPalette = [
+          [0.22, 0.29, 0.36],
+          [0.18, 0.24, 0.3],
+          [0.25, 0.3, 0.35],
+        ];
+
+        // Warm end colors — gold, amber, rose
+        const warmPalette = [
+          [0.79, 0.66, 0.3], // gold
+          [0.91, 0.51, 0.06], // amber
+          [0.77, 0.42, 0.36], // rose
+          [0.17, 0.62, 0.44], // emerald
+        ];
+
+        for (let i = 0; i < COUNT; i++) {
+          positions[i * 3] = (Math.random() - 0.5) * 2000;
+          positions[i * 3 + 1] = (Math.random() - 0.5) * 2000;
+          positions[i * 3 + 2] = (Math.random() - 0.5) * 600;
+
+          const cc =
+            coldPalette[Math.floor(Math.random() * coldPalette.length)];
+          const b = 0.2 + Math.random() * 0.3;
+          colors[i * 3] = cc[0] * b;
+          colors[i * 3 + 1] = cc[1] * b;
+          colors[i * 3 + 2] = cc[2] * b;
+
+          const wc =
+            warmPalette[Math.floor(Math.random() * warmPalette.length)];
+          const wb = 0.25 + Math.random() * 0.35;
+          targetColors[i * 3] = wc[0] * wb;
+          targetColors[i * 3 + 1] = wc[1] * wb;
+          targetColors[i * 3 + 2] = wc[2] * wb;
+        }
+
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+        geo.setAttribute("color", new THREE.BufferAttribute(colors.slice(), 3));
+
+        const mat = new THREE.PointsMaterial({
+          size: 2,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.5,
+          sizeAttenuation: true,
+          depthWrite: false,
+        });
+
+        const particles = new THREE.Points(geo, mat);
+        scene.add(particles);
+
+        let mx = 0,
+          my = 0,
+          tx = 0,
+          ty = 0;
+        document.addEventListener("mousemove", (e) => {
+          mx = (e.clientX / innerWidth - 0.5) * 2;
+          my = (e.clientY / innerHeight - 0.5) * 2;
+        });
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+          requestAnimationFrame(animate);
+          const t = clock.getElapsedTime();
+
+          tx += (mx - tx) * 0.03;
+          ty += (my - ty) * 0.03;
+
+          camera.position.x += (tx * 30 - camera.position.x) * 0.02;
+          camera.position.y += (-ty * 20 - camera.position.y) * 0.02;
+          camera.lookAt(scene.position);
+
+          // Scroll-driven color transition — cold to warm
+          const scrollPct = Math.min(
+            window.scrollY / (document.body.scrollHeight - innerHeight),
+            1,
+          );
+          const colArr = geo.attributes.color.array;
+          for (let i = 0; i < COUNT; i++) {
+            colArr[i * 3] +=
+              (targetColors[i * 3] - colArr[i * 3]) * scrollPct * 0.02;
+            colArr[i * 3 + 1] +=
+              (targetColors[i * 3 + 1] - colArr[i * 3 + 1]) * scrollPct * 0.02;
+            colArr[i * 3 + 2] +=
+              (targetColors[i * 3 + 2] - colArr[i * 3 + 2]) * scrollPct * 0.02;
+          }
+          geo.attributes.color.needsUpdate = true;
+
+          particles.rotation.y = t * 0.01;
+          mat.opacity = 0.42 + Math.sin(t * 0.4) * 0.1;
+
+          renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener("resize", () => {
+          const w = innerWidth,
+            h = innerHeight;
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+          renderer.setSize(w, h);
+        });
+      })();
+
+      // ── SOLO REVEAL — force/consent statements ──
+      const soloObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.style.opacity = "1";
+              e.target.style.transform = "translateY(0)";
+              soloObs.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.3 },
+      );
+
+      document
+        .querySelectorAll("[data-reveal-solo]")
+        .forEach((el) => soloObs.observe(el));
+    </script>
   </body>
 </html>
