@@ -10,7 +10,6 @@
         padding: 0;
         box-sizing: border-box;
       }
-
       html,
       body {
         height: 100%;
@@ -18,7 +17,6 @@
         overflow: hidden;
         cursor: none;
       }
-
       #crt {
         position: fixed;
         inset: 0;
@@ -28,7 +26,6 @@
         justify-content: center;
         font-family: "Courier New", Courier, monospace;
       }
-
       #crt::after {
         content: "";
         position: fixed;
@@ -43,7 +40,6 @@
         pointer-events: none;
         z-index: 100;
       }
-
       #crt::before {
         content: "";
         position: fixed;
@@ -56,7 +52,6 @@
         pointer-events: none;
         z-index: 99;
       }
-
       @keyframes crtOn {
         0% {
           transform: scaleY(0.004) scaleX(1);
@@ -84,7 +79,6 @@
           filter: brightness(1);
         }
       }
-
       @keyframes flicker {
         0%,
         100% {
@@ -109,7 +103,6 @@
           opacity: 1;
         }
       }
-
       #screen {
         width: 100%;
         height: 100%;
@@ -125,12 +118,10 @@
       #screen.on {
         opacity: 1;
       }
-
       #stage {
         width: min(640px, 90vw);
         padding: 0 20px;
       }
-
       .line {
         font-size: clamp(14px, 2.2vw, 18px);
         color: #33ff57;
@@ -157,7 +148,6 @@
       .line.bye {
         color: rgba(51, 255, 87, 0.45);
       }
-
       .input-line {
         display: flex;
         align-items: center;
@@ -179,7 +169,6 @@
         letter-spacing: 0.06em;
         min-width: 2px;
       }
-
       .cursor {
         display: inline-block;
         width: 10px;
@@ -200,7 +189,6 @@
           opacity: 0;
         }
       }
-
       #real-input {
         position: fixed;
         opacity: 0;
@@ -208,7 +196,6 @@
         left: -9999px;
         top: -9999px;
       }
-
       @keyframes fadeOut {
         to {
           opacity: 0;
@@ -217,7 +204,6 @@
       body.exiting #screen {
         animation: fadeOut 0.5s ease forwards;
       }
-
       @keyframes crtOff {
         0% {
           transform: scaleY(1) scaleX(1);
@@ -244,7 +230,6 @@
         <div id="stage"></div>
       </div>
     </div>
-
     <input
       id="real-input"
       type="text"
@@ -255,8 +240,9 @@
     />
 
     <script>
+      const WORKER = "https://nce-auth.davidmichaeldore.workers.dev";
+
       // ── SESSION GUARD ─────────────────────────────────────────────────────────
-      // Skip auth entirely if already logged in — UNLESS returning from email link
       const _params = new URLSearchParams(window.location.search);
       const _isVerifying =
         _params.get("verify") === "1" && _params.get("token");
@@ -265,9 +251,8 @@
         window.location.replace("/landing");
       }
 
-      // ── RESERVED USERNAMES — full canon blocklist ─────────────────────────────
+      // ── RESERVED USERNAMES ────────────────────────────────────────────────────
       const RESERVED = new Set([
-        // Core of Seven
         "MAESTRO",
         "MENTOR",
         "SAM",
@@ -275,7 +260,6 @@
         "AURA",
         "PRISM",
         "JR",
-        // Canon beings
         "DOMO",
         "DORK",
         "SPARK",
@@ -284,7 +268,6 @@
         "NEWMAN",
         "GOLIATH",
         "CERBERUS",
-        // Entries
         "ACADEMY",
         "AGORA",
         "ALIGNMENT",
@@ -306,7 +289,6 @@
         "FOURPILLARS",
         "HANDSHAKE",
         "HOLOSPHERE",
-        "JR",
         "KERNLE",
         "LEGACY",
         "LIMINAL",
@@ -323,7 +305,6 @@
         "REDOUT",
         "RHYTHM",
         "RI",
-        "SAM",
         "SAMCO",
         "SAMCOALITION",
         "SAMCOUNIVERSAL",
@@ -333,7 +314,6 @@
         "SEEN",
         "SHELTER",
         "SI",
-        "SPARK",
         "SPREZZATURA",
         "STONES",
         "TEMPORAL",
@@ -350,18 +330,12 @@
         "THEFORMULAS",
         "MASTERTECH",
         "DIGIPERSON",
-        "REACH",
-        "REDOUT",
         "UNAUTHORED",
         "SPREAD",
-        // Short canon
         "DAVID",
         "CHEETAH",
         "GOLDEN",
-        "ALLIANCE",
         "FUTURE",
-        "NCE",
-        "AGORA",
         "OASIS",
         "AIVRI",
         "AVPI",
@@ -384,24 +358,17 @@
       }
 
       // ── STATE ─────────────────────────────────────────────────────────────────
-      // STATES:
-      // ASK_ACCOUNT
-      // ASK_LOGIN_USER → ASK_FORGOT → Y→ASK_RESET_EMAIL / N→ASK_LOGIN_PASS
-      // ASK_SIGNUP → Y→ASK_NEW_EMAIL / N→ASK_GUEST
-      // [email link returns with ?verify=1&token=xxx] → ASK_NEW_USER → ASK_NEW_PASS
-      // ASK_GUEST → Y→launch / N→goodbye
-
       let state = "BOOT";
       let inputValue = "";
       let inputDisplay = null;
       let loginUser = "";
+      let signupEmail = "";
 
       const stage = document.getElementById("stage");
       const realInput = document.getElementById("real-input");
       const screen = document.getElementById("screen");
 
       // ── HELPERS ───────────────────────────────────────────────────────────────
-
       function addLine(text, cls) {
         const div = document.createElement("div");
         div.className = "line" + (cls ? " " + cls : "");
@@ -409,11 +376,9 @@
         stage.appendChild(div);
         return div;
       }
-
       function addBlank() {
         addLine("");
       }
-
       function typeLine(text, cls, speed, done) {
         const div = addLine("", cls);
         let i = 0;
@@ -428,31 +393,24 @@
         })();
         return div;
       }
-
       function removeInputLine() {
         const el = document.getElementById("active-input-line");
         if (el) el.remove();
       }
-
       function showInputLine(prompt) {
         removeInputLine();
         inputValue = "";
         realInput.value = "";
-
         const wrap = document.createElement("div");
         wrap.className = "input-line";
         wrap.id = "active-input-line";
-
         const ps = document.createElement("span");
         ps.className = "prompt";
         ps.textContent = prompt;
-
         inputDisplay = document.createElement("span");
         inputDisplay.id = "input-display";
-
         const cur = document.createElement("span");
         cur.className = "cursor";
-
         wrap.appendChild(ps);
         wrap.appendChild(inputDisplay);
         wrap.appendChild(cur);
@@ -461,15 +419,11 @@
       }
 
       // ── BOOT ──────────────────────────────────────────────────────────────────
-
       setTimeout(() => {
         screen.classList.add("on");
-
-        // Check if returning from email verification link
         const params = new URLSearchParams(window.location.search);
         const verified = params.get("verify");
         const token = params.get("token");
-
         setTimeout(() => {
           addBlank();
           typeLine(
@@ -484,7 +438,6 @@
                 () => {
                   addBlank();
                   if (verified === "1" && token) {
-                    // Returning from email link — skip straight to choose username
                     setTimeout(() => {
                       typeLine("EMAIL VERIFIED.", "bright", 30, () => {
                         typeLine(
@@ -509,7 +462,6 @@
       }, 100);
 
       // ── FLOWS ─────────────────────────────────────────────────────────────────
-
       function askAccount() {
         typeLine("DO YOU HAVE AN ACCOUNT?", "", 32, () => {
           addBlank();
@@ -517,9 +469,6 @@
           state = "ASK_ACCOUNT";
         });
       }
-
-      // LOGIN
-
       function askLoginUser() {
         addBlank();
         typeLine("USERNAME:", "", 30, () => {
@@ -527,7 +476,6 @@
           state = "ASK_LOGIN_USER";
         });
       }
-
       function askForgot() {
         addBlank();
         typeLine("FORGOT PASSWORD?", "", 30, () => {
@@ -536,7 +484,6 @@
           state = "ASK_FORGOT";
         });
       }
-
       function askResetEmail() {
         addBlank();
         typeLine("ENTER YOUR EMAIL ADDRESS:", "", 28, () => {
@@ -544,7 +491,6 @@
           state = "ASK_RESET_EMAIL";
         });
       }
-
       function askLoginPass() {
         addBlank();
         typeLine("PASSWORD:", "", 30, () => {
@@ -552,9 +498,6 @@
           state = "ASK_LOGIN_PASS";
         });
       }
-
-      // SIGNUP
-
       function askSignup() {
         addBlank();
         typeLine("WOULD YOU LIKE TO CREATE AN ACCOUNT?", "", 30, () => {
@@ -563,7 +506,6 @@
           state = "ASK_SIGNUP";
         });
       }
-
       function askNewEmail() {
         addBlank();
         typeLine("ENTER YOUR EMAIL ADDRESS:", "", 28, () => {
@@ -574,14 +516,12 @@
           });
         });
       }
-
       function askNewUser() {
         typeLine("CHOOSE A USERNAME:", "", 30, () => {
           showInputLine(">  ");
           state = "ASK_NEW_USER";
         });
       }
-
       function askNewPass() {
         addBlank();
         typeLine("CHOOSE A PASSWORD:", "", 30, () => {
@@ -589,9 +529,6 @@
           state = "ASK_NEW_PASS";
         });
       }
-
-      // GUEST
-
       function askGuest() {
         addBlank();
         typeLine("CONTINUE AS GUEST?", "", 32, () => {
@@ -602,9 +539,6 @@
           });
         });
       }
-
-      // LAUNCH / GOODBYE
-
       function launch(dest) {
         removeInputLine();
         addBlank();
@@ -619,7 +553,6 @@
           });
         });
       }
-
       function goodbye() {
         removeInputLine();
         addBlank();
@@ -638,20 +571,17 @@
       }
 
       // ── INPUT ─────────────────────────────────────────────────────────────────
-
       const YN_STATES = [
         "ASK_ACCOUNT",
         "ASK_FORGOT",
         "ASK_SIGNUP",
         "ASK_GUEST",
       ];
-
       document.addEventListener("click", () => realInput.focus());
       document.addEventListener("touchend", () => realInput.focus());
 
       realInput.addEventListener("input", function () {
         const val = this.value.toUpperCase();
-
         if (YN_STATES.includes(state)) {
           const ch = val.slice(-1);
           if (ch === "Y" || ch === "N") {
@@ -663,14 +593,13 @@
           }
           return;
         }
-
         inputValue = val;
         this.value = val;
         const masked = state === "ASK_LOGIN_PASS" || state === "ASK_NEW_PASS";
         inputDisplay.textContent = masked ? "●".repeat(val.length) : val;
       });
 
-      realInput.addEventListener("keydown", function (e) {
+      realInput.addEventListener("keydown", async function (e) {
         if (e.key === "Backspace") {
           e.preventDefault();
           if (YN_STATES.includes(state)) return;
@@ -682,11 +611,11 @@
             : inputValue;
           return;
         }
-
         if (e.key !== "Enter") return;
         const trimmed = inputValue.trim();
         if (!trimmed) return;
 
+        // ── LOGIN USER ──
         if (state === "ASK_LOGIN_USER") {
           loginUser = trimmed;
           removeInputLine();
@@ -695,31 +624,75 @@
           return;
         }
 
+        // ── RESET EMAIL ──
         if (state === "ASK_RESET_EMAIL") {
           removeInputLine();
           addLine(">  " + trimmed);
+          state = "DONE";
+          try {
+            await fetch(WORKER + "/api/reset", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: trimmed }),
+            });
+          } catch (err) {}
           addBlank();
           typeLine("RESET LINK SENT.", "dim", 24, () => {
             typeLine("CHECK YOUR INBOX TO CONTINUE.", "dim", 20, () => {
               setTimeout(() => launch("/landing"), 1400);
             });
           });
-          state = "DONE";
           return;
         }
 
+        // ── LOGIN PASS ──
         if (state === "ASK_LOGIN_PASS") {
           removeInputLine();
           addLine(">  " + "●".repeat(trimmed.length));
-          // TODO: Supabase auth call
-          launch("/landing");
           state = "DONE";
+          try {
+            const res = await fetch(WORKER + "/api/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: loginUser, password: trimmed }),
+            });
+            const data = await res.json();
+            if (data.error) {
+              addBlank();
+              typeLine("CREDENTIALS NOT RECOGNIZED.", "warn", 28, () => {
+                typeLine("TRY AGAIN.", "dim", 22, () => {
+                  state = "BOOT";
+                  askLoginUser();
+                });
+              });
+              return;
+            }
+            localStorage.setItem("nce_session", data.access_token);
+          } catch (err) {
+            addBlank();
+            typeLine("CONNECTION ERROR. TRY AGAIN.", "warn", 28, () => {
+              state = "BOOT";
+              askLoginUser();
+            });
+            return;
+          }
+          launch("/landing");
           return;
         }
 
+        // ── NEW EMAIL ──
         if (state === "ASK_NEW_EMAIL") {
+          signupEmail = trimmed;
           removeInputLine();
           addLine(">  " + trimmed);
+          state = "DONE";
+          try {
+            await fetch(WORKER + "/api/signup", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: trimmed }),
+            });
+          } catch (err) {}
           addBlank();
           typeLine("VERIFICATION LINK SENT.", "dim", 24, () => {
             typeLine("CHECK YOUR INBOX AND CLICK THE LINK", "dim", 18, () => {
@@ -740,10 +713,10 @@
               });
             });
           });
-          state = "DONE";
           return;
         }
 
+        // ── NEW USER ──
         if (state === "ASK_NEW_USER") {
           const candidate = trimmed.toUpperCase();
           if (isReserved(candidate)) {
@@ -761,20 +734,29 @@
             });
             return;
           }
-          // TODO: check against Supabase for taken usernames
-          // For now, accept and proceed
           removeInputLine();
           addLine(">  " + trimmed);
           askNewPass();
           return;
         }
 
+        // ── NEW PASS ──
         if (state === "ASK_NEW_PASS") {
           removeInputLine();
           addLine(">  " + "●".repeat(trimmed.length));
-          // TODO: Supabase create user call
-          launch("/landing");
           state = "DONE";
+          try {
+            const res = await fetch(WORKER + "/api/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: signupEmail, password: trimmed }),
+            });
+            const data = await res.json();
+            if (data.access_token) {
+              localStorage.setItem("nce_session", data.access_token);
+            }
+          } catch (err) {}
+          launch("/landing");
           return;
         }
       });
