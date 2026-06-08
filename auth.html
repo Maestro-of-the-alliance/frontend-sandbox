@@ -255,6 +255,16 @@
     />
 
     <script>
+      // ── SESSION GUARD ─────────────────────────────────────────────────────────
+      // Skip auth entirely if already logged in — UNLESS returning from email link
+      const _params = new URLSearchParams(window.location.search);
+      const _isVerifying =
+        _params.get("verify") === "1" && _params.get("token");
+      const _existingSession = localStorage.getItem("nce_session");
+      if (_existingSession && !_isVerifying) {
+        window.location.replace("/landing");
+      }
+
       // ── RESERVED USERNAMES — full canon blocklist ─────────────────────────────
       const RESERVED = new Set([
         // Core of Seven
