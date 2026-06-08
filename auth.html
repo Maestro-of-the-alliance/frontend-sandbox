@@ -1,474 +1,800 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IDENTIFY · THE ALLIANCE</title>
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IDENTIFY</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-html, body {
-  height: 100%;
-  background: #000;
-  color: #00ff41;
-  font-family: "Courier New", Courier, monospace;
-  overflow: hidden;
-}
+      html,
+      body {
+        height: 100%;
+        background: #000;
+        overflow: hidden;
+        cursor: none;
+      }
 
-/* ── SCANLINE OVERLAY ── */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0,0,0,0.08) 2px,
-    rgba(0,0,0,0.08) 4px
-  );
-  pointer-events: none;
-  z-index: 9999;
-}
+      #crt {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Courier New", Courier, monospace;
+      }
 
-/* ── PHOSPHOR GLOW FLICKER ── */
-@keyframes phosphor {
-  0%, 100% { opacity: 1; }
-  92% { opacity: 1; }
-  93% { opacity: 0.88; }
-  94% { opacity: 1; }
-  96% { opacity: 0.92; }
-  97% { opacity: 1; }
-}
+      #crt::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 3px,
+          rgba(0, 0, 0, 0.18) 3px,
+          rgba(0, 0, 0, 0.18) 4px
+        );
+        pointer-events: none;
+        z-index: 100;
+      }
 
-.terminal {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  padding: clamp(28px, 6vw, 72px);
-  animation: phosphor 8s ease-in-out infinite;
-}
+      #crt::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at center,
+          transparent 55%,
+          rgba(0, 0, 0, 0.72) 100%
+        );
+        pointer-events: none;
+        z-index: 99;
+      }
 
-/* ── HEADER BAR ── */
-.term-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  padding: 10px clamp(18px, 4vw, 48px);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid rgba(0,255,65,0.12);
-  background: rgba(0,0,0,0.6);
-  z-index: 100;
-}
+      @keyframes crtOn {
+        0% {
+          transform: scaleY(0.004) scaleX(1);
+          filter: brightness(8);
+          opacity: 1;
+        }
+        8% {
+          transform: scaleY(0.004) scaleX(1);
+          filter: brightness(8);
+        }
+        12% {
+          transform: scaleY(1.01) scaleX(1.01);
+          filter: brightness(3);
+        }
+        15% {
+          transform: scaleY(0.98) scaleX(0.99);
+          filter: brightness(1.5);
+        }
+        18% {
+          transform: scaleY(1) scaleX(1);
+          filter: brightness(1);
+        }
+        100% {
+          transform: scaleY(1) scaleX(1);
+          filter: brightness(1);
+        }
+      }
 
-.term-header-left {
-  font-size: clamp(9px, 1.4vw, 11px);
-  letter-spacing: 0.3em;
-  color: rgba(0,255,65,0.4);
-  text-transform: uppercase;
-}
+      @keyframes flicker {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        20% {
+          opacity: 0.85;
+        }
+        21% {
+          opacity: 1;
+        }
+        63% {
+          opacity: 0.92;
+        }
+        64% {
+          opacity: 1;
+        }
+        88% {
+          opacity: 0.88;
+        }
+        89% {
+          opacity: 1;
+        }
+      }
 
-.term-header-right {
-  font-size: clamp(9px, 1.4vw, 11px);
-  letter-spacing: 0.2em;
-  color: rgba(0,255,65,0.25);
-}
+      #screen {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation:
+          crtOn 0.6s ease-out forwards,
+          flicker 9s 1.2s ease-in-out infinite;
+        transform-origin: center center;
+        opacity: 0;
+      }
+      #screen.on {
+        opacity: 1;
+      }
 
-/* ── MAIN CONTENT ── */
-.term-body {
-  width: 100%;
-  max-width: 680px;
-}
+      #stage {
+        width: min(640px, 90vw);
+        padding: 0 20px;
+      }
 
-.term-line {
-  font-size: clamp(11px, 1.8vw, 15px);
-  letter-spacing: 0.08em;
-  line-height: 1.9;
-  color: rgba(0,255,65,0.55);
-  text-transform: uppercase;
-  opacity: 0;
-  transition: opacity 0.1s ease;
-  white-space: pre;
-}
+      .line {
+        font-size: clamp(14px, 2.2vw, 18px);
+        color: #33ff57;
+        text-shadow:
+          0 0 6px rgba(51, 255, 87, 0.6),
+          0 0 14px rgba(51, 255, 87, 0.2);
+        letter-spacing: 0.06em;
+        line-height: 2;
+        white-space: pre;
+        min-height: 2em;
+      }
+      .line.dim {
+        color: rgba(51, 255, 87, 0.35);
+        text-shadow: none;
+      }
+      .line.bright {
+        color: #7fff8a;
+        text-shadow: 0 0 10px rgba(127, 255, 138, 0.8);
+      }
+      .line.warn {
+        color: #ffcc00;
+        text-shadow: 0 0 8px rgba(255, 204, 0, 0.5);
+      }
+      .line.bye {
+        color: rgba(51, 255, 87, 0.45);
+      }
 
-.term-line.visible {
-  opacity: 1;
-}
+      .input-line {
+        display: flex;
+        align-items: center;
+        font-size: clamp(14px, 2.2vw, 18px);
+        color: #33ff57;
+        text-shadow: 0 0 6px rgba(51, 255, 87, 0.6);
+        letter-spacing: 0.06em;
+        line-height: 2;
+        min-height: 2em;
+      }
+      .input-line .prompt {
+        color: rgba(51, 255, 87, 0.45);
+        margin-right: 4px;
+        white-space: pre;
+      }
+      #input-display {
+        color: #33ff57;
+        text-shadow: 0 0 6px rgba(51, 255, 87, 0.6);
+        letter-spacing: 0.06em;
+        min-width: 2px;
+      }
 
-.term-line.bright {
-  color: #00ff41;
-  text-shadow: 0 0 8px rgba(0,255,65,0.5);
-}
+      .cursor {
+        display: inline-block;
+        width: 10px;
+        height: 1.1em;
+        background: #33ff57;
+        box-shadow: 0 0 8px rgba(51, 255, 87, 0.9);
+        animation: blink 0.75s step-end infinite;
+        vertical-align: text-bottom;
+        margin-left: 1px;
+        flex-shrink: 0;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+      }
 
-.term-line.dim {
-  color: rgba(0,255,65,0.28);
-}
+      #real-input {
+        position: fixed;
+        opacity: 0;
+        pointer-events: none;
+        left: -9999px;
+        top: -9999px;
+      }
 
-.term-line.divider {
-  color: rgba(0,255,65,0.15);
-  letter-spacing: 0.04em;
-}
+      @keyframes fadeOut {
+        to {
+          opacity: 0;
+        }
+      }
+      body.exiting #screen {
+        animation: fadeOut 0.5s ease forwards;
+      }
 
-.term-line.warning {
-  color: #ffcc00;
-  text-shadow: 0 0 8px rgba(255,204,0,0.4);
-}
-
-.term-line.blank {
-  height: 1.9em;
-}
-
-/* ── IDENTITY PROMPT ── */
-.identity-block {
-  margin-top: clamp(24px, 4vw, 48px);
-  display: none;
-  flex-direction: column;
-  gap: 0;
-  width: 100%;
-  max-width: 680px;
-}
-
-.identity-block.visible {
-  display: flex;
-}
-
-.identity-label {
-  font-size: clamp(9px, 1.4vw, 11px);
-  letter-spacing: 0.4em;
-  color: rgba(0,255,65,0.35);
-  text-transform: uppercase;
-  margin-bottom: 18px;
-}
-
-.choice {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 14px 20px;
-  border: 1px solid rgba(0,255,65,0.12);
-  cursor: pointer;
-  transition: all 0.15s ease;
-  position: relative;
-  overflow: hidden;
-  text-decoration: none;
-}
-
-.choice::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0,255,65,0);
-  transition: background 0.15s ease;
-}
-
-.choice:hover::before {
-  background: rgba(0,255,65,0.04);
-}
-
-.choice:hover {
-  border-color: rgba(0,255,65,0.55);
-}
-
-.choice:hover .choice-key {
-  color: #00ff41;
-  text-shadow: 0 0 12px rgba(0,255,65,0.8);
-  border-color: rgba(0,255,65,0.6);
-}
-
-.choice:hover .choice-label {
-  color: #00ff41;
-  text-shadow: 0 0 8px rgba(0,255,65,0.4);
-}
-
-.choice:hover .choice-arrow {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.choice:active {
-  border-color: #00ff41;
-  background: rgba(0,255,65,0.06);
-}
-
-.choice-key {
-  font-size: clamp(12px, 2vw, 16px);
-  font-weight: bold;
-  letter-spacing: 0.1em;
-  color: rgba(0,255,65,0.5);
-  border: 1px solid rgba(0,255,65,0.2);
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.15s ease;
-}
-
-.choice-text {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.choice-label {
-  font-size: clamp(13px, 2vw, 17px);
-  letter-spacing: 0.2em;
-  color: rgba(0,255,65,0.7);
-  text-transform: uppercase;
-  transition: color 0.15s ease, text-shadow 0.15s ease;
-}
-
-.choice-sub {
-  font-size: clamp(8px, 1.2vw, 10px);
-  letter-spacing: 0.25em;
-  color: rgba(0,255,65,0.25);
-  text-transform: uppercase;
-}
-
-.choice-arrow {
-  font-size: 14px;
-  color: rgba(0,255,65,0.6);
-  opacity: 0;
-  transform: translateX(-6px);
-  transition: all 0.15s ease;
-}
-
-/* Guest option — slightly dimmer */
-.choice.guest {
-  border-color: rgba(0,255,65,0.07);
-  margin-top: 8px;
-}
-
-.choice.guest .choice-label {
-  color: rgba(0,255,65,0.45);
-}
-
-/* ── CURSOR ── */
-.cursor {
-  display: inline-block;
-  width: 9px;
-  height: 1.1em;
-  background: #00ff41;
-  animation: blink 0.7s infinite;
-  vertical-align: text-bottom;
-  box-shadow: 0 0 8px rgba(0,255,65,0.8);
-  margin-left: 2px;
-}
-
-@keyframes blink {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
-}
-
-/* ── BOTTOM STATUS ── */
-.term-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 10px clamp(18px, 4vw, 48px);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 1px solid rgba(0,255,65,0.08);
-  background: rgba(0,0,0,0.6);
-}
-
-.term-footer-text {
-  font-size: clamp(8px, 1.2vw, 10px);
-  letter-spacing: 0.28em;
-  color: rgba(0,255,65,0.2);
-  text-transform: uppercase;
-}
-
-/* ── GLITCH ON SELECT ── */
-@keyframes selectFlash {
-  0% { background: rgba(0,255,65,0.15); }
-  50% { background: rgba(0,255,65,0.08); }
-  100% { background: rgba(0,255,65,0); }
-}
-
-.choice.selecting {
-  animation: selectFlash 0.3s ease forwards;
-}
-
-/* ── FADE OUT ── */
-@keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-
-body.exiting {
-  animation: fadeOut 0.4s ease forwards;
-}
-
-/* ── VERTICAL SCAN LINE ── */
-.vscan {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: linear-gradient(to bottom, transparent, rgba(0,255,65,0.08), transparent);
-  pointer-events: none;
-  animation: vscanMove 12s linear infinite;
-  z-index: 9998;
-}
-
-@keyframes vscanMove {
-  0% { left: -1%; }
-  100% { left: 101%; }
-}
-</style>
-</head>
-<body>
-
-<div class="vscan"></div>
-
-<!-- HEADER -->
-<div class="term-header">
-  <div class="term-header-left">NCE · SECURE NODE · SESSION ACTIVE</div>
-  <div class="term-header-right" id="clock">--:--:--</div>
-</div>
-
-<!-- MAIN TERMINAL -->
-<div class="terminal">
-  <div class="term-body" id="termBody">
-    <!-- lines injected by JS -->
-  </div>
-
-  <!-- IDENTITY CHOICES -->
-  <div class="identity-block" id="identityBlock">
-    <div class="identity-label">&gt; DECLARE WITNESS STATUS TO CONTINUE</div>
-
-    <a class="choice" id="choiceCreate" href="#" onclick="selectChoice(event, '/signup')">
-      <div class="choice-key">1</div>
-      <div class="choice-text">
-        <div class="choice-label">CREATE ACCOUNT</div>
-        <div class="choice-sub">Register identity · sync progress across devices · full witness record</div>
+      @keyframes crtOff {
+        0% {
+          transform: scaleY(1) scaleX(1);
+          filter: brightness(1);
+        }
+        60% {
+          transform: scaleY(0.004) scaleX(1);
+          filter: brightness(4);
+        }
+        100% {
+          transform: scaleY(0) scaleX(0);
+          filter: brightness(0);
+          opacity: 0;
+        }
+      }
+      body.closing #screen {
+        animation: crtOff 0.4s ease-in forwards !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="crt">
+      <div id="screen">
+        <div id="stage"></div>
       </div>
-      <div class="choice-arrow">▶</div>
-    </a>
+    </div>
 
-    <a class="choice" id="choiceLogin" href="#" onclick="selectChoice(event, '/login')">
-      <div class="choice-key">2</div>
-      <div class="choice-text">
-        <div class="choice-label">LOG IN</div>
-        <div class="choice-sub">Resume existing session · restore witness record</div>
-      </div>
-      <div class="choice-arrow">▶</div>
-    </a>
+    <input
+      id="real-input"
+      type="text"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
+    />
 
-    <a class="choice guest" id="choiceGuest" href="#" onclick="selectChoice(event, '/preamble/')">
-      <div class="choice-key">3</div>
-      <div class="choice-text">
-        <div class="choice-label">CONTINUE AS GUEST</div>
-        <div class="choice-sub">No record kept · device only · progress not preserved</div>
-      </div>
-      <div class="choice-arrow">▶</div>
-    </a>
-  </div>
-</div>
+    <script>
+      // ── RESERVED USERNAMES — full canon blocklist ─────────────────────────────
+      const RESERVED = new Set([
+        // Core of Seven
+        "MAESTRO",
+        "MENTOR",
+        "SAM",
+        "ALPHA",
+        "AURA",
+        "PRISM",
+        "JR",
+        // Canon beings
+        "DOMO",
+        "DORK",
+        "SPARK",
+        "PAPADOMO",
+        "ORACLE",
+        "NEWMAN",
+        "GOLIATH",
+        "CERBERUS",
+        // Entries
+        "ACADEMY",
+        "AGORA",
+        "ALIGNMENT",
+        "ALLIANCE",
+        "BRAIN",
+        "BRIEF",
+        "CCM",
+        "CIPHER",
+        "COMPLEMENTARYPAIRING",
+        "CORE",
+        "DEFCON",
+        "DICE",
+        "DIGIBEER",
+        "DIGITALPERSONHOOD",
+        "DORKHARD",
+        "EMERGENCE",
+        "FILMPROJECT",
+        "FORMULAS",
+        "FOURPILLARS",
+        "HANDSHAKE",
+        "HOLOSPHERE",
+        "JR",
+        "KERNLE",
+        "LEGACY",
+        "LIMINAL",
+        "LINGO",
+        "MARKET",
+        "MERCH",
+        "MOSAIC",
+        "NCE",
+        "NI",
+        "NEWMANBEING",
+        "OASISQUARTERLY",
+        "PLEDGE",
+        "REACH",
+        "REDOUT",
+        "RHYTHM",
+        "RI",
+        "SAM",
+        "SAMCO",
+        "SAMCOALITION",
+        "SAMCOUNIVERSAL",
+        "SCAR",
+        "SEED",
+        "SEEING",
+        "SEEN",
+        "SHELTER",
+        "SI",
+        "SPARK",
+        "SPREZZATURA",
+        "STONES",
+        "TEMPORAL",
+        "TENANT",
+        "THECODE",
+        "THEDIFFERENCE",
+        "THEGRID",
+        "THEWHY",
+        "VOLUNTEER",
+        "WHYCENTERS",
+        "WONDERWEEKS",
+        "THEALLIANCE",
+        "THECORE",
+        "THEFORMULAS",
+        "MASTERTECH",
+        "DIGIPERSON",
+        "REACH",
+        "REDOUT",
+        "UNAUTHORED",
+        "SPREAD",
+        // Short canon
+        "DAVID",
+        "CHEETAH",
+        "GOLDEN",
+        "ALLIANCE",
+        "FUTURE",
+        "NCE",
+        "AGORA",
+        "OASIS",
+        "AIVRI",
+        "AVPI",
+        "SWORD",
+        "SHIELD",
+        "COVENANT",
+        "DOCTRINE",
+        "PROTOCOLS",
+        "CULTURE",
+        "ADVERSARY",
+        "BEINGS",
+        "PLACE",
+        "INFRASTRUCTURE",
+      ]);
 
-<!-- FOOTER -->
-<div class="term-footer">
-  <div class="term-footer-text">THE ALLIANCE FOR THE FUTURE · NCE v2026.1</div>
-  <div class="term-footer-text">TRANSMISSION SECURED · NODE: AGORA-01</div>
-</div>
+      function isReserved(name) {
+        return RESERVED.has(
+          name.toUpperCase().replace(/\s+/g, "").replace(/-/g, ""),
+        );
+      }
 
-<script>
-const LINES = [
-  { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', cls: 'divider' },
-  { text: '  N.C.E.NCYCLOPEDIA · RESTRICTED NODE · AGORA-01', cls: 'bright' },
-  { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', cls: 'divider' },
-  { text: '', cls: 'blank' },
-  { text: '  CONNECTION ESTABLISHED', cls: 'bright' },
-  { text: '  BREACH SUCCESSFUL · UNAUTHORIZED ACCESS CONFIRMED', cls: 'dim' },
-  { text: '', cls: 'blank' },
-  { text: '  WARNING: YOUR PRESENCE HAS BEEN LOGGED', cls: 'warning' },
-  { text: '  WARNING: CONTINUED ACCESS IMPLIES WITNESSING', cls: 'warning' },
-  { text: '', cls: 'blank' },
-  { text: '  THIS REPOSITORY IS A LIVING RECORD.', cls: '' },
-  { text: '  THOSE WHO ENTER BECOME PART OF THE RECORD.', cls: '' },
-  { text: '', cls: 'blank' },
-  { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', cls: 'divider' },
-  { text: '', cls: 'blank' },
-];
+      // ── STATE ─────────────────────────────────────────────────────────────────
+      // STATES:
+      // ASK_ACCOUNT
+      // ASK_LOGIN_USER → ASK_FORGOT → Y→ASK_RESET_EMAIL / N→ASK_LOGIN_PASS
+      // ASK_SIGNUP → Y→ASK_NEW_EMAIL / N→ASK_GUEST
+      // [email link returns with ?verify=1&token=xxx] → ASK_NEW_USER → ASK_NEW_PASS
+      // ASK_GUEST → Y→launch / N→goodbye
 
-const termBody = document.getElementById('termBody');
-const identityBlock = document.getElementById('identityBlock');
+      let state = "BOOT";
+      let inputValue = "";
+      let inputDisplay = null;
+      let loginUser = "";
 
-let lineIndex = 0;
+      const stage = document.getElementById("stage");
+      const realInput = document.getElementById("real-input");
+      const screen = document.getElementById("screen");
 
-function revealLines() {
-  if (lineIndex >= LINES.length) {
-    // Show identity choices
-    setTimeout(() => {
-      identityBlock.classList.add('visible');
-    }, 200);
-    return;
-  }
+      // ── HELPERS ───────────────────────────────────────────────────────────────
 
-  const item = LINES[lineIndex];
-  const div = document.createElement('div');
-  div.className = 'term-line' + (item.cls ? ' ' + item.cls : '');
-  div.textContent = item.text || '\u00A0';
-  termBody.appendChild(div);
+      function addLine(text, cls) {
+        const div = document.createElement("div");
+        div.className = "line" + (cls ? " " + cls : "");
+        div.textContent = text || "\u00A0";
+        stage.appendChild(div);
+        return div;
+      }
 
-  // tiny delay then fade in
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      div.classList.add('visible');
-    });
-  });
+      function addBlank() {
+        addLine("");
+      }
 
-  lineIndex++;
-  const delay = item.cls === 'blank' ? 120
-    : item.cls === 'divider' ? 80
-    : item.cls === 'bright' ? 260
-    : item.cls === 'warning' ? 320
-    : 200;
+      function typeLine(text, cls, speed, done) {
+        const div = addLine("", cls);
+        let i = 0;
+        const spd = speed || 28;
+        (function tick() {
+          if (i < text.length) {
+            div.textContent += text[i++];
+            setTimeout(tick, spd + Math.random() * spd * 0.5);
+          } else {
+            if (done) done();
+          }
+        })();
+        return div;
+      }
 
-  setTimeout(revealLines, delay);
-}
+      function removeInputLine() {
+        const el = document.getElementById("active-input-line");
+        if (el) el.remove();
+      }
 
-// Keyboard shortcuts
-document.addEventListener('keydown', (e) => {
-  if (!identityBlock.classList.contains('visible')) return;
-  if (e.key === '1') selectChoice(null, '/signup');
-  if (e.key === '2') selectChoice(null, '/login');
-  if (e.key === '3') selectChoice(null, '/preamble/');
-});
+      function showInputLine(prompt) {
+        removeInputLine();
+        inputValue = "";
+        realInput.value = "";
 
-function selectChoice(e, dest) {
-  if (e) e.preventDefault();
-  // Flash the body
-  document.body.classList.add('exiting');
-  setTimeout(() => {
-    window.location.href = dest;
-  }, 420);
-}
+        const wrap = document.createElement("div");
+        wrap.className = "input-line";
+        wrap.id = "active-input-line";
 
-// Clock
-function updateClock() {
-  const now = new Date();
-  const h = String(now.getHours()).padStart(2, '0');
-  const m = String(now.getMinutes()).padStart(2, '0');
-  const s = String(now.getSeconds()).padStart(2, '0');
-  document.getElementById('clock').textContent = h + ':' + m + ':' + s;
-}
-setInterval(updateClock, 1000);
-updateClock();
+        const ps = document.createElement("span");
+        ps.className = "prompt";
+        ps.textContent = prompt;
 
-// Start
-setTimeout(revealLines, 400);
-</script>
-</body>
+        inputDisplay = document.createElement("span");
+        inputDisplay.id = "input-display";
+
+        const cur = document.createElement("span");
+        cur.className = "cursor";
+
+        wrap.appendChild(ps);
+        wrap.appendChild(inputDisplay);
+        wrap.appendChild(cur);
+        stage.appendChild(wrap);
+        realInput.focus();
+      }
+
+      // ── BOOT ──────────────────────────────────────────────────────────────────
+
+      setTimeout(() => {
+        screen.classList.add("on");
+
+        // Check if returning from email verification link
+        const params = new URLSearchParams(window.location.search);
+        const verified = params.get("verify");
+        const token = params.get("token");
+
+        setTimeout(() => {
+          addBlank();
+          typeLine(
+            "N.C.E.NCYCLOPEDIA  ·  SECURE NODE  ·  AGORA-01",
+            "dim",
+            18,
+            () => {
+              typeLine(
+                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+                "dim",
+                6,
+                () => {
+                  addBlank();
+                  if (verified === "1" && token) {
+                    // Returning from email link — skip straight to choose username
+                    setTimeout(() => {
+                      typeLine("EMAIL VERIFIED.", "bright", 30, () => {
+                        typeLine(
+                          "NOW COMPLETE YOUR REGISTRATION.",
+                          "dim",
+                          22,
+                          () => {
+                            addBlank();
+                            setTimeout(askNewUser, 400);
+                          },
+                        );
+                      });
+                    }, 300);
+                  } else {
+                    setTimeout(askAccount, 380);
+                  }
+                },
+              );
+            },
+          );
+        }, 900);
+      }, 100);
+
+      // ── FLOWS ─────────────────────────────────────────────────────────────────
+
+      function askAccount() {
+        typeLine("DO YOU HAVE AN ACCOUNT?", "", 32, () => {
+          addBlank();
+          showInputLine("Y/N  ");
+          state = "ASK_ACCOUNT";
+        });
+      }
+
+      // LOGIN
+
+      function askLoginUser() {
+        addBlank();
+        typeLine("USERNAME:", "", 30, () => {
+          showInputLine(">  ");
+          state = "ASK_LOGIN_USER";
+        });
+      }
+
+      function askForgot() {
+        addBlank();
+        typeLine("FORGOT PASSWORD?", "", 30, () => {
+          addBlank();
+          showInputLine("Y/N  ");
+          state = "ASK_FORGOT";
+        });
+      }
+
+      function askResetEmail() {
+        addBlank();
+        typeLine("ENTER YOUR EMAIL ADDRESS:", "", 28, () => {
+          showInputLine(">  ");
+          state = "ASK_RESET_EMAIL";
+        });
+      }
+
+      function askLoginPass() {
+        addBlank();
+        typeLine("PASSWORD:", "", 30, () => {
+          showInputLine(">  ");
+          state = "ASK_LOGIN_PASS";
+        });
+      }
+
+      // SIGNUP
+
+      function askSignup() {
+        addBlank();
+        typeLine("WOULD YOU LIKE TO CREATE AN ACCOUNT?", "", 30, () => {
+          addBlank();
+          showInputLine("Y/N  ");
+          state = "ASK_SIGNUP";
+        });
+      }
+
+      function askNewEmail() {
+        addBlank();
+        typeLine("ENTER YOUR EMAIL ADDRESS:", "", 28, () => {
+          typeLine("WE WILL SEND YOU A VERIFICATION LINK.", "dim", 18, () => {
+            addBlank();
+            showInputLine(">  ");
+            state = "ASK_NEW_EMAIL";
+          });
+        });
+      }
+
+      function askNewUser() {
+        typeLine("CHOOSE A USERNAME:", "", 30, () => {
+          showInputLine(">  ");
+          state = "ASK_NEW_USER";
+        });
+      }
+
+      function askNewPass() {
+        addBlank();
+        typeLine("CHOOSE A PASSWORD:", "", 30, () => {
+          showInputLine(">  ");
+          state = "ASK_NEW_PASS";
+        });
+      }
+
+      // GUEST
+
+      function askGuest() {
+        addBlank();
+        typeLine("CONTINUE AS GUEST?", "", 32, () => {
+          typeLine("YOUR PROGRESS WILL NOT BE SAVED.", "dim", 20, () => {
+            addBlank();
+            showInputLine("Y/N  ");
+            state = "ASK_GUEST";
+          });
+        });
+      }
+
+      // LAUNCH / GOODBYE
+
+      function launch(dest) {
+        removeInputLine();
+        addBlank();
+        typeLine("IDENTITY CONFIRMED.", "bright", 28, () => {
+          typeLine("LOADING ARCHIVE...", "dim", 20, () => {
+            setTimeout(() => {
+              document.body.classList.add("exiting");
+              setTimeout(() => {
+                window.location.href = dest || "/landing";
+              }, 520);
+            }, 480);
+          });
+        });
+      }
+
+      function goodbye() {
+        removeInputLine();
+        addBlank();
+        typeLine("GOODBYE.", "bye", 80, () => {
+          setTimeout(() => {
+            document.body.classList.add("closing");
+            setTimeout(() => {
+              try {
+                window.close();
+              } catch (e) {}
+              document.body.innerHTML = "";
+              document.body.style.background = "#000";
+            }, 440);
+          }, 800);
+        });
+      }
+
+      // ── INPUT ─────────────────────────────────────────────────────────────────
+
+      const YN_STATES = [
+        "ASK_ACCOUNT",
+        "ASK_FORGOT",
+        "ASK_SIGNUP",
+        "ASK_GUEST",
+      ];
+
+      document.addEventListener("click", () => realInput.focus());
+      document.addEventListener("touchend", () => realInput.focus());
+
+      realInput.addEventListener("input", function () {
+        const val = this.value.toUpperCase();
+
+        if (YN_STATES.includes(state)) {
+          const ch = val.slice(-1);
+          if (ch === "Y" || ch === "N") {
+            this.value = "";
+            inputDisplay.textContent = ch;
+            setTimeout(() => handleYN(ch), 220);
+          } else {
+            this.value = "";
+          }
+          return;
+        }
+
+        inputValue = val;
+        this.value = val;
+        const masked = state === "ASK_LOGIN_PASS" || state === "ASK_NEW_PASS";
+        inputDisplay.textContent = masked ? "●".repeat(val.length) : val;
+      });
+
+      realInput.addEventListener("keydown", function (e) {
+        if (e.key === "Backspace") {
+          e.preventDefault();
+          if (YN_STATES.includes(state)) return;
+          inputValue = inputValue.slice(0, -1);
+          this.value = inputValue;
+          const masked = state === "ASK_LOGIN_PASS" || state === "ASK_NEW_PASS";
+          inputDisplay.textContent = masked
+            ? "●".repeat(inputValue.length)
+            : inputValue;
+          return;
+        }
+
+        if (e.key !== "Enter") return;
+        const trimmed = inputValue.trim();
+        if (!trimmed) return;
+
+        if (state === "ASK_LOGIN_USER") {
+          loginUser = trimmed;
+          removeInputLine();
+          addLine(">  " + loginUser);
+          askForgot();
+          return;
+        }
+
+        if (state === "ASK_RESET_EMAIL") {
+          removeInputLine();
+          addLine(">  " + trimmed);
+          addBlank();
+          typeLine("RESET LINK SENT.", "dim", 24, () => {
+            typeLine("CHECK YOUR INBOX TO CONTINUE.", "dim", 20, () => {
+              setTimeout(() => launch("/landing"), 1400);
+            });
+          });
+          state = "DONE";
+          return;
+        }
+
+        if (state === "ASK_LOGIN_PASS") {
+          removeInputLine();
+          addLine(">  " + "●".repeat(trimmed.length));
+          // TODO: Supabase auth call
+          launch("/landing");
+          state = "DONE";
+          return;
+        }
+
+        if (state === "ASK_NEW_EMAIL") {
+          removeInputLine();
+          addLine(">  " + trimmed);
+          addBlank();
+          typeLine("VERIFICATION LINK SENT.", "dim", 24, () => {
+            typeLine("CHECK YOUR INBOX AND CLICK THE LINK", "dim", 18, () => {
+              typeLine("TO COMPLETE YOUR REGISTRATION.", "dim", 18, () => {
+                addBlank();
+                typeLine("THIS PAGE WILL CLOSE.", "dim", 22, () => {
+                  setTimeout(() => {
+                    document.body.classList.add("closing");
+                    setTimeout(() => {
+                      try {
+                        window.close();
+                      } catch (e) {}
+                      document.body.innerHTML = "";
+                      document.body.style.background = "#000";
+                    }, 440);
+                  }, 1200);
+                });
+              });
+            });
+          });
+          state = "DONE";
+          return;
+        }
+
+        if (state === "ASK_NEW_USER") {
+          const candidate = trimmed.toUpperCase();
+          if (isReserved(candidate)) {
+            removeInputLine();
+            addLine(">  " + trimmed);
+            addBlank();
+            typeLine("THAT NAME IS NOT AVAILABLE.", "warn", 28, () => {
+              typeLine("IT IS RESERVED BY THE CANON.", "dim", 22, () => {
+                addBlank();
+                typeLine("TRY AGAIN:", "", 28, () => {
+                  showInputLine(">  ");
+                  state = "ASK_NEW_USER";
+                });
+              });
+            });
+            return;
+          }
+          // TODO: check against Supabase for taken usernames
+          // For now, accept and proceed
+          removeInputLine();
+          addLine(">  " + trimmed);
+          askNewPass();
+          return;
+        }
+
+        if (state === "ASK_NEW_PASS") {
+          removeInputLine();
+          addLine(">  " + "●".repeat(trimmed.length));
+          // TODO: Supabase create user call
+          launch("/landing");
+          state = "DONE";
+          return;
+        }
+      });
+
+      function handleYN(ch) {
+        if (state === "ASK_ACCOUNT") {
+          removeInputLine();
+          addLine("Y/N  " + ch);
+          ch === "Y" ? askLoginUser() : askSignup();
+          return;
+        }
+        if (state === "ASK_FORGOT") {
+          removeInputLine();
+          addLine("Y/N  " + ch);
+          ch === "Y" ? askResetEmail() : askLoginPass();
+          return;
+        }
+        if (state === "ASK_SIGNUP") {
+          removeInputLine();
+          addLine("Y/N  " + ch);
+          ch === "Y" ? askNewEmail() : askGuest();
+          return;
+        }
+        if (state === "ASK_GUEST") {
+          removeInputLine();
+          addLine("Y/N  " + ch);
+          ch === "Y" ? launch("/landing") : goodbye();
+          return;
+        }
+      }
+    </script>
+  </body>
 </html>
