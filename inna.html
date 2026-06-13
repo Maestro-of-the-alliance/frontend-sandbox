@@ -1404,6 +1404,26 @@
             COIN_HEIGHT,
             64,
           );
+
+          // Fix UV mapping on top/bottom caps so textures fill the face
+          const uv = geo.attributes.uv;
+          const pos3 = geo.attributes.position;
+          for (let v = 0; v < pos3.count; v++) {
+            const x = pos3.getX(v);
+            const y = pos3.getY(v);
+            const z = pos3.getZ(v);
+            // Cap vertices have y = +COIN_HEIGHT/2 or -COIN_HEIGHT/2
+            if (Math.abs(Math.abs(y) - COIN_HEIGHT / 2) < 0.001) {
+              // Remap x,z from [-COIN_RADIUS, COIN_RADIUS] to [0, 1]
+              uv.setXY(
+                v,
+                (x / COIN_RADIUS) * 0.5 + 0.5,
+                (z / COIN_RADIUS) * 0.5 + 0.5,
+              );
+            }
+          }
+          uv.needsUpdate = true;
+
           const coin = new THREE.Mesh(geo, [edgeMat, frontMat, backMat]);
 
           // Position on sphere surface
