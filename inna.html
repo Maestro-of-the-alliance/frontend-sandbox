@@ -1331,105 +1331,80 @@
       }
 
       async function buildCoins() {
-        updateProgress(10, "LOADING COIN ASSETS...");
+        updateProgress(10, "LOADING MEDALLIONS...");
 
-        const GLB_PATH = "imagebank/inna_coins_256.glb";
-        const loader = new GLTFLoader();
+        const SYMBOLS_BASE = "imagebank/symbols/";
+        const texLoader = new THREE.TextureLoader();
 
-        // Try to load the GLB — fall back to procedural geometry if not available
-        let glbMeshMap = {}; // name -> THREE.Mesh from GLB
-
-        try {
-          const gltf = await new Promise((resolve, reject) => {
-            loader.load(
-              GLB_PATH,
-              resolve,
-              (xhr) => {
-                const pct = (xhr.loaded / xhr.total) * 30;
-                updateProgress(
-                  10 + pct,
-                  `LOADING MEDALLIONS... ${Math.round(pct * 3)}%`,
-                );
-              },
-              reject,
-            );
+        function loadTex(url) {
+          return new Promise((resolve) => {
+            texLoader.load(url, resolve, undefined, () => resolve(null));
           });
-
-          // Index all meshes in the GLB by name
-          gltf.scene.traverse((child) => {
-            if (child.isMesh) {
-              glbMeshMap[child.parent?.name || child.name] = child;
-            }
-          });
-          // Also index by group name
-          gltf.scene.children.forEach((obj) => {
-            glbMeshMap[obj.name] = obj;
-          });
-
-          updateProgress(42, "MEDALLIONS LOADED — PLACING ON SPHERE...");
-        } catch (e) {
-          console.warn("GLB not found, using procedural geometry:", e);
-          updateProgress(42, "BUILDING COIN GEOMETRY...");
         }
-
-        const useGLB = Object.keys(glbMeshMap).length > 0;
 
         for (let i = 0; i < ENTRIES.length; i++) {
           const entry = ENTRIES[i];
           const pos = positions[i];
           const dimColor = getHexColor(entry.dim);
 
-          let coin;
+          // Load F and B textures from repo
+          const fUrl = `${SYMBOLS_BASE}${entry.id}_F.png`;
+          const bUrl = `${SYMBOLS_BASE}${entry.id}_B.png`;
 
-          if (useGLB && glbMeshMap[entry.id]) {
-            // Use real medallion from GLB
-            const glbObj = glbMeshMap[entry.id];
-            coin = glbObj.clone();
+          const [texF, texB] = await Promise.all([
+            loadTex(fUrl),
+            loadTex(bUrl),
+          ]);
 
-            // Scale down — GLB coins are radius=1, INNA sphere coins need COIN_RADIUS
-            coin.scale.setScalar(COIN_RADIUS);
+          // Edge band material — classification color
+          const edgeMat = new THREE.MeshStandardMaterial({
+            color: entry.dormant ? 0x222228 : dimColor,
+            metalness: 0.85,
+            roughness: 0.15,
+            emissive: entry.dormant ? 0x000000 : dimColor,
+            emissiveIntensity: entry.dormant ? 0 : 0.45,
+          });
 
-            // Apply classification color to edge material (slot 0)
-            if (Array.isArray(coin.material)) {
-              coin.material = coin.material.map((m, idx) => {
-                const mat = m.clone();
-                if (idx === 0) {
-                  // Edge band — tint with classification color
-                  mat.color = new THREE.Color(dimColor);
-                  mat.emissive = new THREE.Color(dimColor);
-                  mat.emissiveIntensity = entry.dormant ? 0 : 0.4;
-                }
-                if (entry.dormant) {
-                  mat.opacity = 0.4;
-                  mat.transparent = true;
-                }
-                return mat;
-              });
-            }
-          } else {
-            // Fallback procedural coin
-            const geo = new THREE.CylinderGeometry(
-              COIN_RADIUS,
-              COIN_RADIUS,
-              COIN_HEIGHT,
-              48,
-            );
-            const faceMat = new THREE.MeshStandardMaterial({
-              color: entry.dormant ? 0x111118 : 0x1a1a24,
-              metalness: 0.6,
-              roughness: 0.35,
-              emissive: entry.dormant ? 0x000000 : dimColor,
-              emissiveIntensity: entry.dormant ? 0 : 0.08,
-            });
-            const edgeMat = new THREE.MeshStandardMaterial({
-              color: entry.dormant ? 0x222228 : dimColor,
-              metalness: 0.8,
-              roughness: 0.2,
-              emissive: entry.dormant ? 0x000000 : dimColor,
-              emissiveIntensity: entry.dormant ? 0 : 0.4,
-            });
-            coin = new THREE.Mesh(geo, [edgeMat, faceMat, faceMat]);
-          }
+          // Front face (F texture)
+          const frontMat = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            metalness: 0.5,
+            roughness: 0.4,
+            map: texF || null,
+            transparent: true,
+            ...(texF
+              ? {}
+              : {
+                  color: entry.dormant ? 0x111118 : dimColor,
+                  emissive: entry.dormant ? 0x000000 : dimColor,
+                  emissiveIntensity: 0.06,
+                }),
+          });
+
+          // Back face (B texture)
+          const backMat = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            metalness: 0.5,
+            roughness: 0.4,
+            map: texB || null,
+            transparent: true,
+            ...(texB
+              ? {}
+              : {
+                  color: entry.dormant ? 0x111118 : dimColor,
+                  emissive: entry.dormant ? 0x000000 : dimColor,
+                  emissiveIntensity: 0.06,
+                }),
+          });
+
+          // Coin geometry — [edge, top(F), bottom(B)]
+          const geo = new THREE.CylinderGeometry(
+            COIN_RADIUS,
+            COIN_RADIUS,
+            COIN_HEIGHT,
+            64,
+          );
+          const coin = new THREE.Mesh(geo, [edgeMat, frontMat, backMat]);
 
           // Position on sphere surface
           coin.position.copy(pos);
@@ -1461,9 +1436,9 @@
           coinMeshes.push(record);
           nodeMap[entry.id] = record;
 
-          if (i % 10 === 0) {
+          if (i % 5 === 0) {
             updateProgress(
-              42 + (i / ENTRIES.length) * 30,
+              10 + (i / ENTRIES.length) * 50,
               `PLACING NODE ${i + 1} OF ${ENTRIES.length}...`,
             );
             await new Promise((r) => setTimeout(r, 0));
