@@ -55,6 +55,15 @@
     <!-- ENTRY COUNT -->
     <div id="entryCount"><span id="countNum">73</span> NODES</div>
 
+    <!-- MODE TOGGLE -->
+    <div id="modeToggle">
+      <button id="btnINNA" class="mode-btn active">INNA</button>
+      <button id="btnCLOUD" class="mode-btn">CLOUD</button>
+    </div>
+
+    <!-- WORD CLOUD LAYER -->
+    <div id="cloudLayer"></div>
+
     <!-- SPHERE CONTAINER -->
     <div id="sphereContainer">
       <canvas id="innaCanvas"></canvas>
@@ -160,6 +169,21 @@
 
     #nodeTooltip { position: fixed; z-index: 150; pointer-events: none; font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 0.25em; color: rgba(255,255,255,0.8); background: rgba(2,2,5,0.85); border: 1px solid rgba(255,255,255,0.12); padding: 6px 12px; backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.15s ease; white-space: nowrap; }
     #nodeTooltip.visible { opacity: 1; }
+
+    /* ── MODE TOGGLE ── */
+    #modeToggle { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 100; display: flex; gap: 2px; background: rgba(2,2,5,0.8); border: 1px solid rgba(255,255,255,0.08); padding: 3px; }
+    .mode-btn { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.3em; padding: 5px 16px; background: transparent; border: none; color: rgba(255,255,255,0.3); cursor: pointer; transition: all 0.2s ease; }
+    .mode-btn.active { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.85); }
+    .mode-btn:hover:not(.active) { color: rgba(255,255,255,0.6); }
+
+    /* ── WORD CLOUD ── */
+    #cloudLayer { position: fixed; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; opacity: 0; transition: opacity 0.6s ease; }
+    #cloudLayer.visible { pointer-events: all; }
+    .cloud-word { position: absolute; font-family: 'Cinzel', serif; font-weight: 400; letter-spacing: 0.08em; cursor: pointer; transition: opacity 0.4s ease, transform 0.4s ease, font-size 0.4s ease, text-shadow 0.3s ease; user-select: none; white-space: nowrap; opacity: 0.18; transform: translate(-50%, -50%); }
+    .cloud-word:hover { opacity: 1 !important; text-shadow: 0 0 20px currentColor; }
+    .cloud-word.selected { opacity: 1 !important; text-shadow: 0 0 24px currentColor, 0 0 48px currentColor; transform: translate(-50%, -50%) scale(1.15); }
+    .cloud-word.connected { opacity: 0.7 !important; text-shadow: 0 0 12px currentColor; }
+    .cloud-word.dimmed { opacity: 0.04 !important; }
   `;
         const style = document.createElement("style");
         style.textContent = css;
@@ -1420,6 +1444,194 @@
         clock.start();
         animate();
       }
+
+      // ═══════════════════════════════════════════════════
+      // WORD CLOUD
+      // ═══════════════════════════════════════════════════
+
+      const cloudLayer = document.getElementById("cloudLayer");
+      let cloudWords = []; // { el, entry, x, y, baseSize, vx, vy }
+      let cloudMode = false;
+      let cloudSelected = null;
+      let cloudAnimFrame = null;
+
+      // Connection count for sizing
+      const connCount = {};
+      ENTRIES.forEach((e) => {
+        connCount[e.id] = 0;
+      });
+      CONNECTIONS.forEach((c) => {
+        if (connCount[c.from] !== undefined) connCount[c.from]++;
+        if (connCount[c.to] !== undefined) connCount[c.to]++;
+      });
+      const maxConn = Math.max(...Object.values(connCount));
+
+      function buildCloud() {
+        cloudLayer.innerHTML = "";
+        cloudWords = [];
+
+        const W = window.innerWidth;
+        const H = window.innerHeight;
+
+        ENTRIES.forEach((entry) => {
+          const el = document.createElement("div");
+          el.className = "cloud-word";
+          el.textContent = entry.name;
+
+          const primaryDim = entry.dims[0];
+          el.style.color = DIM_COLORS[primaryDim] || "#888888";
+
+          // Size by connection count — min 9px, max 22px
+          const ratio = (connCount[entry.id] || 0) / maxConn;
+          const size = 9 + ratio * 13;
+          el.style.fontSize = size + "px";
+
+          // Random position avoiding center (SVPO lives there)
+          let x, y;
+          do {
+            x = 0.08 + Math.random() * 0.84;
+            y = 0.08 + Math.random() * 0.84;
+          } while (Math.abs(x - 0.5) < 0.15 && Math.abs(y - 0.5) < 0.15);
+
+          el.style.left = x * W + "px";
+          el.style.top = y * H + "px";
+
+          // Gentle random drift
+          const vx = (Math.random() - 0.5) * 0.12;
+          const vy = (Math.random() - 0.5) * 0.08;
+
+          el.addEventListener("click", () => selectCloudWord(entry.id));
+          el.addEventListener("dblclick", () => jumpToNode(entry.id));
+
+          cloudLayer.appendChild(el);
+          cloudWords.push({
+            el,
+            entry,
+            x: x * W,
+            y: y * H,
+            baseSize: size,
+            vx,
+            vy,
+          });
+        });
+      }
+
+      function selectCloudWord(entryId) {
+        cloudSelected = entryId;
+        const connectedIds = new Set(
+          CONNECTIONS.filter((c) => c.from === entryId || c.to === entryId).map(
+            (c) => (c.from === entryId ? c.to : c.from),
+          ),
+        );
+
+        cloudWords.forEach((w) => {
+          w.el.classList.remove("selected", "connected", "dimmed");
+          if (w.entry.id === entryId) {
+            w.el.classList.add("selected");
+            w.el.style.fontSize = w.baseSize * 1.8 + "px";
+          } else if (connectedIds.has(w.entry.id)) {
+            w.el.classList.add("connected");
+            w.el.style.fontSize = w.baseSize * 1.25 + "px";
+          } else {
+            w.el.classList.add("dimmed");
+            w.el.style.fontSize = w.baseSize + "px";
+          }
+        });
+
+        // Also open panel
+        const node = nodeMap[entryId];
+        if (node) openEntryPanel(node);
+      }
+
+      function jumpToNode(entryId) {
+        // Switch to INNA mode and highlight that node
+        setMode("inna");
+        const node = nodeMap[entryId];
+        if (node) {
+          openEntryPanel(node);
+          // Rotate sphere so node faces camera
+          const pos = node.mesh.position.clone();
+          const targetY = Math.atan2(pos.x, pos.z);
+          const targetX = -Math.asin(pos.y / SPHERE_RADIUS);
+          sphereRotation.y = targetY;
+          sphereRotation.x = targetX;
+          sphereVelocity = { x: 0, y: 0 };
+        }
+      }
+
+      function animateCloud() {
+        if (!cloudMode) return;
+        const W = window.innerWidth;
+        const H = window.innerHeight;
+
+        cloudWords.forEach((w) => {
+          w.x += w.vx;
+          w.y += w.vy;
+          // Bounce off edges
+          if (w.x < 20 || w.x > W - 20) w.vx *= -1;
+          if (w.y < 20 || w.y > H - 20) w.vy *= -1;
+          w.el.style.left = w.x + "px";
+          w.el.style.top = w.y + "px";
+        });
+
+        cloudAnimFrame = requestAnimationFrame(animateCloud);
+      }
+
+      function setMode(mode) {
+        cloudMode = mode === "cloud";
+        document
+          .getElementById("btnINNA")
+          .classList.toggle("active", !cloudMode);
+        document
+          .getElementById("btnCLOUD")
+          .classList.toggle("active", cloudMode);
+
+        if (cloudMode) {
+          buildCloud();
+          cloudLayer.style.opacity = "1";
+          cloudLayer.classList.add("visible");
+          // Sphere fades back but stays
+          coinGroup.traverse((c) => {
+            if (c.material) {
+              if (Array.isArray(c.material))
+                c.material.forEach(
+                  (m) =>
+                    m &&
+                    ((m.opacity = (m.opacity || 1) * 0.25),
+                    (m.transparent = true)),
+                );
+              else {
+                c.material.opacity = (c.material.opacity || 1) * 0.25;
+                c.material.transparent = true;
+              }
+            }
+          });
+          animateCloud();
+        } else {
+          cloudLayer.style.opacity = "0";
+          cloudLayer.classList.remove("visible");
+          cloudSelected = null;
+          if (cloudAnimFrame) {
+            cancelAnimationFrame(cloudAnimFrame);
+            cloudAnimFrame = null;
+          }
+          // Restore sphere opacity
+          coinGroup.traverse((c) => {
+            if (c.material) {
+              if (Array.isArray(c.material))
+                c.material.forEach((m) => m && (m.opacity = 1));
+              else c.material.opacity = 1;
+            }
+          });
+        }
+      }
+
+      document
+        .getElementById("btnINNA")
+        .addEventListener("click", () => setMode("inna"));
+      document
+        .getElementById("btnCLOUD")
+        .addEventListener("click", () => setMode("cloud"));
 
       init();
     </script>
