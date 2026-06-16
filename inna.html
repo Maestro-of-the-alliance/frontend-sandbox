@@ -163,14 +163,8 @@
       })();
     </script>
 
-    <script
-      async
-      src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
-    ></script>
-    <script
-      async
-      src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"
-    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
     <script>
       // Wait for Three.js to load then init
@@ -1060,8 +1054,9 @@
 
           const loader = new THREE.GLTFLoader();
 
+          // FIXED PATH: Added ./ to look directly in the current server root
           loader.load(
-            "imagebank/svpo/SVPO_MASTER.glb",
+            "./imagebank/svpo/SVPO_MASTER.glb",
             function (gltf) {
               const svpo = gltf.scene;
 
@@ -1078,6 +1073,10 @@
               });
 
               svpo.position.set(0, 0, 0);
+
+              // FIXED SCALE: Shrinks it so it perfectly fits inside the sphere
+              svpo.scale.set(0.35, 0.35, 0.35);
+
               svpoGroup.add(svpo);
 
               console.log("SVPO Successfully Injected into Main Engine");
