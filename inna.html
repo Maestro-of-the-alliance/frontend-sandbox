@@ -1043,48 +1043,89 @@
         }
 
         // ── SVPO ──
+        // Post = static anchor (Y axis)
+        // Ring = spins on X axis (bearing mechanic)
+        // Vitruvian Man = wired to post, spins on Y axis with post
         const svpoGroup = new THREE.Group();
         scene.add(svpoGroup);
-        let svpoRing1, svpoRing2, svpoRing3Mesh, svpoCore;
-        let svpoSpinVelocity = 0;
 
-        function buildSVPO() {
-          const ringMat = new THREE.MeshStandardMaterial({
-            color: 0xd4af37,
-            metalness: 1.0,
+        let svpoRing = null; // spins X axis independently
+        let svpoManGroup = null; // spins Y axis (wired to post)
+        let svpoSpinVelocity = 0;
+        let svpoRingVelocity = 0; // ring has independent inertia
+
+        // Gold material for all SVPO elements
+        function goldMat(tex) {
+          return new THREE.MeshStandardMaterial({
+            map: tex || null,
+            color: tex ? 0xffffff : 0xd4af37,
+            metalness: 0.95,
             roughness: 0.05,
             emissive: 0xb89628,
-            emissiveIntensity: 0.3,
+            emissiveIntensity: tex ? 0.15 : 0.3,
+            transparent: !!tex,
+            alphaTest: tex ? 0.05 : 0,
+            side: THREE.DoubleSide,
           });
-          svpoRing1 = new THREE.Mesh(
-            new THREE.TorusGeometry(0.52, 0.012, 16, 80),
-            ringMat,
+        }
+
+        function buildSVPO() {
+          const texLoader = new THREE.TextureLoader();
+          const SIZE = 0.45; // overall SVPO radius
+
+          // ── POST — static, vertical cylinder ──
+          const postTex = texLoader.load(
+            "imagebank/svpo/SVPO_POST.png",
+            undefined,
+            undefined,
+            () => {},
           );
-          svpoGroup.add(svpoRing1);
-          svpoRing2 = new THREE.Mesh(
-            new THREE.TorusGeometry(0.38, 0.009, 16, 64),
-            ringMat.clone(),
+          const postGeo = new THREE.CylinderGeometry(
+            SIZE * 0.12,
+            SIZE * 0.12,
+            SIZE * 2.2,
+            32,
           );
-          svpoRing2.rotation.x = Math.PI / 2;
-          svpoGroup.add(svpoRing2);
-          svpoRing3Mesh = new THREE.Mesh(
-            new THREE.TorusGeometry(0.45, 0.007, 16, 64),
-            ringMat.clone(),
+          const postMat = new THREE.MeshStandardMaterial({
+            map: postTex,
+            color: 0xd4af37,
+            metalness: 0.95,
+            roughness: 0.05,
+            emissive: 0xb89628,
+            emissiveIntensity: 0.2,
+          });
+          const post = new THREE.Mesh(postGeo, postMat);
+          svpoGroup.add(post); // static — never rotated
+
+          // ── RING — flat disc, spins on X axis (horizontal bearing) ──
+          const ringTex = texLoader.load(
+            "imagebank/svpo/SVPO_RING.png",
+            undefined,
+            undefined,
+            () => {},
           );
-          svpoRing3Mesh.rotation.x = Math.PI / 4;
-          svpoRing3Mesh.rotation.z = Math.PI / 4;
-          svpoGroup.add(svpoRing3Mesh);
-          svpoCore = new THREE.Mesh(
-            new THREE.SphereGeometry(0.13, 32, 32),
-            new THREE.MeshStandardMaterial({
-              color: 0xffd700,
-              metalness: 1.0,
-              roughness: 0.05,
-              emissive: 0xb89628,
-              emissiveIntensity: 0.5,
-            }),
+          const ringGeo = new THREE.CylinderGeometry(
+            SIZE,
+            SIZE,
+            SIZE * 0.03,
+            64,
           );
-          svpoGroup.add(svpoCore);
+          svpoRing = new THREE.Mesh(ringGeo, goldMat(ringTex));
+          svpoRing.rotation.z = Math.PI / 2; // lay flat initially, will spin on X
+          svpoGroup.add(svpoRing);
+
+          // ── VITRUVIAN MAN — flat disc, wired to post, spins on Y ──
+          svpoManGroup = new THREE.Group();
+          const manTex = texLoader.load(
+            "imagebank/svpo/SVPO_MAN.png",
+            undefined,
+            undefined,
+            () => {},
+          );
+          const manGeo = new THREE.PlaneGeometry(SIZE * 1.1, SIZE * 1.1);
+          const man = new THREE.Mesh(manGeo, goldMat(manTex));
+          svpoManGroup.add(man);
+          svpoGroup.add(svpoManGroup);
         }
 
         // ── INTERACTION ──
@@ -1109,6 +1150,7 @@
             prevMouse = { x: e.clientX, y: e.clientY };
             const speed = Math.sqrt(dx * dx + dy * dy);
             svpoSpinVelocity = Math.min(svpoSpinVelocity + speed * 0.008, 0.18);
+            svpoRingVelocity = Math.min(svpoRingVelocity + speed * 0.005, 0.12); // ring picks up slower
           }
           // Raycasting for hover
           const rect = canvas.getBoundingClientRect();
@@ -1172,6 +1214,10 @@
             svpoSpinVelocity = Math.min(
               svpoSpinVelocity + Math.sqrt(dx * dx + dy * dy) * 0.008,
               0.18,
+            );
+            svpoRingVelocity = Math.min(
+              svpoRingVelocity + Math.sqrt(dx * dx + dy * dy) * 0.005,
+              0.12,
             );
           },
           { passive: true },
@@ -1396,6 +1442,7 @@
             );
             if (spd < 0.001) sphereRotation.y += 0.0008;
             svpoSpinVelocity *= 0.97;
+            svpoRingVelocity *= 0.985; // ring coasts longer — heavier bearing
           }
 
           coinGroup.rotation.x = sphereRotation.x;
@@ -1403,14 +1450,11 @@
           edgeGroup.rotation.x = sphereRotation.x;
           edgeGroup.rotation.y = sphereRotation.y;
 
-          const totalSpin = 0.004 + svpoSpinVelocity;
-          if (svpoRing1) svpoRing1.rotation.y += totalSpin;
-          if (svpoRing2) svpoRing2.rotation.x -= totalSpin * 0.7;
-          if (svpoRing3Mesh) svpoRing3Mesh.rotation.z += totalSpin * 0.5;
-          if (svpoCore) {
-            svpoCore.rotation.y += 0.001;
-            svpoCore.scale.setScalar(1 + Math.sin(elapsed * 1.2) * 0.05);
-          }
+          // SVPO — post is static
+          // Man spins on Y (wired to post)
+          if (svpoManGroup) svpoManGroup.rotation.y += 0.004 + svpoSpinVelocity;
+          // Ring spins on X independently (bearing mechanic, different inertia)
+          if (svpoRing) svpoRing.rotation.x += 0.003 + svpoRingVelocity;
 
           centerLight.intensity = 1.2 + Math.sin(elapsed * 0.6) * 0.3;
 
