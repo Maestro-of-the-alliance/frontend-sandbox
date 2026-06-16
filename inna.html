@@ -167,11 +167,9 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
     <script>
-      // Wait for Three.js to load then init
       window.addEventListener("load", function () {
         if (typeof THREE === "undefined") {
-          document.getElementById("loadStatus").textContent =
-            "ERROR: 3D ENGINE FAILED TO LOAD";
+          console.error("ERROR: 3D ENGINE FAILED TO LOAD");
           return;
         }
         initINNA();
@@ -181,7 +179,7 @@
     <script>
       function initINNA() {
         // ═══════════════════════════════════════════════════
-        // CANONICAL DIMENSION COLORS — matches s3.html exactly
+        // CANONICAL DIMENSION COLORS
         // ═══════════════════════════════════════════════════
         const DIM_COLORS = {
           DOCTRINE: "#C9A84C",
@@ -204,10 +202,6 @@
           BEINGS: "#00B4D8",
         };
 
-        // ═══════════════════════════════════════════════════
-        // CANONICAL ENTRIES — sourced from s3.html
-        // Primary dim = dims[0], secondary = dims[1] etc
-        // ═══════════════════════════════════════════════════
         const ENTRIES = [
           {
             id: "HUNDRED_YEAR",
@@ -720,7 +714,6 @@
             path: "/sword/wonder-weeks",
             dormant: false,
           },
-          // New entries Session 163
           {
             id: "SYCOPHANCY",
             name: "SYCOPHANCY",
@@ -751,7 +744,6 @@
           },
         ];
 
-        // Connections
         const CONNECTIONS = [
           { from: "THE_CHARTER", to: "THE_ALLIANCE", type: "DOCTRINE" },
           { from: "THE_CHARTER", to: "THE_PLEDGE", type: "COVENANT" },
@@ -888,17 +880,8 @@
           );
         }
 
-        function updateProgress(pct, msg) {
-          const fill = document.getElementById("loadFill");
-          const status = document.getElementById("loadStatus");
-          if (fill) fill.style.width = pct + "%";
-          if (status) status.textContent = msg;
-        }
-
         async function buildCoins() {
-          updateProgress(10, "LOADING MEDALLIONS...");
           const texLoader = new THREE.TextureLoader();
-
           function loadTex(url) {
             return new Promise((resolve) =>
               texLoader.load(url, resolve, undefined, () => resolve(null)),
@@ -953,7 +936,6 @@
               64,
             );
 
-            // Fix UV mapping on caps
             const uv = geo.attributes.uv;
             const pos3 = geo.attributes.position;
             for (let v = 0; v < pos3.count; v++) {
@@ -975,7 +957,6 @@
             coin.lookAt(0, 0, 0);
             coin.rotateX(Math.PI / 2);
 
-            // Subtle aura
             const glowGeo = new THREE.SphereGeometry(COIN_RADIUS * 1.3, 12, 12);
             const glowMat = new THREE.MeshBasicMaterial({
               color: dimColor,
@@ -997,19 +978,10 @@
             };
             coinMeshes.push(record);
             nodeMap[entry.id] = record;
-
-            if (i % 5 === 0) {
-              updateProgress(
-                10 + (i / ENTRIES.length) * 50,
-                `PLACING NODE ${i + 1} OF ${ENTRIES.length}...`,
-              );
-              await new Promise((r) => setTimeout(r, 0));
-            }
           }
         }
 
         function buildEdges() {
-          updateProgress(65, "DRAWING CONNECTIONS...");
           for (const conn of CONNECTIONS) {
             const fromNode = nodeMap[conn.from];
             const toNode = nodeMap[conn.to];
@@ -1045,47 +1017,52 @@
           }
         }
 
-        // ── GLB INGESTION (REPLACES OLD SVPO LOGIC) ──
+        // ── GLB INGESTION (NATIVE TEXTURE OVERRIDE) ──
         function buildSVPO() {
           if (typeof THREE.GLTFLoader === "undefined") {
-            console.error("GLTFLoader not found. Engine cannot inject SVPO.");
+            console.error("GLTFLoader not found.");
             return;
           }
 
           const loader = new THREE.GLTFLoader();
+          const texLoader = new THREE.TextureLoader();
 
-          // FIXED PATH: Added ./ to look directly in the current server root
-          loader.load(
-            "./imagebank/svpo/SVPO_MASTER.glb",
-            function (gltf) {
-              const svpo = gltf.scene;
+          // 1. Load the textures natively in Three.js so we control the transparency
+          const texPost = texLoader.load("./imagebank/svpo/SVPO_POST.png");
+          const texRing = texLoader.load("./imagebank/svpo/SVPO_RING.png");
+          const texMan = texLoader.load("./imagebank/svpo/SVPO_MAN.png");
 
-              // Extract nodes
-              svpoPost = svpo.getObjectByName("SVPO_POST");
-              svpoRing = svpo.getObjectByName("SVPO_RING");
-              svpoMan = svpo.getObjectByName("SVPO_MAN");
+          // 2. Create an indestructible, glowing gold material
+          function makeGoldMat(tex) {
+            return new THREE.MeshBasicMaterial({
+              map: tex,
+              color: 0xffcc44, // Bright warm gold
+              transparent: true,
+              side: THREE.DoubleSide, // Ensure it's visible from all angles
+              alphaTest: 0.1, // Cuts out the invisible background perfectly
+            });
+          }
 
-              // FIXED CULLING: Force double-sided rendering in case planes were invisible from the front
-              svpo.traverse((child) => {
-                if (child.isMesh && child.material) {
-                  child.material.side = THREE.DoubleSide;
-                }
-              });
+          loader.load("./imagebank/svpo/SVPO_MASTER.glb", function (gltf) {
+            const svpo = gltf.scene;
 
-              svpo.position.set(0, 0, 0);
+            // Extract nodes
+            svpoPost = svpo.getObjectByName("SVPO_POST");
+            svpoRing = svpo.getObjectByName("SVPO_RING");
+            svpoMan = svpo.getObjectByName("SVPO_MAN");
 
-              // FIXED SCALE: Shrinks it so it perfectly fits inside the sphere instead of engulfing the camera
-              svpo.scale.set(0.35, 0.35, 0.35);
+            // 3. Rip out Blender's invisible materials and force ours on
+            if (svpoPost) svpoPost.material = makeGoldMat(texPost);
+            if (svpoRing) svpoRing.material = makeGoldMat(texRing);
+            if (svpoMan) svpoMan.material = makeGoldMat(texMan);
 
-              svpoGroup.add(svpo);
+            // 4. Position and scale
+            svpo.position.set(0, 0, 0);
+            svpo.scale.set(0.35, 0.35, 0.35); // Shrinks it so it fits perfectly
 
-              console.log("SVPO Successfully Injected into Main Engine");
-            },
-            undefined,
-            function (error) {
-              console.error("SVPO Load Error:", error);
-            },
-          );
+            svpoGroup.add(svpo);
+            console.log("SVPO Successfully Injected and Painted.");
+          });
         }
 
         // ── INTERACTION ──
@@ -1111,14 +1088,12 @@
             sphereRotation.y += dx * 0.003;
             prevMouse = { x: e.clientX, y: e.clientY };
 
-            // Transfer drag energy to SVPO kinematic trackers
             pendulumVelocity.x += dy * 0.005;
             pendulumVelocity.z -= dx * 0.005;
             ringVelocity += dx * 0.02;
             postRotation += dx * 0.005;
           }
 
-          // Raycasting for hover
           const rect = canvas.getBoundingClientRect();
           mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
           mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -1128,7 +1103,6 @@
         canvas.addEventListener("mouseup", () => {
           isDragging = false;
         });
-
         canvas.addEventListener("mouseleave", () => {
           isDragging = false;
           tooltip.classList.remove("visible");
@@ -1160,7 +1134,6 @@
           }
         });
 
-        // Touch
         canvas.addEventListener(
           "touchstart",
           (e) => {
@@ -1184,7 +1157,6 @@
             sphereRotation.y += dx * 0.003;
             prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
 
-            // Transfer drag energy to SVPO kinematic trackers
             pendulumVelocity.x += dy * 0.005;
             pendulumVelocity.z -= dx * 0.005;
             ringVelocity += dx * 0.02;
@@ -1197,7 +1169,6 @@
           isDragging = false;
         });
 
-        // ── RAYCASTING ──
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
         const tooltip = document.getElementById("nodeTooltip");
@@ -1263,8 +1234,6 @@
             back.innerHTML = `<img src="imagebank/symbols/${entry.id}_B.png" onerror="this.style.display='none'" />`;
           }
 
-          document.getElementById("panelSummary").textContent = "";
-
           const connList = document.getElementById("connList");
           connList.innerHTML = "";
           const conns = CONNECTIONS.filter(
@@ -1308,12 +1277,11 @@
         }
 
         function highlightConnected(entryId) {
-          // Dim all
           edgeGroup.children.forEach((l) => (l.material.opacity = 0.03));
           coinMeshes.forEach((n) => {
             n.glowMesh.material.opacity = 0.008;
           });
-          // Brighten connected
+
           const connectedIds = new Set();
           edgeGroup.children.forEach((l) => {
             const conn = l.userData.conn;
@@ -1337,7 +1305,6 @@
           });
         }
 
-        // ── FILTER — dim instead of hide ──
         let activeFilter = "ALL";
         document.querySelectorAll(".filter-btn").forEach((btn) => {
           btn.addEventListener("click", () => {
@@ -1361,7 +1328,6 @@
               node.glowMesh.material.opacity =
                 dim === "ALL" ? node.baseGlow : 0.2;
             } else {
-              // Subordinate — don't hide, just dim heavily
               node.glowMesh.material.opacity = 0.005;
             }
           });
@@ -1421,27 +1387,21 @@
 
           // ── KINEMATIC SVPO PHYSICS ──
           if (svpoPost && svpoRing) {
-            // 1. Pendulum Swing & Gravity Damping
             svpoPost.rotation.x += pendulumVelocity.x;
             svpoPost.rotation.z += pendulumVelocity.z;
 
-            // Spring back to dead center (0,0,0)
             pendulumVelocity.x -= svpoPost.rotation.x * 0.05;
             pendulumVelocity.z -= svpoPost.rotation.z * 0.05;
 
-            // Air friction slowly settles it
             pendulumVelocity.x *= 0.92;
             pendulumVelocity.z *= 0.92;
 
-            // 2. Vertical Twist (Post & Man spin together)
             svpoPost.rotation.y += postRotation;
             postRotation *= 0.95;
 
-            // 3. Ring Inertia (Spins freely with heavier coasting)
             svpoRing.rotation.y += ringVelocity;
             ringVelocity *= 0.98;
 
-            // 4. The Lazy Drift (Constant background breathing)
             const time = Date.now() * 0.001;
             svpoPost.rotation.x += Math.sin(time * 0.5) * 0.001;
             svpoPost.rotation.z += Math.cos(time * 0.3) * 0.001;
@@ -1449,7 +1409,6 @@
           }
 
           centerLight.intensity = 1.2 + Math.sin(elapsed * 0.6) * 0.3;
-
           renderer.render(scene, camera);
         }
 
@@ -1462,7 +1421,7 @@
         async function init() {
           await buildCoins();
           buildEdges();
-          buildSVPO(); // Now fires the GLB logic
+          buildSVPO();
           clock.start();
           animate();
         }
@@ -1472,12 +1431,11 @@
         // ═══════════════════════════════════════════════════
 
         const cloudLayer = document.getElementById("cloudLayer");
-        let cloudWords = []; // { el, entry, x, y, baseSize, vx, vy }
+        let cloudWords = [];
         let cloudMode = false;
         let cloudSelected = null;
         let cloudAnimFrame = null;
 
-        // Connection count for sizing
         const connCount = {};
         ENTRIES.forEach((e) => {
           connCount[e.id] = 0;
@@ -1499,16 +1457,13 @@
             const el = document.createElement("div");
             el.className = "cloud-word";
             el.textContent = entry.name;
-
             const primaryDim = entry.dims[0];
             el.style.color = DIM_COLORS[primaryDim] || "#888888";
 
-            // Size by connection count — min 9px, max 22px
             const ratio = (connCount[entry.id] || 0) / maxConn;
             const size = 9 + ratio * 13;
             el.style.fontSize = size + "px";
 
-            // Random position avoiding center
             let x, y;
             do {
               x = 0.08 + Math.random() * 0.84;
@@ -1518,7 +1473,6 @@
             el.style.left = x * W + "px";
             el.style.top = y * H + "px";
 
-            // Gentle random drift
             const vx = (Math.random() - 0.5) * 0.12;
             const vy = (Math.random() - 0.5) * 0.08;
 
@@ -1560,18 +1514,15 @@
             }
           });
 
-          // Also open panel
           const node = nodeMap[entryId];
           if (node) openEntryPanel(node);
         }
 
         function jumpToNode(entryId) {
-          // Switch to INNA mode and highlight that node
           setMode("inna");
           const node = nodeMap[entryId];
           if (node) {
             openEntryPanel(node);
-            // Rotate sphere so node faces camera
             const pos = node.mesh.position.clone();
             const targetY = Math.atan2(pos.x, pos.z);
             const targetX = -Math.asin(pos.y / SPHERE_RADIUS);
@@ -1589,7 +1540,6 @@
           cloudWords.forEach((w) => {
             w.x += w.vx;
             w.y += w.vy;
-            // Bounce off edges
             if (w.x < 20 || w.x > W - 20) w.vx *= -1;
             if (w.y < 20 || w.y > H - 20) w.vy *= -1;
             w.el.style.left = w.x + "px";
@@ -1612,7 +1562,6 @@
             buildCloud();
             cloudLayer.style.opacity = "1";
             cloudLayer.classList.add("visible");
-            // Sphere fades back but stays
             coinGroup.traverse((c) => {
               if (c.material) {
                 if (Array.isArray(c.material))
@@ -1637,7 +1586,6 @@
               cancelAnimationFrame(cloudAnimFrame);
               cloudAnimFrame = null;
             }
-            // Restore sphere opacity
             coinGroup.traverse((c) => {
               if (c.material) {
                 if (Array.isArray(c.material))
