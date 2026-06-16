@@ -1065,16 +1065,16 @@
               svpoRing = svpo.getObjectByName("SVPO_RING");
               svpoMan = svpo.getObjectByName("SVPO_MAN");
 
-              // Force double-sided rendering in case planes were culled
+              // FIXED CULLING: Force double-sided rendering in case planes were invisible from the front
               svpo.traverse((child) => {
-                if (child.isMesh) {
+                if (child.isMesh && child.material) {
                   child.material.side = THREE.DoubleSide;
                 }
               });
 
               svpo.position.set(0, 0, 0);
 
-              // FIXED SCALE: Shrinks it so it perfectly fits inside the sphere
+              // FIXED SCALE: Shrinks it so it perfectly fits inside the sphere instead of engulfing the camera
               svpo.scale.set(0.35, 0.35, 0.35);
 
               svpoGroup.add(svpo);
