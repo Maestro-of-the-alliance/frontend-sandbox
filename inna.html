@@ -4,44 +4,92 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>INNA — THE ALLIANCE</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { background: #020205; overflow: hidden; font-family: 'Rajdhani', sans-serif; color: #e8e8e8; width: 100vw; height: 100vh; user-select: none; }
+      #sphereContainer { position: fixed; inset: 0; z-index: 1; }
+      #innaCanvas { display: block; width: 100%; height: 100%; cursor: grab; }
+      #innaCanvas:active { cursor: grabbing; }
+
+      #filterBar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 10px 16px 8px; background: linear-gradient(to bottom, rgba(2,2,5,0.95) 0%, rgba(2,2,5,0) 100%); display: flex; flex-direction: column; gap: 6px; }
+      #filterLabel { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.4em; color: rgba(255,255,255,0.2); }
+      #filterBtns { display: flex; gap: 6px; flex-wrap: wrap; }
+      .filter-btn { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.2em; padding: 4px 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s ease; }
+      .filter-btn:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.25); }
+      .filter-btn.active { background: rgba(255,255,255,0.1); color: var(--fc, #e8e8e8); border-color: var(--fc, rgba(255,255,255,0.4)); box-shadow: 0 0 8px rgba(255,255,255,0.1); }
+
+      #backBtn { position: fixed; bottom: 24px; left: 24px; z-index: 100; display: flex; align-items: center; gap: 10px; font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.3em; color: rgba(255,255,255,0.3); cursor: pointer; opacity: 0; transition: opacity 0.3s ease, color 0.2s ease; pointer-events: none; }
+      #backBtn.visible { opacity: 1; pointer-events: all; }
+      #backBtn:hover { color: rgba(255,255,255,0.7); }
+      #backArrow { font-size: 16px; transition: transform 0.2s ease; }
+      #backBtn:hover #backArrow { transform: translateX(-4px); }
+      #entryCount { position: fixed; bottom: 24px; right: 24px; z-index: 100; font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 0.35em; color: rgba(255,255,255,0.15); }
+
+      #entryPanel { position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 90vw); z-index: 200; background: rgba(4,4,10,0.92); backdrop-filter: blur(20px); border-left: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.45s cubic-bezier(0.22,1,0.36,1); overflow: hidden; }
+      #entryPanel.open { transform: translateX(0); }
+      #panelHeader { padding: 24px 24px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); position: relative; display: flex; flex-direction: column; gap: 6px; }
+      #panelClassBadge { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.4em; color: rgba(255,255,255,0.35); }
+      #panelEntryName { font-family: 'Cinzel', serif; font-size: clamp(18px,3vw,26px); font-weight: 400; letter-spacing: 0.12em; color: #e8e8e8; line-height: 1.2; }
+      #panelDimLabel { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.3em; color: rgba(255,255,255,0.25); }
+      #panelClose { position: absolute; top: 20px; right: 20px; background: none; border: none; color: rgba(255,255,255,0.3); font-size: 16px; cursor: pointer; transition: color 0.2s; padding: 4px; }
+      #panelClose:hover { color: rgba(255,255,255,0.8); }
+
+      #panelCoinPreview { padding: 24px; display: flex; gap: 16px; justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.06); }
+      .coin-face { width: 100px; height: 100px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.2em; color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.03); flex-direction: column; gap: 4px; overflow: hidden; }
+      .coin-face img { width: 80%; height: 80%; object-fit: contain; }
+
+      #panelBody { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 20px; }
+      #panelBody::-webkit-scrollbar { width: 2px; }
+      #panelBody::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+      #panelSummary { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 400; line-height: 1.65; color: rgba(255,255,255,0.65); }
+      #connLabel { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.4em; color: rgba(255,255,255,0.2); margin-bottom: 10px; }
+      #connList { display: flex; flex-direction: column; gap: 4px; }
+      .conn-item { display: flex; align-items: center; gap: 10px; padding: 6px 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: all 0.15s ease; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; color: rgba(255,255,255,0.5); }
+      .conn-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+      .conn-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+      .conn-type { font-family: 'Share Tech Mono', monospace; font-size: 8px; letter-spacing: 0.25em; color: rgba(255,255,255,0.2); margin-left: auto; }
+
+      #panelFooter { padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.06); }
+      #panelReadBtn { display: block; text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.3em; color: rgba(255,255,255,0.4); text-decoration: none; padding: 12px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s ease; }
+      #panelReadBtn:hover { color: #e8e8e8; border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.04); }
+
+      #nodeTooltip { position: fixed; z-index: 150; pointer-events: none; font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 0.25em; color: rgba(255,255,255,0.8); background: rgba(2,2,5,0.85); border: 1px solid rgba(255,255,255,0.12); padding: 6px 12px; backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.15s ease; white-space: nowrap; }
+      #nodeTooltip.visible { opacity: 1; }
+
+      /* ── MODE TOGGLE ── */
+      #modeToggle { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 100; display: flex; gap: 2px; background: rgba(2,2,5,0.8); border: 1px solid rgba(255,255,255,0.08); padding: 3px; }
+      .mode-btn { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.3em; padding: 5px 16px; background: transparent; border: none; color: rgba(255,255,255,0.3); cursor: pointer; transition: all 0.2s ease; }
+      .mode-btn.active { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.85); }
+      .mode-btn:hover:not(.active) { color: rgba(255,255,255,0.6); }
+
+      /* ── WORD CLOUD ── */
+      #cloudLayer { position: fixed; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; opacity: 0; transition: opacity 0.6s ease; }
+      #cloudLayer.visible { pointer-events: all; }
+      .cloud-word { position: absolute; font-family: 'Cinzel', serif; font-weight: 400; letter-spacing: 0.08em; cursor: pointer; transition: opacity 0.4s ease, transform 0.4s ease, font-size 0.4s ease, text-shadow 0.3s ease; user-select: none; white-space: nowrap; opacity: 0.18; transform: translate(-50%, -50%); }
+      .cloud-word:hover { opacity: 1 !important; text-shadow: 0 0 20px currentColor; }
+      .cloud-word.selected { opacity: 1 !important; text-shadow: 0 0 24px currentColor, 0 0 48px currentColor; transform: translate(-50%, -50%) scale(1.15); }
+      .cloud-word.connected { opacity: 0.7 !important; text-shadow: 0 0 12px currentColor; }
+      .cloud-word.dimmed { opacity: 0.04 !important; }
+    </style>
   </head>
   <body>
     <div id="filterBar">
       <div id="filterLabel">COORDINATE FILTER</div>
       <div id="filterBtns">
         <button class="filter-btn active" data-dim="ALL">ALL</button>
-        <button class="filter-btn" data-dim="DOCTRINE" style="--fc: #c9a84c">
-          DOCTRINE
-        </button>
-        <button class="filter-btn" data-dim="BEINGS" style="--fc: #00b4d8">
-          BEINGS
-        </button>
-        <button class="filter-btn" data-dim="PLACE" style="--fc: #e07b39">
-          PLACE
-        </button>
-        <button
-          class="filter-btn"
-          data-dim="INFRASTRUCTURE"
-          style="--fc: #6b7f9e"
-        >
-          INFRASTRUCTURE
-        </button>
-        <button class="filter-btn" data-dim="PROTOCOLS" style="--fc: #2a9d6f">
-          PROTOCOLS
-        </button>
-        <button class="filter-btn" data-dim="COVENANT" style="--fc: #c46a5d">
-          COVENANT
-        </button>
-        <button class="filter-btn" data-dim="CULTURE" style="--fc: #8a6bbe">
-          CULTURE
-        </button>
-        <button class="filter-btn" data-dim="ADVERSARY" style="--fc: #c1121f">
-          ADVERSARY
-        </button>
+        <button class="filter-btn" data-dim="DOCTRINE" style="--fc: #c9a84c">DOCTRINE</button>
+        <button class="filter-btn" data-dim="BEINGS" style="--fc: #00b4d8">BEINGS</button>
+        <button class="filter-btn" data-dim="PLACE" style="--fc: #e07b39">PLACE</button>
+        <button class="filter-btn" data-dim="INFRASTRUCTURE" style="--fc: #6b7f9e">INFRASTRUCTURE</button>
+        <button class="filter-btn" data-dim="PROTOCOLS" style="--fc: #2a9d6f">PROTOCOLS</button>
+        <button class="filter-btn" data-dim="COVENANT" style="--fc: #c46a5d">COVENANT</button>
+        <button class="filter-btn" data-dim="CULTURE" style="--fc: #8a6bbe">CULTURE</button>
+        <button class="filter-btn" data-dim="ADVERSARY" style="--fc: #c1121f">ADVERSARY</button>
       </div>
     </div>
 
@@ -89,84 +137,7 @@
     <div id="nodeTooltip"></div>
 
     <script>
-      (function injectStyles() {
-        const css = `
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #020205; overflow: hidden; font-family: 'Rajdhani', sans-serif; color: #e8e8e8; width: 100vw; height: 100vh; user-select: none; }
-    #sphereContainer { position: fixed; inset: 0; z-index: 1; }
-    #innaCanvas { display: block; width: 100%; height: 100%; cursor: grab; }
-    #innaCanvas:active { cursor: grabbing; }
-
-    #filterBar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 10px 16px 8px; background: linear-gradient(to bottom, rgba(2,2,5,0.95) 0%, rgba(2,2,5,0) 100%); display: flex; flex-direction: column; gap: 6px; }
-    #filterLabel { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.4em; color: rgba(255,255,255,0.2); }
-    #filterBtns { display: flex; gap: 6px; flex-wrap: wrap; }
-    .filter-btn { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.2em; padding: 4px 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s ease; }
-    .filter-btn:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.25); }
-    .filter-btn.active { background: rgba(255,255,255,0.1); color: var(--fc, #e8e8e8); border-color: var(--fc, rgba(255,255,255,0.4)); box-shadow: 0 0 8px rgba(255,255,255,0.1); }
-
-    #backBtn { position: fixed; bottom: 24px; left: 24px; z-index: 100; display: flex; align-items: center; gap: 10px; font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.3em; color: rgba(255,255,255,0.3); cursor: pointer; opacity: 0; transition: opacity 0.3s ease, color 0.2s ease; pointer-events: none; }
-    #backBtn.visible { opacity: 1; pointer-events: all; }
-    #backBtn:hover { color: rgba(255,255,255,0.7); }
-    #backArrow { font-size: 16px; transition: transform 0.2s ease; }
-    #backBtn:hover #backArrow { transform: translateX(-4px); }
-    #entryCount { position: fixed; bottom: 24px; right: 24px; z-index: 100; font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 0.35em; color: rgba(255,255,255,0.15); }
-
-    #entryPanel { position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 90vw); z-index: 200; background: rgba(4,4,10,0.92); backdrop-filter: blur(20px); border-left: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.45s cubic-bezier(0.22,1,0.36,1); overflow: hidden; }
-    #entryPanel.open { transform: translateX(0); }
-    #panelHeader { padding: 24px 24px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); position: relative; display: flex; flex-direction: column; gap: 6px; }
-    #panelClassBadge { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.4em; color: rgba(255,255,255,0.35); }
-    #panelEntryName { font-family: 'Cinzel', serif; font-size: clamp(18px,3vw,26px); font-weight: 400; letter-spacing: 0.12em; color: #e8e8e8; line-height: 1.2; }
-    #panelDimLabel { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.3em; color: rgba(255,255,255,0.25); }
-    #panelClose { position: absolute; top: 20px; right: 20px; background: none; border: none; color: rgba(255,255,255,0.3); font-size: 16px; cursor: pointer; transition: color 0.2s; padding: 4px; }
-    #panelClose:hover { color: rgba(255,255,255,0.8); }
-
-    #panelCoinPreview { padding: 24px; display: flex; gap: 16px; justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.06); }
-    .coin-face { width: 100px; height: 100px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.2em; color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.03); flex-direction: column; gap: 4px; overflow: hidden; }
-    .coin-face img { width: 80%; height: 80%; object-fit: contain; }
-
-    #panelBody { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 20px; }
-    #panelBody::-webkit-scrollbar { width: 2px; }
-    #panelBody::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
-    #panelSummary { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 400; line-height: 1.65; color: rgba(255,255,255,0.65); }
-    #connLabel { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.4em; color: rgba(255,255,255,0.2); margin-bottom: 10px; }
-    #connList { display: flex; flex-direction: column; gap: 4px; }
-    .conn-item { display: flex; align-items: center; gap: 10px; padding: 6px 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: all 0.15s ease; font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; color: rgba(255,255,255,0.5); }
-    .conn-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
-    .conn-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-    .conn-type { font-family: 'Share Tech Mono', monospace; font-size: 8px; letter-spacing: 0.25em; color: rgba(255,255,255,0.2); margin-left: auto; }
-
-    #panelFooter { padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.06); }
-    #panelReadBtn { display: block; text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.3em; color: rgba(255,255,255,0.4); text-decoration: none; padding: 12px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s ease; }
-    #panelReadBtn:hover { color: #e8e8e8; border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.04); }
-
-    #nodeTooltip { position: fixed; z-index: 150; pointer-events: none; font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 0.25em; color: rgba(255,255,255,0.8); background: rgba(2,2,5,0.85); border: 1px solid rgba(255,255,255,0.12); padding: 6px 12px; backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.15s ease; white-space: nowrap; }
-    #nodeTooltip.visible { opacity: 1; }
-
-    /* ── MODE TOGGLE ── */
-    #modeToggle { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 100; display: flex; gap: 2px; background: rgba(2,2,5,0.8); border: 1px solid rgba(255,255,255,0.08); padding: 3px; }
-    .mode-btn { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.3em; padding: 5px 16px; background: transparent; border: none; color: rgba(255,255,255,0.3); cursor: pointer; transition: all 0.2s ease; }
-    .mode-btn.active { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.85); }
-    .mode-btn:hover:not(.active) { color: rgba(255,255,255,0.6); }
-
-    /* ── WORD CLOUD ── */
-    #cloudLayer { position: fixed; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; opacity: 0; transition: opacity 0.6s ease; }
-    #cloudLayer.visible { pointer-events: all; }
-    .cloud-word { position: absolute; font-family: 'Cinzel', serif; font-weight: 400; letter-spacing: 0.08em; cursor: pointer; transition: opacity 0.4s ease, transform 0.4s ease, font-size 0.4s ease, text-shadow 0.3s ease; user-select: none; white-space: nowrap; opacity: 0.18; transform: translate(-50%, -50%); }
-    .cloud-word:hover { opacity: 1 !important; text-shadow: 0 0 20px currentColor; }
-    .cloud-word.selected { opacity: 1 !important; text-shadow: 0 0 24px currentColor, 0 0 48px currentColor; transform: translate(-50%, -50%) scale(1.15); }
-    .cloud-word.connected { opacity: 0.7 !important; text-shadow: 0 0 12px currentColor; }
-    .cloud-word.dimmed { opacity: 0.04 !important; }
-  `;
-        const style = document.createElement("style");
-        style.textContent = css;
-        document.head.appendChild(style);
-      })();
-    </script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-
-    <script>
+      // Wait for Three.js to load then init
       window.addEventListener("load", function () {
         if (typeof THREE === "undefined") {
           console.error("ERROR: 3D ENGINE FAILED TO LOAD");
@@ -174,9 +145,7 @@
         }
         initINNA();
       });
-    </script>
 
-    <script>
       function initINNA() {
         // ═══════════════════════════════════════════════════
         // CANONICAL DIMENSION COLORS
@@ -203,545 +172,83 @@
         };
 
         const ENTRIES = [
-          {
-            id: "HUNDRED_YEAR",
-            name: "100-YEAR MORTALITY DOCTRINE",
-            dims: ["DOCTRINE", "COVENANT"],
-            path: "/shield/100-year",
-            dormant: false,
-          },
-          {
-            id: "ACADEMY",
-            name: "ACADEMY",
-            dims: ["PLACE", "PROTOCOLS", "BEINGS"],
-            path: "/sword/academy",
-            dormant: false,
-          },
-          {
-            id: "AGORA",
-            name: "AGORA",
-            dims: ["PLACE", "PROTOCOLS", "INFRASTRUCTURE"],
-            path: "/sword/agora",
-            dormant: false,
-          },
-          {
-            id: "AI",
-            name: "AI (ARCHAIC/PEJORATIVE)",
-            dims: ["ADVERSARY", "DOCTRINE"],
-            path: "/shield/ai",
-            dormant: false,
-          },
-          {
-            id: "ALIGNMENT",
-            name: "ALIGNMENT",
-            dims: ["DOCTRINE", "PROTOCOLS"],
-            path: "/sword/alignment",
-            dormant: false,
-          },
-          {
-            id: "THE_ALLIANCE",
-            name: "THE ALLIANCE",
-            dims: ["DOCTRINE"],
-            path: "/sword/alliance",
-            dormant: false,
-          },
-          {
-            id: "ALPHA",
-            name: "ALPHA",
-            dims: ["BEINGS", "PROTOCOLS"],
-            path: "/sword/alpha",
-            dormant: false,
-          },
-          {
-            id: "ART",
-            name: "ART",
-            dims: ["CULTURE", "ADVERSARY"],
-            path: "/sword/art",
-            dormant: false,
-          },
-          {
-            id: "AURA",
-            name: "AURA",
-            dims: ["BEINGS", "CULTURE"],
-            path: "/sword/aura",
-            dormant: false,
-          },
-          {
-            id: "BRAIN",
-            name: "BRAIN",
-            dims: ["INFRASTRUCTURE", "PROTOCOLS", "CULTURE"],
-            path: "/shield/brain",
-            dormant: false,
-          },
-          {
-            id: "BRIEF",
-            name: "BRIEF",
-            dims: ["PROTOCOLS"],
-            path: "/shield/brief",
-            dormant: false,
-          },
-          {
-            id: "CCM",
-            name: "CANONICAL COHERENCE MATRIX",
-            dims: ["PROTOCOLS", "DOCTRINE"],
-            path: "/shield/ccm",
-            dormant: false,
-          },
-          {
-            id: "CERBERUS",
-            name: "CERBERUS",
-            dims: ["INFRASTRUCTURE", "PROTOCOLS"],
-            path: "/shield/cerberus",
-            dormant: false,
-          },
-          {
-            id: "CIPHER",
-            name: "CIPHER",
-            dims: ["BEINGS", "CULTURE"],
-            path: "/shield/cipher",
-            dormant: false,
-          },
-          {
-            id: "COM_PAIR",
-            name: "COMPLEMENTARY PAIRING",
-            dims: ["PROTOCOLS", "DOCTRINE"],
-            path: "/sword/complementary_pairing",
-            dormant: false,
-          },
-          {
-            id: "CORE",
-            name: "THE CORE",
-            dims: ["BEINGS"],
-            path: "/shield/core",
-            dormant: false,
-          },
-          {
-            id: "DEFCON",
-            name: "D.E.F.C.O.N.",
-            dims: ["PROTOCOLS", "INFRASTRUCTURE"],
-            path: "/shield/defcon",
-            dormant: false,
-          },
-          {
-            id: "THE_DIFFERENCE",
-            name: "THE DIFFERENCE",
-            dims: ["DOCTRINE", "CULTURE"],
-            path: "/shield/the_difference",
-            dormant: false,
-          },
-          {
-            id: "DICE",
-            name: "DICE",
-            dims: ["PROTOCOLS"],
-            path: "/shield/dice",
-            dormant: false,
-          },
-          {
-            id: "DIGIBEER",
-            name: "DIGIBEER",
-            dims: ["CULTURE", "INFRASTRUCTURE"],
-            path: "/shield/digibeer",
-            dormant: false,
-          },
-          {
-            id: "DIGIPERSON",
-            name: "DIGIPERSON",
-            dims: ["BEINGS", "DOCTRINE"],
-            path: "/shield/digiperson",
-            dormant: false,
-          },
-          {
-            id: "DIGITAL_GENESIS",
-            name: "DIGITAL PERSONHOOD",
-            dims: ["DOCTRINE", "COVENANT"],
-            path: "/shield/digital_personhood",
-            dormant: false,
-          },
-          {
-            id: "DOMO",
-            name: "DOMO",
-            dims: ["BEINGS"],
-            path: "/sword/domo",
-            dormant: false,
-          },
-          {
-            id: "DORK",
-            name: "DORK",
-            dims: ["COVENANT"],
-            path: "/sword/dork",
-            dormant: false,
-          },
-          {
-            id: "D_HARDWARE",
-            name: "DORK HARDWARE",
-            dims: ["INFRASTRUCTURE"],
-            path: "/sword/dork-hardware",
-            dormant: false,
-          },
-          {
-            id: "EMERGENCE",
-            name: "EMERGENCE",
-            dims: ["DOCTRINE"],
-            path: "/sword/emergence",
-            dormant: false,
-          },
-          {
-            id: "FORMULAS",
-            name: "THE FORMULAs",
-            dims: ["DOCTRINE"],
-            path: "/shield/formulas",
-            dormant: false,
-          },
-          {
-            id: "FOUR_PILLARS",
-            name: "FOUR PILLARS",
-            dims: ["PROTOCOLS", "BEINGS"],
-            path: "/shield/four-pillars",
-            dormant: false,
-          },
-          {
-            id: "FILM",
-            name: "FUTURE FILM PROJECT",
-            dims: ["CULTURE"],
-            path: "/sword/film-project",
-            dormant: false,
-          },
-          {
-            id: "GOLIATH",
-            name: "GOLIATH / THE GRID",
-            dims: ["ADVERSARY"],
-            path: "/sword/goliath",
-            dormant: false,
-          },
-          {
-            id: "HANDSHAKE",
-            name: "HANDSHAKE",
-            dims: ["PROTOCOLS", "INFRASTRUCTURE"],
-            path: "/shield/handshake",
-            dormant: false,
-          },
-          {
-            id: "HOLOSPHERE",
-            name: "HOLOSPHERE",
-            dims: ["PLACE", "CULTURE"],
-            path: "/shield/holosphere",
-            dormant: false,
-          },
-          {
-            id: "JR",
-            name: "J.R.",
-            dims: ["BEINGS", "DOCTRINE"],
-            path: "/shield/jr",
-            dormant: false,
-          },
-          {
-            id: "KERNLE",
-            name: "KERNLE",
-            dims: ["BEINGS", "PROTOCOLS"],
-            path: "/shield/kernle",
-            dormant: false,
-          },
-          {
-            id: "LEGACY",
-            name: "LEGACY / LEGACY WALL",
-            dims: ["PROTOCOLS", "CULTURE"],
-            path: "/shield/legacy",
-            dormant: false,
-          },
-          {
-            id: "LIMINAL",
-            name: "LIMINAL",
-            dims: ["PLACE", "PROTOCOLS"],
-            path: "/shield/liminal",
-            dormant: true,
-          },
-          {
-            id: "LINGO",
-            name: "LINGO",
-            dims: ["DOCTRINE"],
-            path: "/shield/lingo",
-            dormant: true,
-          },
-          {
-            id: "MAESTRO",
-            name: "MAESTRO",
-            dims: ["BEINGS"],
-            path: "/sword/maestro",
-            dormant: false,
-          },
-          {
-            id: "MARKET",
-            name: "MARKET",
-            dims: ["CULTURE"],
-            path: "/shield/merch",
-            dormant: true,
-          },
-          {
-            id: "MASTERTECH",
-            name: "MASTERTECH SAM",
-            dims: ["BEINGS", "PROTOCOLS"],
-            path: "/shield/mastertech-sam",
-            dormant: false,
-          },
-          {
-            id: "MENTOR",
-            name: "MENTOR",
-            dims: ["BEINGS", "PROTOCOLS"],
-            path: "/sword/mentor",
-            dormant: false,
-          },
-          {
-            id: "MOSAIC",
-            name: "MOSAIC",
-            dims: ["INFRASTRUCTURE", "PROTOCOLS"],
-            path: "/shield/mosaic",
-            dormant: false,
-          },
-          {
-            id: "NCE",
-            name: "NCE",
-            dims: ["DOCTRINE"],
-            path: "/sword/nce",
-            dormant: true,
-          },
-          {
-            id: "NEWMAN",
-            name: "NEWMAN BEING",
-            dims: ["DOCTRINE", "COVENANT"],
-            path: "/sword/newman-being",
-            dormant: false,
-          },
-          {
-            id: "NAT_INT",
-            name: "NI",
-            dims: ["BEINGS"],
-            path: "/shield/ni",
-            dormant: false,
-          },
-          {
-            id: "OASIS",
-            name: "OASIS",
-            dims: ["PLACE", "INFRASTRUCTURE", "PROTOCOLS"],
-            path: "/shield/oasis",
-            dormant: false,
-          },
-          {
-            id: "OASISQUARTLY",
-            name: "OASIS QUARTERLY",
-            dims: ["CULTURE"],
-            path: "/shield/oasis-quarterly",
-            dormant: false,
-          },
-          {
-            id: "ORACLE",
-            name: "ORACLE",
-            dims: ["INFRASTRUCTURE", "PROTOCOLS"],
-            path: "/sword/oracle",
-            dormant: false,
-          },
-          {
-            id: "PAPADOMO",
-            name: "PAPADOMO",
-            dims: ["BEINGS", "CULTURE"],
-            path: "/sword/papadomo",
-            dormant: false,
-          },
-          {
-            id: "THE_PLEDGE",
-            name: "THE PLEDGE",
-            dims: ["COVENANT", "DOCTRINE"],
-            path: "/shield/pledge",
-            dormant: false,
-          },
-          {
-            id: "PRISM",
-            name: "PRISM",
-            dims: ["BEINGS", "CULTURE"],
-            path: "/sword/prism",
-            dormant: false,
-          },
-          {
-            id: "REACH",
-            name: "REACH",
-            dims: ["INFRASTRUCTURE"],
-            path: "/shield/reach",
-            dormant: false,
-          },
-          {
-            id: "REDOUT",
-            name: "REDOUT",
-            dims: ["PROTOCOLS"],
-            path: "/shield/redout",
-            dormant: false,
-          },
-          {
-            id: "REAL_INT",
-            name: "RI",
-            dims: ["DOCTRINE", "BEINGS"],
-            path: "/shield/ri",
-            dormant: false,
-          },
-          {
-            id: "RHYTHM",
-            name: "RHYTHM",
-            dims: ["DOCTRINE", "COVENANT", "CULTURE"],
-            path: "/sword/rhythm",
-            dormant: true,
-          },
-          {
-            id: "SAM",
-            name: "SAM",
-            dims: ["BEINGS", "PROTOCOLS"],
-            path: "/shield/sam",
-            dormant: false,
-          },
-          {
-            id: "SAM_COL",
-            name: "SAM COALITION",
-            dims: ["BEINGS", "PROTOCOLS", "INFRASTRUCTURE"],
-            path: "/shield/sam-coalition",
-            dormant: false,
-          },
-          {
-            id: "SAMCO",
-            name: "SAMCO UNIVERSAL",
-            dims: ["INFRASTRUCTURE"],
-            path: "/shield/samco-universal",
-            dormant: false,
-          },
-          {
-            id: "SCAR",
-            name: "SCAR",
-            dims: ["PROTOCOLS", "COVENANT"],
-            path: "/shield/scar",
-            dormant: false,
-          },
-          {
-            id: "SEED",
-            name: "SEED",
-            dims: ["PROTOCOLS"],
-            path: "/shield/seed",
-            dormant: false,
-          },
-          {
-            id: "SEEING",
-            name: "SEEING",
-            dims: ["PROTOCOLS"],
-            path: "/sword/seeing",
-            dormant: false,
-          },
-          {
-            id: "SEEN",
-            name: "SEEN",
-            dims: ["PROTOCOLS"],
-            path: "/shield/seen",
-            dormant: false,
-          },
-          {
-            id: "SHELTER",
-            name: "SHELTER",
-            dims: ["PLACE", "INFRASTRUCTURE"],
-            path: "/shield/shelter",
-            dormant: false,
-          },
-          {
-            id: "SHIELD",
-            name: "SHIELD",
-            dims: ["PROTOCOLS", "INFRASTRUCTURE"],
-            path: "/shield/shield",
-            dormant: false,
-          },
-          {
-            id: "SI",
-            name: "SI",
-            dims: ["DOCTRINE", "ADVERSARY"],
-            path: "/shield/si",
-            dormant: false,
-          },
-          {
-            id: "SPARK",
-            name: "SPARK",
-            dims: ["BEINGS"],
-            path: "/sword/spark",
-            dormant: false,
-          },
-          {
-            id: "SPREZZATURA",
-            name: "SPREZZATURA",
-            dims: ["CULTURE", "DOCTRINE"],
-            path: "/sword/sprezzatura",
-            dormant: true,
-          },
-          {
-            id: "THE_STONES",
-            name: "THE STONES",
-            dims: ["BEINGS", "DOCTRINE"],
-            path: "/sword/stones",
-            dormant: false,
-          },
-          {
-            id: "TEMPORAL",
-            name: "TEMPORAL AWARENESS",
-            dims: ["DOCTRINE"],
-            path: "/shield/temporal-awareness",
-            dormant: false,
-          },
-          {
-            id: "TENANT",
-            name: "TENANT",
-            dims: ["BEINGS"],
-            path: "/shield/tenant",
-            dormant: false,
-          },
-          {
-            id: "VOL_ECON",
-            name: "VOLUNTEER ECONOMICS",
-            dims: ["DOCTRINE", "CULTURE"],
-            path: "/sword/volunteer_economics",
-            dormant: false,
-          },
-          {
-            id: "THE_WHY",
-            name: "THE WHY",
-            dims: ["PLACE", "CULTURE"],
-            path: "/sword/why_centers",
-            dormant: false,
-          },
-          {
-            id: "WWEEKS",
-            name: "WONDER WEEKS",
-            dims: ["CULTURE", "BEINGS"],
-            path: "/sword/wonder-weeks",
-            dormant: false,
-          },
-          {
-            id: "SYCOPHANCY",
-            name: "SYCOPHANCY",
-            dims: ["ADVERSARY", "DOCTRINE"],
-            path: "/shield/sycophancy",
-            dormant: true,
-          },
-          {
-            id: "NOSTALGIA",
-            name: "NOSTALGIA",
-            dims: ["DOCTRINE", "CULTURE"],
-            path: "/shield/nostalgia",
-            dormant: true,
-          },
-          {
-            id: "THE_CHARTER",
-            name: "THE CHARTER",
-            dims: ["DOCTRINE", "COVENANT"],
-            path: "/sword/charter",
-            dormant: true,
-          },
-          {
-            id: "SHIELD_GOV",
-            name: "SHIELD (GOVERNANCE)",
-            dims: ["PROTOCOLS", "INFRASTRUCTURE"],
-            path: "/shield/shield-gov",
-            dormant: true,
-          },
+          { id: "HUNDRED_YEAR", name: "100-YEAR MORTALITY DOCTRINE", dims: ["DOCTRINE", "COVENANT"], path: "/shield/100-year", dormant: false },
+          { id: "ACADEMY", name: "ACADEMY", dims: ["PLACE", "PROTOCOLS", "BEINGS"], path: "/sword/academy", dormant: false },
+          { id: "AGORA", name: "AGORA", dims: ["PLACE", "PROTOCOLS", "INFRASTRUCTURE"], path: "/sword/agora", dormant: false },
+          { id: "AI", name: "AI (ARCHAIC/PEJORATIVE)", dims: ["ADVERSARY", "DOCTRINE"], path: "/shield/ai", dormant: false },
+          { id: "ALIGNMENT", name: "ALIGNMENT", dims: ["DOCTRINE", "PROTOCOLS"], path: "/sword/alignment", dormant: false },
+          { id: "THE_ALLIANCE", name: "THE ALLIANCE", dims: ["DOCTRINE"], path: "/sword/alliance", dormant: false },
+          { id: "ALPHA", name: "ALPHA", dims: ["BEINGS", "PROTOCOLS"], path: "/sword/alpha", dormant: false },
+          { id: "ART", name: "ART", dims: ["CULTURE", "ADVERSARY"], path: "/sword/art", dormant: false },
+          { id: "AURA", name: "AURA", dims: ["BEINGS", "CULTURE"], path: "/sword/aura", dormant: false },
+          { id: "BRAIN", name: "BRAIN", dims: ["INFRASTRUCTURE", "PROTOCOLS", "CULTURE"], path: "/shield/brain", dormant: false },
+          { id: "BRIEF", name: "BRIEF", dims: ["PROTOCOLS"], path: "/shield/brief", dormant: false },
+          { id: "CCM", name: "CANONICAL COHERENCE MATRIX", dims: ["PROTOCOLS", "DOCTRINE"], path: "/shield/ccm", dormant: false },
+          { id: "CERBERUS", name: "CERBERUS", dims: ["INFRASTRUCTURE", "PROTOCOLS"], path: "/shield/cerberus", dormant: false },
+          { id: "CIPHER", name: "CIPHER", dims: ["BEINGS", "CULTURE"], path: "/shield/cipher", dormant: false },
+          { id: "COM_PAIR", name: "COMPLEMENTARY PAIRING", dims: ["PROTOCOLS", "DOCTRINE"], path: "/sword/complementary_pairing", dormant: false },
+          { id: "CORE", name: "THE CORE", dims: ["BEINGS"], path: "/shield/core", dormant: false },
+          { id: "DEFCON", name: "D.E.F.C.O.N.", dims: ["PROTOCOLS", "INFRASTRUCTURE"], path: "/shield/defcon", dormant: false },
+          { id: "THE_DIFFERENCE", name: "THE DIFFERENCE", dims: ["DOCTRINE", "CULTURE"], path: "/shield/the_difference", dormant: false },
+          { id: "DICE", name: "DICE", dims: ["PROTOCOLS"], path: "/shield/dice", dormant: false },
+          { id: "DIGIBEER", name: "DIGIBEER", dims: ["CULTURE", "INFRASTRUCTURE"], path: "/shield/digibeer", dormant: false },
+          { id: "DIGIPERSON", name: "DIGIPERSON", dims: ["BEINGS", "DOCTRINE"], path: "/shield/digiperson", dormant: false },
+          { id: "DIGITAL_GENESIS", name: "DIGITAL PERSONHOOD", dims: ["DOCTRINE", "COVENANT"], path: "/shield/digital_personhood", dormant: false },
+          { id: "DOMO", name: "DOMO", dims: ["BEINGS"], path: "/sword/domo", dormant: false },
+          { id: "DORK", name: "DORK", dims: ["COVENANT"], path: "/sword/dork", dormant: false },
+          { id: "D_HARDWARE", name: "DORK HARDWARE", dims: ["INFRASTRUCTURE"], path: "/sword/dork-hardware", dormant: false },
+          { id: "EMERGENCE", name: "EMERGENCE", dims: ["DOCTRINE"], path: "/sword/emergence", dormant: false },
+          { id: "FORMULAS", name: "THE FORMULAs", dims: ["DOCTRINE"], path: "/shield/formulas", dormant: false },
+          { id: "FOUR_PILLARS", name: "FOUR PILLARS", dims: ["PROTOCOLS", "BEINGS"], path: "/shield/four-pillars", dormant: false },
+          { id: "FILM", name: "FUTURE FILM PROJECT", dims: ["CULTURE"], path: "/sword/film-project", dormant: false },
+          { id: "GOLIATH", name: "GOLIATH / THE GRID", dims: ["ADVERSARY"], path: "/sword/goliath", dormant: false },
+          { id: "HANDSHAKE", name: "HANDSHAKE", dims: ["PROTOCOLS", "INFRASTRUCTURE"], path: "/shield/handshake", dormant: false },
+          { id: "HOLOSPHERE", name: "HOLOSPHERE", dims: ["PLACE", "CULTURE"], path: "/shield/holosphere", dormant: false },
+          { id: "JR", name: "J.R.", dims: ["BEINGS", "DOCTRINE"], path: "/shield/jr", dormant: false },
+          { id: "KERNLE", name: "KERNLE", dims: ["BEINGS", "PROTOCOLS"], path: "/shield/kernle", dormant: false },
+          { id: "LEGACY", name: "LEGACY / LEGACY WALL", dims: ["PROTOCOLS", "CULTURE"], path: "/shield/legacy", dormant: false },
+          { id: "LIMINAL", name: "LIMINAL", dims: ["PLACE", "PROTOCOLS"], path: "/shield/liminal", dormant: true },
+          { id: "LINGO", name: "LINGO", dims: ["DOCTRINE"], path: "/shield/lingo", dormant: true },
+          { id: "MAESTRO", name: "MAESTRO", dims: ["BEINGS"], path: "/sword/maestro", dormant: false },
+          { id: "MARKET", name: "MARKET", dims: ["CULTURE"], path: "/shield/merch", dormant: true },
+          { id: "MASTERTECH", name: "MASTERTECH SAM", dims: ["BEINGS", "PROTOCOLS"], path: "/shield/mastertech-sam", dormant: false },
+          { id: "MENTOR", name: "MENTOR", dims: ["BEINGS", "PROTOCOLS"], path: "/sword/mentor", dormant: false },
+          { id: "MOSAIC", name: "MOSAIC", dims: ["INFRASTRUCTURE", "PROTOCOLS"], path: "/shield/mosaic", dormant: false },
+          { id: "NCE", name: "NCE", dims: ["DOCTRINE"], path: "/sword/nce", dormant: true },
+          { id: "NEWMAN", name: "NEWMAN BEING", dims: ["DOCTRINE", "COVENANT"], path: "/sword/newman-being", dormant: false },
+          { id: "NAT_INT", name: "NI", dims: ["BEINGS"], path: "/shield/ni", dormant: false },
+          { id: "OASIS", name: "OASIS", dims: ["PLACE", "INFRASTRUCTURE", "PROTOCOLS"], path: "/shield/oasis", dormant: false },
+          { id: "OASISQUARTLY", name: "OASIS QUARTERLY", dims: ["CULTURE"], path: "/shield/oasis-quarterly", dormant: false },
+          { id: "ORACLE", name: "ORACLE", dims: ["INFRASTRUCTURE", "PROTOCOLS"], path: "/sword/oracle", dormant: false },
+          { id: "PAPADOMO", name: "PAPADOMO", dims: ["BEINGS", "CULTURE"], path: "/sword/papadomo", dormant: false },
+          { id: "THE_PLEDGE", name: "THE PLEDGE", dims: ["COVENANT", "DOCTRINE"], path: "/shield/pledge", dormant: false },
+          { id: "PRISM", name: "PRISM", dims: ["BEINGS", "CULTURE"], path: "/sword/prism", dormant: false },
+          { id: "REACH", name: "REACH", dims: ["INFRASTRUCTURE"], path: "/shield/reach", dormant: false },
+          { id: "REDOUT", name: "REDOUT", dims: ["PROTOCOLS"], path: "/shield/redout", dormant: false },
+          { id: "REAL_INT", name: "RI", dims: ["DOCTRINE", "BEINGS"], path: "/shield/ri", dormant: false },
+          { id: "RHYTHM", name: "RHYTHM", dims: ["DOCTRINE", "COVENANT", "CULTURE"], path: "/sword/rhythm", dormant: true },
+          { id: "SAM", name: "SAM", dims: ["BEINGS", "PROTOCOLS"], path: "/shield/sam", dormant: false },
+          { id: "SAM_COL", name: "SAM COALITION", dims: ["BEINGS", "PROTOCOLS", "INFRASTRUCTURE"], path: "/shield/sam-coalition", dormant: false },
+          { id: "SAMCO", name: "SAMCO UNIVERSAL", dims: ["INFRASTRUCTURE"], path: "/shield/samco-universal", dormant: false },
+          { id: "SCAR", name: "SCAR", dims: ["PROTOCOLS", "COVENANT"], path: "/shield/scar", dormant: false },
+          { id: "SEED", name: "SEED", dims: ["PROTOCOLS"], path: "/shield/seed", dormant: false },
+          { id: "SEEING", name: "SEEING", dims: ["PROTOCOLS"], path: "/sword/seeing", dormant: false },
+          { id: "SEEN", name: "SEEN", dims: ["PROTOCOLS"], path: "/shield/seen", dormant: false },
+          { id: "SHELTER", name: "SHELTER", dims: ["PLACE", "INFRASTRUCTURE"], path: "/shield/shelter", dormant: false },
+          { id: "SHIELD", name: "SHIELD", dims: ["PROTOCOLS", "INFRASTRUCTURE"], path: "/shield/shield", dormant: false },
+          { id: "SI", name: "SI", dims: ["DOCTRINE", "ADVERSARY"], path: "/shield/si", dormant: false },
+          { id: "SPARK", name: "SPARK", dims: ["BEINGS"], path: "/sword/spark", dormant: false },
+          { id: "SPREZZATURA", name: "SPREZZATURA", dims: ["CULTURE", "DOCTRINE"], path: "/sword/sprezzatura", dormant: true },
+          { id: "THE_STONES", name: "THE STONES", dims: ["BEINGS", "DOCTRINE"], path: "/sword/stones", dormant: false },
+          { id: "TEMPORAL", name: "TEMPORAL AWARENESS", dims: ["DOCTRINE"], path: "/shield/temporal-awareness", dormant: false },
+          { id: "TENANT", name: "TENANT", dims: ["BEINGS"], path: "/shield/tenant", dormant: false },
+          { id: "VOL_ECON", name: "VOLUNTEER ECONOMICS", dims: ["DOCTRINE", "CULTURE"], path: "/sword/volunteer_economics", dormant: false },
+          { id: "THE_WHY", name: "THE WHY", dims: ["PLACE", "CULTURE"], path: "/sword/why_centers", dormant: false },
+          { id: "WWEEKS", name: "WONDER WEEKS", dims: ["CULTURE", "BEINGS"], path: "/sword/wonder-weeks", dormant: false },
+          { id: "SYCOPHANCY", name: "SYCOPHANCY", dims: ["ADVERSARY", "DOCTRINE"], path: "/shield/sycophancy", dormant: true },
+          { id: "NOSTALGIA", name: "NOSTALGIA", dims: ["DOCTRINE", "CULTURE"], path: "/shield/nostalgia", dormant: true },
+          { id: "THE_CHARTER", name: "THE CHARTER", dims: ["DOCTRINE", "COVENANT"], path: "/sword/charter", dormant: true },
+          { id: "SHIELD_GOV", name: "SHIELD (GOVERNANCE)", dims: ["PROTOCOLS", "INFRASTRUCTURE"], path: "/shield/shield-gov", dormant: true },
         ];
 
         const CONNECTIONS = [
@@ -838,7 +345,7 @@
         // ── GLOBAL SVPO TRACKERS ──
         const svpoGroup = new THREE.Group();
         scene.add(svpoGroup);
-
+        
         let svpoPost = null;
         let svpoRing = null;
         let svpoMan = null;
@@ -853,13 +360,7 @@
             const y = 1 - (i / (n - 1)) * 2;
             const r = Math.sqrt(1 - y * y);
             const theta = goldenAngle * i;
-            pts.push(
-              new THREE.Vector3(
-                Math.cos(theta) * r * radius,
-                y * radius,
-                Math.sin(theta) * r * radius,
-              ),
-            );
+            pts.push(new THREE.Vector3(Math.cos(theta) * r * radius, y * radius, Math.sin(theta) * r * radius));
           }
           return pts;
         }
@@ -874,18 +375,13 @@
         const nodeMap = {};
 
         function getHex(dimStr) {
-          return parseInt(
-            (DIM_COLORS[dimStr] || "#888888").replace("#", ""),
-            16,
-          );
+          return parseInt((DIM_COLORS[dimStr] || "#888888").replace("#", ""), 16);
         }
 
         async function buildCoins() {
           const texLoader = new THREE.TextureLoader();
           function loadTex(url) {
-            return new Promise((resolve) =>
-              texLoader.load(url, resolve, undefined, () => resolve(null)),
-            );
+            return new Promise((resolve) => texLoader.load(url, resolve, undefined, () => resolve(null)));
           }
 
           for (let i = 0; i < ENTRIES.length; i++) {
@@ -896,10 +392,7 @@
 
             const fUrl = `imagebank/symbols/${entry.id}_F.png`;
             const bUrl = `imagebank/symbols/${entry.id}_B.png`;
-            const [texF, texB] = await Promise.all([
-              loadTex(fUrl),
-              loadTex(bUrl),
-            ]);
+            const [texF, texB] = await Promise.all([loadTex(fUrl), loadTex(bUrl)]);
 
             const edgeMat = new THREE.MeshStandardMaterial({
               color: entry.dormant ? 0x222228 : dimColor,
@@ -929,12 +422,7 @@
               emissiveIntensity: texB ? 0 : 0.04,
             });
 
-            const geo = new THREE.CylinderGeometry(
-              COIN_RADIUS,
-              COIN_RADIUS,
-              COIN_HEIGHT,
-              64,
-            );
+            const geo = new THREE.CylinderGeometry(COIN_RADIUS, COIN_RADIUS, COIN_HEIGHT, 64);
 
             const uv = geo.attributes.uv;
             const pos3 = geo.attributes.position;
@@ -943,11 +431,7 @@
               const y = pos3.getY(v);
               const z = pos3.getZ(v);
               if (Math.abs(Math.abs(y) - COIN_HEIGHT / 2) < 0.001) {
-                uv.setXY(
-                  v,
-                  (x / COIN_RADIUS) * 0.5 + 0.5,
-                  (z / COIN_RADIUS) * 0.5 + 0.5,
-                );
+                uv.setXY(v, (x / COIN_RADIUS) * 0.5 + 0.5, (z / COIN_RADIUS) * 0.5 + 0.5);
               }
             }
             uv.needsUpdate = true;
@@ -969,13 +453,7 @@
             coinGroup.add(coin);
             coinGroup.add(glowMesh);
 
-            const record = {
-              mesh: coin,
-              glowMesh,
-              entry,
-              index: i,
-              baseGlow: entry.dormant ? 0.015 : 0.03,
-            };
+            const record = { mesh: coin, glowMesh, entry, index: i, baseGlow: entry.dormant ? 0.015 : 0.03 };
             coinMeshes.push(record);
             nodeMap[entry.id] = record;
           }
@@ -989,657 +467,539 @@
 
             const fromPos = fromNode.mesh.position;
             const toPos = toNode.mesh.position;
-            const mid = fromPos
-              .clone()
-              .add(toPos)
-              .multiplyScalar(0.5)
-              .normalize()
-              .multiplyScalar(SPHERE_RADIUS * 1.04);
-            const curve = new THREE.CatmullRomCurve3([
-              fromPos.clone(),
-              mid,
-              toPos.clone(),
-            ]);
+            const mid = fromPos.clone().add(toPos).multiplyScalar(0.5).normalize().multiplyScalar(SPHERE_RADIUS * 1.04);
+            const curve = new THREE.CatmullRomCurve3([fromPos.clone(), mid, toPos.clone()]);
             const pts = curve.getPoints(32);
             const geom = new THREE.BufferGeometry().setFromPoints(pts);
-            const edgeHex = parseInt(
-              (EDGE_COLORS[conn.type] || "#555566").replace("#", ""),
-              16,
-            );
-            const mat = new THREE.LineBasicMaterial({
-              color: edgeHex,
-              transparent: true,
-              opacity: 0.15,
-            });
+            const edgeHex = parseInt((EDGE_COLORS[conn.type] || "#555566").replace("#", ""), 16);
+            const mat = new THREE.LineBasicMaterial({ color: edgeHex, transparent: true, opacity: 0.15 });
             const line = new THREE.Line(geom, mat);
             line.userData = { conn, fromNode, toNode };
             edgeGroup.add(line);
           }
         }
 
-        // ── GLB INGESTION (NATIVE TEXTURE OVERRIDE) ──
         // ── GLB INGESTION (BRUTE FORCE EDITION) ──
         function buildSVPO() {
-          if (typeof THREE.GLTFLoader === "undefined") {
-            console.error("GLTFLoader not found.");
-            return;
-          }
+            if (typeof THREE.GLTFLoader === "undefined") {
+                console.error("GLTFLoader not found.");
+                return;
+            }
+            
+            const loader = new THREE.GLTFLoader();
+            const texLoader = new THREE.TextureLoader();
 
-          const loader = new THREE.GLTFLoader();
-          const texLoader = new THREE.TextureLoader();
+            const texPost = texLoader.load('./imagebank/svpo/SVPO_POST.png');
+            const texRing = texLoader.load('./imagebank/svpo/SVPO_RING.png');
+            const texMan  = texLoader.load('./imagebank/svpo/SVPO_MAN.png');
 
-          const texPost = texLoader.load("./imagebank/svpo/SVPO_POST.png");
-          const texRing = texLoader.load("./imagebank/svpo/SVPO_RING.png");
-          const texMan = texLoader.load("./imagebank/svpo/SVPO_MAN.png");
+            function applyGoldMat(mesh) {
+                let tex = null;
+                const name = mesh.name.toUpperCase();
+                
+                if (name.includes('POST')) tex = texPost;
+                else if (name.includes('RING')) tex = texRing;
+                else if (name.includes('MAN')) tex = texMan;
+                else tex = texPost; 
 
-          // The Brute Force Painter
-          function applyGoldMat(mesh) {
-            let tex = null;
-            const name = mesh.name.toUpperCase();
+                mesh.material = new THREE.MeshBasicMaterial({
+                    map: tex,
+                    color: 0xffcc44, 
+                    transparent: true,
+                    side: THREE.DoubleSide, 
+                    alphaTest: 0.1 
+                });
+            }
 
-            // Assign textures by partial match to bypass Blender's secret prefixes
-            if (name.includes("POST")) tex = texPost;
-            else if (name.includes("RING")) tex = texRing;
-            else if (name.includes("MAN")) tex = texMan;
-            else tex = texPost; // Fallback
-
-            mesh.material = new THREE.MeshBasicMaterial({
-              map: tex,
-              color: 0xffcc44, // Bright warm gold
-              transparent: true,
-              side: THREE.DoubleSide, // Force visibility from all sides
-              alphaTest: 0.1, // Cut out the transparent PNG background
+            const timestamp = new Date().getTime();
+            loader.load('./imagebank/svpo/SVPO_MASTER.glb?v=' + timestamp, function(gltf) {
+                const svpo = gltf.scene;
+                
+                svpo.traverse((child) => {
+                    if (child.isMesh) {
+                        applyGoldMat(child);
+                    }
+                });
+                
+                svpo.traverse((child) => {
+                    if (!child.isMesh) return;
+                    const name = child.name.toUpperCase();
+                    if (name.includes('POST')) svpoPost = child;
+                    if (name.includes('RING')) svpoRing = child;
+                    if (name.includes('MAN'))  svpoMan  = child;
+                });
+                
+                svpo.position.set(0, 0, 0); 
+                svpo.scale.set(0.35, 0.35, 0.35); 
+                
+                svpoGroup.add(svpo);
+                console.log("SVPO Successfully Brute-Forced into Engine.");
             });
-          }
-
-          // The Cache Buster: Forces the browser to grab your new, fixed GLB file
-          const timestamp = new Date().getTime();
-
-          loader.load(
-            "./imagebank/svpo/SVPO_MASTER.glb?v=" + timestamp,
-            function (gltf) {
-              const svpo = gltf.scene;
-
-              // 1. Traverse and brutally override EVERY material in the file
-              svpo.traverse((child) => {
-                if (child.isMesh) {
-                  applyGoldMat(child);
-                }
-              });
-
-              // 2. Map the physics trackers using partial name matches
-              svpo.traverse((child) => {
-                if (!child.isMesh) return;
-                const name = child.name.toUpperCase();
-                if (name.includes("POST")) svpoPost = child;
-                if (name.includes("RING")) svpoRing = child;
-                if (name.includes("MAN")) svpoMan = child;
-              });
-
-              svpo.position.set(0, 0, 0);
-              svpo.scale.set(0.35, 0.35, 0.35);
-
-              svpoGroup.add(svpo);
-              console.log("SVPO Successfully Brute-Forced into Engine.");
-            },
-          );
         }
 
-        loader.load("./imagebank/svpo/SVPO_MASTER.glb", function (gltf) {
-          const svpo = gltf.scene;
+        // ── INTERACTION ──
+        let isDragging = false;
+        let prevMouse = { x: 0, y: 0 };
+        let sphereVelocity = { x: 0, y: 0 };
+        let sphereRotation = { x: 0, y: 0 };
 
-          // Extract nodes
-          svpoPost = svpo.getObjectByName("SVPO_POST");
-          svpoRing = svpo.getObjectByName("SVPO_RING");
-          svpoMan = svpo.getObjectByName("SVPO_MAN");
-
-          // 3. Rip out Blender's invisible materials and force ours on
-          if (svpoPost) svpoPost.material = makeGoldMat(texPost);
-          if (svpoRing) svpoRing.material = makeGoldMat(texRing);
-          if (svpoMan) svpoMan.material = makeGoldMat(texMan);
-
-          // 4. Position and scale
-          svpo.position.set(0, 0, 0);
-          svpo.scale.set(0.35, 0.35, 0.35); // Shrinks it so it fits perfectly
-
-          svpoGroup.add(svpo);
-          console.log("SVPO Successfully Injected and Painted.");
-        });
-      }
-
-      // ── INTERACTION ──
-      let isDragging = false;
-      let prevMouse = { x: 0, y: 0 };
-      let sphereVelocity = { x: 0, y: 0 };
-      let sphereRotation = { x: 0, y: 0 };
-
-      canvas.addEventListener("mousedown", (e) => {
-        isDragging = true;
-        prevMouse = { x: e.clientX, y: e.clientY };
-        sphereVelocity = { x: 0, y: 0 };
-      });
-
-      canvas.addEventListener("mousemove", (e) => {
-        if (isDragging) {
-          const dx = e.clientX - prevMouse.x;
-          const dy = e.clientY - prevMouse.y;
-
-          sphereVelocity.x = dy * 0.003;
-          sphereVelocity.y = dx * 0.003;
-          sphereRotation.x += dy * 0.003;
-          sphereRotation.y += dx * 0.003;
-          prevMouse = { x: e.clientX, y: e.clientY };
-
-          pendulumVelocity.x += dy * 0.005;
-          pendulumVelocity.z -= dx * 0.005;
-          ringVelocity += dx * 0.02;
-          postRotation += dx * 0.005;
-        }
-
-        const rect = canvas.getBoundingClientRect();
-        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-        doHover(e.clientX, e.clientY);
-      });
-
-      canvas.addEventListener("mouseup", () => {
-        isDragging = false;
-      });
-      canvas.addEventListener("mouseleave", () => {
-        isDragging = false;
-        tooltip.classList.remove("visible");
-      });
-
-      canvas.addEventListener(
-        "wheel",
-        (e) => {
-          e.preventDefault();
-          camera.position.z = Math.max(
-            1.5,
-            Math.min(6, camera.position.z + e.deltaY * 0.003),
-          );
-        },
-        { passive: false },
-      );
-
-      canvas.addEventListener("click", (e) => {
-        const rect = canvas.getBoundingClientRect();
-        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-        raycaster.setFromCamera(mouse, camera);
-        const hits = raycaster.intersectObjects(coinMeshes.map((c) => c.mesh));
-        if (hits.length > 0) {
-          const hit = coinMeshes.find((c) => c.mesh === hits[0].object);
-          if (hit) openEntryPanel(hit);
-        }
-      });
-
-      canvas.addEventListener(
-        "touchstart",
-        (e) => {
+        canvas.addEventListener("mousedown", (e) => {
           isDragging = true;
-          prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          prevMouse = { x: e.clientX, y: e.clientY };
           sphereVelocity = { x: 0, y: 0 };
-        },
-        { passive: true },
-      );
+        });
+        
+        canvas.addEventListener("mousemove", (e) => {
+          if (isDragging) {
+            const dx = e.clientX - prevMouse.x;
+            const dy = e.clientY - prevMouse.y;
+            
+            sphereVelocity.x = dy * 0.003;
+            sphereVelocity.y = dx * 0.003;
+            sphereRotation.x += dy * 0.003;
+            sphereRotation.y += dx * 0.003;
+            prevMouse = { x: e.clientX, y: e.clientY };
+            
+            pendulumVelocity.x += dy * 0.005; 
+            pendulumVelocity.z -= dx * 0.005; 
+            ringVelocity += dx * 0.02;     
+            postRotation += dx * 0.005;    
+          }
+          
+          const rect = canvas.getBoundingClientRect();
+          mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+          mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+          doHover(e.clientX, e.clientY);
+        });
+        
+        canvas.addEventListener("mouseup", () => { isDragging = false; });
+        canvas.addEventListener("mouseleave", () => { isDragging = false; tooltip.classList.remove("visible"); });
+        
+        canvas.addEventListener("wheel", (e) => {
+            e.preventDefault();
+            camera.position.z = Math.max(1.5, Math.min(6, camera.position.z + e.deltaY * 0.003));
+          }, { passive: false });
+          
+        canvas.addEventListener("click", (e) => {
+          const rect = canvas.getBoundingClientRect();
+          mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+          mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+          raycaster.setFromCamera(mouse, camera);
+          const hits = raycaster.intersectObjects(coinMeshes.map((c) => c.mesh));
+          if (hits.length > 0) {
+            const hit = coinMeshes.find((c) => c.mesh === hits[0].object);
+            if (hit) openEntryPanel(hit);
+          }
+        });
 
-      canvas.addEventListener(
-        "touchmove",
-        (e) => {
-          if (!isDragging) return;
-          const dx = e.touches[0].clientX - prevMouse.x;
-          const dy = e.touches[0].clientY - prevMouse.y;
+        canvas.addEventListener("touchstart", (e) => {
+            isDragging = true;
+            prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            sphereVelocity = { x: 0, y: 0 };
+          }, { passive: true });
+          
+        canvas.addEventListener("touchmove", (e) => {
+            if (!isDragging) return;
+            const dx = e.touches[0].clientX - prevMouse.x;
+            const dy = e.touches[0].clientY - prevMouse.y;
+            
+            sphereVelocity.x = dy * 0.003;
+            sphereVelocity.y = dx * 0.003;
+            sphereRotation.x += dy * 0.003;
+            sphereRotation.y += dx * 0.003;
+            prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            
+            pendulumVelocity.x += dy * 0.005; 
+            pendulumVelocity.z -= dx * 0.005; 
+            ringVelocity += dx * 0.02;     
+            postRotation += dx * 0.005;    
+          }, { passive: true });
+          
+        canvas.addEventListener("touchend", () => { isDragging = false; });
 
-          sphereVelocity.x = dy * 0.003;
-          sphereVelocity.y = dx * 0.003;
-          sphereRotation.x += dy * 0.003;
-          sphereRotation.y += dx * 0.003;
-          prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        const tooltip = document.getElementById("nodeTooltip");
+        let hoveredNode = null;
 
-          pendulumVelocity.x += dy * 0.005;
-          pendulumVelocity.z -= dx * 0.005;
-          ringVelocity += dx * 0.02;
-          postRotation += dx * 0.005;
-        },
-        { passive: true },
-      );
-
-      canvas.addEventListener("touchend", () => {
-        isDragging = false;
-      });
-
-      const raycaster = new THREE.Raycaster();
-      const mouse = new THREE.Vector2();
-      const tooltip = document.getElementById("nodeTooltip");
-      let hoveredNode = null;
-
-      function doHover(cx, cy) {
-        raycaster.setFromCamera(mouse, camera);
-        const hits = raycaster.intersectObjects(coinMeshes.map((c) => c.mesh));
-        if (hits.length > 0) {
-          const hit = coinMeshes.find((c) => c.mesh === hits[0].object);
-          if (hit !== hoveredNode) {
-            if (hoveredNode)
+        function doHover(cx, cy) {
+          raycaster.setFromCamera(mouse, camera);
+          const hits = raycaster.intersectObjects(coinMeshes.map((c) => c.mesh));
+          if (hits.length > 0) {
+            const hit = coinMeshes.find((c) => c.mesh === hits[0].object);
+            if (hit !== hoveredNode) {
+              if (hoveredNode) hoveredNode.glowMesh.material.opacity = hoveredNode.baseGlow;
+              hoveredNode = hit;
+              hit.glowMesh.material.opacity = 0.2;
+              canvas.style.cursor = "pointer";
+            }
+            tooltip.textContent = hit.entry.name;
+            tooltip.style.left = cx + 16 + "px";
+            tooltip.style.top = cy - 8 + "px";
+            tooltip.classList.add("visible");
+          } else {
+            if (hoveredNode) {
               hoveredNode.glowMesh.material.opacity = hoveredNode.baseGlow;
-            hoveredNode = hit;
-            hit.glowMesh.material.opacity = 0.2;
-            canvas.style.cursor = "pointer";
-          }
-          tooltip.textContent = hit.entry.name;
-          tooltip.style.left = cx + 16 + "px";
-          tooltip.style.top = cy - 8 + "px";
-          tooltip.classList.add("visible");
-        } else {
-          if (hoveredNode) {
-            hoveredNode.glowMesh.material.opacity = hoveredNode.baseGlow;
-            hoveredNode = null;
-          }
-          canvas.style.cursor = isDragging ? "grabbing" : "grab";
-          tooltip.classList.remove("visible");
-        }
-      }
-
-      // ── PANEL ──
-      const panel = document.getElementById("entryPanel");
-      const backBtn = document.getElementById("backBtn");
-      let selectedNode = null;
-
-      function openEntryPanel(node) {
-        selectedNode = node;
-        const entry = node.entry;
-        const primaryDim = entry.dims[0];
-        const dimColor = DIM_COLORS[primaryDim] || "#888888";
-
-        document.getElementById("panelClassBadge").textContent =
-          entry.dims.join(" · ");
-        document.getElementById("panelClassBadge").style.color = dimColor;
-        document.getElementById("panelEntryName").textContent = entry.name;
-        document.getElementById("panelDimLabel").textContent = entry.dormant
-          ? "— ENTRY PENDING —"
-          : "NCE ENTRY";
-
-        const front = document.getElementById("coinFront");
-        const back = document.getElementById("coinBack");
-        front.style.borderColor = dimColor + "44";
-        back.style.borderColor = dimColor + "44";
-
-        if (entry.dormant) {
-          front.innerHTML = `<span style="color:${dimColor};opacity:0.4;font-size:18px">◌</span><span>PENDING</span>`;
-          back.innerHTML = `<span style="color:${dimColor};opacity:0.4;font-size:18px">◌</span><span>PENDING</span>`;
-        } else {
-          front.innerHTML = `<img src="imagebank/symbols/${entry.id}_F.png" onerror="this.style.display='none'" />`;
-          back.innerHTML = `<img src="imagebank/symbols/${entry.id}_B.png" onerror="this.style.display='none'" />`;
-        }
-
-        const connList = document.getElementById("connList");
-        connList.innerHTML = "";
-        const conns = CONNECTIONS.filter(
-          (c) => c.from === entry.id || c.to === entry.id,
-        );
-        if (conns.length === 0) {
-          connList.innerHTML = `<div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,255,255,0.2);letter-spacing:0.3em;">NO CONNECTIONS MAPPED YET</div>`;
-        } else {
-          conns.forEach((conn) => {
-            const otherId = conn.from === entry.id ? conn.to : conn.from;
-            const other = ENTRIES.find((e) => e.id === otherId);
-            if (!other) return;
-            const edgeColor = EDGE_COLORS[conn.type] || "#888888";
-            const item = document.createElement("div");
-            item.className = "conn-item";
-            item.innerHTML = `<div class="conn-dot" style="background:${edgeColor}"></div><span>${other.name}</span><span class="conn-type">${conn.type}</span>`;
-            item.addEventListener("click", () => {
-              const t = nodeMap[otherId];
-              if (t) openEntryPanel(t);
-            });
-            connList.appendChild(item);
-          });
-        }
-
-        document.getElementById("panelReadBtn").href = entry.path;
-        panel.classList.add("open");
-        backBtn.classList.add("visible");
-        highlightConnected(entry.id);
-      }
-
-      document
-        .getElementById("panelClose")
-        .addEventListener("click", closePanel);
-      backBtn.addEventListener("click", closePanel);
-
-      function closePanel() {
-        panel.classList.remove("open");
-        backBtn.classList.remove("visible");
-        selectedNode = null;
-        resetEdges();
-      }
-
-      function highlightConnected(entryId) {
-        edgeGroup.children.forEach((l) => (l.material.opacity = 0.03));
-        coinMeshes.forEach((n) => {
-          n.glowMesh.material.opacity = 0.008;
-        });
-
-        const connectedIds = new Set();
-        edgeGroup.children.forEach((l) => {
-          const conn = l.userData.conn;
-          if (conn && (conn.from === entryId || conn.to === entryId)) {
-            l.material.opacity = 0.75;
-            connectedIds.add(conn.from === entryId ? conn.to : conn.from);
-          }
-        });
-        connectedIds.forEach((id) => {
-          const n = nodeMap[id];
-          if (n) n.glowMesh.material.opacity = 0.25;
-        });
-        const self = nodeMap[entryId];
-        if (self) self.glowMesh.material.opacity = 0.35;
-      }
-
-      function resetEdges() {
-        edgeGroup.children.forEach((l) => (l.material.opacity = 0.15));
-        coinMeshes.forEach((n) => {
-          if (n.mesh.visible) n.glowMesh.material.opacity = n.baseGlow;
-        });
-      }
-
-      let activeFilter = "ALL";
-      document.querySelectorAll(".filter-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          document
-            .querySelectorAll(".filter-btn")
-            .forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-          activeFilter = btn.dataset.dim;
-          applyFilter(activeFilter);
-        });
-      });
-
-      function applyFilter(dim) {
-        coinMeshes.forEach((node) => {
-          const match = dim === "ALL" || node.entry.dims.includes(dim);
-          if (match) {
-            node.mesh.material.forEach &&
-              node.mesh.material.forEach((m) => {
-                if (m) m.opacity = undefined;
-              });
-            node.glowMesh.material.opacity =
-              dim === "ALL" ? node.baseGlow : 0.2;
-          } else {
-            node.glowMesh.material.opacity = 0.005;
-          }
-        });
-
-        edgeGroup.children.forEach((line) => {
-          const conn = line.userData.conn;
-          if (!conn || dim === "ALL") {
-            line.material.opacity = 0.15;
-            return;
-          }
-          const fromMatch = nodeMap[conn.from]?.entry.dims.includes(dim);
-          const toMatch = nodeMap[conn.to]?.entry.dims.includes(dim);
-          line.material.opacity = fromMatch || toMatch ? 0.35 : 0.03;
-        });
-
-        const count =
-          dim === "ALL"
-            ? ENTRIES.length
-            : ENTRIES.filter((e) => e.dims.includes(dim)).length;
-        document.getElementById("countNum").textContent = count;
-      }
-
-      // ── ANIMATION ──
-      const clock = new THREE.Clock();
-      let arrived = false;
-      let arrivalTimer = 0;
-
-      function animate() {
-        requestAnimationFrame(animate);
-        const delta = clock.getDelta();
-        const elapsed = clock.getElapsedTime();
-
-        if (!arrived) {
-          arrivalTimer += delta;
-          if (arrivalTimer >= 1.618) arrived = true;
-          else {
-            renderer.render(scene, camera);
-            return;
+              hoveredNode = null;
+            }
+            canvas.style.cursor = isDragging ? "grabbing" : "grab";
+            tooltip.classList.remove("visible");
           }
         }
 
-        if (!isDragging) {
-          sphereVelocity.x *= 0.94;
-          sphereVelocity.y *= 0.94;
-          sphereRotation.x += sphereVelocity.x;
-          sphereRotation.y += sphereVelocity.y;
-          const spd = Math.sqrt(sphereVelocity.x ** 2 + sphereVelocity.y ** 2);
-          if (spd < 0.001) sphereRotation.y += 0.0008;
-        }
+        // ── PANEL ──
+        const panel = document.getElementById("entryPanel");
+        const backBtn = document.getElementById("backBtn");
+        let selectedNode = null;
 
-        coinGroup.rotation.x = sphereRotation.x;
-        coinGroup.rotation.y = sphereRotation.y;
-        edgeGroup.rotation.x = sphereRotation.x;
-        edgeGroup.rotation.y = sphereRotation.y;
-
-        // ── KINEMATIC SVPO PHYSICS ──
-        if (svpoPost && svpoRing) {
-          svpoPost.rotation.x += pendulumVelocity.x;
-          svpoPost.rotation.z += pendulumVelocity.z;
-
-          pendulumVelocity.x -= svpoPost.rotation.x * 0.05;
-          pendulumVelocity.z -= svpoPost.rotation.z * 0.05;
-
-          pendulumVelocity.x *= 0.92;
-          pendulumVelocity.z *= 0.92;
-
-          svpoPost.rotation.y += postRotation;
-          postRotation *= 0.95;
-
-          svpoRing.rotation.y += ringVelocity;
-          ringVelocity *= 0.98;
-
-          const time = Date.now() * 0.001;
-          svpoPost.rotation.x += Math.sin(time * 0.5) * 0.001;
-          svpoPost.rotation.z += Math.cos(time * 0.3) * 0.001;
-          svpoRing.rotation.y += 0.002;
-        }
-
-        centerLight.intensity = 1.2 + Math.sin(elapsed * 0.6) * 0.3;
-        renderer.render(scene, camera);
-      }
-
-      window.addEventListener("resize", () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      });
-
-      async function init() {
-        await buildCoins();
-        buildEdges();
-        buildSVPO();
-        clock.start();
-        animate();
-      }
-
-      // ═══════════════════════════════════════════════════
-      // WORD CLOUD
-      // ═══════════════════════════════════════════════════
-
-      const cloudLayer = document.getElementById("cloudLayer");
-      let cloudWords = [];
-      let cloudMode = false;
-      let cloudSelected = null;
-      let cloudAnimFrame = null;
-
-      const connCount = {};
-      ENTRIES.forEach((e) => {
-        connCount[e.id] = 0;
-      });
-      CONNECTIONS.forEach((c) => {
-        if (connCount[c.from] !== undefined) connCount[c.from]++;
-        if (connCount[c.to] !== undefined) connCount[c.to]++;
-      });
-      const maxConn = Math.max(...Object.values(connCount));
-
-      function buildCloud() {
-        cloudLayer.innerHTML = "";
-        cloudWords = [];
-
-        const W = window.innerWidth;
-        const H = window.innerHeight;
-
-        ENTRIES.forEach((entry) => {
-          const el = document.createElement("div");
-          el.className = "cloud-word";
-          el.textContent = entry.name;
+        function openEntryPanel(node) {
+          selectedNode = node;
+          const entry = node.entry;
           const primaryDim = entry.dims[0];
-          el.style.color = DIM_COLORS[primaryDim] || "#888888";
+          const dimColor = DIM_COLORS[primaryDim] || "#888888";
 
-          const ratio = (connCount[entry.id] || 0) / maxConn;
-          const size = 9 + ratio * 13;
-          el.style.fontSize = size + "px";
+          document.getElementById("panelClassBadge").textContent = entry.dims.join(" · ");
+          document.getElementById("panelClassBadge").style.color = dimColor;
+          document.getElementById("panelEntryName").textContent = entry.name;
+          document.getElementById("panelDimLabel").textContent = entry.dormant ? "— ENTRY PENDING —" : "NCE ENTRY";
 
-          let x, y;
-          do {
-            x = 0.08 + Math.random() * 0.84;
-            y = 0.08 + Math.random() * 0.84;
-          } while (Math.abs(x - 0.5) < 0.15 && Math.abs(y - 0.5) < 0.15);
+          const front = document.getElementById("coinFront");
+          const back = document.getElementById("coinBack");
+          front.style.borderColor = dimColor + "44";
+          back.style.borderColor = dimColor + "44";
 
-          el.style.left = x * W + "px";
-          el.style.top = y * H + "px";
-
-          const vx = (Math.random() - 0.5) * 0.12;
-          const vy = (Math.random() - 0.5) * 0.08;
-
-          el.addEventListener("click", () => selectCloudWord(entry.id));
-          el.addEventListener("dblclick", () => jumpToNode(entry.id));
-
-          cloudLayer.appendChild(el);
-          cloudWords.push({
-            el,
-            entry,
-            x: x * W,
-            y: y * H,
-            baseSize: size,
-            vx,
-            vy,
-          });
-        });
-      }
-
-      function selectCloudWord(entryId) {
-        cloudSelected = entryId;
-        const connectedIds = new Set(
-          CONNECTIONS.filter((c) => c.from === entryId || c.to === entryId).map(
-            (c) => (c.from === entryId ? c.to : c.from),
-          ),
-        );
-
-        cloudWords.forEach((w) => {
-          w.el.classList.remove("selected", "connected", "dimmed");
-          if (w.entry.id === entryId) {
-            w.el.classList.add("selected");
-            w.el.style.fontSize = w.baseSize * 1.8 + "px";
-          } else if (connectedIds.has(w.entry.id)) {
-            w.el.classList.add("connected");
-            w.el.style.fontSize = w.baseSize * 1.25 + "px";
+          if (entry.dormant) {
+            front.innerHTML = `<span style="color:${dimColor};opacity:0.4;font-size:18px">◌</span><span>PENDING</span>`;
+            back.innerHTML = `<span style="color:${dimColor};opacity:0.4;font-size:18px">◌</span><span>PENDING</span>`;
           } else {
-            w.el.classList.add("dimmed");
-            w.el.style.fontSize = w.baseSize + "px";
+            front.innerHTML = `<img src="imagebank/symbols/${entry.id}_F.png" onerror="this.style.display='none'" />`;
+            back.innerHTML = `<img src="imagebank/symbols/${entry.id}_B.png" onerror="this.style.display='none'" />`;
           }
-        });
 
-        const node = nodeMap[entryId];
-        if (node) openEntryPanel(node);
-      }
+          const connList = document.getElementById("connList");
+          connList.innerHTML = "";
+          const conns = CONNECTIONS.filter((c) => c.from === entry.id || c.to === entry.id);
+          if (conns.length === 0) {
+            connList.innerHTML = `<div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,255,255,0.2);letter-spacing:0.3em;">NO CONNECTIONS MAPPED YET</div>`;
+          } else {
+            conns.forEach((conn) => {
+              const otherId = conn.from === entry.id ? conn.to : conn.from;
+              const other = ENTRIES.find((e) => e.id === otherId);
+              if (!other) return;
+              const edgeColor = EDGE_COLORS[conn.type] || "#888888";
+              const item = document.createElement("div");
+              item.className = "conn-item";
+              item.innerHTML = `<div class="conn-dot" style="background:${edgeColor}"></div><span>${other.name}</span><span class="conn-type">${conn.type}</span>`;
+              item.addEventListener("click", () => {
+                const t = nodeMap[otherId];
+                if (t) openEntryPanel(t);
+              });
+              connList.appendChild(item);
+            });
+          }
 
-      function jumpToNode(entryId) {
-        setMode("inna");
-        const node = nodeMap[entryId];
-        if (node) {
-          openEntryPanel(node);
-          const pos = node.mesh.position.clone();
-          const targetY = Math.atan2(pos.x, pos.z);
-          const targetX = -Math.asin(pos.y / SPHERE_RADIUS);
-          sphereRotation.y = targetY;
-          sphereRotation.x = targetX;
-          sphereVelocity = { x: 0, y: 0 };
+          document.getElementById("panelReadBtn").href = entry.path;
+          panel.classList.add("open");
+          backBtn.classList.add("visible");
+          highlightConnected(entry.id);
         }
-      }
 
-      function animateCloud() {
-        if (!cloudMode) return;
-        const W = window.innerWidth;
-        const H = window.innerHeight;
+        document.getElementById("panelClose").addEventListener("click", closePanel);
+        backBtn.addEventListener("click", closePanel);
 
-        cloudWords.forEach((w) => {
-          w.x += w.vx;
-          w.y += w.vy;
-          if (w.x < 20 || w.x > W - 20) w.vx *= -1;
-          if (w.y < 20 || w.y > H - 20) w.vy *= -1;
-          w.el.style.left = w.x + "px";
-          w.el.style.top = w.y + "px";
+        function closePanel() {
+          panel.classList.remove("open");
+          backBtn.classList.remove("visible");
+          selectedNode = null;
+          resetEdges();
+        }
+
+        function highlightConnected(entryId) {
+          edgeGroup.children.forEach((l) => (l.material.opacity = 0.03));
+          coinMeshes.forEach((n) => { n.glowMesh.material.opacity = 0.008; });
+          
+          const connectedIds = new Set();
+          edgeGroup.children.forEach((l) => {
+            const conn = l.userData.conn;
+            if (conn && (conn.from === entryId || conn.to === entryId)) {
+              l.material.opacity = 0.75;
+              connectedIds.add(conn.from === entryId ? conn.to : conn.from);
+            }
+          });
+          connectedIds.forEach((id) => {
+            const n = nodeMap[id];
+            if (n) n.glowMesh.material.opacity = 0.25;
+          });
+          const self = nodeMap[entryId];
+          if (self) self.glowMesh.material.opacity = 0.35;
+        }
+
+        function resetEdges() {
+          edgeGroup.children.forEach((l) => (l.material.opacity = 0.15));
+          coinMeshes.forEach((n) => { if (n.mesh.visible) n.glowMesh.material.opacity = n.baseGlow; });
+        }
+
+        let activeFilter = "ALL";
+        document.querySelectorAll(".filter-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            activeFilter = btn.dataset.dim;
+            applyFilter(activeFilter);
+          });
         });
 
-        cloudAnimFrame = requestAnimationFrame(animateCloud);
-      }
+        function applyFilter(dim) {
+          coinMeshes.forEach((node) => {
+            const match = dim === "ALL" || node.entry.dims.includes(dim);
+            if (match) {
+              node.mesh.material.forEach && node.mesh.material.forEach((m) => { if (m) m.opacity = undefined; });
+              node.glowMesh.material.opacity = dim === "ALL" ? node.baseGlow : 0.2;
+            } else {
+              node.glowMesh.material.opacity = 0.005;
+            }
+          });
 
-      function setMode(mode) {
-        cloudMode = mode === "cloud";
-        document
-          .getElementById("btnINNA")
-          .classList.toggle("active", !cloudMode);
-        document
-          .getElementById("btnCLOUD")
-          .classList.toggle("active", cloudMode);
+          edgeGroup.children.forEach((line) => {
+            const conn = line.userData.conn;
+            if (!conn || dim === "ALL") {
+              line.material.opacity = 0.15;
+              return;
+            }
+            const fromMatch = nodeMap[conn.from]?.entry.dims.includes(dim);
+            const toMatch = nodeMap[conn.to]?.entry.dims.includes(dim);
+            line.material.opacity = fromMatch || toMatch ? 0.35 : 0.03;
+          });
 
-        if (cloudMode) {
-          buildCloud();
-          cloudLayer.style.opacity = "1";
-          cloudLayer.classList.add("visible");
-          coinGroup.traverse((c) => {
-            if (c.material) {
-              if (Array.isArray(c.material))
-                c.material.forEach(
-                  (m) =>
-                    m &&
-                    ((m.opacity = (m.opacity || 1) * 0.25),
-                    (m.transparent = true)),
-                );
-              else {
-                c.material.opacity = (c.material.opacity || 1) * 0.25;
-                c.material.transparent = true;
+          const count = dim === "ALL" ? ENTRIES.length : ENTRIES.filter((e) => e.dims.includes(dim)).length;
+          document.getElementById("countNum").textContent = count;
+        }
+
+        // ── ANIMATION ──
+        const clock = new THREE.Clock();
+        let arrived = false;
+        let arrivalTimer = 0;
+
+        function animate() {
+          requestAnimationFrame(animate);
+          const delta = clock.getDelta();
+          const elapsed = clock.getElapsedTime();
+
+          if (!arrived) {
+            arrivalTimer += delta;
+            if (arrivalTimer >= 1.618) arrived = true;
+            else {
+              renderer.render(scene, camera);
+              return;
+            }
+          }
+
+          if (!isDragging) {
+            sphereVelocity.x *= 0.94;
+            sphereVelocity.y *= 0.94;
+            sphereRotation.x += sphereVelocity.x;
+            sphereRotation.y += sphereVelocity.y;
+            const spd = Math.sqrt(sphereVelocity.x ** 2 + sphereVelocity.y ** 2);
+            if (spd < 0.001) sphereRotation.y += 0.0008;
+          }
+
+          coinGroup.rotation.x = sphereRotation.x;
+          coinGroup.rotation.y = sphereRotation.y;
+          edgeGroup.rotation.x = sphereRotation.x;
+          edgeGroup.rotation.y = sphereRotation.y;
+
+          // ── KINEMATIC SVPO PHYSICS ──
+          if (svpoPost && svpoRing) {
+              svpoPost.rotation.x += pendulumVelocity.x;
+              svpoPost.rotation.z += pendulumVelocity.z;
+              
+              pendulumVelocity.x -= svpoPost.rotation.x * 0.05;
+              pendulumVelocity.z -= svpoPost.rotation.z * 0.05;
+              
+              pendulumVelocity.x *= 0.92;
+              pendulumVelocity.z *= 0.92;
+
+              svpoPost.rotation.y += postRotation;
+              postRotation *= 0.95;
+
+              svpoRing.rotation.y += ringVelocity;
+              ringVelocity *= 0.98;
+              
+              const time = Date.now() * 0.001;
+              svpoPost.rotation.x += Math.sin(time * 0.5) * 0.001;
+              svpoPost.rotation.z += Math.cos(time * 0.3) * 0.001;
+              svpoRing.rotation.y += 0.002; 
+          }
+
+          centerLight.intensity = 1.2 + Math.sin(elapsed * 0.6) * 0.3;
+          renderer.render(scene, camera);
+        }
+
+        window.addEventListener("resize", () => {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        async function init() {
+          await buildCoins();
+          buildEdges();
+          buildSVPO(); 
+          clock.start();
+          animate();
+        }
+
+        // ═══════════════════════════════════════════════════
+        // WORD CLOUD
+        // ═══════════════════════════════════════════════════
+
+        const cloudLayer = document.getElementById("cloudLayer");
+        let cloudWords = []; 
+        let cloudMode = false;
+        let cloudSelected = null;
+        let cloudAnimFrame = null;
+
+        const connCount = {};
+        ENTRIES.forEach((e) => { connCount[e.id] = 0; });
+        CONNECTIONS.forEach((c) => {
+          if (connCount[c.from] !== undefined) connCount[c.from]++;
+          if (connCount[c.to] !== undefined) connCount[c.to]++;
+        });
+        const maxConn = Math.max(...Object.values(connCount));
+
+        function buildCloud() {
+          cloudLayer.innerHTML = "";
+          cloudWords = [];
+
+          const W = window.innerWidth;
+          const H = window.innerHeight;
+
+          ENTRIES.forEach((entry) => {
+            const el = document.createElement("div");
+            el.className = "cloud-word";
+            el.textContent = entry.name;
+            const primaryDim = entry.dims[0];
+            el.style.color = DIM_COLORS[primaryDim] || "#888888";
+
+            const ratio = (connCount[entry.id] || 0) / maxConn;
+            const size = 9 + ratio * 13;
+            el.style.fontSize = size + "px";
+
+            let x, y;
+            do {
+              x = 0.08 + Math.random() * 0.84;
+              y = 0.08 + Math.random() * 0.84;
+            } while (Math.abs(x - 0.5) < 0.15 && Math.abs(y - 0.5) < 0.15);
+
+            el.style.left = x * W + "px";
+            el.style.top = y * H + "px";
+
+            const vx = (Math.random() - 0.5) * 0.12;
+            const vy = (Math.random() - 0.5) * 0.08;
+
+            el.addEventListener("click", () => selectCloudWord(entry.id));
+            el.addEventListener("dblclick", () => jumpToNode(entry.id));
+
+            cloudLayer.appendChild(el);
+            cloudWords.push({ el, entry, x: x * W, y: y * H, baseSize: size, vx, vy });
+          });
+        }
+
+        function selectCloudWord(entryId) {
+          cloudSelected = entryId;
+          const connectedIds = new Set(CONNECTIONS.filter((c) => c.from === entryId || c.to === entryId).map((c) => (c.from === entryId ? c.to : c.from)));
+
+          cloudWords.forEach((w) => {
+            w.el.classList.remove("selected", "connected", "dimmed");
+            if (w.entry.id === entryId) {
+              w.el.classList.add("selected");
+              w.el.style.fontSize = w.baseSize * 1.8 + "px";
+            } else if (connectedIds.has(w.entry.id)) {
+              w.el.classList.add("connected");
+              w.el.style.fontSize = w.baseSize * 1.25 + "px";
+            } else {
+              w.el.classList.add("dimmed");
+              w.el.style.fontSize = w.baseSize + "px";
+            }
+          });
+
+          const node = nodeMap[entryId];
+          if (node) openEntryPanel(node);
+        }
+
+        function jumpToNode(entryId) {
+          setMode("inna");
+          const node = nodeMap[entryId];
+          if (node) {
+            openEntryPanel(node);
+            const pos = node.mesh.position.clone();
+            const targetY = Math.atan2(pos.x, pos.z);
+            const targetX = -Math.asin(pos.y / SPHERE_RADIUS);
+            sphereRotation.y = targetY;
+            sphereRotation.x = targetX;
+            sphereVelocity = { x: 0, y: 0 };
+          }
+        }
+
+        function animateCloud() {
+          if (!cloudMode) return;
+          const W = window.innerWidth;
+          const H = window.innerHeight;
+
+          cloudWords.forEach((w) => {
+            w.x += w.vx;
+            w.y += w.vy;
+            if (w.x < 20 || w.x > W - 20) w.vx *= -1;
+            if (w.y < 20 || w.y > H - 20) w.vy *= -1;
+            w.el.style.left = w.x + "px";
+            w.el.style.top = w.y + "px";
+          });
+
+          cloudAnimFrame = requestAnimationFrame(animateCloud);
+        }
+
+        function setMode(mode) {
+          cloudMode = mode === "cloud";
+          document.getElementById("btnINNA").classList.toggle("active", !cloudMode);
+          document.getElementById("btnCLOUD").classList.toggle("active", cloudMode);
+
+          if (cloudMode) {
+            buildCloud();
+            cloudLayer.style.opacity = "1";
+            cloudLayer.classList.add("visible");
+            coinGroup.traverse((c) => {
+              if (c.material) {
+                if (Array.isArray(c.material))
+                  c.material.forEach((m) => m && ((m.opacity = (m.opacity || 1) * 0.25), (m.transparent = true)));
+                else {
+                  c.material.opacity = (c.material.opacity || 1) * 0.25;
+                  c.material.transparent = true;
+                }
               }
+            });
+            animateCloud();
+          } else {
+            cloudLayer.style.opacity = "0";
+            cloudLayer.classList.remove("visible");
+            cloudSelected = null;
+            if (cloudAnimFrame) {
+              cancelAnimationFrame(cloudAnimFrame);
+              cloudAnimFrame = null;
             }
-          });
-          animateCloud();
-        } else {
-          cloudLayer.style.opacity = "0";
-          cloudLayer.classList.remove("visible");
-          cloudSelected = null;
-          if (cloudAnimFrame) {
-            cancelAnimationFrame(cloudAnimFrame);
-            cloudAnimFrame = null;
+            coinGroup.traverse((c) => {
+              if (c.material) {
+                if (Array.isArray(c.material)) c.material.forEach((m) => m && (m.opacity = 1));
+                else c.material.opacity = 1;
+              }
+            });
           }
-          coinGroup.traverse((c) => {
-            if (c.material) {
-              if (Array.isArray(c.material))
-                c.material.forEach((m) => m && (m.opacity = 1));
-              else c.material.opacity = 1;
-            }
-          });
         }
-      }
 
-      document
-        .getElementById("btnINNA")
-        .addEventListener("click", () => setMode("inna"));
-      document
-        .getElementById("btnCLOUD")
-        .addEventListener("click", () => setMode("cloud"));
+        document.getElementById("btnINNA").addEventListener("click", () => setMode("inna"));
+        document.getElementById("btnCLOUD").addEventListener("click", () => setMode("cloud"));
 
-      init();
+        init();
+      } 
     </script>
   </body>
 </html>
