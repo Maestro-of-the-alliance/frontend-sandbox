@@ -481,12 +481,26 @@
                     if (child.isMesh) applyGoldMat(child);
                 });
                 
+                // ── THE MICRO-DIALS: Scale each piece individually ──
                 svpo.traverse((child) => {
                     if (!child.isMesh) return;
                     const name = child.name.toUpperCase();
-                    if (name.includes('POST')) svpoPost = child;
-                    if (name.includes('RING')) svpoRing = child;
-                    if (name.includes('MAN'))  svpoMan  = child;
+                    
+                    if (name.includes('POST')) {
+                        svpoPost = child;
+                        // Dial for the Post (X = Width, Y = Height, Z = Depth)
+                        svpoPost.scale.set(1.0, 1.0, 1.0); 
+                    }
+                    if (name.includes('RING')) {
+                        svpoRing = child;
+                        // Dial for the Ring
+                        svpoRing.scale.set(1.0, 1.0, 1.0); 
+                    }
+                    if (name.includes('MAN')) {
+                        svpoMan = child;
+                        // Dial for the Man
+                        svpoMan.scale.set(1.0, 1.0, 1.0); 
+                    }
                 });
                 
                 svpo.position.set(0, 0, 0); 
@@ -602,17 +616,26 @@
           if (!isDragging) { sphereVelocity.x *= 0.94; sphereVelocity.y *= 0.94; sphereRotation.x += sphereVelocity.x; sphereRotation.y += sphereVelocity.y; const spd = Math.sqrt(sphereVelocity.x ** 2 + sphereVelocity.y ** 2); if (spd < 0.001) sphereRotation.y += 0.0008; }
           coinGroup.rotation.x = sphereRotation.x; coinGroup.rotation.y = sphereRotation.y; edgeGroup.rotation.x = sphereRotation.x; edgeGroup.rotation.y = sphereRotation.y;
 
-          // ── KINEMATIC SVPO PHYSICS (Heat Miser Style) ──
+         // ── SVPO PHYSICS (CLEAN REVOLVING DOOR) ──
           if (svpoPost && svpoRing) {
-              svpoPost.rotation.x += pendulumVelocity.x; svpoPost.rotation.z += pendulumVelocity.z;
-              pendulumVelocity.x -= svpoPost.rotation.x * 0.05; pendulumVelocity.z -= svpoPost.rotation.z * 0.05;
-              pendulumVelocity.x *= 0.92; pendulumVelocity.z *= 0.92;
-              svpoPost.rotation.y += postRotation; postRotation *= 0.95;
-              svpoRing.rotation.y += ringVelocity; ringVelocity *= 0.98;
+              // 1. Map horizontal mouse drag directly to the vertical spin
+              // If it spins backward, change the + to a -
+              postRotation += (isDragging ? sphereVelocity.y * 2 : 0);
+              ringVelocity -= (isDragging ? sphereVelocity.y * 3 : 0); // Ring spins opposite/faster
               
-              const time = Date.now() * 0.001;
-              svpoPost.rotation.x += Math.sin(time * 0.5) * 0.001; svpoPost.rotation.z += Math.cos(time * 0.3) * 0.001;
-              svpoRing.rotation.y += 0.002; // Constant slow spin of the ring
+              // 2. Apply the spin to the Y-axis ONLY
+              svpoPost.rotation.y += postRotation;
+              svpoRing.rotation.y += ringVelocity;
+
+              // 3. Friction (slows down smoothly when you let go)
+              postRotation *= 0.95;
+              ringVelocity *= 0.98;
+              
+              // 4. LOCK THE WOBBLE: Force X and Z axes to stay perfectly still
+              svpoPost.rotation.x = 0;
+              svpoPost.rotation.z = 0;
+              svpoRing.rotation.x = 0;
+              svpoRing.rotation.z = 0;
           }
 
           centerLight.intensity = 1.2 + Math.sin(elapsed * 0.6) * 0.3;
