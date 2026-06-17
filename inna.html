@@ -1018,30 +1018,69 @@
         }
 
         // ── GLB INGESTION (NATIVE TEXTURE OVERRIDE) ──
+        // ── GLB INGESTION (BRUTE FORCE EDITION) ──
         function buildSVPO() {
-          if (typeof THREE.GLTFLoader === "undefined") {
-            console.error("GLTFLoader not found.");
-            return;
-          }
+            if (typeof THREE.GLTFLoader === "undefined") {
+                console.error("GLTFLoader not found.");
+                return;
+            }
 
-          const loader = new THREE.GLTFLoader();
-          const texLoader = new THREE.TextureLoader();
+            const loader = new THREE.GLTFLoader();
+            const texLoader = new THREE.TextureLoader();
 
-          // 1. Load the textures natively in Three.js so we control the transparency
-          const texPost = texLoader.load("./imagebank/svpo/SVPO_POST.png");
-          const texRing = texLoader.load("./imagebank/svpo/SVPO_RING.png");
-          const texMan = texLoader.load("./imagebank/svpo/SVPO_MAN.png");
+            const texPost = texLoader.load('./imagebank/svpo/SVPO_POST.png');
+            const texRing = texLoader.load('./imagebank/svpo/SVPO_RING.png');
+            const texMan  = texLoader.load('./imagebank/svpo/SVPO_MAN.png');
 
-          // 2. Create an indestructible, glowing gold material
-          function makeGoldMat(tex) {
-            return new THREE.MeshBasicMaterial({
-              map: tex,
-              color: 0xffcc44, // Bright warm gold
-              transparent: true,
-              side: THREE.DoubleSide, // Ensure it's visible from all angles
-              alphaTest: 0.1, // Cuts out the invisible background perfectly
+            // The Brute Force Painter
+            function applyGoldMat(mesh) {
+                let tex = null;
+                const name = mesh.name.toUpperCase();
+
+                // Assign textures by partial match to bypass Blender's secret prefixes
+                if (name.includes('POST')) tex = texPost;
+                else if (name.includes('RING')) tex = texRing;
+                else if (name.includes('MAN')) tex = texMan;
+                else tex = texPost; // Fallback
+
+                mesh.material = new THREE.MeshBasicMaterial({
+                    map: tex,
+                    color: 0xffcc44, // Bright warm gold
+                    transparent: true,
+                    side: THREE.DoubleSide, // Force visibility from all sides
+                    alphaTest: 0.1 // Cut out the transparent PNG background
+                });
+            }
+
+            // The Cache Buster: Forces the browser to grab your new, fixed GLB file
+            const timestamp = new Date().getTime();
+
+            loader.load('./imagebank/svpo/SVPO_MASTER.glb?v=' + timestamp, function(gltf) {
+                const svpo = gltf.scene;
+
+                // 1. Traverse and brutally override EVERY material in the file
+                svpo.traverse((child) => {
+                    if (child.isMesh) {
+                        applyGoldMat(child);
+                    }
+                });
+
+                // 2. Map the physics trackers using partial name matches
+                svpo.traverse((child) => {
+                    if (!child.isMesh) return;
+                    const name = child.name.toUpperCase();
+                    if (name.includes('POST')) svpoPost = child;
+                    if (name.includes('RING')) svpoRing = child;
+                    if (name.includes('MAN'))  svpoMan  = child;
+                });
+
+                svpo.position.set(0, 0, 0);
+                svpo.scale.set(0.35, 0.35, 0.35);
+
+                svpoGroup.add(svpo);
+                console.log("SVPO Successfully Brute-Forced into Engine.");
             });
-          }
+        }
 
           loader.load("./imagebank/svpo/SVPO_MASTER.glb", function (gltf) {
             const svpo = gltf.scene;
