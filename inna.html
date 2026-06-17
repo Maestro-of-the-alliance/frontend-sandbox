@@ -309,22 +309,13 @@
 
         // ── SCENE SETUP ──
         const canvas = document.getElementById("innaCanvas");
-        const renderer = new THREE.WebGLRenderer({
-          canvas,
-          antialias: true,
-          alpha: true,
-        });
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setClearColor(0x020205, 1);
 
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(
-          55,
-          window.innerWidth / window.innerHeight,
-          0.1,
-          1000,
-        );
+        const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, 0, 3.8);
 
         const ambient = new THREE.AmbientLight(0xffffff, 0.7);
@@ -380,9 +371,7 @@
 
         async function buildCoins() {
           const texLoader = new THREE.TextureLoader();
-          function loadTex(url) {
-            return new Promise((resolve) => texLoader.load(url, resolve, undefined, () => resolve(null)));
-          }
+          function loadTex(url) { return new Promise((resolve) => texLoader.load(url, resolve, undefined, () => resolve(null))); }
 
           for (let i = 0; i < ENTRIES.length; i++) {
             const entry = ENTRIES[i];
@@ -396,129 +385,100 @@
 
             const edgeMat = new THREE.MeshStandardMaterial({
               color: entry.dormant ? 0x222228 : dimColor,
-              metalness: 0.9,
-              roughness: 0.1,
+              metalness: 0.9, roughness: 0.1,
               emissive: entry.dormant ? 0x000000 : dimColor,
               emissiveIntensity: entry.dormant ? 0 : 0.5,
             });
 
             const frontMat = new THREE.MeshStandardMaterial({
               color: texF ? 0xffffff : entry.dormant ? 0x111118 : 0x1a1a24,
-              metalness: 0.5,
-              roughness: 0.4,
-              map: texF || null,
-              transparent: !!texF,
-              emissive: texF ? 0x000000 : dimColor,
-              emissiveIntensity: texF ? 0 : 0.04,
+              metalness: 0.5, roughness: 0.4, map: texF || null, transparent: !!texF,
+              emissive: texF ? 0x000000 : dimColor, emissiveIntensity: texF ? 0 : 0.04,
             });
 
             const backMat = new THREE.MeshStandardMaterial({
               color: texB ? 0xffffff : entry.dormant ? 0x111118 : 0x1a1a24,
-              metalness: 0.5,
-              roughness: 0.4,
-              map: texB || null,
-              transparent: !!texB,
-              emissive: texB ? 0x000000 : dimColor,
-              emissiveIntensity: texB ? 0 : 0.04,
+              metalness: 0.5, roughness: 0.4, map: texB || null, transparent: !!texB,
+              emissive: texB ? 0x000000 : dimColor, emissiveIntensity: texB ? 0 : 0.04,
             });
 
             const geo = new THREE.CylinderGeometry(COIN_RADIUS, COIN_RADIUS, COIN_HEIGHT, 64);
-
             const uv = geo.attributes.uv;
             const pos3 = geo.attributes.position;
             for (let v = 0; v < pos3.count; v++) {
-              const x = pos3.getX(v);
-              const y = pos3.getY(v);
-              const z = pos3.getZ(v);
-              if (Math.abs(Math.abs(y) - COIN_HEIGHT / 2) < 0.001) {
-                uv.setXY(v, (x / COIN_RADIUS) * 0.5 + 0.5, (z / COIN_RADIUS) * 0.5 + 0.5);
-              }
+              const x = pos3.getX(v), y = pos3.getY(v), z = pos3.getZ(v);
+              if (Math.abs(Math.abs(y) - COIN_HEIGHT / 2) < 0.001) uv.setXY(v, (x / COIN_RADIUS) * 0.5 + 0.5, (z / COIN_RADIUS) * 0.5 + 0.5);
             }
             uv.needsUpdate = true;
 
             const coin = new THREE.Mesh(geo, [edgeMat, frontMat, backMat]);
-            coin.position.copy(pos);
-            coin.lookAt(0, 0, 0);
-            coin.rotateX(Math.PI / 2);
+            coin.position.copy(pos); coin.lookAt(0, 0, 0); coin.rotateX(Math.PI / 2);
 
             const glowGeo = new THREE.SphereGeometry(COIN_RADIUS * 1.3, 12, 12);
-            const glowMat = new THREE.MeshBasicMaterial({
-              color: dimColor,
-              transparent: true,
-              opacity: entry.dormant ? 0.015 : 0.03,
-            });
-            const glowMesh = new THREE.Mesh(glowGeo, glowMat);
-            glowMesh.position.copy(pos);
+            const glowMat = new THREE.MeshBasicMaterial({ color: dimColor, transparent: true, opacity: entry.dormant ? 0.015 : 0.03 });
+            const glowMesh = new THREE.Mesh(glowGeo, glowMat); glowMesh.position.copy(pos);
 
-            coinGroup.add(coin);
-            coinGroup.add(glowMesh);
-
+            coinGroup.add(coin); coinGroup.add(glowMesh);
             const record = { mesh: coin, glowMesh, entry, index: i, baseGlow: entry.dormant ? 0.015 : 0.03 };
-            coinMeshes.push(record);
-            nodeMap[entry.id] = record;
+            coinMeshes.push(record); nodeMap[entry.id] = record;
           }
         }
 
         function buildEdges() {
           for (const conn of CONNECTIONS) {
-            const fromNode = nodeMap[conn.from];
-            const toNode = nodeMap[conn.to];
+            const fromNode = nodeMap[conn.from], toNode = nodeMap[conn.to];
             if (!fromNode || !toNode) continue;
-
-            const fromPos = fromNode.mesh.position;
-            const toPos = toNode.mesh.position;
+            const fromPos = fromNode.mesh.position, toPos = toNode.mesh.position;
             const mid = fromPos.clone().add(toPos).multiplyScalar(0.5).normalize().multiplyScalar(SPHERE_RADIUS * 1.04);
             const curve = new THREE.CatmullRomCurve3([fromPos.clone(), mid, toPos.clone()]);
             const pts = curve.getPoints(32);
             const geom = new THREE.BufferGeometry().setFromPoints(pts);
             const edgeHex = parseInt((EDGE_COLORS[conn.type] || "#555566").replace("#", ""), 16);
             const mat = new THREE.LineBasicMaterial({ color: edgeHex, transparent: true, opacity: 0.15 });
-            const line = new THREE.Line(geom, mat);
-            line.userData = { conn, fromNode, toNode };
-            edgeGroup.add(line);
+            const line = new THREE.Line(geom, mat); line.userData = { conn, fromNode, toNode }; edgeGroup.add(line);
           }
         }
 
-        // ── GLB INGESTION (BRUTE FORCE EDITION) ──
+        // ── GLB INGESTION (DEPTH-FIXED METALLIC EDITION) ──
         function buildSVPO() {
             if (typeof THREE.GLTFLoader === "undefined") {
-                console.error("GLTFLoader not found.");
-                return;
+                console.error("GLTFLoader not found."); return;
             }
             
             const loader = new THREE.GLTFLoader();
             const texLoader = new THREE.TextureLoader();
+            const timestamp = new Date().getTime(); // Forces fresh download of everything
 
-            const texPost = texLoader.load('./imagebank/svpo/SVPO_POST.png');
-            const texRing = texLoader.load('./imagebank/svpo/SVPO_RING.png');
-            const texMan  = texLoader.load('./imagebank/svpo/SVPO_MAN.png');
+            const texPost = texLoader.load('./imagebank/svpo/SVPO_POST.png?v=' + timestamp);
+            const texRing = texLoader.load('./imagebank/svpo/SVPO_RING.png?v=' + timestamp);
+            const texMan  = texLoader.load('./imagebank/svpo/SVPO_MAN.png?v=' + timestamp);
 
             function applyGoldMat(mesh) {
                 let tex = null;
                 const name = mesh.name.toUpperCase();
-                
                 if (name.includes('POST')) tex = texPost;
                 else if (name.includes('RING')) tex = texRing;
                 else if (name.includes('MAN')) tex = texMan;
                 else tex = texPost; 
 
-                mesh.material = new THREE.MeshBasicMaterial({
+                mesh.material = new THREE.MeshStandardMaterial({
                     map: tex,
-                    color: 0xffcc44, 
-                    transparent: true,
-                    side: THREE.DoubleSide, 
-                    alphaTest: 0.1 
+                    color: 0xffcc44,       
+                    metalness: 0.9,        
+                    roughness: 0.15,       
+                    emissive: 0xffaa00,    
+                    emissiveIntensity: 0.2,
+                    transparent: false,    // Fixes overlap/depth-sorting glitch
+                    alphaTest: 0.5,        // Forces a clean cutout using the pure white PNGs
+                    side: THREE.DoubleSide 
                 });
             }
 
-            const timestamp = new Date().getTime();
             loader.load('./imagebank/svpo/SVPO_MASTER.glb?v=' + timestamp, function(gltf) {
                 const svpo = gltf.scene;
                 
                 svpo.traverse((child) => {
-                    if (child.isMesh) {
-                        applyGoldMat(child);
-                    }
+                    if (child.isMesh) applyGoldMat(child);
                 });
                 
                 svpo.traverse((child) => {
@@ -531,472 +491,175 @@
                 
                 svpo.position.set(0, 0, 0); 
                 svpo.scale.set(0.35, 0.35, 0.35); 
-                
                 svpoGroup.add(svpo);
                 console.log("SVPO Successfully Brute-Forced into Engine.");
             });
         }
 
         // ── INTERACTION ──
-        let isDragging = false;
-        let prevMouse = { x: 0, y: 0 };
-        let sphereVelocity = { x: 0, y: 0 };
-        let sphereRotation = { x: 0, y: 0 };
+        let isDragging = false; let prevMouse = { x: 0, y: 0 };
+        let sphereVelocity = { x: 0, y: 0 }; let sphereRotation = { x: 0, y: 0 };
 
         canvas.addEventListener("mousedown", (e) => {
-          isDragging = true;
-          prevMouse = { x: e.clientX, y: e.clientY };
-          sphereVelocity = { x: 0, y: 0 };
+          isDragging = true; prevMouse = { x: e.clientX, y: e.clientY }; sphereVelocity = { x: 0, y: 0 };
         });
         
         canvas.addEventListener("mousemove", (e) => {
           if (isDragging) {
-            const dx = e.clientX - prevMouse.x;
-            const dy = e.clientY - prevMouse.y;
-            
-            sphereVelocity.x = dy * 0.003;
-            sphereVelocity.y = dx * 0.003;
-            sphereRotation.x += dy * 0.003;
-            sphereRotation.y += dx * 0.003;
+            const dx = e.clientX - prevMouse.x; const dy = e.clientY - prevMouse.y;
+            sphereVelocity.x = dy * 0.003; sphereVelocity.y = dx * 0.003;
+            sphereRotation.x += dy * 0.003; sphereRotation.y += dx * 0.003;
             prevMouse = { x: e.clientX, y: e.clientY };
             
-            pendulumVelocity.x += dy * 0.005; 
-            pendulumVelocity.z -= dx * 0.005; 
-            ringVelocity += dx * 0.02;     
-            postRotation += dx * 0.005;    
+            pendulumVelocity.x += dy * 0.005; pendulumVelocity.z -= dx * 0.005; 
+            ringVelocity += dx * 0.02; postRotation += dx * 0.005;    
           }
-          
           const rect = canvas.getBoundingClientRect();
-          mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-          mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+          mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1; mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
           doHover(e.clientX, e.clientY);
         });
         
         canvas.addEventListener("mouseup", () => { isDragging = false; });
         canvas.addEventListener("mouseleave", () => { isDragging = false; tooltip.classList.remove("visible"); });
-        
-        canvas.addEventListener("wheel", (e) => {
-            e.preventDefault();
-            camera.position.z = Math.max(1.5, Math.min(6, camera.position.z + e.deltaY * 0.003));
-          }, { passive: false });
+        canvas.addEventListener("wheel", (e) => { e.preventDefault(); camera.position.z = Math.max(1.5, Math.min(6, camera.position.z + e.deltaY * 0.003)); }, { passive: false });
           
         canvas.addEventListener("click", (e) => {
           const rect = canvas.getBoundingClientRect();
-          mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-          mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+          mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1; mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
           raycaster.setFromCamera(mouse, camera);
           const hits = raycaster.intersectObjects(coinMeshes.map((c) => c.mesh));
-          if (hits.length > 0) {
-            const hit = coinMeshes.find((c) => c.mesh === hits[0].object);
-            if (hit) openEntryPanel(hit);
-          }
+          if (hits.length > 0) { const hit = coinMeshes.find((c) => c.mesh === hits[0].object); if (hit) openEntryPanel(hit); }
         });
 
-        canvas.addEventListener("touchstart", (e) => {
-            isDragging = true;
-            prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-            sphereVelocity = { x: 0, y: 0 };
-          }, { passive: true });
-          
+        canvas.addEventListener("touchstart", (e) => { isDragging = true; prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY }; sphereVelocity = { x: 0, y: 0 }; }, { passive: true });
         canvas.addEventListener("touchmove", (e) => {
             if (!isDragging) return;
-            const dx = e.touches[0].clientX - prevMouse.x;
-            const dy = e.touches[0].clientY - prevMouse.y;
-            
-            sphereVelocity.x = dy * 0.003;
-            sphereVelocity.y = dx * 0.003;
-            sphereRotation.x += dy * 0.003;
-            sphereRotation.y += dx * 0.003;
+            const dx = e.touches[0].clientX - prevMouse.x; const dy = e.touches[0].clientY - prevMouse.y;
+            sphereVelocity.x = dy * 0.003; sphereVelocity.y = dx * 0.003; sphereRotation.x += dy * 0.003; sphereRotation.y += dx * 0.003;
             prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-            
-            pendulumVelocity.x += dy * 0.005; 
-            pendulumVelocity.z -= dx * 0.005; 
-            ringVelocity += dx * 0.02;     
-            postRotation += dx * 0.005;    
+            pendulumVelocity.x += dy * 0.005; pendulumVelocity.z -= dx * 0.005; ringVelocity += dx * 0.02; postRotation += dx * 0.005;    
           }, { passive: true });
-          
         canvas.addEventListener("touchend", () => { isDragging = false; });
 
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
-        const tooltip = document.getElementById("nodeTooltip");
-        let hoveredNode = null;
+        const raycaster = new THREE.Raycaster(); const mouse = new THREE.Vector2(); const tooltip = document.getElementById("nodeTooltip"); let hoveredNode = null;
 
         function doHover(cx, cy) {
-          raycaster.setFromCamera(mouse, camera);
-          const hits = raycaster.intersectObjects(coinMeshes.map((c) => c.mesh));
+          raycaster.setFromCamera(mouse, camera); const hits = raycaster.intersectObjects(coinMeshes.map((c) => c.mesh));
           if (hits.length > 0) {
             const hit = coinMeshes.find((c) => c.mesh === hits[0].object);
-            if (hit !== hoveredNode) {
-              if (hoveredNode) hoveredNode.glowMesh.material.opacity = hoveredNode.baseGlow;
-              hoveredNode = hit;
-              hit.glowMesh.material.opacity = 0.2;
-              canvas.style.cursor = "pointer";
-            }
-            tooltip.textContent = hit.entry.name;
-            tooltip.style.left = cx + 16 + "px";
-            tooltip.style.top = cy - 8 + "px";
-            tooltip.classList.add("visible");
+            if (hit !== hoveredNode) { if (hoveredNode) hoveredNode.glowMesh.material.opacity = hoveredNode.baseGlow; hoveredNode = hit; hit.glowMesh.material.opacity = 0.2; canvas.style.cursor = "pointer"; }
+            tooltip.textContent = hit.entry.name; tooltip.style.left = cx + 16 + "px"; tooltip.style.top = cy - 8 + "px"; tooltip.classList.add("visible");
           } else {
-            if (hoveredNode) {
-              hoveredNode.glowMesh.material.opacity = hoveredNode.baseGlow;
-              hoveredNode = null;
-            }
-            canvas.style.cursor = isDragging ? "grabbing" : "grab";
-            tooltip.classList.remove("visible");
+            if (hoveredNode) { hoveredNode.glowMesh.material.opacity = hoveredNode.baseGlow; hoveredNode = null; }
+            canvas.style.cursor = isDragging ? "grabbing" : "grab"; tooltip.classList.remove("visible");
           }
         }
 
         // ── PANEL ──
-        const panel = document.getElementById("entryPanel");
-        const backBtn = document.getElementById("backBtn");
-        let selectedNode = null;
+        const panel = document.getElementById("entryPanel"); const backBtn = document.getElementById("backBtn"); let selectedNode = null;
 
         function openEntryPanel(node) {
-          selectedNode = node;
-          const entry = node.entry;
-          const primaryDim = entry.dims[0];
-          const dimColor = DIM_COLORS[primaryDim] || "#888888";
-
-          document.getElementById("panelClassBadge").textContent = entry.dims.join(" · ");
-          document.getElementById("panelClassBadge").style.color = dimColor;
-          document.getElementById("panelEntryName").textContent = entry.name;
-          document.getElementById("panelDimLabel").textContent = entry.dormant ? "— ENTRY PENDING —" : "NCE ENTRY";
-
-          const front = document.getElementById("coinFront");
-          const back = document.getElementById("coinBack");
-          front.style.borderColor = dimColor + "44";
-          back.style.borderColor = dimColor + "44";
-
-          if (entry.dormant) {
-            front.innerHTML = `<span style="color:${dimColor};opacity:0.4;font-size:18px">◌</span><span>PENDING</span>`;
-            back.innerHTML = `<span style="color:${dimColor};opacity:0.4;font-size:18px">◌</span><span>PENDING</span>`;
-          } else {
-            front.innerHTML = `<img src="imagebank/symbols/${entry.id}_F.png" onerror="this.style.display='none'" />`;
-            back.innerHTML = `<img src="imagebank/symbols/${entry.id}_B.png" onerror="this.style.display='none'" />`;
-          }
-
-          const connList = document.getElementById("connList");
-          connList.innerHTML = "";
+          selectedNode = node; const entry = node.entry; const primaryDim = entry.dims[0]; const dimColor = DIM_COLORS[primaryDim] || "#888888";
+          document.getElementById("panelClassBadge").textContent = entry.dims.join(" · "); document.getElementById("panelClassBadge").style.color = dimColor;
+          document.getElementById("panelEntryName").textContent = entry.name; document.getElementById("panelDimLabel").textContent = entry.dormant ? "— ENTRY PENDING —" : "NCE ENTRY";
+          const front = document.getElementById("coinFront"), back = document.getElementById("coinBack"); front.style.borderColor = dimColor + "44"; back.style.borderColor = dimColor + "44";
+          if (entry.dormant) { front.innerHTML = `<span style="color:${dimColor};opacity:0.4;font-size:18px">◌</span><span>PENDING</span>`; back.innerHTML = `<span style="color:${dimColor};opacity:0.4;font-size:18px">◌</span><span>PENDING</span>`; } else { front.innerHTML = `<img src="imagebank/symbols/${entry.id}_F.png" onerror="this.style.display='none'" />`; back.innerHTML = `<img src="imagebank/symbols/${entry.id}_B.png" onerror="this.style.display='none'" />`; }
+          const connList = document.getElementById("connList"); connList.innerHTML = "";
           const conns = CONNECTIONS.filter((c) => c.from === entry.id || c.to === entry.id);
-          if (conns.length === 0) {
-            connList.innerHTML = `<div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,255,255,0.2);letter-spacing:0.3em;">NO CONNECTIONS MAPPED YET</div>`;
-          } else {
-            conns.forEach((conn) => {
-              const otherId = conn.from === entry.id ? conn.to : conn.from;
-              const other = ENTRIES.find((e) => e.id === otherId);
-              if (!other) return;
-              const edgeColor = EDGE_COLORS[conn.type] || "#888888";
-              const item = document.createElement("div");
-              item.className = "conn-item";
-              item.innerHTML = `<div class="conn-dot" style="background:${edgeColor}"></div><span>${other.name}</span><span class="conn-type">${conn.type}</span>`;
-              item.addEventListener("click", () => {
-                const t = nodeMap[otherId];
-                if (t) openEntryPanel(t);
-              });
-              connList.appendChild(item);
-            });
-          }
-
-          document.getElementById("panelReadBtn").href = entry.path;
-          panel.classList.add("open");
-          backBtn.classList.add("visible");
-          highlightConnected(entry.id);
+          if (conns.length === 0) { connList.innerHTML = `<div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,255,255,0.2);letter-spacing:0.3em;">NO CONNECTIONS MAPPED YET</div>`; } else { conns.forEach((conn) => { const otherId = conn.from === entry.id ? conn.to : conn.from; const other = ENTRIES.find((e) => e.id === otherId); if (!other) return; const edgeColor = EDGE_COLORS[conn.type] || "#888888"; const item = document.createElement("div"); item.className = "conn-item"; item.innerHTML = `<div class="conn-dot" style="background:${edgeColor}"></div><span>${other.name}</span><span class="conn-type">${conn.type}</span>`; item.addEventListener("click", () => { const t = nodeMap[otherId]; if (t) openEntryPanel(t); }); connList.appendChild(item); }); }
+          document.getElementById("panelReadBtn").href = entry.path; panel.classList.add("open"); backBtn.classList.add("visible"); highlightConnected(entry.id);
         }
 
-        document.getElementById("panelClose").addEventListener("click", closePanel);
-        backBtn.addEventListener("click", closePanel);
-
-        function closePanel() {
-          panel.classList.remove("open");
-          backBtn.classList.remove("visible");
-          selectedNode = null;
-          resetEdges();
-        }
+        document.getElementById("panelClose").addEventListener("click", closePanel); backBtn.addEventListener("click", closePanel);
+        function closePanel() { panel.classList.remove("open"); backBtn.classList.remove("visible"); selectedNode = null; resetEdges(); }
 
         function highlightConnected(entryId) {
-          edgeGroup.children.forEach((l) => (l.material.opacity = 0.03));
-          coinMeshes.forEach((n) => { n.glowMesh.material.opacity = 0.008; });
-          
+          edgeGroup.children.forEach((l) => (l.material.opacity = 0.03)); coinMeshes.forEach((n) => { n.glowMesh.material.opacity = 0.008; });
           const connectedIds = new Set();
-          edgeGroup.children.forEach((l) => {
-            const conn = l.userData.conn;
-            if (conn && (conn.from === entryId || conn.to === entryId)) {
-              l.material.opacity = 0.75;
-              connectedIds.add(conn.from === entryId ? conn.to : conn.from);
-            }
-          });
-          connectedIds.forEach((id) => {
-            const n = nodeMap[id];
-            if (n) n.glowMesh.material.opacity = 0.25;
-          });
-          const self = nodeMap[entryId];
-          if (self) self.glowMesh.material.opacity = 0.35;
+          edgeGroup.children.forEach((l) => { const conn = l.userData.conn; if (conn && (conn.from === entryId || conn.to === entryId)) { l.material.opacity = 0.75; connectedIds.add(conn.from === entryId ? conn.to : conn.from); } });
+          connectedIds.forEach((id) => { const n = nodeMap[id]; if (n) n.glowMesh.material.opacity = 0.25; });
+          const self = nodeMap[entryId]; if (self) self.glowMesh.material.opacity = 0.35;
         }
 
-        function resetEdges() {
-          edgeGroup.children.forEach((l) => (l.material.opacity = 0.15));
-          coinMeshes.forEach((n) => { if (n.mesh.visible) n.glowMesh.material.opacity = n.baseGlow; });
-        }
+        function resetEdges() { edgeGroup.children.forEach((l) => (l.material.opacity = 0.15)); coinMeshes.forEach((n) => { if (n.mesh.visible) n.glowMesh.material.opacity = n.baseGlow; }); }
 
         let activeFilter = "ALL";
-        document.querySelectorAll(".filter-btn").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
-            btn.classList.add("active");
-            activeFilter = btn.dataset.dim;
-            applyFilter(activeFilter);
-          });
-        });
+        document.querySelectorAll(".filter-btn").forEach((btn) => { btn.addEventListener("click", () => { document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active")); btn.classList.add("active"); activeFilter = btn.dataset.dim; applyFilter(activeFilter); }); });
 
         function applyFilter(dim) {
-          coinMeshes.forEach((node) => {
-            const match = dim === "ALL" || node.entry.dims.includes(dim);
-            if (match) {
-              node.mesh.material.forEach && node.mesh.material.forEach((m) => { if (m) m.opacity = undefined; });
-              node.glowMesh.material.opacity = dim === "ALL" ? node.baseGlow : 0.2;
-            } else {
-              node.glowMesh.material.opacity = 0.005;
-            }
-          });
-
-          edgeGroup.children.forEach((line) => {
-            const conn = line.userData.conn;
-            if (!conn || dim === "ALL") {
-              line.material.opacity = 0.15;
-              return;
-            }
-            const fromMatch = nodeMap[conn.from]?.entry.dims.includes(dim);
-            const toMatch = nodeMap[conn.to]?.entry.dims.includes(dim);
-            line.material.opacity = fromMatch || toMatch ? 0.35 : 0.03;
-          });
-
-          const count = dim === "ALL" ? ENTRIES.length : ENTRIES.filter((e) => e.dims.includes(dim)).length;
-          document.getElementById("countNum").textContent = count;
+          coinMeshes.forEach((node) => { const match = dim === "ALL" || node.entry.dims.includes(dim); if (match) { node.mesh.material.forEach && node.mesh.material.forEach((m) => { if (m) m.opacity = undefined; }); node.glowMesh.material.opacity = dim === "ALL" ? node.baseGlow : 0.2; } else { node.glowMesh.material.opacity = 0.005; } });
+          edgeGroup.children.forEach((line) => { const conn = line.userData.conn; if (!conn || dim === "ALL") { line.material.opacity = 0.15; return; } const fromMatch = nodeMap[conn.from]?.entry.dims.includes(dim); const toMatch = nodeMap[conn.to]?.entry.dims.includes(dim); line.material.opacity = fromMatch || toMatch ? 0.35 : 0.03; });
+          const count = dim === "ALL" ? ENTRIES.length : ENTRIES.filter((e) => e.dims.includes(dim)).length; document.getElementById("countNum").textContent = count;
         }
 
         // ── ANIMATION ──
-        const clock = new THREE.Clock();
-        let arrived = false;
-        let arrivalTimer = 0;
+        const clock = new THREE.Clock(); let arrived = false; let arrivalTimer = 0;
 
         function animate() {
-          requestAnimationFrame(animate);
-          const delta = clock.getDelta();
-          const elapsed = clock.getElapsedTime();
+          requestAnimationFrame(animate); const delta = clock.getDelta(); const elapsed = clock.getElapsedTime();
+          if (!arrived) { arrivalTimer += delta; if (arrivalTimer >= 1.618) arrived = true; else { renderer.render(scene, camera); return; } }
 
-          if (!arrived) {
-            arrivalTimer += delta;
-            if (arrivalTimer >= 1.618) arrived = true;
-            else {
-              renderer.render(scene, camera);
-              return;
-            }
-          }
+          if (!isDragging) { sphereVelocity.x *= 0.94; sphereVelocity.y *= 0.94; sphereRotation.x += sphereVelocity.x; sphereRotation.y += sphereVelocity.y; const spd = Math.sqrt(sphereVelocity.x ** 2 + sphereVelocity.y ** 2); if (spd < 0.001) sphereRotation.y += 0.0008; }
+          coinGroup.rotation.x = sphereRotation.x; coinGroup.rotation.y = sphereRotation.y; edgeGroup.rotation.x = sphereRotation.x; edgeGroup.rotation.y = sphereRotation.y;
 
-          if (!isDragging) {
-            sphereVelocity.x *= 0.94;
-            sphereVelocity.y *= 0.94;
-            sphereRotation.x += sphereVelocity.x;
-            sphereRotation.y += sphereVelocity.y;
-            const spd = Math.sqrt(sphereVelocity.x ** 2 + sphereVelocity.y ** 2);
-            if (spd < 0.001) sphereRotation.y += 0.0008;
-          }
-
-          coinGroup.rotation.x = sphereRotation.x;
-          coinGroup.rotation.y = sphereRotation.y;
-          edgeGroup.rotation.x = sphereRotation.x;
-          edgeGroup.rotation.y = sphereRotation.y;
-
-          // ── KINEMATIC SVPO PHYSICS ──
+          // ── KINEMATIC SVPO PHYSICS (Heat Miser Style) ──
           if (svpoPost && svpoRing) {
-              svpoPost.rotation.x += pendulumVelocity.x;
-              svpoPost.rotation.z += pendulumVelocity.z;
-              
-              pendulumVelocity.x -= svpoPost.rotation.x * 0.05;
-              pendulumVelocity.z -= svpoPost.rotation.z * 0.05;
-              
-              pendulumVelocity.x *= 0.92;
-              pendulumVelocity.z *= 0.92;
-
-              svpoPost.rotation.y += postRotation;
-              postRotation *= 0.95;
-
-              svpoRing.rotation.y += ringVelocity;
-              ringVelocity *= 0.98;
+              svpoPost.rotation.x += pendulumVelocity.x; svpoPost.rotation.z += pendulumVelocity.z;
+              pendulumVelocity.x -= svpoPost.rotation.x * 0.05; pendulumVelocity.z -= svpoPost.rotation.z * 0.05;
+              pendulumVelocity.x *= 0.92; pendulumVelocity.z *= 0.92;
+              svpoPost.rotation.y += postRotation; postRotation *= 0.95;
+              svpoRing.rotation.y += ringVelocity; ringVelocity *= 0.98;
               
               const time = Date.now() * 0.001;
-              svpoPost.rotation.x += Math.sin(time * 0.5) * 0.001;
-              svpoPost.rotation.z += Math.cos(time * 0.3) * 0.001;
-              svpoRing.rotation.y += 0.002; 
+              svpoPost.rotation.x += Math.sin(time * 0.5) * 0.001; svpoPost.rotation.z += Math.cos(time * 0.3) * 0.001;
+              svpoRing.rotation.y += 0.002; // Constant slow spin of the ring
           }
 
           centerLight.intensity = 1.2 + Math.sin(elapsed * 0.6) * 0.3;
           renderer.render(scene, camera);
         }
 
-        window.addEventListener("resize", () => {
-          camera.aspect = window.innerWidth / window.innerHeight;
-          camera.updateProjectionMatrix();
-          renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        async function init() {
-          await buildCoins();
-          buildEdges();
-          buildSVPO(); 
-          clock.start();
-          animate();
-        }
+        window.addEventListener("resize", () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+        async function init() { await buildCoins(); buildEdges(); buildSVPO(); clock.start(); animate(); }
 
         // ═══════════════════════════════════════════════════
         // WORD CLOUD
         // ═══════════════════════════════════════════════════
 
-        const cloudLayer = document.getElementById("cloudLayer");
-        let cloudWords = []; 
-        let cloudMode = false;
-        let cloudSelected = null;
-        let cloudAnimFrame = null;
-
-        const connCount = {};
-        ENTRIES.forEach((e) => { connCount[e.id] = 0; });
-        CONNECTIONS.forEach((c) => {
-          if (connCount[c.from] !== undefined) connCount[c.from]++;
-          if (connCount[c.to] !== undefined) connCount[c.to]++;
-        });
+        const cloudLayer = document.getElementById("cloudLayer"); let cloudWords = []; let cloudMode = false; let cloudSelected = null; let cloudAnimFrame = null;
+        const connCount = {}; ENTRIES.forEach((e) => { connCount[e.id] = 0; }); CONNECTIONS.forEach((c) => { if (connCount[c.from] !== undefined) connCount[c.from]++; if (connCount[c.to] !== undefined) connCount[c.to]++; });
         const maxConn = Math.max(...Object.values(connCount));
 
         function buildCloud() {
-          cloudLayer.innerHTML = "";
-          cloudWords = [];
-
-          const W = window.innerWidth;
-          const H = window.innerHeight;
-
+          cloudLayer.innerHTML = ""; cloudWords = []; const W = window.innerWidth; const H = window.innerHeight;
           ENTRIES.forEach((entry) => {
-            const el = document.createElement("div");
-            el.className = "cloud-word";
-            el.textContent = entry.name;
-            const primaryDim = entry.dims[0];
-            el.style.color = DIM_COLORS[primaryDim] || "#888888";
-
-            const ratio = (connCount[entry.id] || 0) / maxConn;
-            const size = 9 + ratio * 13;
-            el.style.fontSize = size + "px";
-
-            let x, y;
-            do {
-              x = 0.08 + Math.random() * 0.84;
-              y = 0.08 + Math.random() * 0.84;
-            } while (Math.abs(x - 0.5) < 0.15 && Math.abs(y - 0.5) < 0.15);
-
-            el.style.left = x * W + "px";
-            el.style.top = y * H + "px";
-
-            const vx = (Math.random() - 0.5) * 0.12;
-            const vy = (Math.random() - 0.5) * 0.08;
-
-            el.addEventListener("click", () => selectCloudWord(entry.id));
-            el.addEventListener("dblclick", () => jumpToNode(entry.id));
-
-            cloudLayer.appendChild(el);
-            cloudWords.push({ el, entry, x: x * W, y: y * H, baseSize: size, vx, vy });
+            const el = document.createElement("div"); el.className = "cloud-word"; el.textContent = entry.name; const primaryDim = entry.dims[0]; el.style.color = DIM_COLORS[primaryDim] || "#888888";
+            const ratio = (connCount[entry.id] || 0) / maxConn; const size = 9 + ratio * 13; el.style.fontSize = size + "px";
+            let x, y; do { x = 0.08 + Math.random() * 0.84; y = 0.08 + Math.random() * 0.84; } while (Math.abs(x - 0.5) < 0.15 && Math.abs(y - 0.5) < 0.15);
+            el.style.left = x * W + "px"; el.style.top = y * H + "px";
+            const vx = (Math.random() - 0.5) * 0.12; const vy = (Math.random() - 0.5) * 0.08;
+            el.addEventListener("click", () => selectCloudWord(entry.id)); el.addEventListener("dblclick", () => jumpToNode(entry.id));
+            cloudLayer.appendChild(el); cloudWords.push({ el, entry, x: x * W, y: y * H, baseSize: size, vx, vy });
           });
         }
 
         function selectCloudWord(entryId) {
-          cloudSelected = entryId;
-          const connectedIds = new Set(CONNECTIONS.filter((c) => c.from === entryId || c.to === entryId).map((c) => (c.from === entryId ? c.to : c.from)));
-
-          cloudWords.forEach((w) => {
-            w.el.classList.remove("selected", "connected", "dimmed");
-            if (w.entry.id === entryId) {
-              w.el.classList.add("selected");
-              w.el.style.fontSize = w.baseSize * 1.8 + "px";
-            } else if (connectedIds.has(w.entry.id)) {
-              w.el.classList.add("connected");
-              w.el.style.fontSize = w.baseSize * 1.25 + "px";
-            } else {
-              w.el.classList.add("dimmed");
-              w.el.style.fontSize = w.baseSize + "px";
-            }
-          });
-
-          const node = nodeMap[entryId];
-          if (node) openEntryPanel(node);
+          cloudSelected = entryId; const connectedIds = new Set(CONNECTIONS.filter((c) => c.from === entryId || c.to === entryId).map((c) => (c.from === entryId ? c.to : c.from)));
+          cloudWords.forEach((w) => { w.el.classList.remove("selected", "connected", "dimmed"); if (w.entry.id === entryId) { w.el.classList.add("selected"); w.el.style.fontSize = w.baseSize * 1.8 + "px"; } else if (connectedIds.has(w.entry.id)) { w.el.classList.add("connected"); w.el.style.fontSize = w.baseSize * 1.25 + "px"; } else { w.el.classList.add("dimmed"); w.el.style.fontSize = w.baseSize + "px"; } });
+          const node = nodeMap[entryId]; if (node) openEntryPanel(node);
         }
 
-        function jumpToNode(entryId) {
-          setMode("inna");
-          const node = nodeMap[entryId];
-          if (node) {
-            openEntryPanel(node);
-            const pos = node.mesh.position.clone();
-            const targetY = Math.atan2(pos.x, pos.z);
-            const targetX = -Math.asin(pos.y / SPHERE_RADIUS);
-            sphereRotation.y = targetY;
-            sphereRotation.x = targetX;
-            sphereVelocity = { x: 0, y: 0 };
-          }
-        }
+        function jumpToNode(entryId) { setMode("inna"); const node = nodeMap[entryId]; if (node) { openEntryPanel(node); const pos = node.mesh.position.clone(); const targetY = Math.atan2(pos.x, pos.z); const targetX = -Math.asin(pos.y / SPHERE_RADIUS); sphereRotation.y = targetY; sphereRotation.x = targetX; sphereVelocity = { x: 0, y: 0 }; } }
 
-        function animateCloud() {
-          if (!cloudMode) return;
-          const W = window.innerWidth;
-          const H = window.innerHeight;
-
-          cloudWords.forEach((w) => {
-            w.x += w.vx;
-            w.y += w.vy;
-            if (w.x < 20 || w.x > W - 20) w.vx *= -1;
-            if (w.y < 20 || w.y > H - 20) w.vy *= -1;
-            w.el.style.left = w.x + "px";
-            w.el.style.top = w.y + "px";
-          });
-
-          cloudAnimFrame = requestAnimationFrame(animateCloud);
-        }
+        function animateCloud() { if (!cloudMode) return; const W = window.innerWidth; const H = window.innerHeight; cloudWords.forEach((w) => { w.x += w.vx; w.y += w.vy; if (w.x < 20 || w.x > W - 20) w.vx *= -1; if (w.y < 20 || w.y > H - 20) w.vy *= -1; w.el.style.left = w.x + "px"; w.el.style.top = w.y + "px"; }); cloudAnimFrame = requestAnimationFrame(animateCloud); }
 
         function setMode(mode) {
-          cloudMode = mode === "cloud";
-          document.getElementById("btnINNA").classList.toggle("active", !cloudMode);
-          document.getElementById("btnCLOUD").classList.toggle("active", cloudMode);
-
-          if (cloudMode) {
-            buildCloud();
-            cloudLayer.style.opacity = "1";
-            cloudLayer.classList.add("visible");
-            coinGroup.traverse((c) => {
-              if (c.material) {
-                if (Array.isArray(c.material))
-                  c.material.forEach((m) => m && ((m.opacity = (m.opacity || 1) * 0.25), (m.transparent = true)));
-                else {
-                  c.material.opacity = (c.material.opacity || 1) * 0.25;
-                  c.material.transparent = true;
-                }
-              }
-            });
-            animateCloud();
-          } else {
-            cloudLayer.style.opacity = "0";
-            cloudLayer.classList.remove("visible");
-            cloudSelected = null;
-            if (cloudAnimFrame) {
-              cancelAnimationFrame(cloudAnimFrame);
-              cloudAnimFrame = null;
-            }
-            coinGroup.traverse((c) => {
-              if (c.material) {
-                if (Array.isArray(c.material)) c.material.forEach((m) => m && (m.opacity = 1));
-                else c.material.opacity = 1;
-              }
-            });
-          }
+          cloudMode = mode === "cloud"; document.getElementById("btnINNA").classList.toggle("active", !cloudMode); document.getElementById("btnCLOUD").classList.toggle("active", cloudMode);
+          if (cloudMode) { buildCloud(); cloudLayer.style.opacity = "1"; cloudLayer.classList.add("visible"); coinGroup.traverse((c) => { if (c.material) { if (Array.isArray(c.material)) c.material.forEach((m) => m && ((m.opacity = (m.opacity || 1) * 0.25), (m.transparent = true))); else { c.material.opacity = (c.material.opacity || 1) * 0.25; c.material.transparent = true; } } }); animateCloud(); } 
+          else { cloudLayer.style.opacity = "0"; cloudLayer.classList.remove("visible"); cloudSelected = null; if (cloudAnimFrame) { cancelAnimationFrame(cloudAnimFrame); cloudAnimFrame = null; } coinGroup.traverse((c) => { if (c.material) { if (Array.isArray(c.material)) c.material.forEach((m) => m && (m.opacity = 1)); else c.material.opacity = 1; } }); }
         }
 
-        document.getElementById("btnINNA").addEventListener("click", () => setMode("inna"));
-        document.getElementById("btnCLOUD").addEventListener("click", () => setMode("cloud"));
+        document.getElementById("btnINNA").addEventListener("click", () => setMode("inna")); document.getElementById("btnCLOUD").addEventListener("click", () => setMode("cloud"));
 
         init();
       } 
