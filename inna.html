@@ -619,23 +619,17 @@
          // ── SVPO PHYSICS (CLEAN REVOLVING DOOR) ──
           if (svpoPost && svpoRing) {
               // 1. Map horizontal mouse drag directly to the vertical spin
-              // If it spins backward, change the + to a -
               postRotation += (isDragging ? sphereVelocity.y * 2 : 0);
-              ringVelocity -= (isDragging ? sphereVelocity.y * 3 : 0); // Ring spins opposite/faster
+              ringVelocity -= (isDragging ? sphereVelocity.y * 3 : 0); 
               
-              // 2. Apply the spin to the Y-axis ONLY
+              // 2. Apply the spin to the Y-axis ONLY. 
+              // (We do not touch X or Z, allowing them to stay safely upright)
               svpoPost.rotation.y += postRotation;
               svpoRing.rotation.y += ringVelocity;
 
-              // 3. Friction (slows down smoothly when you let go)
+              // 3. Coasting Friction
               postRotation *= 0.95;
               ringVelocity *= 0.98;
-              
-              // 4. LOCK THE WOBBLE: Force X and Z axes to stay perfectly still
-              svpoPost.rotation.x = 0;
-              svpoPost.rotation.z = 0;
-              svpoRing.rotation.x = 0;
-              svpoRing.rotation.z = 0;
           }
 
           centerLight.intensity = 1.2 + Math.sin(elapsed * 0.6) * 0.3;
