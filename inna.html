@@ -439,7 +439,7 @@
           }
         }
 
-        // ── GLB INGESTION (DEPTH-FIXED METALLIC EDITION) ──
+      // ── GLB INGESTION (THE SHREDDER + MICRO-DIALS EDITION) ──
         function buildSVPO() {
             if (typeof THREE.GLTFLoader === "undefined") {
                 console.error("GLTFLoader not found."); return;
@@ -447,12 +447,14 @@
             
             const loader = new THREE.GLTFLoader();
             const texLoader = new THREE.TextureLoader();
-            const timestamp = new Date().getTime(); // Forces fresh download of everything
+            const timestamp = new Date().getTime(); 
 
+            // Force cache dump for the new white PNGs
             const texPost = texLoader.load('./imagebank/svpo/SVPO_POST.png?v=' + timestamp);
             const texRing = texLoader.load('./imagebank/svpo/SVPO_RING.png?v=' + timestamp);
             const texMan  = texLoader.load('./imagebank/svpo/SVPO_MAN.png?v=' + timestamp);
 
+            // Paint it solid Gold & fix depth sorting
             function applyGoldMat(mesh) {
                 let tex = null;
                 const name = mesh.name.toUpperCase();
@@ -462,51 +464,56 @@
                 else tex = texPost; 
 
                 mesh.material = new THREE.MeshStandardMaterial({
-                    map: tex,
-                    color: 0xffcc44,       
-                    metalness: 0.9,        
-                    roughness: 0.15,       
-                    emissive: 0xffaa00,    
-                    emissiveIntensity: 0.2,
-                    transparent: false,    // Fixes overlap/depth-sorting glitch
-                    alphaTest: 0.5,        // Forces a clean cutout using the pure white PNGs
-                    side: THREE.DoubleSide 
+                    map: tex, color: 0xffcc44, metalness: 0.9, roughness: 0.15,       
+                    emissive: 0xffaa00, emissiveIntensity: 0.2, transparent: false, 
+                    alphaTest: 0.5, side: THREE.DoubleSide 
                 });
             }
 
             loader.load('./imagebank/svpo/SVPO_MASTER.glb?v=' + timestamp, function(gltf) {
                 const svpo = gltf.scene;
+                const rawMeshes = [];
                 
-                svpo.traverse((child) => {
-                    if (child.isMesh) applyGoldMat(child);
-                });
+                // 1. Gather the pieces
+                svpo.traverse((child) => { if (child.isMesh) rawMeshes.push(child); });
                 
-                // ── THE MICRO-DIALS: Scale each piece individually ──
-                svpo.traverse((child) => {
-                    if (!child.isMesh) return;
-                    const name = child.name.toUpperCase();
+                // 2. Shred the hierarchy, stand them up, and scale them
+                rawMeshes.forEach((mesh) => {
+                    const name = mesh.name.toUpperCase();
                     
+                    const wrapper = new THREE.Group();
+                    svpoGroup.add(wrapper);
+                    wrapper.add(mesh); // Moves it out of Blender's grip
+                    
+                    // Force the geometry upright
+                    mesh.position.set(0, 0, 0);
+                    mesh.rotation.set(Math.PI / 2, 0, 0); 
+                    
+                    // THE GLOBAL DIAL (Size of the whole ornament)
+                    wrapper.scale.set(0.35, 0.35, 0.35); 
+                    
+                    // 3. Stacking depth & THE MICRO-DIALS
                     if (name.includes('POST')) {
-                        svpoPost = child;
-                        // Dial for the Post (X = Width, Y = Height, Z = Depth)
-                        svpoPost.scale.set(1.0, 1.0, 1.0); 
+                        svpoPost = wrapper;
+                        wrapper.position.z = 0.0;     
+                        mesh.scale.set(1.0, 1.0, 1.0); // POST MICRO-DIAL
                     }
                     if (name.includes('RING')) {
-                        svpoRing = child;
-                        // Dial for the Ring
-                        svpoRing.scale.set(1.0, 1.0, 1.0); 
+                        svpoRing = wrapper;
+                        wrapper.position.z = 0.005;   
+                        mesh.scale.set(1.0, 1.0, 1.0); // RING MICRO-DIAL
                     }
                     if (name.includes('MAN')) {
-                        svpoMan = child;
-                        // Dial for the Man
-                        svpoMan.scale.set(1.0, 1.0, 1.0); 
+                        svpoMan = wrapper;
+                        wrapper.position.z = 0.01;    
+                        mesh.scale.set(1.0, 1.0, 1.0); // MAN MICRO-DIAL
                     }
+                    
+                    // 4. Apply the metal material
+                    applyGoldMat(mesh);
                 });
                 
-                svpo.position.set(0, 0, 0); 
-                svpo.scale.set(0.35, 0.35, 0.35); 
-                svpoGroup.add(svpo);
-                console.log("SVPO Successfully Brute-Forced into Engine.");
+                console.log("SVPO Hierarchy Shredded, Scaled, and Injected.");
             });
         }
 
