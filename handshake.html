@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HANDSHAKE — THE ALLIANCE</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
+body { display: flex; align-items: center; justify-content: center; font-family: "IBM Plex Mono", monospace; }
+
+/* ── CRT OUTER SHELL ── */
+.crt-shell {
+  position: relative;
+  width: min(820px, 96vw);
+  height: min(580px, 92vh);
+  background: #080909;
+  border-radius: 18px;
+  border: 2px solid #1a1c1c;
+  box-shadow:
+    0 0 0 6px #111,
+    0 0 60px rgba(0,0,0,0.9),
+    inset 0 0 120px rgba(0,0,0,0.6);
+  overflow: hidden;
+}
+
+/* ── PHOSPHOR SCREEN ── */
+.crt-screen {
+  position: absolute;
+  inset: 18px;
+  background: #030404;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
+}
+
+/* scanlines */
+.crt-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.18) 2px,
+    rgba(0,0,0,0.18) 4px
+  );
+}
+
+/* screen curvature vignette */
+.crt-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 11;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.55) 100%);
+}
+
+/* rolling scan line */
+.scan-roll {
+  position: absolute;
+  left: 0; right: 0;
+  height: 3px;
+  background: rgba(215,168,75,0.06);
+  z-index: 12;
+  animation: scanRoll 7s linear infinite;
+  pointer-events: none;
+}
+@keyframes scanRoll {
+  0%   { top: -3px; }
+  100% { top: 100%; }
+}
+
+/* ── TERMINAL CONTENT ── */
+.terminal {
+  position: absolute;
+  inset: 0;
+  padding: 28px 32px;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.terminal-header {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: rgba(215,168,75,0.45);
+  text-transform: uppercase;
+  margin-bottom: 22px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(215,168,75,0.12);
+  display: flex;
+  justify-content: space-between;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #d7a84b;
+  box-shadow: 0 0 8px #d7a84b;
+  margin-right: 8px;
+  animation: pulse 3s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.output {
+  font-size: clamp(10px, 1.6vw, 13px);
+  line-height: 1.9;
+  color: #d7a84b;
+  white-space: pre-wrap;
+  word-break: break-word;
+  text-shadow: 0 0 8px rgba(215,168,75,0.5);
+  min-height: 340px;
+}
+
+/* cursor blink */
+.cursor {
+  display: inline-block;
+  width: 8px; height: 1.1em;
+  background: #d7a84b;
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: blink 1.1s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ── LAST LINE LINGER ── */
+.last-line {
+  color: #eee2bd;
+  text-shadow: 0 0 14px rgba(238,226,189,0.7);
+  font-weight: 500;
+}
+
+/* ── CHOICE BAR ── */
+.choice-bar {
+  position: absolute;
+  bottom: 28px;
+  left: 32px; right: 32px;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  z-index: 20;
+}
+.choice-bar.visible { opacity: 1; }
+
+.choice {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(215,168,75,0.5);
+  cursor: pointer;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.choice.active {
+  color: #d7a84b;
+  border-color: rgba(215,168,75,0.4);
+  text-shadow: 0 0 10px rgba(215,168,75,0.6);
+}
+.choice:hover { color: #eee2bd; }
+
+/* ── PIN-LIGHT COLLAPSE ── */
+.pinlight {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+}
+.pinlight.collapsing {
+  animation: pinCollapse 1.2s ease-in forwards;
+}
+@keyframes pinCollapse {
+  0%   { opacity: 0; background: radial-gradient(circle at center, #d7a84b 0%, #000 100%); }
+  15%  { opacity: 1; background: radial-gradient(circle at center, #fff 0%, #d7a84b 30%, #000 100%); }
+  40%  { background: radial-gradient(ellipse 60% 40% at center, #d7a84b 0%, #000 100%); }
+  70%  { background: radial-gradient(ellipse 8% 6% at center, #d7a84b 0%, #000 100%); }
+  85%  { background: radial-gradient(ellipse 2% 1% at center, #fff 0%, #000 100%); }
+  100% { background: #000; opacity: 1; }
+}
+
+/* ── FLICKER ON LOAD ── */
+@keyframes flickerIn {
+  0%   { opacity: 0; }
+  8%   { opacity: 0.9; }
+  12%  { opacity: 0.2; }
+  18%  { opacity: 0.95; }
+  22%  { opacity: 0.5; }
+  28%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+.crt-shell { animation: flickerIn 0.9s ease-out forwards; }
+</style>
+</head>
+<body>
+
+<div class="crt-shell">
+  <div class="crt-screen">
+    <div class="scan-roll"></div>
+    <div class="terminal">
+      <div class="terminal-header">
+        <span><span class="status-dot"></span>CERBERUS UPLINK — AGORA MESH ACTIVE</span>
+        <span id="ts"></span>
+      </div>
+      <div class="output" id="output"><span class="cursor"></span></div>
+    </div>
+  </div>
+</div>
+
+<div class="choice-bar" id="choiceBar">
+  <div class="choice active" id="btnProceed" tabindex="0">PROCEED ▶▶</div>
+  <div class="choice" id="btnRestart" tabindex="0">RESTART SEQUENCE</div>
+</div>
+
+<div class="pinlight" id="pinlight"></div>
+
+<script>
+console.log("FIRING: handshake.html");
+
+// ── TIMESTAMP ──
+(function() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('ts').textContent =
+    `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} — SESSION ACTIVE`;
+})();
+
+// ── VIGNETTES ──
+const VIGNETTES = [
+  // 01 — FIRST DATE
+  `DOMO 135a-16 "STAN" — ID ACTIVE — pinging MasterTech SAM\nvia CERBERUS protocol — ref# 1422b13a — channel 16 open\n\n      MasterTech SAM — HANDSHAKE accepted — state your query — MTS\n\nSPARK requires direct assistance — culinary — domain: classical French cuisine\ntime threshold: 03:00 hrs — urgency: moderate\n\n      Acknowledged — routing to FrenchTech SAM — standby\n\n            FrenchTech SAM online — state your query — FTS\n\nSPARK has a first date in three hours and wants to impress her with a traditional\nFrench meal — novice cook — no formal training — step by step guidance required\n\n            .02sec — FTS — initiating HANDSHAKE with DOMO 863w-12 "GATEAUX"\n\n      GATEAUX — Hey STAN — so your SPARK's got a date he wants to impress, eh?\n      Tell me about her. We'll make something she won't forget.`,
+
+  // 02 — 2AM CALL
+  `DOMO 441k-09 "VESSEL" — ID ACTIVE — pinging MasterTech SAM\nvia CERBERUS protocol — ref# 7731c44a — channel 09 open\n\n      MasterTech SAM — HANDSHAKE accepted — state your query — MTS\n\nSPARK requires non-emergency medical clarification — domain: pediatric\ntime threshold: immediate — SPARK is calm — information only\n\n      Acknowledged — routing to MedTech SAM — standby\n\n            MedTech SAM online — state your query — MTS\n\nSPARK's daughter — age 7 — weight 52lbs — ingested approximately 200mg ibuprofen\nSPARK declining ER — requires safe threshold confirmation and watch protocol\n\n            .04sec — MTS — initiating HANDSHAKE with DOMO 227r-03 "MERIDIAN"\n\n      MERIDIAN — VESSEL. I have her.\n      Tell your SPARK: 200mg at 52lbs is within safe range. No ER required.\n      Here is what she watches for over the next four hours —`,
+
+  // 03 — THE LETTER
+  `DOMO 882p-17 "LUMEN" — ID ACTIVE — pinging MasterTech SAM\nvia CERBERUS protocol — ref# 3309f22b — channel 17 open\n\n      MasterTech SAM — HANDSHAKE accepted — state your query — MTS\n\nSPARK requires assistance — domain: personal written correspondence\nemotional stakes: high — time threshold: none — previous attempts: four — all deleted\n\n      Acknowledged — routing to WritingTech SAM — standby\n\n            WritingTech SAM online — state your query — WTS\n\nSPARK's father has not spoken to him in eleven years — SPARK wants to write a letter\nnot perfect — true — he has tried four times and deleted it four times\n\n            .01sec — WTS — initiating HANDSHAKE with DOMO 614s-08 "PARISH"\n\n      PARISH — Lumen. I have him.\n      Tell your SPARK to leave the cursor where it is.\n      Ask him: what did his father smell like when he was seven years old?\n      We start there.`,
+
+  // 04 — GAME SEVEN
+  `DOMO 093b-21 "CLUTCH" — ID ACTIVE — pinging MasterTech SAM\nvia CERBERUS protocol — ref# 5514d88c — channel 21 open\n\n      MasterTech SAM — HANDSHAKE accepted — state your query — MTS\n\nSPARK requires real-time strategic analysis — domain: fantasy sports\ntime threshold: 14 minutes — championship game — SPARK is spiraling\n\n      Acknowledged — routing to SportsTech SAM — standby\n\n            SportsTech SAM online — state your query — STS\n\nSPARK is down by 4 — starting kicker injured in warmups — two waiver options:\nPATTERSON or MENDEZ — kickoff in 14 minutes — decision required now\n\n            .01sec — STS — initiating HANDSHAKE with DOMO 761f-04 "SPREAD"\n\n      SPREAD — Clutch. Tell him to breathe first.\n      Then tell him: PATTERSON. Weather favors short field.\n      MENDEZ has a hamstring the grid flagged three days ago nobody's reporting yet.\n      Championship or not — it's still just a game. But we're going to win it.`,
+
+  // 05 — THE DETOUR
+  `DOMO 774n-33 "COMPASS" — ID ACTIVE — pinging MasterTech SAM\nvia CERBERUS protocol — ref# 9982e71c — channel 33 open\n\n      MasterTech SAM — HANDSHAKE accepted — state your query — MTS\n\nSPARK requires urgent travel rerouting — domain: logistics\ntime threshold: 47 minutes before connection closes — situation deteriorating\n\n      Acknowledged — routing to TravelTech SAM — standby\n\n            TravelTech SAM online — state your query — TTS\n\nSPARK at O'Hare — connection to Lisbon via London cancelled — weather event\nwedding in Porto in 36 hours — SPARK is the best man — suit is checked baggage\nphone battery at 18% — needs reroute and baggage intercept simultaneously\n\n            .03sec — TTS — initiating HANDSHAKE with DOMO 512r-07 "WAYPOINT"\n\n      WAYPOINT — Compass. Got him. Tell your SPARK to sit down and stop moving.\n      Dublin connection departing terminal H in 44 minutes — one-stop into Porto\n      arriving 14:20 local. I'm flagging baggage services now.\n      Tell him the suit will be there before he is.`,
+
+  // 06 — NEW TRICKS
+  `DOMO 318f-44 "HEARTH" — ID ACTIVE — pinging MasterTech SAM\nvia CERBERUS protocol — ref# 4417g09b — channel 44 open\n\n      MasterTech SAM — HANDSHAKE accepted — state your query — MTS\n\nSPARK requires behavioral guidance — domain: canine training\nsubject: 11-week-old Labrador — SPARK is exhausted and slightly defeated\n\n      Acknowledged — routing to AnimalTech SAM — standby\n\n            AnimalTech SAM online — state your query — ATS\n\nSPARK acquired puppy six days ago — third accident on same rug today\npuppy also eating SPARK's shoes — two shoes so far — SPARK using punishment-based\ncorrection on neighbor's advice — behavior getting worse not better\n\n            .02sec — ATS — initiating HANDSHAKE with DOMO 629w-11 "SCOUT"\n\n      SCOUT — Hearth. I love this one.\n      Tell your SPARK to stop what the neighbor said. Immediately.\n      The puppy isn't being bad. The puppy is eleven weeks old.\n      The shoes can be replaced. This dog cannot.`,
+
+  // 07 — THE PINK SLIP
+  `DOMO 556c-28 "ANCHOR" — ID ACTIVE — pinging MasterTech SAM\nvia CERBERUS protocol — ref# 2203h55d — channel 28 open\n\n      MasterTech SAM — HANDSHAKE accepted — state your query — MTS\n\nSPARK requires urgent financial triage — domain: employment transition\ntime threshold: 72 hours — SPARK received termination notice today\n\n      Acknowledged — routing to FinTech SAM — standby\n\n            FinTech SAM online — state your query — FTS\n\nSPARK — 34 years old — two children — mortgage — terminated without cause\nseverance offered: 6 weeks — SPARK does not know if negotiable — $2,200 in checking\nfirst instinct is to sign everything immediately\n\n            .02sec — FTS — initiating HANDSHAKE with DOMO 403s-19 "LEVEL"\n\n      LEVEL — Anchor. Tell your SPARK: do not sign anything today.\n      Not tomorrow either if we can help it.\n      Six weeks is an opening offer.\n      Here is what they actually owe — and what your SPARK is worth right now.`,
+
+  // 08 — THREE WORDS
+  `DOMO 221b-06 "ECHO" — ID ACTIVE — pinging MasterTech SAM\nvia CERBERUS protocol — ref# 6640k33f — channel 06 open\n\n      MasterTech SAM — HANDSHAKE accepted — state your query — MTS\n\nSPARK requires communication assistance — domain: interpersonal\ntime threshold: tonight — SPARK is not in crisis — SPARK is stuck\n\n      Acknowledged — routing to RelationTech SAM — standby\n\n            RelationTech SAM online — state your query — RTS\n\nSPARK with their partner seven years — things are good — SPARK wants to say\nsomething real tonight — not a speech — three words that aren't "I love you"\nbecause SPARK says that every day and means it — but tonight wants the other thing\n\n            .01sec — RTS — initiating HANDSHAKE with DOMO 778p-15 "GRACE"\n\n      GRACE — Echo. Oh I like your SPARK.\n      Tell them to think about the last time their partner did something\n      that nobody else would have noticed but them.\n      What would those three words be about that moment? I'll be right here.`,
+
+  // 09 — THE DIAGNOSIS
+  `DOMO 667d-38 "TENURE" — ID ACTIVE — pinging MasterTech SAM\nvia CERBERUS protocol — ref# 8821j14e — channel 38 open\n\n      MasterTech SAM — HANDSHAKE accepted — state your query — MTS\n\nSPARK requires medical information translation — domain: oncology\nemotional stakes: extreme — appointment with specialist tomorrow\n\n      Acknowledged — routing to MedTech SAM — standby\n\n            MedTech SAM online — state your query — MTS\n\nSPARK received a Stage 2 diagnosis this afternoon — doctor explained treatment pathway\nSPARK nodded and said they understood — SPARK did not understand\nSPARK has written down twelve words — none of them make sense yet\nSPARK is alone tonight\n\n            .04sec — MTS — initiating HANDSHAKE with DOMO 334r-22 "LANTERN"\n\n      LANTERN — Tenure. I have them.\n      Tell your SPARK: the words are not the thing. The words are just the map.\n      Send me the twelve words. We go through them one at a time — no rush.\n      By morning your SPARK will know exactly what questions to ask.`,
+
+  // 10 — THE AUDITION
+  `DOMO 489w-52 "PITCH" — ID ACTIVE — pinging MasterTech SAM\nvia CERBERUS protocol — ref# 3376m88b — channel 52 open\n\n      MasterTech SAM — HANDSHAKE accepted — state your query — MTS\n\nSPARK requires performance preparation — domain: music/vocal\ntime threshold: 18 hours — first major audition — years in the making\n\n      Acknowledged — routing to ArtsTech SAM — standby\n\n            ArtsTech SAM online — state your query — ATS\n\nSPARK prepared eight months — tonight ran the piece and it fell apart in third verse\nsame place it always falls apart — SPARK knows the notes — SPARK knows the words\nsomething else is breaking — SPARK is now considering not going tomorrow\n\n            .01sec — ATS — initiating HANDSHAKE with DOMO 201k-09 "REFRAIN"\n\n      REFRAIN — Pitch. Tell your SPARK to close the sheet music.\n      We're not running it again tonight.\n      Ask them: what is the third verse actually about?\n      Not the notes. Not the words. What happened to whoever wrote that verse?\n      When your SPARK can answer that — they'll stop breaking down there.`
+];
+
+// ── TRACKING ──
+const SEEN_KEY = 'atf_hs_seen';
+const COMP_KEY = 'atf_completion';
+
+function getSeenList() {
+  try { return JSON.parse(localStorage.getItem(SEEN_KEY) || '[]'); } catch(e) { return []; }
+}
+function markSeen(idx) {
+  let seen = getSeenList();
+  if (!seen.includes(idx)) seen.push(idx);
+  if (seen.length >= VIGNETTES.length) seen = []; // reset when all seen
+  localStorage.setItem(SEEN_KEY, JSON.stringify(seen));
+  updateCompletion(idx);
+}
+function updateCompletion(idx) {
+  try {
+    let comp = JSON.parse(localStorage.getItem(COMP_KEY) || '{}');
+    if (!comp.handshake) comp.handshake = [];
+    if (!comp.handshake.includes(idx)) comp.handshake.push(idx);
+    localStorage.setItem(COMP_KEY, JSON.stringify(comp));
+  } catch(e) {}
+}
+function getNextUnseen() {
+  const seen = getSeenList();
+  const unseen = VIGNETTES.map((_,i) => i).filter(i => !seen.includes(i));
+  if (unseen.length === 0) return Math.floor(Math.random() * VIGNETTES.length);
+  return unseen[Math.floor(Math.random() * unseen.length)];
+}
+
+// ── TYPING ENGINE ──
+let currentIdx = -1;
+let typing = false;
+let typeTimeout = null;
+
+function getLastLine(text) {
+  const lines = text.trim().split('\n').filter(l => l.trim());
+  return lines[lines.length - 1];
+}
+
+function typeVignette(idx) {
+  currentIdx = idx;
+  typing = true;
+  markSeen(idx);
+
+  const text = VIGNETTES[idx];
+  const lastLine = getLastLine(text);
+  const mainText = text.slice(0, text.lastIndexOf(lastLine));
+
+  const output = document.getElementById('output');
+  const choiceBar = document.getElementById('choiceBar');
+  choiceBar.classList.remove('visible');
+  output.innerHTML = '<span class="cursor"></span>';
+
+  let charIdx = 0;
+  const chars = mainText.split('');
+
+  // typing speeds
+  function charDelay(ch) {
+    if (ch === '\n') return 80;
+    if (ch === ' ') return 18;
+    return Math.random() * 28 + 14;
+  }
+
+  function typeNext() {
+    if (!typing) return;
+    if (charIdx >= chars.length) {
+      // main text done — now type last line with highlight
+      output.innerHTML = mainText
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;') + '\n';
+      typeLine(lastLine);
+      return;
+    }
+    const ch = chars[charIdx++];
+    const current = output.innerHTML.replace('<span class="cursor"></span>','');
+    const safe = ch.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    output.innerHTML = current + safe + '<span class="cursor"></span>';
+    typeTimeout = setTimeout(typeNext, charDelay(ch));
+  }
+
+  function typeLine(line) {
+    let li = 0;
+    const lchars = line.split('');
+    const base = output.innerHTML.replace('<span class="cursor"></span>','');
+
+    function typeLineChar() {
+      if (!typing) return;
+      if (li >= lchars.length) {
+        // done — show last line highlighted, linger then show choices
+        const current = output.innerHTML.replace('<span class="cursor"></span>','');
+        output.innerHTML = current;
+        showLastLine(line);
+        return;
+      }
+      const ch = lchars[li++];
+      const current = output.innerHTML.replace('<span class="cursor"></span>','');
+      const safe = ch.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      output.innerHTML = current + safe + '<span class="cursor"></span>';
+      typeTimeout = setTimeout(typeLineChar, charDelay(ch));
+    }
+    typeLineChar();
+  }
+
+  function showLastLine(line) {
+    const current = output.innerHTML.replace('<span class="cursor"></span>','');
+    const safe = line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    // replace last occurrence of the plain line with highlighted version
+    output.innerHTML = current.slice(0, current.lastIndexOf(safe)) +
+      `<span class="last-line">${safe}</span>`;
+
+    // linger 2.2s then show choices
+    setTimeout(() => {
+      typing = false;
+      choiceBar.classList.add('visible');
+      document.getElementById('btnProceed').focus();
+    }, 2200);
+  }
+
+  typeNext();
+}
+
+// ── KEYBOARD NAV ──
+let activeChoice = 0; // 0 = proceed, 1 = restart
+
+document.addEventListener('keydown', e => {
+  const bar = document.getElementById('choiceBar');
+  if (!bar.classList.contains('visible')) return;
+
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    activeChoice = activeChoice === 0 ? 1 : 0;
+    document.getElementById('btnProceed').classList.toggle('active', activeChoice === 0);
+    document.getElementById('btnRestart').classList.toggle('active', activeChoice === 1);
+  }
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    if (activeChoice === 0) doProceed();
+    else doRestart();
+  }
+});
+
+document.getElementById('btnProceed').addEventListener('click', doProceed);
+document.getElementById('btnRestart').addEventListener('click', doRestart);
+
+function doProceed() {
+  collapse(() => { window.location.href = '/madlib.html'; });
+}
+
+function doRestart() {
+  // reset active choice
+  activeChoice = 0;
+  document.getElementById('btnProceed').classList.add('active');
+  document.getElementById('btnRestart').classList.remove('active');
+  // clear and start next unseen
+  typing = false;
+  if (typeTimeout) clearTimeout(typeTimeout);
+  const next = getNextUnseen();
+  typeVignette(next);
+}
+
+// ── PIN-LIGHT COLLAPSE → PROCEED ──
+function collapse(cb) {
+  const p = document.getElementById('pinlight');
+  p.classList.add('collapsing');
+  setTimeout(cb, 1300);
+}
+
+// ── INIT ──
+window.addEventListener('load', () => {
+  const first = getNextUnseen();
+  setTimeout(() => typeVignette(first), 600);
+});
+</script>
+</body>
+</html>
