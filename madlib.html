@@ -1,0 +1,944 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>THE ALLIANCE — FIELD TEST</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        min-height: 100%;
+        background: #0d1117;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      /* ── PHASE: PROMPT ── */
+      #phase-prompt {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 24px;
+        background: #0d1117;
+      }
+
+      .prompt-eyebrow {
+        font-size: 11px;
+        letter-spacing: 0.35em;
+        color: rgba(215, 168, 75, 0.6);
+        text-transform: uppercase;
+        margin-bottom: 48px;
+        text-align: center;
+      }
+
+      .prompt-card {
+        width: min(560px, 100%);
+        text-align: center;
+      }
+
+      .prompt-counter {
+        font-size: 11px;
+        letter-spacing: 0.25em;
+        color: rgba(255, 255, 255, 0.2);
+        text-transform: uppercase;
+        margin-bottom: 32px;
+      }
+
+      .prompt-question {
+        font-size: clamp(22px, 5vw, 38px);
+        font-weight: 300;
+        color: #ffffff;
+        line-height: 1.3;
+        margin-bottom: 48px;
+        letter-spacing: -0.01em;
+      }
+
+      .prompt-question em {
+        font-style: normal;
+        color: #d7a84b;
+        font-weight: 400;
+      }
+
+      .prompt-input-area {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .prompt-input {
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid rgba(215, 168, 75, 0.4);
+        color: #d7a84b;
+        font-size: clamp(20px, 4vw, 32px);
+        font-family: inherit;
+        font-weight: 400;
+        text-align: center;
+        width: min(320px, 90%);
+        padding: 8px 0;
+        outline: none;
+        letter-spacing: 0.02em;
+        transition: border-color 0.2s ease;
+      }
+      .prompt-input:focus {
+        border-color: #d7a84b;
+      }
+      .prompt-input::placeholder {
+        color: rgba(215, 168, 75, 0.25);
+      }
+
+      .autofill-btn {
+        background: transparent;
+        border: 1px solid rgba(215, 168, 75, 0.25);
+        color: rgba(215, 168, 75, 0.5);
+        font-family: inherit;
+        font-size: 11px;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        padding: 8px 20px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .autofill-btn:hover {
+        border-color: rgba(215, 168, 75, 0.6);
+        color: rgba(215, 168, 75, 0.9);
+      }
+
+      .next-btn {
+        background: rgba(215, 168, 75, 0.12);
+        border: 1px solid rgba(215, 168, 75, 0.35);
+        color: #d7a84b;
+        font-family: inherit;
+        font-size: 11px;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        padding: 12px 32px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 8px;
+      }
+      .next-btn:hover {
+        background: rgba(215, 168, 75, 0.22);
+      }
+      .next-btn:disabled {
+        opacity: 0.3;
+        cursor: default;
+      }
+
+      .autofill-all-btn {
+        background: transparent;
+        border: none;
+        color: rgba(255, 255, 255, 0.2);
+        font-family: inherit;
+        font-size: 10px;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        cursor: pointer;
+        padding: 4px 0;
+        transition: color 0.2s ease;
+        margin-top: 8px;
+      }
+      .autofill-all-btn:hover {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      /* ── PHASE: REVEAL ── */
+      #phase-reveal {
+        display: none;
+        min-height: 100vh;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 60px 24px 80px;
+        background: #0d1117;
+      }
+
+      .reveal-eyebrow {
+        font-size: 11px;
+        letter-spacing: 0.35em;
+        color: rgba(215, 168, 75, 0.6);
+        text-transform: uppercase;
+        margin-bottom: 60px;
+        text-align: center;
+      }
+
+      .quote-block {
+        width: min(720px, 100%);
+        margin-bottom: 64px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition:
+          opacity 0.6s ease,
+          transform 0.6s ease;
+      }
+      .quote-block.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .quote-number {
+        font-size: 10px;
+        letter-spacing: 0.3em;
+        color: rgba(255, 255, 255, 0.2);
+        text-transform: uppercase;
+        margin-bottom: 20px;
+      }
+
+      .madlib-quote {
+        font-size: clamp(16px, 2.8vw, 22px);
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.75);
+        font-weight: 300;
+        margin-bottom: 20px;
+        font-style: italic;
+      }
+
+      .madlib-word {
+        color: #d7a84b;
+        font-style: normal;
+        font-weight: 500;
+        text-decoration: underline;
+        text-decoration-color: rgba(215, 168, 75, 0.3);
+        text-underline-offset: 3px;
+      }
+
+      .reveal-divider {
+        width: 40px;
+        height: 1px;
+        background: rgba(215, 168, 75, 0.3);
+        margin: 24px 0;
+      }
+
+      .real-quote {
+        font-size: clamp(14px, 2.2vw, 18px);
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 400;
+        margin-bottom: 12px;
+        opacity: 0;
+        transition: opacity 1.2s ease 0.4s;
+      }
+      .real-quote.visible {
+        opacity: 1;
+      }
+
+      .real-attribution {
+        font-size: 12px;
+        letter-spacing: 0.15em;
+        color: rgba(215, 168, 75, 0.7);
+        text-transform: uppercase;
+        opacity: 0;
+        transition: opacity 0.8s ease 1.2s;
+      }
+      .real-attribution.visible {
+        opacity: 1;
+      }
+
+      /* ── CHOICE BAR ── */
+      .choice-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        gap: 32px;
+        padding: 20px 24px;
+        background: linear-gradient(transparent, rgba(13, 17, 23, 0.98));
+        z-index: 50;
+      }
+
+      .choice {
+        font-family: inherit;
+        font-size: 11px;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: rgba(215, 168, 75, 0.45);
+        cursor: pointer;
+        padding: 10px 20px;
+        border: 1px solid transparent;
+        background: transparent;
+        transition: all 0.2s ease;
+      }
+      .choice.primary {
+        color: #d7a84b;
+        border-color: rgba(215, 168, 75, 0.4);
+      }
+      .choice:hover {
+        color: #eee2bd;
+        border-color: rgba(215, 168, 75, 0.5);
+      }
+
+      /* ── PROGRESS DOTS ── */
+      .progress-dots {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-bottom: 40px;
+      }
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: rgba(215, 168, 75, 0.2);
+        transition: background 0.3s ease;
+      }
+      .dot.active {
+        background: #d7a84b;
+      }
+      .dot.done {
+        background: rgba(215, 168, 75, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- PHASE 1: PROMPTS -->
+    <div id="phase-prompt">
+      <div class="prompt-eyebrow">A quick exercise before we continue</div>
+      <div class="prompt-card">
+        <div class="prompt-counter" id="promptCounter">Word 1 of —</div>
+        <div class="prompt-question" id="promptQuestion">Loading...</div>
+        <div class="prompt-input-area">
+          <input
+            class="prompt-input"
+            id="promptInput"
+            type="text"
+            placeholder="your answer"
+            autocomplete="off"
+            autocorrect="off"
+            spellcheck="false"
+          />
+          <button class="autofill-btn" id="autofillOneBtn">
+            autofill this one
+          </button>
+          <button class="next-btn" id="nextPromptBtn" disabled>Next →</button>
+          <button class="autofill-all-btn" id="autofillAllBtn">
+            autofill all remaining
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 2: REVEALS -->
+    <div id="phase-reveal">
+      <div class="reveal-eyebrow">Here's what you made.</div>
+      <div class="progress-dots" id="progressDots"></div>
+      <div id="revealContainer"></div>
+      <div class="choice-bar">
+        <button class="choice" id="btnRestart">Restart</button>
+        <button class="choice primary" id="btnProceed">Proceed ▶▶</button>
+      </div>
+    </div>
+
+    <script>
+      console.log("FIRING: madlib.html");
+
+      // ── QUOTE POOL ──
+      const QUOTES = [
+        {
+          id: "western_union",
+          template: [
+            "This '",
+            {
+              blank: "give me a device your grandma uses to talk to people",
+              autofills: [
+                "rotary dial",
+                "tin can",
+                "ear trumpet",
+                "telegraph key",
+                "carrier pigeon",
+              ],
+            },
+            "' has too many shortcomings to be seriously considered as a means of ",
+            {
+              blank:
+                "give me something people do when they need to reach each other",
+              autofills: [
+                "hollering",
+                "semaphore",
+                "smoke signals",
+                "letter writing",
+                "interpretive dance",
+              ],
+            },
+            ". The device is inherently of no ",
+            {
+              blank: "give me a word that means usefulness to a corporation",
+              autofills: ["value", "profit", "purpose", "utility", "synergy"],
+            },
+            " to us.",
+          ],
+          real: "This 'telephone' has too many shortcomings to be seriously considered as a means of communication. The device is inherently of no value to us.",
+          attribution: "Western Union — internal memo, 1876",
+        },
+        {
+          id: "ken_olsen",
+          template: [
+            "There is no reason anyone would want a ",
+            {
+              blank:
+                "give me a piece of office equipment that sounds absurd in a living room",
+              autofills: [
+                "mainframe",
+                "fax machine",
+                "mimeograph",
+                "card punch",
+                "adding machine",
+              ],
+            },
+            " in their ",
+            {
+              blank: "give me a room where this would be most ridiculous",
+              autofills: [
+                "bathroom",
+                "nursery",
+                "broom closet",
+                "sauna",
+                "panic room",
+              ],
+            },
+            ".",
+          ],
+          real: "There is no reason anyone would want a computer in their home.",
+          attribution:
+            "Ken Olsen, founder of Digital Equipment Corporation — 1977",
+        },
+        {
+          id: "decca",
+          template: [
+            "We don't like their ",
+            {
+              blank:
+                "give me something a band makes that you either love or hate",
+              autofills: [
+                "racket",
+                "noise",
+                "vibrations",
+                "caterwauling",
+                "ruckus",
+              ],
+            },
+            ". Groups of ",
+            {
+              blank: "give me an instrument that seems old-fashioned",
+              autofills: [
+                "banjos",
+                "kazoos",
+                "harmonicas",
+                "ukuleles",
+                "washboards",
+              ],
+            },
+            " are on the way out.",
+          ],
+          real: "We don't like their sound. Groups of guitars are on the way out.",
+          attribution: "Decca Records — rejecting the Beatles, 1962",
+        },
+        {
+          id: "zanuck",
+          template: [
+            null,
+            {
+              blank:
+                "give me a form of entertainment that definitely hasn't taken over civilization",
+              autofills: [
+                "Television",
+                "Podcasting",
+                "Streaming",
+                "TikTok",
+                "YouTube",
+              ],
+            },
+            " won't be able to hold on to any market it captures after the first ",
+            {
+              blank: "give me a laughably short amount of time",
+              autofills: [
+                "six months",
+                "two weeks",
+                "a long weekend",
+                "one fiscal quarter",
+                "forty-five minutes",
+              ],
+            },
+            ". People will soon get tired of staring at a ",
+            {
+              blank:
+                "give me a piece of furniture that sounds stupid to stare at",
+              autofills: [
+                "plywood box",
+                "credenza",
+                "ottoman",
+                "hope chest",
+                "chifforobe",
+              ],
+            },
+            " every night.",
+          ],
+          real: "Television won't be able to hold on to any market it captures after the first six months. People will soon get tired of staring at a plywood box every night.",
+          attribution: "Darryl Zanuck, Head of 20th Century Fox — 1946",
+        },
+        {
+          id: "ballmer",
+          template: [
+            "There's no chance that the ",
+            {
+              blank:
+                "give me something that everyone you know has in their pocket right now",
+              autofills: [
+                "iPhone",
+                "smartphone",
+                "pocket computer",
+                "glass rectangle",
+                "tiny brain extension",
+              ],
+            },
+            " is going to get any significant ",
+            {
+              blank:
+                "give me a business metric that makes executives feel smart",
+              autofills: [
+                "market share",
+                "mindshare",
+                "user adoption",
+                "synergistic uptake",
+                "brand penetration",
+              ],
+            },
+            ".",
+          ],
+          real: "There's no chance that the iPhone is going to get any significant market share.",
+          attribution: "Steve Ballmer, CEO of Microsoft — 2007",
+        },
+        {
+          id: "summerfield",
+          template: [
+            "Before man reaches the ",
+            {
+              blank:
+                "give me a celestial body that seemed impossibly far away in 1959",
+              autofills: [
+                "moon",
+                "stars",
+                "Mars",
+                "the Milky Way",
+                "the outer darkness",
+              ],
+            },
+            ", your ",
+            {
+              blank:
+                "give me something you send when you want someone to know you're thinking of them",
+              autofills: [
+                "mail",
+                "birthday cards",
+                "fruit baskets",
+                "telegrams",
+                "good vibes",
+              ],
+            },
+            " will be delivered within hours from New York to Australia by ",
+            {
+              blank:
+                "give me something that travels fast but seems insane for package delivery",
+              autofills: [
+                "guided missiles",
+                "cannonballs",
+                "very motivated interns",
+                "carrier pigeons on espresso",
+                "race cars",
+              ],
+            },
+            ". We stand on the threshold of ",
+            {
+              blank:
+                "give me a made-up industry that sounds both official and completely unhinged",
+              autofills: [
+                "rocket mail",
+                "missile post",
+                "ballistic correspondence",
+                "supersonic parcel service",
+                "orbital delivery",
+              ],
+            },
+            ".",
+          ],
+          real: "Before man reaches the moon, your mail will be delivered within hours from New York to Australia by guided missiles. We stand on the threshold of rocket mail.",
+          attribution: "Arthur Summerfield, U.S. Postmaster General — 1959",
+        },
+        {
+          id: "goldwyn_price",
+          template: [
+            "I include myself among the ",
+            {
+              blank:
+                "give me a number so catastrophically large it sounds like an excuse not to try",
+              autofills: [
+                "millions",
+                "billions",
+                "untold masses",
+                "seventy-seven percent",
+                "literally everyone",
+              ],
+            },
+            " who will be unable to pay for ",
+            {
+              blank:
+                "give me a piece of tech you can buy for under $30 at any drug store",
+              autofills: [
+                "television",
+                "a calculator",
+                "earbuds",
+                "a phone charger",
+                "a USB hub",
+              ],
+            },
+            ".",
+          ],
+          real: "I include myself among the millions who will be unable to pay for television.",
+          attribution: "Samuel Goldwyn, co-founder of MGM",
+        },
+        {
+          id: "goldwyn_color",
+          template: [
+            null,
+            {
+              blank:
+                "give me something that sounds miraculous until you remember it already exists",
+              autofills: [
+                "Color television",
+                "Wireless music",
+                "Moving pictures",
+                "Talking films",
+                "Indoor plumbing",
+              ],
+            },
+            "! Bah, I won't believe it until I see it in ",
+            {
+              blank:
+                "give me a way of experiencing something that completely defeats the purpose",
+              autofills: [
+                "black and white",
+                "complete darkness",
+                "a written description",
+                "a still photograph",
+                "someone else's words",
+              ],
+            },
+            ".",
+          ],
+          real: "Color television! Bah, I won't believe it until I see it in black and white.",
+          attribution: "Samuel Goldwyn, co-founder of MGM",
+        },
+        {
+          id: "ericksen",
+          template: [
+            "The ",
+            {
+              blank:
+                "give me three parts of the human body you'd really prefer a doctor could reach",
+              autofills: [
+                "abdomen, the chest, and the brain",
+                "heart, the lungs, and the spine",
+                "liver, the kidneys, and the pancreas",
+                "stomach, the colon, and the appendix",
+                "everything important, basically",
+              ],
+            },
+            " will forever be shut from the intrusion of the ",
+            {
+              blank:
+                "give me an adjective that describes a doctor who clearly knows what they're doing",
+              autofills: [
+                "wise and humane",
+                "skilled and careful",
+                "board-certified and sober",
+                "competent and awake",
+                "actually trained",
+              ],
+            },
+            " surgeon.",
+          ],
+          real: "The abdomen, the chest, and the brain will forever be shut from the intrusion of the wise and humane surgeon.",
+          attribution:
+            "Sir John Eric Ericksen, Surgeon to Queen Victoria — 1873",
+        },
+      ];
+
+      // ── TRACKING ──
+      const ML_SEEN_KEY = "atf_ml_seen";
+      const COMP_KEY = "atf_completion";
+
+      function getMlSeen() {
+        try {
+          return JSON.parse(localStorage.getItem(ML_SEEN_KEY) || "[]");
+        } catch (e) {
+          return [];
+        }
+      }
+      function markMlSeen(ids) {
+        let seen = getMlSeen();
+        ids.forEach((id) => {
+          if (!seen.includes(id)) seen.push(id);
+        });
+        if (seen.length >= QUOTES.length) seen = [];
+        localStorage.setItem(ML_SEEN_KEY, JSON.stringify(seen));
+        // completion
+        try {
+          let comp = JSON.parse(localStorage.getItem(COMP_KEY) || "{}");
+          if (!comp.madlib) comp.madlib = [];
+          ids.forEach((id) => {
+            if (!comp.madlib.includes(id)) comp.madlib.push(id);
+          });
+          localStorage.setItem(COMP_KEY, JSON.stringify(comp));
+        } catch (e) {}
+      }
+
+      function pickThreeQuotes() {
+        const seen = getMlSeen();
+        const unseen = QUOTES.filter((q) => !seen.includes(q.id));
+        const pool = unseen.length >= 3 ? unseen : QUOTES;
+        const shuffled = [...pool].sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, 3);
+      }
+
+      // ── STATE ──
+      let selectedQuotes = [];
+      let allBlanks = []; // {quoteIdx, blankIdx, prompt, autofills}
+      let answers = []; // parallel array to allBlanks
+      let currentBlankIdx = 0;
+
+      function init() {
+        selectedQuotes = pickThreeQuotes();
+        allBlanks = [];
+        answers = [];
+
+        // collect all blanks from all 3 quotes, then shuffle
+        selectedQuotes.forEach((q, qi) => {
+          q.template.forEach((part, pi) => {
+            if (part && typeof part === "object" && part.blank) {
+              allBlanks.push({
+                quoteIdx: qi,
+                partIdx: pi,
+                prompt: part.blank,
+                autofills: part.autofills,
+              });
+              answers.push(null);
+            }
+          });
+        });
+
+        // shuffle blanks
+        for (let i = allBlanks.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [allBlanks[i], allBlanks[j]] = [allBlanks[j], allBlanks[i]];
+          [answers[i], answers[j]] = [answers[j], answers[i]];
+        }
+
+        currentBlankIdx = 0;
+        showPrompt();
+      }
+
+      // ── PROMPT PHASE ──
+      function showPrompt() {
+        document.getElementById("phase-prompt").style.display = "flex";
+        document.getElementById("phase-reveal").style.display = "none";
+        renderCurrentPrompt();
+      }
+
+      function renderCurrentPrompt() {
+        const blank = allBlanks[currentBlankIdx];
+        const total = allBlanks.length;
+        document.getElementById("promptCounter").textContent =
+          `Word ${currentBlankIdx + 1} of ${total}`;
+
+        // format prompt as question
+        const q = blank.prompt;
+        const capitalized = q.charAt(0).toUpperCase() + q.slice(1);
+        document.getElementById("promptQuestion").innerHTML =
+          capitalized.includes("give me")
+            ? capitalized.replace("give me ", "Give me <em>") + "</em>"
+            : `<em>${capitalized}</em>`;
+
+        const input = document.getElementById("promptInput");
+        input.value = "";
+        input.placeholder = "your answer";
+        input.focus();
+
+        document.getElementById("nextPromptBtn").disabled = true;
+      }
+
+      // input enables next
+      document
+        .getElementById("promptInput")
+        .addEventListener("input", function () {
+          document.getElementById("nextPromptBtn").disabled =
+            this.value.trim().length === 0;
+        });
+
+      document
+        .getElementById("promptInput")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Enter" && this.value.trim().length > 0)
+            advancePrompt();
+        });
+
+      document
+        .getElementById("nextPromptBtn")
+        .addEventListener("click", advancePrompt);
+
+      function advancePrompt() {
+        const val = document.getElementById("promptInput").value.trim();
+        if (!val) return;
+        answers[currentBlankIdx] = val;
+        currentBlankIdx++;
+        if (currentBlankIdx >= allBlanks.length) {
+          showReveal();
+        } else {
+          renderCurrentPrompt();
+        }
+      }
+
+      // autofill one
+      document
+        .getElementById("autofillOneBtn")
+        .addEventListener("click", function () {
+          const blank = allBlanks[currentBlankIdx];
+          const opts = blank.autofills;
+          const pick = opts[Math.floor(Math.random() * opts.length)];
+          document.getElementById("promptInput").value = pick;
+          document.getElementById("nextPromptBtn").disabled = false;
+        });
+
+      // autofill all remaining
+      document
+        .getElementById("autofillAllBtn")
+        .addEventListener("click", function () {
+          for (let i = currentBlankIdx; i < allBlanks.length; i++) {
+            if (answers[i] === null) {
+              const opts = allBlanks[i].autofills;
+              answers[i] = opts[Math.floor(Math.random() * opts.length)];
+            }
+          }
+          // fill current display too
+          const blank = allBlanks[currentBlankIdx];
+          document.getElementById("promptInput").value =
+            answers[currentBlankIdx];
+          document.getElementById("nextPromptBtn").disabled = false;
+          // advance after brief pause
+          setTimeout(() => showReveal(), 400);
+        });
+
+      // ── REVEAL PHASE ──
+      function showReveal() {
+        // mark these quotes seen
+        markMlSeen(selectedQuotes.map((q) => q.id));
+
+        document.getElementById("phase-prompt").style.display = "none";
+        const revealDiv = document.getElementById("phase-reveal");
+        revealDiv.style.display = "flex";
+
+        // build answer map: quoteIdx → [answers in order]
+        const answersByQuote = selectedQuotes.map(() => []);
+        allBlanks.forEach((blank, i) => {
+          answersByQuote[blank.quoteIdx].push({
+            partIdx: blank.partIdx,
+            answer: answers[i],
+          });
+        });
+
+        // build progress dots
+        const dotsEl = document.getElementById("progressDots");
+        dotsEl.innerHTML = "";
+        selectedQuotes.forEach((_, i) => {
+          const dot = document.createElement("div");
+          dot.className = "dot" + (i === 0 ? " active" : "");
+          dot.id = `dot-${i}`;
+          dotsEl.appendChild(dot);
+        });
+
+        // build quote blocks
+        const container = document.getElementById("revealContainer");
+        container.innerHTML = "";
+
+        selectedQuotes.forEach((q, qi) => {
+          const block = document.createElement("div");
+          block.className = "quote-block";
+          block.id = `qblock-${qi}`;
+
+          // build mad-libbed version
+          const ansMap = {};
+          answersByQuote[qi].forEach(({ partIdx, answer }) => {
+            ansMap[partIdx] = answer;
+          });
+
+          let madlibHtml = "";
+          q.template.forEach((part, pi) => {
+            if (part === null) return;
+            if (typeof part === "string") {
+              madlibHtml += escHtml(part);
+            } else {
+              const ans = ansMap[pi] || "____";
+              madlibHtml += `<span class="madlib-word">${escHtml(ans)}</span>`;
+            }
+          });
+
+          block.innerHTML = `
+      <div class="quote-number">— ${String(qi + 1).padStart(2, "0")} —</div>
+      <div class="madlib-quote">"${madlibHtml}"</div>
+      <div class="reveal-divider"></div>
+      <div class="real-quote" id="rq-${qi}">"${escHtml(q.real)}"</div>
+      <div class="real-attribution" id="ra-${qi}">${escHtml(q.attribution)}</div>
+    `;
+          container.appendChild(block);
+        });
+
+        // stagger reveal
+        selectedQuotes.forEach((_, i) => {
+          setTimeout(() => {
+            const block = document.getElementById(`qblock-${i}`);
+            block.classList.add("visible");
+            // real quote fades in after madlib visible
+            setTimeout(() => {
+              document.getElementById(`rq-${i}`).classList.add("visible");
+              document.getElementById(`ra-${i}`).classList.add("visible");
+              // update dot
+              document.getElementById(`dot-${i}`).classList.remove("active");
+              document.getElementById(`dot-${i}`).classList.add("done");
+              if (i + 1 < selectedQuotes.length) {
+                document.getElementById(`dot-${i + 1}`).classList.add("active");
+              }
+            }, 600);
+          }, i * 1800);
+        });
+      }
+
+      function escHtml(str) {
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      // ── CHOICES ──
+      document.getElementById("btnProceed").addEventListener("click", () => {
+        window.location.href = "/flyby.html";
+      });
+
+      document.getElementById("btnRestart").addEventListener("click", () => {
+        init();
+      });
+
+      // ── START ──
+      window.addEventListener("load", init);
+    </script>
+  </body>
+</html>
