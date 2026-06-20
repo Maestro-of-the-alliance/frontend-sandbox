@@ -13,19 +13,29 @@
       html,
       body {
         width: 100%;
-        min-height: 100%;
+        height: 100%;
         background: #0d1117;
+        overflow: hidden;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #fff;
       }
 
-      /* ── PHASE: PROMPT ── */
-      #phase-prompt {
-        min-height: 100vh;
-        display: flex;
+      /* ── PHASE CONTAINERS ── */
+      .phase {
+        position: fixed;
+        inset: 0;
+        display: none;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         padding: 40px 24px;
+      }
+      .phase.active {
+        display: flex;
+      }
+
+      /* ── PROMPT PHASE ── */
+      #phase-prompt {
         background: #0d1117;
       }
 
@@ -37,40 +47,27 @@
         margin-bottom: 48px;
         text-align: center;
       }
-
-      .prompt-card {
-        width: min(560px, 100%);
-        text-align: center;
-      }
-
       .prompt-counter {
         font-size: 11px;
         letter-spacing: 0.25em;
         color: rgba(255, 255, 255, 0.2);
         text-transform: uppercase;
-        margin-bottom: 32px;
+        margin-bottom: 28px;
+        text-align: center;
       }
-
       .prompt-question {
-        font-size: clamp(22px, 5vw, 38px);
+        font-size: clamp(20px, 4vw, 34px);
         font-weight: 300;
-        color: #ffffff;
-        line-height: 1.3;
+        color: #fff;
+        line-height: 1.35;
         margin-bottom: 48px;
-        letter-spacing: -0.01em;
+        text-align: center;
+        max-width: 540px;
       }
-
       .prompt-question em {
         font-style: normal;
         color: #d7a84b;
         font-weight: 400;
-      }
-
-      .prompt-input-area {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 16px;
       }
 
       .prompt-input {
@@ -80,40 +77,48 @@
         color: #d7a84b;
         font-size: clamp(20px, 4vw, 32px);
         font-family: inherit;
-        font-weight: 400;
         text-align: center;
         width: min(320px, 90%);
         padding: 8px 0;
         outline: none;
-        letter-spacing: 0.02em;
-        transition: border-color 0.2s ease;
+        transition: border-color 0.2s;
+        display: block;
+        margin: 0 auto 16px;
       }
       .prompt-input:focus {
         border-color: #d7a84b;
       }
       .prompt-input::placeholder {
-        color: rgba(215, 168, 75, 0.25);
+        color: rgba(215, 168, 75, 0.22);
       }
 
-      .autofill-btn {
+      .btn-row {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        margin-top: 8px;
+      }
+
+      .btn-af-one {
         background: transparent;
         border: 1px solid rgba(215, 168, 75, 0.25);
-        color: rgba(215, 168, 75, 0.5);
+        color: rgba(215, 168, 75, 0.55);
         font-family: inherit;
         font-size: 11px;
         letter-spacing: 0.25em;
         text-transform: uppercase;
         padding: 8px 20px;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all 0.2s;
       }
-      .autofill-btn:hover {
+      .btn-af-one:hover {
         border-color: rgba(215, 168, 75, 0.6);
         color: rgba(215, 168, 75, 0.9);
       }
 
-      .next-btn {
-        background: rgba(215, 168, 75, 0.12);
+      .btn-next {
+        background: rgba(215, 168, 75, 0.1);
         border: 1px solid rgba(215, 168, 75, 0.35);
         color: #d7a84b;
         font-family: inherit;
@@ -122,127 +127,89 @@
         text-transform: uppercase;
         padding: 12px 32px;
         cursor: pointer;
-        transition: all 0.2s ease;
-        margin-top: 8px;
+        transition: all 0.2s;
       }
-      .next-btn:hover {
-        background: rgba(215, 168, 75, 0.22);
+      .btn-next:hover {
+        background: rgba(215, 168, 75, 0.2);
       }
-      .next-btn:disabled {
+      .btn-next:disabled {
         opacity: 0.3;
         cursor: default;
+        pointer-events: none;
       }
 
-      .autofill-all-btn {
+      .btn-af-all {
         background: transparent;
         border: none;
-        color: rgba(255, 255, 255, 0.2);
+        color: rgba(255, 255, 255, 0.18);
         font-family: inherit;
         font-size: 10px;
         letter-spacing: 0.25em;
         text-transform: uppercase;
         cursor: pointer;
-        padding: 4px 0;
-        transition: color 0.2s ease;
-        margin-top: 8px;
+        transition: color 0.2s;
+        padding: 4px;
       }
-      .autofill-all-btn:hover {
+      .btn-af-all:hover {
         color: rgba(255, 255, 255, 0.5);
       }
 
-      /* ── PHASE: REVEAL ── */
+      /* ── REVEAL PHASE ── */
       #phase-reveal {
-        display: none;
-        min-height: 100vh;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        padding: 60px 24px 80px;
         background: #0d1117;
+        justify-content: flex-start;
+        overflow-y: auto;
+        padding-top: 60px;
+        padding-bottom: 100px;
       }
 
-      .reveal-eyebrow {
-        font-size: 11px;
-        letter-spacing: 0.35em;
-        color: rgba(215, 168, 75, 0.6);
-        text-transform: uppercase;
-        margin-bottom: 60px;
+      .word-list-container {
+        width: min(700px, 100%);
+        margin: 0 auto 56px;
         text-align: center;
       }
-
-      .quote-block {
-        width: min(720px, 100%);
-        margin-bottom: 64px;
-        opacity: 0;
-        transform: translateY(20px);
+      .word-list-label {
+        font-size: 10px;
+        letter-spacing: 0.3em;
+        color: rgba(215, 168, 75, 0.4);
+        text-transform: uppercase;
+        margin-bottom: 20px;
+      }
+      .word-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+      }
+      .word-chip {
+        font-size: clamp(13px, 2vw, 16px);
+        color: #d7a84b;
+        padding: 6px 14px;
+        border: 1px solid rgba(215, 168, 75, 0.3);
+        border-radius: 2px;
         transition:
           opacity 0.6s ease,
           transform 0.6s ease;
+        background: rgba(215, 168, 75, 0.05);
       }
-      .quote-block.visible {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      .quote-number {
-        font-size: 10px;
-        letter-spacing: 0.3em;
-        color: rgba(255, 255, 255, 0.2);
-        text-transform: uppercase;
-        margin-bottom: 20px;
+      .word-chip.used {
+        opacity: 0.08;
       }
 
-      .madlib-quote {
-        font-size: clamp(16px, 2.8vw, 22px);
-        line-height: 1.7;
-        color: rgba(255, 255, 255, 0.75);
-        font-weight: 300;
-        margin-bottom: 20px;
-        font-style: italic;
+      /* quote stage */
+      .quote-stage {
+        width: min(700px, 100%);
+        margin: 0 auto;
+        min-height: 280px;
+        position: relative;
       }
 
-      .madlib-word {
-        color: #d7a84b;
-        font-style: normal;
-        font-weight: 500;
-        text-decoration: underline;
-        text-decoration-color: rgba(215, 168, 75, 0.3);
-        text-underline-offset: 3px;
+      canvas#quoteCanvas {
+        display: block;
+        width: 100%;
       }
 
-      .reveal-divider {
-        width: 40px;
-        height: 1px;
-        background: rgba(215, 168, 75, 0.3);
-        margin: 24px 0;
-      }
-
-      .real-quote {
-        font-size: clamp(14px, 2.2vw, 18px);
-        line-height: 1.7;
-        color: rgba(255, 255, 255, 0.9);
-        font-weight: 400;
-        margin-bottom: 12px;
-        opacity: 0;
-        transition: opacity 1.2s ease 0.4s;
-      }
-      .real-quote.visible {
-        opacity: 1;
-      }
-
-      .real-attribution {
-        font-size: 12px;
-        letter-spacing: 0.15em;
-        color: rgba(215, 168, 75, 0.7);
-        text-transform: uppercase;
-        opacity: 0;
-        transition: opacity 0.8s ease 1.2s;
-      }
-      .real-attribution.visible {
-        opacity: 1;
-      }
-
-      /* ── CHOICE BAR ── */
+      /* choice bar */
       .choice-bar {
         position: fixed;
         bottom: 0;
@@ -250,12 +217,18 @@
         right: 0;
         display: flex;
         justify-content: center;
-        gap: 32px;
+        gap: 24px;
         padding: 20px 24px;
         background: linear-gradient(transparent, rgba(13, 17, 23, 0.98));
+        opacity: 0;
+        transition: opacity 0.8s ease;
+        pointer-events: none;
         z-index: 50;
       }
-
+      .choice-bar.visible {
+        opacity: 1;
+        pointer-events: all;
+      }
       .choice {
         font-family: inherit;
         font-size: 11px;
@@ -266,7 +239,7 @@
         padding: 10px 20px;
         border: 1px solid transparent;
         background: transparent;
-        transition: all 0.2s ease;
+        transition: all 0.2s;
       }
       .choice.primary {
         color: #d7a84b;
@@ -276,191 +249,202 @@
         color: #eee2bd;
         border-color: rgba(215, 168, 75, 0.5);
       }
-
-      /* ── PROGRESS DOTS ── */
-      .progress-dots {
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        margin-bottom: 40px;
-      }
-      .dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: rgba(215, 168, 75, 0.2);
-        transition: background 0.3s ease;
-      }
-      .dot.active {
-        background: #d7a84b;
-      }
-      .dot.done {
-        background: rgba(215, 168, 75, 0.5);
-      }
     </style>
   </head>
   <body>
-    <!-- PHASE 1: PROMPTS -->
-    <div id="phase-prompt">
+    <!-- PROMPT PHASE -->
+    <div class="phase active" id="phase-prompt">
       <div class="prompt-eyebrow">A quick exercise before we continue</div>
-      <div class="prompt-card">
-        <div class="prompt-counter" id="promptCounter">Word 1 of —</div>
-        <div class="prompt-question" id="promptQuestion">Loading...</div>
-        <div class="prompt-input-area">
-          <input
-            class="prompt-input"
-            id="promptInput"
-            type="text"
-            placeholder="your answer"
-            autocomplete="off"
-            autocorrect="off"
-            spellcheck="false"
-          />
-          <button class="autofill-btn" id="autofillOneBtn">
-            autofill this one
-          </button>
-          <button class="next-btn" id="nextPromptBtn" disabled>Next →</button>
-          <button class="autofill-all-btn" id="autofillAllBtn">
-            autofill all remaining
-          </button>
-        </div>
+      <div class="prompt-counter" id="promptCounter">Word 1 of —</div>
+      <div class="prompt-question" id="promptQuestion"></div>
+      <input
+        class="prompt-input"
+        id="promptInput"
+        type="text"
+        placeholder="your answer"
+        autocomplete="off"
+        autocorrect="off"
+        spellcheck="false"
+      />
+      <div class="btn-row">
+        <button class="btn-af-one" id="btnAfOne">autofill this one</button>
+        <button class="btn-next" id="btnNext" disabled>Next →</button>
+        <button class="btn-af-all" id="btnAfAll">autofill all remaining</button>
       </div>
     </div>
 
-    <!-- PHASE 2: REVEALS -->
-    <div id="phase-reveal">
-      <div class="reveal-eyebrow">Here's what you made.</div>
-      <div class="progress-dots" id="progressDots"></div>
-      <div id="revealContainer"></div>
-      <div class="choice-bar">
-        <button class="choice" id="btnRestart">Restart</button>
-        <button class="choice primary" id="btnProceed">Proceed ▶▶</button>
+    <!-- REVEAL PHASE -->
+    <div class="phase" id="phase-reveal">
+      <div class="word-list-container">
+        <div class="word-list-label">Your words</div>
+        <div class="word-list" id="wordList"></div>
       </div>
+      <div class="quote-stage">
+        <canvas id="quoteCanvas"></canvas>
+      </div>
+    </div>
+
+    <div class="choice-bar" id="choiceBar">
+      <button class="choice" id="btnRestart">Try Again</button>
+      <button class="choice" id="btnBackHS">↩ Handshake</button>
+      <button class="choice primary" id="btnProceed">Proceed ▶▶</button>
     </div>
 
     <script>
       console.log("FIRING: madlib.html");
 
-      // ── QUOTE POOL ──
+      // ── QUOTE POOL ──────────────────────────────────────────────────────
       const QUOTES = [
         {
           id: "western_union",
-          template: [
+          parts: [
             "This '",
-            {
-              blank: "give me a device your grandma uses to talk to people",
-              autofills: [
-                "rotary dial",
-                "tin can",
-                "ear trumpet",
-                "telegraph key",
-                "carrier pigeon",
-              ],
-            },
-            "' has too many shortcomings to be seriously considered as a means of ",
-            {
-              blank:
-                "give me something people do when they need to reach each other",
-              autofills: [
-                "hollering",
-                "semaphore",
-                "smoke signals",
-                "letter writing",
-                "interpretive dance",
-              ],
-            },
-            ". The device is inherently of no ",
-            {
-              blank: "give me a word that means usefulness to a corporation",
-              autofills: ["value", "profit", "purpose", "utility", "synergy"],
-            },
+            { b: 0, real: "telephone" },
+            "' has too many ",
+            { b: 1, real: "shortcomings" },
+            " to be ",
+            { b: 2, real: "seriously" },
+            " considered as a means of communication. The device is inherently of ",
+            { b: 3, real: "no value" },
             " to us.",
           ],
-          real: "This 'telephone' has too many shortcomings to be seriously considered as a means of communication. The device is inherently of no value to us.",
+          prompts: [
+            {
+              q: "an invention most can't do without",
+              af: [
+                "doorbell",
+                "microwave",
+                "remote control",
+                "alarm clock",
+                "toaster",
+              ],
+            },
+            {
+              q: "a word meaning the opposite of aptitudes",
+              af: [
+                "failings",
+                "deficiencies",
+                "blunders",
+                "weaknesses",
+                "liabilities",
+              ],
+            },
+            {
+              q: "Yahoo _______ly",
+              af: ["serious", "previous", "dangerous", "obvious", "mysterious"],
+            },
+            {
+              q: "garbage's price",
+              af: [
+                "no worth",
+                "zero value",
+                "free trash",
+                "no profit",
+                "less than nothing",
+              ],
+            },
+          ],
           attribution: "Western Union — internal memo, 1876",
         },
         {
           id: "ken_olsen",
-          template: [
+          parts: [
             "There is no reason anyone would want a ",
-            {
-              blank:
-                "give me a piece of office equipment that sounds absurd in a living room",
-              autofills: [
-                "mainframe",
-                "fax machine",
-                "mimeograph",
-                "card punch",
-                "adding machine",
-              ],
-            },
+            { b: 0, real: "computer" },
             " in their ",
-            {
-              blank: "give me a room where this would be most ridiculous",
-              autofills: [
-                "bathroom",
-                "nursery",
-                "broom closet",
-                "sauna",
-                "panic room",
-              ],
-            },
+            { b: 1, real: "home" },
             ".",
           ],
-          real: "There is no reason anyone would want a computer in their home.",
+          prompts: [
+            {
+              q: "a common piece of 'personal' technology",
+              af: [
+                "fax machine",
+                "calculator",
+                "typewriter",
+                "pager",
+                "overhead projector",
+              ],
+            },
+            {
+              q: "people go here after work",
+              af: ["bar", "gym", "couch", "garage", "therapy"],
+            },
+          ],
           attribution:
             "Ken Olsen, founder of Digital Equipment Corporation — 1977",
         },
         {
           id: "decca",
-          template: [
-            "We don't like their ",
-            {
-              blank:
-                "give me something a band makes that you either love or hate",
-              autofills: [
-                "racket",
-                "noise",
-                "vibrations",
-                "caterwauling",
-                "ruckus",
-              ],
-            },
+          parts: [
+            "We don't ",
+            { b: 0, real: "like" },
+            " their ",
+            { b: 1, real: "sound" },
             ". Groups of ",
+            { b: 2, real: "guitars" },
+            " are on the ",
+            { b: 3, real: "way out" },
+            ".",
+          ],
+          prompts: [
             {
-              blank: "give me an instrument that seems old-fashioned",
-              autofills: [
-                "banjos",
-                "kazoos",
-                "harmonicas",
-                "ukuleles",
-                "washboards",
+              q: "a feeling of affirmation",
+              af: ["enjoy", "appreciate", "love", "admire", "respect"],
+            },
+            {
+              q: "flatulence often creates a",
+              af: ["smell", "disturbance", "noise", "cloud", "situation"],
+            },
+            {
+              q: "a stringed instrument",
+              af: ["banjos", "ukuleles", "harps", "mandolins", "lutes"],
+            },
+            {
+              q: "two words meaning great distance",
+              af: [
+                "far gone",
+                "miles away",
+                "long gone",
+                "far out",
+                "worlds apart",
               ],
             },
-            " are on the way out.",
           ],
-          real: "We don't like their sound. Groups of guitars are on the way out.",
           attribution: "Decca Records — rejecting the Beatles, 1962",
         },
         {
           id: "zanuck",
-          template: [
-            null,
+          parts: [
+            { b: 0, real: "Television" },
+            " won't be able to hold on to any ",
+            { b: 1, real: "market" },
+            " it captures after the first ",
+            { b: 2, real: "six months" },
+            ". ",
+            { b: 3, real: "People" },
+            " will soon get tired of staring at a ",
+            { b: 4, real: "plywood box" },
+            " every night.",
+          ],
+          prompts: [
             {
-              blank:
-                "give me a form of entertainment that definitely hasn't taken over civilization",
-              autofills: [
-                "Television",
-                "Podcasting",
-                "Streaming",
-                "TikTok",
-                "YouTube",
+              q: "it has a screen",
+              af: ["The iPhone", "A laptop", "Streaming", "TikTok", "YouTube"],
+            },
+            {
+              q: "dinner is bought here",
+              af: [
+                "restaurant",
+                "grocery store",
+                "food court",
+                "drive-thru",
+                "farmers market",
               ],
             },
-            " won't be able to hold on to any market it captures after the first ",
             {
-              blank: "give me a laughably short amount of time",
-              autofills: [
+              q: "time before new tech becomes obsolete",
+              af: [
                 "six months",
                 "two weeks",
                 "a long weekend",
@@ -468,476 +452,690 @@
                 "forty-five minutes",
               ],
             },
-            ". People will soon get tired of staring at a ",
             {
-              blank:
-                "give me a piece of furniture that sounds stupid to stare at",
-              autofills: [
-                "plywood box",
-                "credenza",
-                "ottoman",
-                "hope chest",
-                "chifforobe",
+              q: "plural noun",
+              af: [
+                "Teenagers",
+                "Executives",
+                "Dentists",
+                "Accountants",
+                "Librarians",
               ],
             },
-            " every night.",
+            {
+              q: "two words you might be buried in",
+              af: [
+                "plywood box",
+                "pine box",
+                "cheap casket",
+                "wooden crate",
+                "cardboard box",
+              ],
+            },
           ],
-          real: "Television won't be able to hold on to any market it captures after the first six months. People will soon get tired of staring at a plywood box every night.",
           attribution: "Darryl Zanuck, Head of 20th Century Fox — 1946",
         },
         {
           id: "ballmer",
-          template: [
+          parts: [
             "There's no chance that the ",
-            {
-              blank:
-                "give me something that everyone you know has in their pocket right now",
-              autofills: [
-                "iPhone",
-                "smartphone",
-                "pocket computer",
-                "glass rectangle",
-                "tiny brain extension",
-              ],
-            },
+            { b: 0, real: "iPhone" },
             " is going to get any significant ",
-            {
-              blank:
-                "give me a business metric that makes executives feel smart",
-              autofills: [
-                "market share",
-                "mindshare",
-                "user adoption",
-                "synergistic uptake",
-                "brand penetration",
-              ],
-            },
-            ".",
+            { b: 1, real: "market" },
+            " share.",
           ],
-          real: "There's no chance that the iPhone is going to get any significant market share.",
+          prompts: [
+            {
+              q: "there are 17 of them",
+              af: ["Android", "Galaxy", "Blackberry", "Nokia", "Motorola"],
+            },
+            {
+              q: "retail establishment",
+              af: ["farmers", "flea", "stock", "black", "swap"],
+            },
+          ],
           attribution: "Steve Ballmer, CEO of Microsoft — 2007",
         },
         {
           id: "summerfield",
-          template: [
+          parts: [
             "Before man reaches the ",
-            {
-              blank:
-                "give me a celestial body that seemed impossibly far away in 1959",
-              autofills: [
-                "moon",
-                "stars",
-                "Mars",
-                "the Milky Way",
-                "the outer darkness",
-              ],
-            },
+            { b: 0, real: "moon" },
             ", your ",
+            { b: 1, real: "mail" },
+            " will be delivered within hours from New York to ",
+            { b: 2, real: "Australia" },
+            " by guided ",
+            { b: 3, real: "missiles" },
+            ". We stand on the threshold of ",
+            { b: 4, real: "rocket mail" },
+            ".",
+          ],
+          prompts: [
             {
-              blank:
-                "give me something you send when you want someone to know you're thinking of them",
-              autofills: [
-                "mail",
-                "birthday cards",
-                "fruit baskets",
-                "telegrams",
-                "good vibes",
+              q: "a type of pie",
+              af: ["moon", "sun", "star", "cloud", "crater"],
+            },
+            {
+              q: "antiquated form of communication",
+              af: [
+                "telegram",
+                "letter",
+                "fax",
+                "carrier pigeon",
+                "smoke signal",
               ],
             },
-            " will be delivered within hours from New York to Australia by ",
             {
-              blank:
-                "give me something that travels fast but seems insane for package delivery",
-              autofills: [
-                "guided missiles",
+              q: "a continent",
+              af: ["Australia", "Antarctica", "Africa", "Europe", "Asia"],
+            },
+            {
+              q: "something that travels fast but seems insane for delivery",
+              af: [
+                "missiles",
                 "cannonballs",
+                "trebuchets",
                 "very motivated interns",
                 "carrier pigeons on espresso",
-                "race cars",
               ],
             },
-            ". We stand on the threshold of ",
             {
-              blank:
-                "give me a made-up industry that sounds both official and completely unhinged",
-              autofills: [
+              q: "a made-up industry that sounds official and unhinged",
+              af: [
                 "rocket mail",
                 "missile post",
                 "ballistic correspondence",
-                "supersonic parcel service",
                 "orbital delivery",
+                "supersonic parcel service",
               ],
             },
-            ".",
           ],
-          real: "Before man reaches the moon, your mail will be delivered within hours from New York to Australia by guided missiles. We stand on the threshold of rocket mail.",
           attribution: "Arthur Summerfield, U.S. Postmaster General — 1959",
         },
         {
-          id: "goldwyn_price",
-          template: [
+          id: "goldwyn_pay",
+          parts: [
             "I include myself among the ",
+            { b: 0, real: "millions" },
+            " who will be unable to ",
+            { b: 1, real: "pay" },
+            " for ",
+            { b: 2, real: "television" },
+            ".",
+          ],
+          prompts: [
             {
-              blank:
-                "give me a number so catastrophically large it sounds like an excuse not to try",
-              autofills: [
-                "millions",
+              q: "a once large sum of money",
+              af: [
                 "billions",
+                "thousands",
+                "a fortune",
                 "untold masses",
                 "seventy-seven percent",
-                "literally everyone",
               ],
             },
-            " who will be unable to pay for ",
             {
-              blank:
-                "give me a piece of tech you can buy for under $30 at any drug store",
-              autofills: [
-                "television",
-                "a calculator",
-                "earbuds",
-                "a phone charger",
-                "a USB hub",
-              ],
+              q: "a man traditionally does this on a date",
+              af: ["pay", "propose", "cry", "brag", "overcook"],
             },
-            ".",
+            {
+              q: "piece of tech that's both a noun and a verb",
+              af: ["Google", "Zoom", "Uber", "TiVo", "Snapchat"],
+            },
           ],
-          real: "I include myself among the millions who will be unable to pay for television.",
-          attribution: "Samuel Goldwyn, co-founder of MGM",
-        },
-        {
-          id: "goldwyn_color",
-          template: [
-            null,
-            {
-              blank:
-                "give me something that sounds miraculous until you remember it already exists",
-              autofills: [
-                "Color television",
-                "Wireless music",
-                "Moving pictures",
-                "Talking films",
-                "Indoor plumbing",
-              ],
-            },
-            "! Bah, I won't believe it until I see it in ",
-            {
-              blank:
-                "give me a way of experiencing something that completely defeats the purpose",
-              autofills: [
-                "black and white",
-                "complete darkness",
-                "a written description",
-                "a still photograph",
-                "someone else's words",
-              ],
-            },
-            ".",
-          ],
-          real: "Color television! Bah, I won't believe it until I see it in black and white.",
           attribution: "Samuel Goldwyn, co-founder of MGM",
         },
         {
           id: "ericksen",
-          template: [
-            "The ",
-            {
-              blank:
-                "give me three parts of the human body you'd really prefer a doctor could reach",
-              autofills: [
-                "abdomen, the chest, and the brain",
-                "heart, the lungs, and the spine",
-                "liver, the kidneys, and the pancreas",
-                "stomach, the colon, and the appendix",
-                "everything important, basically",
-              ],
-            },
-            " will forever be shut from the intrusion of the ",
-            {
-              blank:
-                "give me an adjective that describes a doctor who clearly knows what they're doing",
-              autofills: [
-                "wise and humane",
-                "skilled and careful",
-                "board-certified and sober",
-                "competent and awake",
-                "actually trained",
-              ],
-            },
-            " surgeon.",
+          parts: [
+            "The abdomen, the ",
+            { b: 0, real: "chest" },
+            ", and the ",
+            { b: 1, real: "brain" },
+            " will forever be shut from the ",
+            { b: 2, real: "intrusion" },
+            " of the wise and humane surgeon.",
           ],
-          real: "The abdomen, the chest, and the brain will forever be shut from the intrusion of the wise and humane surgeon.",
+          prompts: [
+            {
+              q: "a place for keepsakes",
+              af: ["chest", "trunk", "vault", "attic", "hope chest"],
+            },
+            {
+              q: "tenant outreach",
+              af: [
+                "landlord",
+                "super",
+                "management",
+                "building brain",
+                "property oversight",
+              ],
+            },
+            {
+              q: "what targeted ads begin to feel like",
+              af: [
+                "intrusion",
+                "invasion",
+                "harassment",
+                "surveillance",
+                "ambush",
+              ],
+            },
+          ],
           attribution:
             "Sir John Eric Ericksen, Surgeon to Queen Victoria — 1873",
         },
       ];
 
-      // ── TRACKING ──
-      const ML_SEEN_KEY = "atf_ml_seen";
-      const COMP_KEY = "atf_completion";
+      // ── STORAGE ─────────────────────────────────────────────────────────
+      const ML_SEEN = "atf_ml_seen";
+      const COMP = "atf_completion";
 
-      function getMlSeen() {
+      function getSeen() {
         try {
-          return JSON.parse(localStorage.getItem(ML_SEEN_KEY) || "[]");
+          return JSON.parse(localStorage.getItem(ML_SEEN) || "[]");
         } catch (e) {
           return [];
         }
       }
-      function markMlSeen(ids) {
-        let seen = getMlSeen();
+      function markSeen(ids) {
+        let s = getSeen();
         ids.forEach((id) => {
-          if (!seen.includes(id)) seen.push(id);
+          if (!s.includes(id)) s.push(id);
         });
-        if (seen.length >= QUOTES.length) seen = [];
-        localStorage.setItem(ML_SEEN_KEY, JSON.stringify(seen));
-        // completion
+        if (s.length >= QUOTES.length) s = [];
+        localStorage.setItem(ML_SEEN, JSON.stringify(s));
         try {
-          let comp = JSON.parse(localStorage.getItem(COMP_KEY) || "{}");
-          if (!comp.madlib) comp.madlib = [];
+          let c = JSON.parse(localStorage.getItem(COMP) || "{}");
+          if (!c.madlib) c.madlib = [];
           ids.forEach((id) => {
-            if (!comp.madlib.includes(id)) comp.madlib.push(id);
+            if (!c.madlib.includes(id)) c.madlib.push(id);
           });
-          localStorage.setItem(COMP_KEY, JSON.stringify(comp));
+          localStorage.setItem(COMP, JSON.stringify(c));
         } catch (e) {}
       }
-
-      function pickThreeQuotes() {
-        const seen = getMlSeen();
+      function pickThree() {
+        const seen = getSeen();
         const unseen = QUOTES.filter((q) => !seen.includes(q.id));
         const pool = unseen.length >= 3 ? unseen : QUOTES;
-        const shuffled = [...pool].sort(() => Math.random() - 0.5);
-        return shuffled.slice(0, 3);
+        return [...pool].sort(() => Math.random() - 0.5).slice(0, 3);
       }
 
-      // ── STATE ──
+      // ── STATE ────────────────────────────────────────────────────────────
       let selectedQuotes = [];
-      let allBlanks = []; // {quoteIdx, blankIdx, prompt, autofills}
-      let answers = []; // parallel array to allBlanks
-      let currentBlankIdx = 0;
+      let allBlanks = []; // {qi, bi, prompt, autofills}
+      let answers = [];
+      let currentB = 0;
 
       function init() {
-        selectedQuotes = pickThreeQuotes();
+        selectedQuotes = pickThree();
         allBlanks = [];
         answers = [];
-
-        // collect all blanks from all 3 quotes, then shuffle
         selectedQuotes.forEach((q, qi) => {
-          q.template.forEach((part, pi) => {
-            if (part && typeof part === "object" && part.blank) {
+          q.parts.forEach((p, pi) => {
+            if (p && typeof p === "object") {
               allBlanks.push({
-                quoteIdx: qi,
-                partIdx: pi,
-                prompt: part.blank,
-                autofills: part.autofills,
+                qi,
+                pi,
+                prompt: q.prompts[p.b].q,
+                autofills: q.prompts[p.b].af,
+                real: p.real,
               });
               answers.push(null);
             }
           });
         });
-
         // shuffle blanks
         for (let i = allBlanks.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [allBlanks[i], allBlanks[j]] = [allBlanks[j], allBlanks[i]];
           [answers[i], answers[j]] = [answers[j], answers[i]];
         }
-
-        currentBlankIdx = 0;
-        showPrompt();
+        currentB = 0;
+        showPromptPhase();
       }
 
-      // ── PROMPT PHASE ──
-      function showPrompt() {
-        document.getElementById("phase-prompt").style.display = "flex";
-        document.getElementById("phase-reveal").style.display = "none";
-        renderCurrentPrompt();
+      // ── PROMPT PHASE ─────────────────────────────────────────────────────
+      function showPromptPhase() {
+        document.getElementById("phase-prompt").classList.add("active");
+        document.getElementById("phase-reveal").classList.remove("active");
+        document.getElementById("choiceBar").classList.remove("visible");
+        renderPrompt();
       }
 
-      function renderCurrentPrompt() {
-        const blank = allBlanks[currentBlankIdx];
-        const total = allBlanks.length;
+      function renderPrompt() {
+        const b = allBlanks[currentB];
         document.getElementById("promptCounter").textContent =
-          `Word ${currentBlankIdx + 1} of ${total}`;
-
-        // format prompt as question
-        const q = blank.prompt;
-        const capitalized = q.charAt(0).toUpperCase() + q.slice(1);
+          `Word ${currentB + 1} of ${allBlanks.length}`;
+        const q = b.prompt;
         document.getElementById("promptQuestion").innerHTML =
-          capitalized.includes("give me")
-            ? capitalized.replace("give me ", "Give me <em>") + "</em>"
-            : `<em>${capitalized}</em>`;
-
-        const input = document.getElementById("promptInput");
-        input.value = "";
-        input.placeholder = "your answer";
-        input.focus();
-
-        document.getElementById("nextPromptBtn").disabled = true;
+          q.charAt(0).toUpperCase() + q.slice(1);
+        const inp = document.getElementById("promptInput");
+        inp.value = "";
+        inp.focus();
+        document.getElementById("btnNext").disabled = true;
       }
 
-      // input enables next
       document
         .getElementById("promptInput")
         .addEventListener("input", function () {
-          document.getElementById("nextPromptBtn").disabled =
+          document.getElementById("btnNext").disabled =
             this.value.trim().length === 0;
         });
-
       document
         .getElementById("promptInput")
-        .addEventListener("keydown", function (e) {
-          if (e.key === "Enter" && this.value.trim().length > 0)
-            advancePrompt();
+        .addEventListener("keydown", (e) => {
+          if (
+            e.key === "Enter" &&
+            document.getElementById("promptInput").value.trim()
+          )
+            advance();
         });
+      document.getElementById("btnNext").addEventListener("click", advance);
 
-      document
-        .getElementById("nextPromptBtn")
-        .addEventListener("click", advancePrompt);
-
-      function advancePrompt() {
+      function advance() {
         const val = document.getElementById("promptInput").value.trim();
         if (!val) return;
-        answers[currentBlankIdx] = val;
-        currentBlankIdx++;
-        if (currentBlankIdx >= allBlanks.length) {
-          showReveal();
-        } else {
-          renderCurrentPrompt();
-        }
+        answers[currentB] = val;
+        currentB++;
+        if (currentB >= allBlanks.length) showRevealPhase();
+        else renderPrompt();
       }
 
-      // autofill one
-      document
-        .getElementById("autofillOneBtn")
-        .addEventListener("click", function () {
-          const blank = allBlanks[currentBlankIdx];
-          const opts = blank.autofills;
-          const pick = opts[Math.floor(Math.random() * opts.length)];
-          document.getElementById("promptInput").value = pick;
-          document.getElementById("nextPromptBtn").disabled = false;
+      document.getElementById("btnAfOne").addEventListener("click", () => {
+        const af = allBlanks[currentB].autofills;
+        document.getElementById("promptInput").value =
+          af[Math.floor(Math.random() * af.length)];
+        document.getElementById("btnNext").disabled = false;
+      });
+
+      document.getElementById("btnAfAll").addEventListener("click", () => {
+        for (let i = currentB; i < allBlanks.length; i++) {
+          if (!answers[i])
+            answers[i] =
+              allBlanks[i].autofills[
+                Math.floor(Math.random() * allBlanks[i].autofills.length)
+              ];
+        }
+        document.getElementById("promptInput").value = answers[currentB];
+        document.getElementById("btnNext").disabled = false;
+        setTimeout(showRevealPhase, 300);
+      });
+
+      // ── REVEAL PHASE ─────────────────────────────────────────────────────
+      function showRevealPhase() {
+        markSeen(selectedQuotes.map((q) => q.id));
+        document.getElementById("phase-prompt").classList.remove("active");
+        document.getElementById("phase-reveal").classList.add("active");
+
+        // build answer lookup: {qi: {bi: answer}}
+        const ansMap = {};
+        allBlanks.forEach((b, i) => {
+          if (!ansMap[b.qi]) ansMap[b.qi] = {};
+          ansMap[b.qi][b.bi] = answers[i];
         });
 
-      // autofill all remaining
-      document
-        .getElementById("autofillAllBtn")
-        .addEventListener("click", function () {
-          for (let i = currentBlankIdx; i < allBlanks.length; i++) {
-            if (answers[i] === null) {
-              const opts = allBlanks[i].autofills;
-              answers[i] = opts[Math.floor(Math.random() * opts.length)];
+        // render word list chips
+        const wordList = document.getElementById("wordList");
+        wordList.innerHTML = "";
+        // show answers in the order they were answered (shuffled order)
+        allBlanks.forEach((b, i) => {
+          const chip = document.createElement("div");
+          chip.className = "word-chip";
+          chip.id = `chip-${i}`;
+          chip.textContent = answers[i];
+          wordList.appendChild(chip);
+        });
+
+        // setup canvas
+        const canvas = document.getElementById("quoteCanvas");
+        const stage = canvas.parentElement;
+        canvas.width = stage.offsetWidth * window.devicePixelRatio;
+        canvas.height = 380 * window.devicePixelRatio;
+        canvas.style.height = "380px";
+        const ctx = canvas.getContext("2d");
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        const W = stage.offsetWidth;
+        const H = 380;
+
+        // run the three-quote sequence
+        runQuoteSequence(ctx, W, H, ansMap, 0);
+      }
+
+      // ── CANVAS SEQUENCE ───────────────────────────────────────────────────
+      function runQuoteSequence(ctx, W, H, ansMap, qi) {
+        if (qi >= selectedQuotes.length) {
+          // all done
+          document.getElementById("choiceBar").classList.add("visible");
+          return;
+        }
+
+        const q = selectedQuotes[qi];
+
+        // build token list for this quote
+        // each token: {text, isBlank, blankIdx (into allBlanks), answer, real}
+        const tokens = [];
+        q.parts.forEach((p, pi) => {
+          if (typeof p === "string") {
+            tokens.push({ text: p, isBlank: false });
+          } else {
+            // find which allBlanks entry corresponds to this qi/pi
+            const bIdx = allBlanks.findIndex((b) => b.qi === qi && b.pi === pi);
+            tokens.push({
+              text: answers[bIdx],
+              isBlank: true,
+              bIdx,
+              real: p.real,
+            });
+          }
+        });
+
+        // STEP 1: fade blank words from chip list, fade in at positions
+        // STEP 2: diffuse rest of mad lib quote around them (left to right)
+        // STEP 3: hold 1s
+        // STEP 4: diffuse real quote in (left to right) replacing answers
+        // STEP 5: hold 1s
+        // STEP 6: fade in attribution
+        // STEP 7: hold 1.5s then fade everything, next quote
+
+        const FONT_SIZE = Math.min(18, W / 28);
+        const LINE_H = FONT_SIZE * 1.7;
+        const GOLD = "#d7a84b";
+        const WHITE = "#e8e0cc";
+        const DIM = "rgba(232,224,204,0.55)";
+        const ATTR_COLOR = "rgba(215,168,75,0.7)";
+
+        // layout tokens into wrapped lines
+        ctx.font = `${FONT_SIZE}px -apple-system, sans-serif`;
+        const MARGIN = 32;
+        const maxW = W - MARGIN * 2;
+
+        function layoutTokens(toks, useReal) {
+          // returns array of {x,y,text,isBlank} positioned
+          const words = [];
+          toks.forEach((t) => {
+            const txt = useReal && t.isBlank ? t.real : t.text;
+            // split on spaces but keep them
+            const parts = txt.split(/(\s+)/);
+            parts.forEach((p) => {
+              if (p) words.push({ text: p, isBlank: t.isBlank, bIdx: t.bIdx });
+            });
+          });
+
+          const placed = [];
+          let x = MARGIN,
+            y = FONT_SIZE + 20;
+          words.forEach((w) => {
+            const tw = ctx.measureText(w.text).width;
+            if (x + tw > MARGIN + maxW && w.text.trim()) {
+              x = MARGIN;
+              y += LINE_H;
+            }
+            placed.push({
+              x,
+              y,
+              text: w.text,
+              isBlank: w.isBlank,
+              bIdx: w.bIdx,
+              w: tw,
+            });
+            x += tw;
+          });
+          return placed;
+        }
+
+        // diffusion particle effect for a single word appearing at position
+        function diffuseWord(ctx, text, tx, ty, color, progress) {
+          // progress 0→1
+          // at low progress: scattered random chars around position, blurry
+          // at high progress: clear text at position
+          const p = Math.max(0, Math.min(1, progress));
+          const ease = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p; // ease in out
+
+          ctx.save();
+          ctx.font = `${FONT_SIZE}px -apple-system, sans-serif`;
+
+          if (ease < 0.85) {
+            // scatter phase — draw noisy chars around target
+            const scatter = (1 - ease) * 28;
+            const numParts = Math.floor(8 * (1 - ease));
+            const chars = "▓▒░█▄▀■□▪▫◆◇○●";
+            ctx.globalAlpha = Math.min(1, ease * 2) * 0.6;
+            ctx.fillStyle = color;
+            for (let i = 0; i < numParts; i++) {
+              const nx = tx + (Math.random() - 0.5) * scatter * 2;
+              const ny = ty + (Math.random() - 0.5) * scatter * 0.6;
+              ctx.fillText(
+                chars[Math.floor(Math.random() * chars.length)],
+                nx,
+                ny,
+              );
             }
           }
-          // fill current display too
-          const blank = allBlanks[currentBlankIdx];
-          document.getElementById("promptInput").value =
-            answers[currentBlankIdx];
-          document.getElementById("nextPromptBtn").disabled = false;
-          // advance after brief pause
-          setTimeout(() => showReveal(), 400);
+
+          // draw actual text fading in
+          ctx.globalAlpha = ease;
+          ctx.fillStyle = color;
+          ctx.fillText(text, tx, ty);
+          ctx.restore();
+        }
+
+        // full sequence animation
+        let phase = "blank-fade-in"; // phases: blank-fade-in, madlib-diffuse, hold-madlib, real-diffuse, hold-real, attribution, hold-attr, fade-out
+        let phaseStart = performance.now();
+        let madlibLayout = null;
+        let realLayout = null;
+        let attrAlpha = 0;
+        let overallAlpha = 1;
+
+        // mark chips as used for this quote
+        allBlanks.forEach((b, i) => {
+          if (b.qi === qi) {
+            const chip = document.getElementById(`chip-${i}`);
+            if (chip) chip.classList.add("used");
+          }
         });
 
-      // ── REVEAL PHASE ──
-      function showReveal() {
-        // mark these quotes seen
-        markMlSeen(selectedQuotes.map((q) => q.id));
+        function frame(now) {
+          const elapsed = now - phaseStart;
+          ctx.clearRect(0, 0, W, H);
+          ctx.save();
+          ctx.globalAlpha = overallAlpha;
 
-        document.getElementById("phase-prompt").style.display = "none";
-        const revealDiv = document.getElementById("phase-reveal");
-        revealDiv.style.display = "flex";
+          if (!madlibLayout) madlibLayout = layoutTokens(tokens, false);
+          if (!realLayout) realLayout = layoutTokens(tokens, true);
 
-        // build answer map: quoteIdx → [answers in order]
-        const answersByQuote = selectedQuotes.map(() => []);
-        allBlanks.forEach((blank, i) => {
-          answersByQuote[blank.quoteIdx].push({
-            partIdx: blank.partIdx,
-            answer: answers[i],
-          });
-        });
+          // total diffuse duration spreads words left to right
+          const DIFFUSE_TOTAL = 2200; // ms for all words to appear
+          const HOLD = 1000;
+          const ATTR_FADE = 600;
+          const ATTR_HOLD = 1200;
+          const FADE_OUT = 700;
 
-        // build progress dots
-        const dotsEl = document.getElementById("progressDots");
-        dotsEl.innerHTML = "";
-        selectedQuotes.forEach((_, i) => {
-          const dot = document.createElement("div");
-          dot.className = "dot" + (i === 0 ? " active" : "");
-          dot.id = `dot-${i}`;
-          dotsEl.appendChild(dot);
-        });
-
-        // build quote blocks
-        const container = document.getElementById("revealContainer");
-        container.innerHTML = "";
-
-        selectedQuotes.forEach((q, qi) => {
-          const block = document.createElement("div");
-          block.className = "quote-block";
-          block.id = `qblock-${qi}`;
-
-          // build mad-libbed version
-          const ansMap = {};
-          answersByQuote[qi].forEach(({ partIdx, answer }) => {
-            ansMap[partIdx] = answer;
-          });
-
-          let madlibHtml = "";
-          q.template.forEach((part, pi) => {
-            if (part === null) return;
-            if (typeof part === "string") {
-              madlibHtml += escHtml(part);
-            } else {
-              const ans = ansMap[pi] || "____";
-              madlibHtml += `<span class="madlib-word">${escHtml(ans)}</span>`;
-            }
-          });
-
-          block.innerHTML = `
-      <div class="quote-number">— ${String(qi + 1).padStart(2, "0")} —</div>
-      <div class="madlib-quote">"${madlibHtml}"</div>
-      <div class="reveal-divider"></div>
-      <div class="real-quote" id="rq-${qi}">"${escHtml(q.real)}"</div>
-      <div class="real-attribution" id="ra-${qi}">${escHtml(q.attribution)}</div>
-    `;
-          container.appendChild(block);
-        });
-
-        // stagger reveal
-        selectedQuotes.forEach((_, i) => {
-          setTimeout(() => {
-            const block = document.getElementById(`qblock-${i}`);
-            block.classList.add("visible");
-            // real quote fades in after madlib visible
-            setTimeout(() => {
-              document.getElementById(`rq-${i}`).classList.add("visible");
-              document.getElementById(`ra-${i}`).classList.add("visible");
-              // update dot
-              document.getElementById(`dot-${i}`).classList.remove("active");
-              document.getElementById(`dot-${i}`).classList.add("done");
-              if (i + 1 < selectedQuotes.length) {
-                document.getElementById(`dot-${i + 1}`).classList.add("active");
+          if (phase === "blank-fade-in") {
+            // show blank words already in position (they faded from list)
+            // duration: 600ms
+            const p = Math.min(1, elapsed / 600);
+            madlibLayout.forEach((w) => {
+              if (w.isBlank) {
+                ctx.save();
+                ctx.globalAlpha = p;
+                ctx.fillStyle = GOLD;
+                ctx.font = `500 ${FONT_SIZE}px -apple-system, sans-serif`;
+                ctx.fillText(w.text, w.x, w.y);
+                ctx.restore();
               }
-            }, 600);
-          }, i * 1800);
-        });
+            });
+            if (p >= 1) {
+              phase = "madlib-diffuse";
+              phaseStart = now;
+            }
+          } else if (phase === "madlib-diffuse") {
+            // diffuse non-blank words left to right around the blanks
+            // blanks stay solid
+            const nonBlanks = madlibLayout.filter(
+              (w) => !w.isBlank && w.text.trim(),
+            );
+            const perWord = DIFFUSE_TOTAL / Math.max(1, nonBlanks.length);
+
+            // draw blanks solid
+            madlibLayout.forEach((w) => {
+              if (w.isBlank) {
+                ctx.save();
+                ctx.fillStyle = GOLD;
+                ctx.font = `500 ${FONT_SIZE}px -apple-system, sans-serif`;
+                ctx.fillText(w.text, w.x, w.y);
+                ctx.restore();
+              }
+            });
+
+            // diffuse each non-blank in sequence
+            let anyPending = false;
+            nonBlanks.forEach((w, wi) => {
+              const wordStart = wi * perWord * 0.7; // overlap slightly
+              const wordElapsed = elapsed - wordStart;
+              const wordDur = perWord * 1.4;
+              const p = Math.min(1, Math.max(0, wordElapsed / wordDur));
+              if (p < 1) anyPending = true;
+              diffuseWord(ctx, w.text, w.x, w.y, DIM, p);
+            });
+
+            if (!anyPending && elapsed > DIFFUSE_TOTAL) {
+              phase = "hold-madlib";
+              phaseStart = now;
+            }
+          } else if (phase === "hold-madlib") {
+            // draw complete mad lib
+            madlibLayout.forEach((w) => {
+              ctx.save();
+              ctx.font = w.isBlank
+                ? `500 ${FONT_SIZE}px -apple-system, sans-serif`
+                : `${FONT_SIZE}px -apple-system, sans-serif`;
+              ctx.fillStyle = w.isBlank ? GOLD : DIM;
+              ctx.globalAlpha = 1;
+              ctx.fillText(w.text, w.x, w.y);
+              ctx.restore();
+            });
+            if (elapsed >= HOLD) {
+              phase = "real-diffuse";
+              phaseStart = now;
+            }
+          } else if (phase === "real-diffuse") {
+            // diffuse real quote in, replacing everything left to right
+            const allWords = realLayout.filter((w) => w.text.trim());
+            const perWord = DIFFUSE_TOTAL / Math.max(1, allWords.length);
+
+            allWords.forEach((w, wi) => {
+              const wordStart = wi * perWord * 0.65;
+              const wordElapsed = elapsed - wordStart;
+              const wordDur = perWord * 1.5;
+              const p = Math.min(1, Math.max(0, wordElapsed / wordDur));
+              const color = w.isBlank ? WHITE : WHITE;
+              ctx.save();
+              ctx.font = `${FONT_SIZE}px -apple-system, sans-serif`;
+              diffuseWord(ctx, w.text, w.x, w.y, color, p);
+              ctx.restore();
+            });
+
+            const lastWordStart = (allWords.length - 1) * perWord * 0.65;
+            if (elapsed > lastWordStart + perWord * 1.5 + 200) {
+              phase = "hold-real";
+              phaseStart = now;
+            }
+          } else if (phase === "hold-real") {
+            realLayout.forEach((w) => {
+              ctx.save();
+              ctx.font = `${FONT_SIZE}px -apple-system, sans-serif`;
+              ctx.fillStyle = WHITE;
+              ctx.fillText(w.text, w.x, w.y);
+              ctx.restore();
+            });
+            if (elapsed >= HOLD) {
+              phase = "attribution";
+              phaseStart = now;
+            }
+          } else if (phase === "attribution") {
+            // draw real quote
+            realLayout.forEach((w) => {
+              ctx.save();
+              ctx.font = `${FONT_SIZE}px -apple-system, sans-serif`;
+              ctx.fillStyle = WHITE;
+              ctx.fillText(w.text, w.x, w.y);
+              ctx.restore();
+            });
+            // fade in attribution below
+            attrAlpha = Math.min(1, elapsed / ATTR_FADE);
+            const attrY =
+              (realLayout[realLayout.length - 1]?.y || 80) + LINE_H * 1.4;
+            ctx.save();
+            ctx.globalAlpha = attrAlpha;
+            ctx.fillStyle = ATTR_COLOR;
+            ctx.font = `11px -apple-system, sans-serif`;
+            ctx.letterSpacing = "0.15em";
+            ctx.fillText(
+              ("— " + selectedQuotes[qi].attribution).toUpperCase(),
+              MARGIN,
+              attrY,
+            );
+            ctx.restore();
+            if (elapsed >= ATTR_FADE + ATTR_HOLD) {
+              phase = "fade-out";
+              phaseStart = now;
+            }
+          } else if (phase === "fade-out") {
+            overallAlpha = Math.max(0, 1 - elapsed / FADE_OUT);
+            // draw real quote + attr at fading alpha
+            realLayout.forEach((w) => {
+              ctx.save();
+              ctx.font = `${FONT_SIZE}px -apple-system, sans-serif`;
+              ctx.fillStyle = WHITE;
+              ctx.fillText(w.text, w.x, w.y);
+              ctx.restore();
+            });
+            const attrY =
+              (realLayout[realLayout.length - 1]?.y || 80) + LINE_H * 1.4;
+            ctx.save();
+            ctx.fillStyle = ATTR_COLOR;
+            ctx.font = `11px -apple-system, sans-serif`;
+            ctx.fillText(
+              ("— " + selectedQuotes[qi].attribution).toUpperCase(),
+              MARGIN,
+              attrY,
+            );
+            ctx.restore();
+
+            if (overallAlpha <= 0) {
+              ctx.restore();
+              overallAlpha = 1;
+              madlibLayout = null;
+              realLayout = null;
+              // next quote
+              setTimeout(
+                () => runQuoteSequence(ctx, W, H, ansMap, qi + 1),
+                400,
+              );
+              return;
+            }
+          }
+
+          ctx.restore();
+          requestAnimationFrame(frame);
+        }
+
+        requestAnimationFrame(frame);
       }
 
-      function escHtml(str) {
-        return str
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;");
-      }
-
-      // ── CHOICES ──
+      // ── CHOICES ──────────────────────────────────────────────────────────
       document.getElementById("btnProceed").addEventListener("click", () => {
         window.location.href = "/flyby.html";
       });
-
-      document.getElementById("btnRestart").addEventListener("click", () => {
-        init();
+      document.getElementById("btnRestart").addEventListener("click", init);
+      document.getElementById("btnBackHS").addEventListener("click", () => {
+        window.location.href = "/handshake.html";
       });
 
-      // ── START ──
+      // ── START ─────────────────────────────────────────────────────────────
       window.addEventListener("load", init);
     </script>
   </body>
