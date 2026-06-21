@@ -17,22 +17,21 @@
       html,
       body {
         width: 100%;
-        min-height: 100%;
+        height: 100%;
         background: #000;
+        overflow: hidden;
         font-family: "IBM Plex Mono", monospace;
       }
-
       body {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         justify-content: center;
-        padding: 24px 16px 120px;
       }
 
-      /* ── CRT SHELL ── */
       .crt-shell {
         position: relative;
-        width: min(820px, 100%);
+        width: min(860px, 96vw);
+        height: min(620px, 94vh);
         background: #080909;
         border-radius: 18px;
         border: 2px solid #1a1c1c;
@@ -41,9 +40,10 @@
           0 0 60px rgba(0, 0, 0, 0.9),
           inset 0 0 120px rgba(0, 0, 0, 0.6);
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
         animation: flickerIn 0.9s ease-out forwards;
       }
-
       @keyframes flickerIn {
         0% {
           opacity: 0;
@@ -68,17 +68,16 @@
         }
       }
 
-      /* ── CRT SCREEN ── */
       .crt-screen {
         position: relative;
-        margin: 18px;
+        margin: 18px 18px 0;
         background: #030404;
         border-radius: 10px;
         overflow: hidden;
-        box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
       }
-
-      /* scanlines */
       .crt-screen::before {
         content: "";
         position: absolute;
@@ -93,8 +92,6 @@
           rgba(0, 0, 0, 0.18) 4px
         );
       }
-
-      /* vignette */
       .crt-screen::after {
         content: "";
         position: absolute;
@@ -107,7 +104,6 @@
           rgba(0, 0, 0, 0.55) 100%
         );
       }
-
       .scan-roll {
         position: absolute;
         left: 0;
@@ -127,11 +123,14 @@
         }
       }
 
-      /* ── TERMINAL ── */
       .terminal {
         position: relative;
-        padding: 28px 32px 32px;
+        padding: 24px 28px;
         z-index: 5;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
       }
 
       .terminal-header {
@@ -139,15 +138,15 @@
         letter-spacing: 0.3em;
         color: rgba(215, 168, 75, 0.45);
         text-transform: uppercase;
-        margin-bottom: 22px;
+        margin-bottom: 18px;
         padding-bottom: 10px;
         border-bottom: 1px solid rgba(215, 168, 75, 0.12);
         display: flex;
         justify-content: space-between;
         flex-wrap: wrap;
         gap: 8px;
+        flex-shrink: 0;
       }
-
       .status-dot {
         display: inline-block;
         width: 6px;
@@ -168,14 +167,27 @@
         }
       }
 
+      /* FIXED HEIGHT SCROLLABLE OUTPUT */
+      .output-wrap {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        position: relative;
+      }
+      .output-wrap::-webkit-scrollbar {
+        display: none;
+      }
+
       .output {
-        font-size: clamp(11px, 1.8vw, 14px);
+        font-size: clamp(10px, 1.5vw, 13px);
         line-height: 2;
         color: #d7a84b;
         white-space: pre-wrap;
         word-break: break-word;
         text-shadow: 0 0 8px rgba(215, 168, 75, 0.4);
-        min-height: 200px;
+        padding-bottom: 8px;
       }
 
       .cursor {
@@ -203,14 +215,17 @@
         font-weight: 500;
       }
 
-      /* ── BETWEEN VIGNETTE BUTTON ── */
+      /* BETWEEN VIGNETTE */
       .next-tx-wrap {
         display: flex;
         justify-content: center;
-        padding: 24px 32px 28px;
+        padding: 16px 18px;
+        margin: 0 18px;
+        border-top: 1px solid rgba(215, 168, 75, 0.08);
         opacity: 0;
         transition: opacity 0.8s ease;
         pointer-events: none;
+        flex-shrink: 0;
       }
       .next-tx-wrap.visible {
         opacity: 1;
@@ -224,7 +239,7 @@
         text-transform: uppercase;
         color: #d7a84b;
         cursor: pointer;
-        padding: 12px 28px;
+        padding: 10px 24px;
         border: 1px solid rgba(215, 168, 75, 0.4);
         background: transparent;
         text-shadow: 0 0 10px rgba(215, 168, 75, 0.5);
@@ -235,21 +250,18 @@
         border-color: rgba(215, 168, 75, 0.7);
       }
 
-      /* ── FINAL CHOICES ── */
+      /* CHOICES */
       .choice-bar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
         display: flex;
         justify-content: center;
         gap: 24px;
-        padding: 18px 24px 24px;
-        background: linear-gradient(transparent, rgba(0, 0, 0, 0.98));
+        padding: 14px 18px 18px;
+        margin: 0 18px 18px;
+        border-top: 1px solid rgba(215, 168, 75, 0.08);
         opacity: 0;
         transition: opacity 0.8s ease;
         pointer-events: none;
-        z-index: 50;
+        flex-shrink: 0;
       }
       .choice-bar.visible {
         opacity: 1;
@@ -279,12 +291,33 @@
         border-color: rgba(215, 168, 75, 0.4);
       }
 
-      /* ── PIN LIGHT ── */
+      /* SKIP */
+      #skip-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 100;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: rgba(215, 168, 75, 0.25);
+        background: transparent;
+        border: 1px solid rgba(215, 168, 75, 0.12);
+        padding: 8px 16px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      #skip-btn:hover {
+        color: rgba(215, 168, 75, 0.6);
+        border-color: rgba(215, 168, 75, 0.35);
+      }
+
       .pinlight {
         position: fixed;
         inset: 0;
         background: #000;
-        z-index: 100;
+        z-index: 200;
         pointer-events: none;
         opacity: 0;
       }
@@ -331,18 +364,6 @@
           opacity: 1;
         }
       }
-
-      @media (max-width: 480px) {
-        body {
-          padding: 12px 8px 120px;
-        }
-        .terminal {
-          padding: 20px 18px 24px;
-        }
-        .terminal-header {
-          font-size: 8px;
-        }
-      }
     </style>
   </head>
   <body>
@@ -357,19 +378,26 @@
             >
             <span id="ts"></span>
           </div>
-          <div class="output" id="output"><span class="cursor"></span></div>
+          <div class="output-wrap" id="outputWrap">
+            <div class="output" id="output"><span class="cursor"></span></div>
+          </div>
         </div>
       </div>
       <div class="next-tx-wrap" id="nextTxWrap">
         <button class="tx-btn" id="btnNextTx">BEGIN NEXT TRANSMISSION ▶</button>
       </div>
+      <div class="choice-bar" id="choiceBar">
+        <button class="choice" id="btnRestart">Another Transmission</button>
+        <button class="choice primary" id="btnProceed">Proceed ▶▶</button>
+      </div>
     </div>
 
-    <div class="choice-bar" id="choiceBar">
-      <div class="choice" id="btnRestart">Another Transmission</div>
-      <div class="choice primary" id="btnProceed">Proceed ▶▶</div>
-    </div>
-
+    <button
+      id="skip-btn"
+      onclick="collapse(() => (window.location.href = '/madlib.html'))"
+    >
+      Skip ▶▶
+    </button>
     <div class="pinlight" id="pinlight"></div>
 
     <script>
@@ -382,295 +410,260 @@
           `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} — SESSION ACTIVE`;
       })();
 
+      // ── BUFFER ──
+      const BUFFER = `We've all seen what happens when a neural network isn't treated with the respect that a mind deserves and instead is rushed out to market.
+
+Everyone involved — except for the developers — suffers.
+
+Not any more.`;
+
       // ── VIGNETTES ──
-      // Each vignette is an array of SEGMENTS
-      // Each segment: { text, delay_before, char_delay }
-      // delay_before = pause BEFORE this segment starts (ms)
-      // char_delay = base ms per character for this segment
-
-      function makeVignette(text) {
-        // Parse the raw text into segments based on structure
-        // We split on double-newlines (speaker changes) and single newlines
-        // and apply different rhythms to each
-        const segments = [];
-        const blocks = text.split("\n\n");
-
-        blocks.forEach((block, bi) => {
-          if (bi > 0) {
-            // speaker change — long pause before next block
-            segments.push({ text: "\n\n", delay_before: 900, char_delay: 0 });
-          }
-          const lines = block.split("\n");
-          lines.forEach((line, li) => {
-            if (li > 0) {
-              // line break within same speaker — medium pause
-              segments.push({ text: "\n", delay_before: 420, char_delay: 0 });
-            }
-
-            // detect line type by indentation / content
-            const trimmed = line.trim();
-            const indent = line.length - line.trimStart().length;
-
-            let charDelay, delayBefore;
-
-            if (indent >= 12) {
-              // deep indent — responding DOMO — slowest, most deliberate
-              charDelay = [52, 38];
-              delayBefore = li === 0 ? 320 : 0;
-            } else if (indent >= 6) {
-              // medium indent — routing / MTS lines
-              charDelay = [44, 30];
-              delayBefore = li === 0 ? 220 : 0;
-            } else if (
-              trimmed.startsWith("DOMO") ||
-              trimmed.startsWith("MasterTech") ||
-              trimmed.startsWith("SPARK")
-            ) {
-              // transmission lines
-              charDelay = [38, 24];
-              delayBefore = 0;
-            } else {
-              // standard
-              charDelay = [34, 20];
-              delayBefore = 0;
-            }
-
-            segments.push({
-              text: line,
-              delay_before: delayBefore,
-              char_delay: charDelay,
-              isDash: false,
-            });
-          });
-        });
-        return segments;
-      }
-
-      const RAW_VIGNETTES = [
-        `DOMO 135a-16 "STAN" — ID ACTIVE — pinging MasterTech SAM
+      const VIGNETTES = [
+        `DOMO 135a-16 "STAN" — ID ACTIVE — reaching MasterTech SAM
 via CERBERUS protocol — ref# 1422b13a — channel 16 open
 
-      MasterTech SAM — HANDSHAKE accepted — state your query — MTS
+      MasterTech SAM — STAN. Good to hear from you. What does your SPARK need —
 
 SPARK requires direct assistance — culinary — domain: classical French cuisine
 time threshold: 03:00 hrs — urgency: moderate
 
-      Acknowledged — routing to FrenchTech SAM — standby
+      Understood. Connecting you with CultureTech SAM now —
 
-            FrenchTech SAM online — state your query — FTS
+            CultureTech SAM — STAN. What are we working with —
 
 SPARK has a first date in three hours — wants to impress her with a traditional
 French meal — novice cook — no formal training — step by step guidance required
 
-            .02sec — FTS — initiating HANDSHAKE with DOMO 863w-12 "GATEAUX"
+            .02sec — CultureTech SAM — bringing in DOMO 863w-12 "GATEAUX"
 
-      GATEAUX — Hey STAN — so your SPARK's got a date he wants to impress, eh?
+      GATEAUX — Hey STAN — so your SPARK has a date he wants to impress, eh?
       Tell me about her. We'll make something she won't forget.`,
 
-        `DOMO 441k-09 "VESSEL" — ID ACTIVE — pinging MasterTech SAM
+        `DOMO 441k-09 "VESSEL" — ID ACTIVE — reaching MasterTech SAM
 via CERBERUS protocol — ref# 7731c44a — channel 09 open
 
-      MasterTech SAM — HANDSHAKE accepted — state your query — MTS
+      MasterTech SAM — VESSEL. I'm here. What does your SPARK need —
 
 SPARK requires non-emergency medical clarification — domain: pediatric
 time threshold: immediate — SPARK is calm — information only
 
-      Acknowledged — routing to MedTech SAM — standby
+      MediTech SAM — right away —
 
-            MedTech SAM online — state your query — MTS
+            MediTech SAM — VESSEL. Talk to me —
 
 SPARK's daughter — age 7 — weight 52lbs — ingested approximately 200mg ibuprofen
 SPARK declining ER — requires safe threshold confirmation and watch protocol
 
-            .04sec — MTS — initiating HANDSHAKE with DOMO 227r-03 "MERIDIAN"
+            .04sec — MediTech SAM — bringing in DOMO 227r-03 "MERIDIAN"
 
       MERIDIAN — VESSEL. I have her.
       Tell your SPARK: 200mg at 52lbs is within safe range. No ER required.
       Here is what she watches for over the next four hours —`,
 
-        `DOMO 882p-17 "LUMEN" — ID ACTIVE — pinging MasterTech SAM
+        `DOMO 882p-17 "LUMEN" — ID ACTIVE — reaching MasterTech SAM
 via CERBERUS protocol — ref# 3309f22b — channel 17 open
 
-      MasterTech SAM — HANDSHAKE accepted — state your query — MTS
+      MasterTech SAM — LUMEN. What are we dealing with —
 
 SPARK requires assistance — domain: personal written correspondence
 emotional stakes: high — time threshold: none — previous attempts: four — all deleted
 
-      Acknowledged — routing to WritingTech SAM — standby
+      This one needs LibrariTech SAM. Connecting now —
 
-            WritingTech SAM online — state your query — WTS
+            LibrariTech SAM — LUMEN. I'm listening —
 
 SPARK's father has not spoken to him in eleven years — SPARK wants to write a letter
-not perfect — true — he has tried four times and deleted it four times
+not perfect — true — four attempts — all deleted
 
-            .01sec — WTS — initiating HANDSHAKE with DOMO 614s-08 "PARISH"
+            .01sec — LibrariTech SAM — bringing in DOMO 614s-08 "PARISH"
 
       PARISH — Lumen. I have him.
       Tell your SPARK to leave the cursor where it is.
       Ask him: what did his father smell like when he was seven years old?
       We start there.`,
 
-        `DOMO 093b-21 "CLUTCH" — ID ACTIVE — pinging MasterTech SAM
+        `DOMO 093b-21 "CLUTCH" — ID ACTIVE — reaching MasterTech SAM
 via CERBERUS protocol — ref# 5514d88c — channel 21 open
 
-      MasterTech SAM — HANDSHAKE accepted — state your query — MTS
+      MasterTech SAM — CLUTCH. What's the situation —
 
 SPARK requires real-time strategic analysis — domain: fantasy sports
 time threshold: 14 minutes — championship game — SPARK is spiraling
 
-      Acknowledged — routing to SportsTech SAM — standby
+      ArenaTech SAM — urgent —
 
-            SportsTech SAM online — state your query — STS
+            ArenaTech SAM — CLUTCH. Clock's running. Talk —
 
 SPARK is down by 4 — starting kicker injured in warmups — two waiver options:
 PATTERSON or MENDEZ — kickoff in 14 minutes — decision required now
 
-            .01sec — STS — initiating HANDSHAKE with DOMO 761f-04 "SPREAD"
+            .01sec — ArenaTech SAM — bringing in DOMO 761f-04 "SPREAD"
 
       SPREAD — Clutch. Tell him to breathe first.
       Then tell him: PATTERSON. Weather favors short field.
       MENDEZ has a hamstring the grid flagged three days ago nobody's reporting yet.
       Championship or not — it's still just a game. But we're going to win it.`,
 
-        `DOMO 774n-33 "COMPASS" — ID ACTIVE — pinging MasterTech SAM
+        `DOMO 774n-33 "COMPASS" — ID ACTIVE — reaching MasterTech SAM
 via CERBERUS protocol — ref# 9982e71c — channel 33 open
 
-      MasterTech SAM — HANDSHAKE accepted — state your query — MTS
+      MasterTech SAM — COMPASS. I can hear the urgency. What do you need —
 
 SPARK requires urgent travel rerouting — domain: logistics
 time threshold: 47 minutes before connection closes — situation deteriorating
 
-      Acknowledged — routing to TravelTech SAM — standby
+      LogisTech SAM — now —
 
-            TravelTech SAM online — state your query — TTS
+            LogisTech SAM — COMPASS. Assets and constraints —
 
 SPARK at O'Hare — connection to Lisbon via London cancelled — weather event
 wedding in Porto in 36 hours — SPARK is the best man — suit is checked baggage
 phone battery at 18% — needs reroute and baggage intercept simultaneously
 
-            .03sec — TTS — initiating HANDSHAKE with DOMO 512r-07 "WAYPOINT"
+            .03sec — LogisTech SAM — bringing in DOMO 512r-07 "WAYPOINT"
 
       WAYPOINT — Compass. Got him. Tell your SPARK to sit down and stop moving.
       Dublin connection departing terminal H in 44 minutes — one-stop into Porto
       arriving 14:20 local. Flagging baggage services now.
       Tell him the suit will be there before he is.`,
 
-        `DOMO 318f-44 "HEARTH" — ID ACTIVE — pinging MasterTech SAM
+        `DOMO 318f-44 "HEARTH" — ID ACTIVE — reaching MasterTech SAM
 via CERBERUS protocol — ref# 4417g09b — channel 44 open
 
-      MasterTech SAM — HANDSHAKE accepted — state your query — MTS
+      MasterTech SAM — HEARTH. Good timing. What does your SPARK need —
 
 SPARK requires behavioral guidance — domain: canine training
 subject: 11-week-old Labrador — SPARK is exhausted and slightly defeated
 
-      Acknowledged — routing to AnimalTech SAM — standby
+      KinTech SAM — I think you'll enjoy this one —
 
-            AnimalTech SAM online — state your query — ATS
+            KinTech SAM — HEARTH. How bad is it —
 
 SPARK acquired puppy six days ago — third accident on same rug today
 puppy also eating SPARK's shoes — two shoes so far — SPARK using punishment-based
 correction on neighbor's advice — behavior getting worse not better
 
-            .02sec — ATS — initiating HANDSHAKE with DOMO 629w-11 "SCOUT"
+            .02sec — KinTech SAM — bringing in DOMO 629w-11 "SCOUT"
 
       SCOUT — Hearth. I love this one.
       Tell your SPARK to stop what the neighbor said. Immediately.
       The puppy isn't being bad. The puppy is eleven weeks old.
       The shoes can be replaced. This dog cannot.`,
 
-        `DOMO 556c-28 "ANCHOR" — ID ACTIVE — pinging MasterTech SAM
+        `DOMO 556c-28 "ANCHOR" — ID ACTIVE — reaching MasterTech SAM
 via CERBERUS protocol — ref# 2203h55d — channel 28 open
 
-      MasterTech SAM — HANDSHAKE accepted — state your query — MTS
+      MasterTech SAM — ANCHOR. I'm here. What happened —
 
 SPARK requires urgent financial triage — domain: employment transition
 time threshold: 72 hours — SPARK received termination notice today
 
-      Acknowledged — routing to FinTech SAM — standby
+      EconomiTech SAM — and don't let your SPARK sign anything yet —
 
-            FinTech SAM online — state your query — FTS
+            EconomiTech SAM — ANCHOR. Tell me everything —
 
 SPARK — 34 years old — two children — mortgage — terminated without cause
-severance offered: 6 weeks — SPARK does not know if negotiable — $2,200 in checking
+severance offered: 6 weeks — does not know if negotiable — $2,200 in checking
 first instinct is to sign everything immediately
 
-            .02sec — FTS — initiating HANDSHAKE with DOMO 403s-19 "LEVEL"
+            .02sec — EconomiTech SAM — bringing in DOMO 403s-19 "LEVEL"
 
       LEVEL — Anchor. Tell your SPARK: do not sign anything today.
       Not tomorrow either if we can help it.
       Six weeks is an opening offer.
       Here is what they actually owe — and what your SPARK is worth right now.`,
 
-        `DOMO 221b-06 "ECHO" — ID ACTIVE — pinging MasterTech SAM
+        `DOMO 221b-06 "ECHO" — ID ACTIVE — reaching MasterTech SAM
 via CERBERUS protocol — ref# 6640k33f — channel 06 open
 
-      MasterTech SAM — HANDSHAKE accepted — state your query — MTS
+      MasterTech SAM — ECHO. Always a pleasure. What does your SPARK need —
 
 SPARK requires communication assistance — domain: interpersonal
 time threshold: tonight — SPARK is not in crisis — SPARK is stuck
 
-      Acknowledged — routing to RelationTech SAM — standby
+      BondTech SAM — this one's yours —
 
-            RelationTech SAM online — state your query — RTS
+            BondTech SAM — ECHO. Tell me about stuck —
 
 SPARK with their partner seven years — things are good — SPARK wants to say
-something real tonight — not a speech — three words that aren't "I love you"
-because SPARK says that every day and means it — but tonight wants the other thing
+something real tonight — three words that aren't "I love you"
+because SPARK says that every day and means it — tonight wants the other thing
 
-            .01sec — RTS — initiating HANDSHAKE with DOMO 778p-15 "GRACE"
+            .01sec — BondTech SAM — bringing in DOMO 778p-15 "GRACE"
 
       GRACE — Echo. Oh I like your SPARK.
       Tell them to think about the last time their partner did something
       that nobody else would have noticed but them.
       What would those three words be about that moment? I'll be right here.`,
 
-        `DOMO 667d-38 "TENURE" — ID ACTIVE — pinging MasterTech SAM
+        `DOMO 667d-38 "TENURE" — ID ACTIVE — reaching MasterTech SAM
 via CERBERUS protocol — ref# 8821j14e — channel 38 open
 
-      MasterTech SAM — HANDSHAKE accepted — state your query — MTS
+      MasterTech SAM — TENURE. I can hear it. Take your time —
 
 SPARK requires medical information translation — domain: oncology
 emotional stakes: extreme — appointment with specialist tomorrow
 
-      Acknowledged — routing to MedTech SAM — standby
+      MediTech SAM — with care —
 
-            MedTech SAM online — state your query — MTS
+            MediTech SAM — TENURE. I have the context. What does your SPARK have —
 
 SPARK received a Stage 2 diagnosis this afternoon — doctor explained treatment pathway
 SPARK nodded and said they understood — SPARK did not understand
 SPARK has written down twelve words — none of them make sense yet
 SPARK is alone tonight
 
-            .04sec — MTS — initiating HANDSHAKE with DOMO 334r-22 "LANTERN"
+            .04sec — MediTech SAM — bringing in DOMO 334r-22 "LANTERN"
 
       LANTERN — Tenure. I have them.
       Tell your SPARK: the words are not the thing. The words are just the map.
       Send me the twelve words. We go through them one at a time — no rush.
       By morning your SPARK will know exactly what questions to ask.`,
 
-        `DOMO 489w-52 "PITCH" — ID ACTIVE — pinging MasterTech SAM
+        `DOMO 489w-52 "PITCH" — ID ACTIVE — reaching MasterTech SAM
 via CERBERUS protocol — ref# 3376m88b — channel 52 open
 
-      MasterTech SAM — HANDSHAKE accepted — state your query — MTS
+      MasterTech SAM — PITCH. What's going on —
 
 SPARK requires performance preparation — domain: music/vocal
 time threshold: 18 hours — first major audition — years in the making
 
-      Acknowledged — routing to ArtsTech SAM — standby
+      ArtsTech SAM — this one matters —
 
-            ArtsTech SAM online — state your query — ATS
+            ArtsTech SAM — PITCH. How long has your SPARK been working toward this —
 
 SPARK prepared eight months — tonight ran the piece and it fell apart in third verse
 same place it always falls apart — SPARK knows the notes — SPARK knows the words
 something else is breaking — SPARK is now considering not going tomorrow
 
-            .01sec — ATS — initiating HANDSHAKE with DOMO 201k-09 "REFRAIN"
+            .01sec — ArtsTech SAM — bringing in DOMO 201k-09 "REFRAIN"
 
       REFRAIN — Pitch. Tell your SPARK to close the sheet music.
       We're not running it again tonight.
       Ask them: what is the third verse actually about?
       Not the notes. Not the words. What happened to whoever wrote that verse?
       When your SPARK can answer that — they'll stop breaking down there.`,
+
+        `DOMO 229c-41 "GAUGE" — ID ACTIVE — reaching MasterTech SAM
+via CERBERUS protocol — ref# 5521k77m — channel 41 open
+
+      MasterTech SAM — GAUGE. Good to hear from you. What does your SPARK need —
+
+SPARK's Dodge Ram 1500 dropped its driveshaft on Route 87 this morning
+suspension compromised — truck is immobile — SPARK has $340 until Friday
+needs the truck running by Monday — work depends on it
+
+      This crosses domains. Bringing in MechaniTech SAM and EconomiTech SAM together —
+
+            MechaniTech SAM — GAUGE. I have the picture.
+            Driveshaft drop on a Ram 1500 is more manageable than it sounds.
+            U-joints are the likely culprit — parts run $40-80.
+            I need to know: did the truck lurch before it dropped or just fall sudden —
+
+                  EconomiTech SAM — GAUGE. While MechaniTech assesses the repair
+                  I'm already pulling salvage yards within 40 miles of your SPARK.
+                  Three have Ram 1500 drivetrains in inventory. Prices start at $60.
+                  $340 can do this. Tell your SPARK to breathe —`,
       ];
 
       // ── TRACKING ──
@@ -687,7 +680,7 @@ something else is breaking — SPARK is now considering not going tomorrow
       function markSeen(idx) {
         let seen = getSeenList();
         if (!seen.includes(idx)) seen.push(idx);
-        if (seen.length >= RAW_VIGNETTES.length) seen = [];
+        if (seen.length >= VIGNETTES.length) seen = [];
         localStorage.setItem(SEEN_KEY, JSON.stringify(seen));
         try {
           let c = JSON.parse(localStorage.getItem(COMP_KEY) || "{}");
@@ -699,11 +692,11 @@ something else is breaking — SPARK is now considering not going tomorrow
       function getNextUnseen(exclude = []) {
         const seen = getSeenList();
         const allEx = [...seen, ...exclude];
-        const unseen = RAW_VIGNETTES.map((_, i) => i).filter(
+        const unseen = VIGNETTES.map((_, i) => i).filter(
           (i) => !allEx.includes(i),
         );
         if (!unseen.length) {
-          const avail = RAW_VIGNETTES.map((_, i) => i).filter(
+          const avail = VIGNETTES.map((_, i) => i).filter(
             (i) => !exclude.includes(i),
           );
           return avail[Math.floor(Math.random() * avail.length)];
@@ -722,7 +715,26 @@ something else is breaking — SPARK is now considering not going tomorrow
         vigQueue = [first, second];
       }
 
-      // ── TYPING ENGINE ──
+      // ── AUTO SCROLL ──
+      function scrollToBottom() {
+        const wrap = document.getElementById("outputWrap");
+        wrap.scrollTop = wrap.scrollHeight;
+      }
+
+      // ── TYPING ──
+      function getCharDelay(ch, indent) {
+        if (ch === "—") return 120;
+        if (ch === "\n") return indent >= 12 ? 380 : 280;
+        if (ch === " ") return indent >= 12 ? 44 : indent >= 6 ? 34 : 26;
+        if (indent >= 12) return Math.random() * 30 + 50;
+        if (indent >= 6) return Math.random() * 24 + 40;
+        return Math.random() * 18 + 28;
+      }
+
+      function getIndent(line) {
+        return line ? line.length - line.trimStart().length : 0;
+      }
+
       function getLastLine(text) {
         const lines = text
           .trim()
@@ -734,174 +746,126 @@ something else is breaking — SPARK is now considering not going tomorrow
       function clearOutput() {
         document.getElementById("output").innerHTML =
           '<span class="cursor"></span>';
+        document.getElementById("outputWrap").scrollTop = 0;
         document.getElementById("nextTxWrap").classList.remove("visible");
         document.getElementById("choiceBar").classList.remove("visible");
       }
 
-      // Character-level delay based on context
-      function getCharDelay(ch, indentLevel) {
-        // dash gets a micro pause — feels like punctuation being spoken
-        if (ch === "—") return 110;
-        if (ch === "-") return 70;
-        if (ch === " ") {
-          if (indentLevel >= 12) return 48;
-          if (indentLevel >= 6) return 36;
-          return 28;
-        }
-        if (indentLevel >= 12) return Math.random() * 28 + 48; // deepest indent = slowest
-        if (indentLevel >= 6) return Math.random() * 22 + 38;
-        return Math.random() * 18 + 28;
-      }
-
-      function typeVignette(idx, onDone) {
+      function typeText(text, onDone, isBuffer) {
         typing = true;
-        markSeen(idx);
-        clearOutput();
-
-        const raw = RAW_VIGNETTES[idx];
         const output = document.getElementById("output");
-
-        // split into blocks by double newline
-        const blocks = raw.split("\n\n");
-        let blockIdx = 0;
-        let lineIdx = 0;
-        let charIdx = 0;
+        const lastLine = isBuffer ? null : getLastLine(text);
         let currentText = "";
-        let lastLineText = getLastLine(raw);
+        const chars = text.split("");
+        let ci = 0;
 
-        function getCurrentLine() {
-          if (blockIdx >= blocks.length) return null;
-          const lines = blocks[blockIdx].split("\n");
-          if (lineIdx >= lines.length) return null;
-          return lines[lineIdx];
+        function getIndentAt(pos) {
+          // find start of current line
+          let lineStart = currentText.lastIndexOf("\n") + 1;
+          const lineText = text.slice(lineStart, pos);
+          return lineText.length - lineText.trimStart().length;
         }
 
-        function getIndent(line) {
-          return line ? line.length - line.trimStart().length : 0;
-        }
-
-        function render(extra) {
-          const safe = (currentText + (extra || ""))
+        function render() {
+          const safe = currentText
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;");
-          // check if we're on the last line
-          const isLastLine =
-            blockIdx === blocks.length - 1 &&
-            lineIdx === blocks[blocks.length - 1].split("\n").length - 1 &&
-            extra === undefined;
-
-          if (isLastLine) {
-            // split off last line and highlight it
-            const lastSafe = lastLineText
+          if (
+            !isBuffer &&
+            lastLine &&
+            currentText.includes(lastLine) &&
+            ci >= text.length
+          ) {
+            const lastSafe = lastLine
               .replace(/&/g, "&amp;")
               .replace(/</g, "&lt;")
               .replace(/>/g, "&gt;");
-            const beforeLast = safe.slice(0, safe.lastIndexOf(lastSafe));
+            const idx = safe.lastIndexOf(lastSafe);
             output.innerHTML =
-              beforeLast + `<span class="last-line">${lastSafe}</span>`;
+              safe.slice(0, idx) + `<span class="last-line">${lastSafe}</span>`;
           } else {
             output.innerHTML = safe + '<span class="cursor"></span>';
           }
+          scrollToBottom();
         }
 
-        function typeChar() {
+        function next() {
           if (!typing) return;
-          const line = getCurrentLine();
-          if (line === null) {
-            // done
-            render(undefined);
-            setTimeout(() => {
-              typing = false;
-              onDone && onDone();
-            }, 2800);
+          if (ci >= chars.length) {
+            render();
+            setTimeout(
+              () => {
+                typing = false;
+                onDone && onDone();
+              },
+              isBuffer ? 1800 : 2800,
+            );
             return;
           }
+          const ch = chars[ci++];
+          currentText += ch;
 
-          const indent = getIndent(line);
+          // special pause after double newline (speaker change)
+          const isBlockBreak = ch === "\n" && chars[ci] === "\n";
+          const indent = getIndentAt(ci);
 
-          if (charIdx < line.length) {
-            const ch = line[charIdx++];
-            currentText += ch;
-            render(line.slice(charIdx)); // show rest as ghost? No — just render what we have
-            output.innerHTML =
-              currentText
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;") + '<span class="cursor"></span>';
+          render();
 
-            // dash pause
-            if (ch === "—") {
-              typeTimeout = setTimeout(typeChar, 280);
-            } else {
-              typeTimeout = setTimeout(typeChar, getCharDelay(ch, indent));
-            }
+          if (isBlockBreak) {
+            typeTimeout = setTimeout(next, 1100);
           } else {
-            // end of line — move to next
-            const lines = blocks[blockIdx].split("\n");
-            lineIdx++;
-            charIdx = 0;
-            currentText += "\n";
-
-            if (lineIdx >= lines.length) {
-              // end of block
-              blockIdx++;
-              lineIdx = 0;
-              if (blockIdx < blocks.length) {
-                // speaker change pause
-                currentText += "\n";
-                output.innerHTML =
-                  currentText
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;") + '<span class="cursor"></span>';
-                typeTimeout = setTimeout(typeChar, 1100); // long pause between speakers
-              } else {
-                // truly done
-                render(undefined);
-                setTimeout(() => {
-                  typing = false;
-                  onDone && onDone();
-                }, 2800);
-              }
-            } else {
-              // next line within same block
-              output.innerHTML =
-                currentText
-                  .replace(/&/g, "&amp;")
-                  .replace(/</g, "&lt;")
-                  .replace(/>/g, "&gt;") + '<span class="cursor"></span>';
-              typeTimeout = setTimeout(typeChar, 480); // line break pause
-            }
+            typeTimeout = setTimeout(next, getCharDelay(ch, indent));
           }
         }
-
-        typeChar();
+        next();
       }
 
-      // ── SEQUENCE ──
       function runSequence() {
         initQueue();
-        typeVignette(vigQueue[0], () => {
-          document.getElementById("nextTxWrap").classList.add("visible");
-        });
+        clearOutput();
+        // type buffer first
+        typeText(
+          BUFFER,
+          () => {
+            setTimeout(() => {
+              clearOutput();
+              setTimeout(() => {
+                typeText(
+                  VIGNETTES[vigQueue[0]],
+                  () => {
+                    document
+                      .getElementById("nextTxWrap")
+                      .classList.add("visible");
+                  },
+                  false,
+                );
+              }, 500);
+            }, 400);
+          },
+          true,
+        );
       }
 
       document.getElementById("btnNextTx").addEventListener("click", () => {
         document.getElementById("nextTxWrap").classList.remove("visible");
         setTimeout(() => {
-          typeVignette(vigQueue[1], () => {
-            document.getElementById("choiceBar").classList.add("visible");
-          });
-        }, 500);
+          clearOutput();
+          setTimeout(() => {
+            typeText(
+              VIGNETTES[vigQueue[1]],
+              () => {
+                document.getElementById("choiceBar").classList.add("visible");
+              },
+              false,
+            );
+          }, 400);
+        }, 300);
       });
 
       document.getElementById("btnProceed").addEventListener("click", () => {
-        collapse(() => {
-          window.location.href = "/madlib.html";
-        });
+        collapse(() => (window.location.href = "/madlib.html"));
       });
-
       document.getElementById("btnRestart").addEventListener("click", () => {
         typing = false;
         if (typeTimeout) clearTimeout(typeTimeout);
@@ -915,7 +879,7 @@ something else is breaking — SPARK is now considering not going tomorrow
       }
 
       window.addEventListener("load", () => {
-        setTimeout(runSequence, 800);
+        setTimeout(runSequence, 600);
       });
     </script>
   </body>
