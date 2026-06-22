@@ -1,74 +1,93 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PAPADOMO</title>
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body {
-      width: 100%; height: 100%;
-      background: #000;
-      overflow: hidden;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    video {
+
+    html,
+    body {
       width: 100%;
       height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+
+    #papadomo {
+      width: 100vw;
+      height: 100vh;
       object-fit: cover;
       display: block;
+      background: #000;
     }
-    #rotate-prompt {
-      display: none;
+
+    .rotate-screen {
       position: fixed;
       inset: 0;
-      background: #000;
-      z-index: 999;
+
+      display: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 24px;
+
+      background: #000;
+      color: #d4af37;
+
+      z-index: 9999;
+
       font-family: monospace;
-      color: #d7a84b;
       text-align: center;
-      padding: 40px;
+      padding: 2rem;
     }
-    #rotate-prompt .icon {
-      font-size: 48px;
-      animation: rotateHint 2s ease-in-out infinite;
+
+    .rotate-icon {
+      font-size: 5rem;
+      margin-bottom: 1.5rem;
+      animation: spinHint 2s ease-in-out infinite;
     }
-    @keyframes rotateHint {
-      0%, 100% { transform: rotate(0deg); }
-      50%       { transform: rotate(90deg); }
+
+    .rotate-text {
+      font-size: 1.1rem;
+      letter-spacing: 0.08em;
+      line-height: 1.6;
     }
-    #rotate-prompt p {
-      font-size: 13px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      line-height: 2;
-      text-shadow: 0 0 10px rgba(215,168,75,0.5);
+
+    @keyframes spinHint {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      50% {
+        transform: rotate(90deg);
+      }
+
+      100% {
+        transform: rotate(90deg);
+      }
     }
-    #rotate-prompt button {
-      font-family: monospace;
-      font-size: 11px;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: #d7a84b;
-      background: transparent;
-      border: 1px solid rgba(215,168,75,0.4);
-      padding: 12px 28px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    #rotate-prompt button:active {
-      background: rgba(215,168,75,0.15);
+
+    @media (orientation: portrait) {
+      .rotate-screen {
+        display: flex;
+      }
     }
   </style>
 </head>
+
 <body>
-  <div id="rotate-prompt">
-    <div class="icon">📱</div>
-    <p>Rotate your device<br>then tap to continue</p>
-    <button id="continueBtn">Tap to Continue ▶</button>
+
+  <div class="rotate-screen">
+    <div class="rotate-icon">📱↻</div>
+    <div class="rotate-text">
+      ROTATE TO SEE THE WAY
+    </div>
   </div>
 
   <video
@@ -80,45 +99,32 @@
   ></video>
 
   <script>
-    const vid = document.getElementById('papadomo');
-    const prompt = document.getElementById('rotate-prompt');
-    const continueBtn = document.getElementById('continueBtn');
+    const vid = document.getElementById("papadomo");
 
-    function isPortrait() {
-      return window.innerHeight > window.innerWidth;
+    function updateOrientation() {
+      if (window.matchMedia("(orientation: landscape)").matches) {
+
+        if (vid.paused) {
+          vid.play().catch(() => {});
+        }
+
+      } else {
+
+        vid.pause();
+        vid.currentTime = 0;
+
+      }
     }
 
-    function showPrompt() {
-      prompt.style.display = 'flex';
-      vid.pause();
-    }
+    window.addEventListener("resize", updateOrientation);
+    window.addEventListener("orientationchange", updateOrientation);
 
-    function hidePromptAndPlay() {
-      prompt.style.display = 'none';
-      vid.play();
-    }
+    updateOrientation();
 
-    // Show prompt on portrait, auto-play on landscape
-    if (isPortrait()) {
-      showPrompt();
-    } else {
-      hidePromptAndPlay();
-    }
-
-    // Button manually dismisses and plays
-    continueBtn.addEventListener('click', hidePromptAndPlay);
-
-    // Also auto-detect if they rotate without tapping
-    window.addEventListener('resize', () => {
-      if (!isPortrait()) hidePromptAndPlay();
-    });
-    window.addEventListener('orientationchange', () => {
-      setTimeout(() => { if (!isPortrait()) hidePromptAndPlay(); }, 300);
-    });
-
-    vid.addEventListener('ended', () => {
-      window.location.href = '/preamble/prologue.html';
+    vid.addEventListener("ended", () => {
+      window.location.href = "/preamble/prologue.html";
     });
   </script>
+
 </body>
 </html>
