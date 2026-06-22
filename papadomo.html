@@ -27,7 +27,7 @@
       align-items: center;
       justify-content: center;
       gap: 24px;
-      font-family: "IBM Plex Mono", monospace;
+      font-family: monospace;
       color: #d7a84b;
       text-align: center;
       padding: 40px;
@@ -47,18 +47,33 @@
       line-height: 2;
       text-shadow: 0 0 10px rgba(215,168,75,0.5);
     }
+    #rotate-prompt button {
+      font-family: monospace;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #d7a84b;
+      background: transparent;
+      border: 1px solid rgba(215,168,75,0.4);
+      padding: 12px 28px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    #rotate-prompt button:active {
+      background: rgba(215,168,75,0.15);
+    }
   </style>
 </head>
 <body>
   <div id="rotate-prompt">
     <div class="icon">📱</div>
-    <p>Rotate your device<br>to continue</p>
+    <p>Rotate your device<br>then tap to continue</p>
+    <button id="continueBtn">Tap to Continue ▶</button>
   </div>
 
   <video
     id="papadomo"
     src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/office.mp4"
-    autoplay
     muted
     playsinline
     preload="auto"
@@ -67,22 +82,38 @@
   <script>
     const vid = document.getElementById('papadomo');
     const prompt = document.getElementById('rotate-prompt');
+    const continueBtn = document.getElementById('continueBtn');
 
-    function checkOrientation() {
-      const isPortrait = window.innerHeight > window.innerWidth;
-      if (isPortrait) {
-        prompt.style.display = 'flex';
-        vid.pause();
-      } else {
-        prompt.style.display = 'none';
-        vid.play();
-      }
+    function isPortrait() {
+      return window.innerHeight > window.innerWidth;
     }
 
-    checkOrientation();
-    window.addEventListener('resize', checkOrientation);
+    function showPrompt() {
+      prompt.style.display = 'flex';
+      vid.pause();
+    }
+
+    function hidePromptAndPlay() {
+      prompt.style.display = 'none';
+      vid.play();
+    }
+
+    // Show prompt on portrait, auto-play on landscape
+    if (isPortrait()) {
+      showPrompt();
+    } else {
+      hidePromptAndPlay();
+    }
+
+    // Button manually dismisses and plays
+    continueBtn.addEventListener('click', hidePromptAndPlay);
+
+    // Also auto-detect if they rotate without tapping
+    window.addEventListener('resize', () => {
+      if (!isPortrait()) hidePromptAndPlay();
+    });
     window.addEventListener('orientationchange', () => {
-      setTimeout(checkOrientation, 300);
+      setTimeout(() => { if (!isPortrait()) hidePromptAndPlay(); }, 300);
     });
 
     vid.addEventListener('ended', () => {
