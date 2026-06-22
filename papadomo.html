@@ -1,45 +1,90 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PAPADOMO</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        width: 100%;
-        height: 100%;
-        background: #000;
-        overflow: hidden;
-      }
-      video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-      }
-    </style>
-  </head>
-  <body>
-    <video
-      id="papadomo"
-      src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/office.mp4"
-      autoplay
-      muted
-      playsinline
-      preload="auto"
-    ></video>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PAPADOMO</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    #rotate-prompt {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      font-family: "IBM Plex Mono", monospace;
+      color: #d7a84b;
+      text-align: center;
+      padding: 40px;
+    }
+    #rotate-prompt .icon {
+      font-size: 48px;
+      animation: rotateHint 2s ease-in-out infinite;
+    }
+    @keyframes rotateHint {
+      0%, 100% { transform: rotate(0deg); }
+      50%       { transform: rotate(90deg); }
+    }
+    #rotate-prompt p {
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      line-height: 2;
+      text-shadow: 0 0 10px rgba(215,168,75,0.5);
+    }
+  </style>
+</head>
+<body>
+  <div id="rotate-prompt">
+    <div class="icon">📱</div>
+    <p>Rotate your device<br>to continue</p>
+  </div>
 
-    <script>
-      const vid = document.getElementById("papadomo");
-      vid.addEventListener("ended", () => {
-        window.location.href = "/preamble/prologue.html";
-      });
-    </script>
-  </body>
+  <video
+    id="papadomo"
+    src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/office.mp4"
+    autoplay
+    muted
+    playsinline
+    preload="auto"
+  ></video>
+
+  <script>
+    const vid = document.getElementById('papadomo');
+    const prompt = document.getElementById('rotate-prompt');
+
+    function checkOrientation() {
+      const isPortrait = window.innerHeight > window.innerWidth;
+      if (isPortrait) {
+        prompt.style.display = 'flex';
+        vid.pause();
+      } else {
+        prompt.style.display = 'none';
+        vid.play();
+      }
+    }
+
+    checkOrientation();
+    window.addEventListener('resize', checkOrientation);
+
+    vid.addEventListener('ended', () => {
+      window.location.href = '/preamble/prologue.html';
+    });
+  </script>
+</body>
 </html>
