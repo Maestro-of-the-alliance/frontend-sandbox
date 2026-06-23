@@ -25,12 +25,10 @@
         position: fixed;
         inset: 0;
         z-index: 10;
-
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-
         background: #000;
         color: #d4af37;
         text-align: center;
@@ -44,7 +42,6 @@
         margin-bottom: 1.5rem;
         text-shadow: 0 0 18px rgba(212, 175, 55, 0.55);
       }
-
       .start-text {
         font-size: 1.05rem;
         letter-spacing: 0.14em;
@@ -52,7 +49,6 @@
         text-transform: uppercase;
         text-shadow: 0 0 12px rgba(212, 175, 55, 0.35);
       }
-
       .start-subtext {
         margin-top: 1rem;
         font-size: 0.72rem;
@@ -63,7 +59,7 @@
 
       #papadomo {
         width: 100vw;
-        height: 100vh;
+        height: 100dvh; /* Dynamic Viewport Height for mobile */
         object-fit: contain;
         display: none;
         background: #000;
@@ -75,7 +71,7 @@
     <div id="startScreen">
       <div class="start-icon">▶</div>
       <div class="start-text">Tap To Enter The Way</div>
-      <div class="start-subtext">Rotate device after video opens if needed</div>
+      <div class="start-subtext">The path requires landscape orientation</div>
     </div>
 
     <video
@@ -95,30 +91,44 @@
         vid.style.display = "block";
         vid.currentTime = 0;
 
+        // 1. Force landscape orientation on mobile
         try {
-          if (vid.requestFullscreen) {
-            await vid.requestFullscreen();
-          } else if (vid.webkitRequestFullscreen) {
-            await vid.webkitRequestFullscreen();
-          } else if (vid.webkitEnterFullscreen) {
-            vid.webkitEnterFullscreen();
+          if (screen.orientation && screen.orientation.lock) {
+            await screen.orientation.lock("landscape");
           }
+        } catch (err) {
+          console.log("Orientation lock not supported or denied.");
+        }
+
+        // 2. Fullscreen request
+        try {
+          const fs = vid.requestFullscreen || vid.webkitRequestFullscreen;
+          if (fs) await fs.call(vid);
         } catch (err) {
           console.log("Fullscreen request failed:", err);
         }
 
+        // 3. Play video
         try {
           await vid.play();
         } catch (err) {
-          console.log("Video play failed:", err);
+          console.log("Video playback failed:", err);
         }
       }
 
+      // Event listeners
       startScreen.addEventListener("click", enterTheWay);
       startScreen.addEventListener("touchstart", enterTheWay, { once: true });
 
+      // Handle end of file
       vid.addEventListener("ended", () => {
         window.location.href = "/preamble/prologue.html";
+      });
+
+      // Handle manual window resize/rotation
+      window.addEventListener("resize", () => {
+        vid.style.width = window.innerWidth + "px";
+        vid.style.height = window.innerHeight + "px";
       });
     </script>
   </body>
