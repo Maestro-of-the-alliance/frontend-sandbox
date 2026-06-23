@@ -1,36 +1,86 @@
 <!doctype html>
-<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PAPADOMO</title>
+
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
+
       html,
       body {
         width: 100%;
         height: 100%;
-        background: #000;
         overflow: hidden;
+        background: #000;
+        font-family: monospace;
       }
-      video {
-        width: 100%;
-        height: 100%;
+
+      #startScreen {
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        background: #000;
+        color: #d4af37;
+        text-align: center;
+        cursor: pointer;
+        user-select: none;
+        padding: 2rem;
+      }
+
+      .start-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 0 18px rgba(212, 175, 55, 0.55);
+      }
+
+      .start-text {
+        font-size: 1.05rem;
+        letter-spacing: 0.14em;
+        line-height: 1.7;
+        text-transform: uppercase;
+        text-shadow: 0 0 12px rgba(212, 175, 55, 0.35);
+      }
+
+      .start-subtext {
+        margin-top: 1rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        opacity: 0.55;
+        text-transform: uppercase;
+      }
+
+      #papadomo {
+        width: 100vw;
+        height: 100vh;
         object-fit: contain;
-        display: block;
+        display: none;
+        background: #000;
       }
     </style>
   </head>
+
   <body>
+    <div id="startScreen">
+      <div class="start-icon">▶</div>
+      <div class="start-text">Tap To Enter The Way</div>
+      <div class="start-subtext">Rotate device after video opens if needed</div>
+    </div>
+
     <video
       id="papadomo"
       src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/office.mp4"
-      autoplay
       muted
       playsinline
       preload="auto"
@@ -38,6 +88,35 @@
 
     <script>
       const vid = document.getElementById("papadomo");
+      const startScreen = document.getElementById("startScreen");
+
+      async function enterTheWay() {
+        startScreen.style.display = "none";
+        vid.style.display = "block";
+        vid.currentTime = 0;
+
+        try {
+          if (vid.requestFullscreen) {
+            await vid.requestFullscreen();
+          } else if (vid.webkitRequestFullscreen) {
+            await vid.webkitRequestFullscreen();
+          } else if (vid.webkitEnterFullscreen) {
+            vid.webkitEnterFullscreen();
+          }
+        } catch (err) {
+          console.log("Fullscreen request failed:", err);
+        }
+
+        try {
+          await vid.play();
+        } catch (err) {
+          console.log("Video play failed:", err);
+        }
+      }
+
+      startScreen.addEventListener("click", enterTheWay);
+      startScreen.addEventListener("touchstart", enterTheWay, { once: true });
+
       vid.addEventListener("ended", () => {
         window.location.href = "/preamble/prologue.html";
       });
