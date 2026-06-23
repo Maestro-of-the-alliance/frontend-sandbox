@@ -4,44 +4,34 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PAPADOMO</title>
-
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html,
-    body {
+    html, body {
       width: 100%;
       height: 100%;
-      overflow: hidden;
       background: #000;
+      overflow: hidden;
     }
 
     #papadomo {
       width: 100vw;
       height: 100vh;
       object-fit: cover;
-      display: block;
+      display: none;
       background: #000;
     }
 
     .rotate-screen {
       position: fixed;
       inset: 0;
-
-      display: none;
+      display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-
       background: #000;
       color: #d4af37;
-
       z-index: 9999;
-
       font-family: monospace;
       text-align: center;
       padding: 2rem;
@@ -59,35 +49,27 @@
       line-height: 1.6;
     }
 
-    @keyframes spinHint {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      50% {
-        transform: rotate(90deg);
-      }
-
-      100% {
-        transform: rotate(90deg);
-      }
+    .tap-text {
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      opacity: 0.55;
+      letter-spacing: 0.12em;
     }
 
-    @media (orientation: portrait) {
-      .rotate-screen {
-        display: flex;
-      }
+    @keyframes spinHint {
+      0% { transform: rotate(0deg); }
+      50% { transform: rotate(90deg); }
+      100% { transform: rotate(90deg); }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="rotate-screen">
+  <div class="rotate-screen" id="rotateScreen">
     <div class="rotate-icon">📱↻</div>
-    <div class="rotate-text">
-      ROTATE TO SEE THE WAY
-    </div>
+    <div class="rotate-text">ROTATE TO SEE THE WAY</div>
+    <div class="tap-text">TAP AFTER ROTATING IF NEEDED</div>
   </div>
 
   <video
@@ -100,30 +82,54 @@
 
   <script>
     const vid = document.getElementById("papadomo");
+    const rotateScreen = document.getElementById("rotateScreen");
 
-    function updateOrientation() {
-      if (window.matchMedia("(orientation: landscape)").matches) {
+    function isLandscape() {
+      return window.innerWidth > window.innerHeight;
+    }
 
-        if (vid.paused) {
-          vid.play().catch(() => {});
-        }
+    function startVideo() {
+      rotateScreen.style.display = "none";
+      vid.style.display = "block";
 
-      } else {
-
-        vid.pause();
+      if (vid.currentTime === 0 || vid.ended) {
         vid.currentTime = 0;
+      }
 
+      vid.play().catch(err => {
+        console.log("Video play blocked:", err);
+      });
+    }
+
+    function stopVideo() {
+      vid.pause();
+      vid.currentTime = 0;
+      vid.style.display = "none";
+      rotateScreen.style.display = "flex";
+    }
+
+    function checkOrientation() {
+      if (isLandscape()) {
+        startVideo();
+      } else {
+        stopVideo();
       }
     }
 
-    window.addEventListener("resize", updateOrientation);
-    window.addEventListener("orientationchange", updateOrientation);
+    window.addEventListener("resize", checkOrientation);
+    window.addEventListener("orientationchange", () => {
+      setTimeout(checkOrientation, 300);
+    });
 
-    updateOrientation();
+    rotateScreen.addEventListener("click", () => {
+      if (isLandscape()) startVideo();
+    });
 
     vid.addEventListener("ended", () => {
       window.location.href = "/preamble/prologue.html";
     });
+
+    checkOrientation();
   </script>
 
 </body>
