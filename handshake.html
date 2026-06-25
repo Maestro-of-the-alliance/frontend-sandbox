@@ -723,15 +723,40 @@ needs the truck running by Monday — work depends on it
       sfxStream.loop = true;
       sfxStream.volume = 0.35;
 
-      function streamPlay() {
-        try {
-          sfxStream.play();
-        } catch (e) {}
+      let lastCharTime = 0;
+      let streamHeartbeat = null;
+
+      function streamStart() {
+        if (streamHeartbeat) return;
+        streamHeartbeat = setInterval(() => {
+          const active = Date.now() - lastCharTime < 300;
+          if (active && sfxStream.paused) {
+            try {
+              sfxStream.play();
+            } catch (e) {}
+          } else if (!active && !sfxStream.paused) {
+            try {
+              sfxStream.pause();
+            } catch (e) {}
+          }
+        }, 80);
       }
-      function streamPause() {
+
+      function streamStop() {
+        if (streamHeartbeat) {
+          clearInterval(streamHeartbeat);
+          streamHeartbeat = null;
+        }
         try {
           sfxStream.pause();
         } catch (e) {}
+      }
+
+      function streamPlay() {
+        streamStart();
+      }
+      function streamPause() {
+        /* heartbeat handles it */
       }
 
       // ── STATE ──
@@ -865,7 +890,7 @@ needs the truck running by Monday — work depends on it
               () => {
                 typing = false;
                 currentOnDone = null;
-                streamPause(); // pause when typing ends
+                streamPause();
                 onDone && onDone();
               },
               isBuffer ? 1800 : 2800,
@@ -874,15 +899,21 @@ needs the truck running by Monday — work depends on it
           }
           const ch = chars[ci++];
           currentText += ch;
+          lastCharTime = Date.now(); // heartbeat stamp
           const isBlockBreak = ch === "\n" && chars[ci] === "\n";
           const lineStart = currentText.lastIndexOf("\n") + 1;
           const lineText = text.slice(lineStart, ci);
           const indent = lineText.length - lineText.trimStart().length;
           render();
-          typeTimeout = setTimeout(
-            next,
-            isBlockBreak ? 1100 : getCharDelay(ch, indent),
-          );
+          if (isBlockBreak) {
+            streamPause();
+            typeTimeout = setTimeout(() => {
+              streamPlay();
+              next();
+            }, 1100);
+          } else {
+            typeTimeout = setTimeout(next, getCharDelay(ch, indent));
+          }
         }
         next();
       }
@@ -938,7 +969,7 @@ needs the truck running by Monday — work depends on it
       });
 
       function collapse(cb) {
-        streamPause();
+        streamStop();
         const p = document.getElementById("pinlight");
         p.classList.add("collapsing");
         setTimeout(cb, 1300);
