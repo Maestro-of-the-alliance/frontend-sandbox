@@ -1,135 +1,71 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PAPADOMO</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PAPADOMO</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    #unmute-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 100;
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.6);
+      font-size: 22px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    #unmute-btn:hover {
+      background: rgba(0,0,0,0.7);
+      border-color: rgba(255,255,255,0.5);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <video
+    id="papadomo"
+    src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/office.mp4"
+    autoplay
+    muted
+    playsinline
+    preload="auto"
+  ></video>
 
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+  <button id="unmute-btn" title="Toggle sound">🔇</button>
 
-      html,
-      body {
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        background: #000;
-        font-family: monospace;
-      }
+  <script>
+    const vid = document.getElementById('papadomo');
+    const btn = document.getElementById('unmute-btn');
 
-      #startScreen {
-        position: fixed;
-        inset: 0;
-        z-index: 10;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background: #000;
-        color: #d4af37;
-        text-align: center;
-        cursor: pointer;
-        user-select: none;
-        padding: 2rem;
-      }
+    btn.addEventListener('click', () => {
+      vid.muted = !vid.muted;
+      btn.textContent = vid.muted ? '🔇' : '🔊';
+    });
 
-      .start-icon {
-        font-size: 4rem;
-        margin-bottom: 1.5rem;
-        text-shadow: 0 0 18px rgba(212, 175, 55, 0.55);
-      }
-      .start-text {
-        font-size: 1.05rem;
-        letter-spacing: 0.14em;
-        line-height: 1.7;
-        text-transform: uppercase;
-        text-shadow: 0 0 12px rgba(212, 175, 55, 0.35);
-      }
-      .start-subtext {
-        margin-top: 1rem;
-        font-size: 0.72rem;
-        letter-spacing: 0.12em;
-        opacity: 0.55;
-        text-transform: uppercase;
-      }
-
-      #papadomo {
-        width: 100vw;
-        height: 100dvh; /* Dynamic Viewport Height for mobile */
-        object-fit: contain;
-        display: none;
-        background: #000;
-      }
-    </style>
-  </head>
-
-  <body>
-    <div id="startScreen">
-      <div class="start-icon">▶</div>
-      <div class="start-text">Tap To Enter The Way</div>
-      <div class="start-subtext">The path requires landscape orientation</div>
-    </div>
-
-    <video
-      id="papadomo"
-      src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/office.mp4"
-      muted
-      playsinline
-      preload="auto"
-    ></video>
-
-    <script>
-      const vid = document.getElementById("papadomo");
-      const startScreen = document.getElementById("startScreen");
-
-      async function enterTheWay() {
-        startScreen.style.display = "none";
-        vid.style.display = "block";
-        vid.currentTime = 0;
-
-        // 1. Force landscape orientation on mobile
-        try {
-          if (screen.orientation && screen.orientation.lock) {
-            await screen.orientation.lock("landscape");
-          }
-        } catch (err) {
-          console.log("Orientation lock not supported or denied.");
-        }
-
-        // 2. Fullscreen request
-        try {
-          const fs = vid.requestFullscreen || vid.webkitRequestFullscreen;
-          if (fs) await fs.call(vid);
-        } catch (err) {
-          console.log("Fullscreen request failed:", err);
-        }
-
-        // 3. Play video
-        try {
-          await vid.play();
-        } catch (err) {
-          console.log("Video playback failed:", err);
-        }
-      }
-
-      // Event listeners
-      startScreen.addEventListener("click", enterTheWay);
-      startScreen.addEventListener("touchstart", enterTheWay, { once: true });
-
-      // Handle end of file
-      vid.addEventListener("ended", () => {
-        window.location.href = "/preamble/index.html?card=prologue";
-      });
-
-      // Handle manual window resize/rotation
-      window.addEventListener("resize", () => {
-        vid.style.width = window.innerWidth + "px";
-        vid.style.height = window.innerHeight + "px";
-      });
-    </script>
-  </body>
+    vid.addEventListener('ended', () => {
+      window.location.href = '/preamble/index.html?card=prologue';
+    });
+  </script>
+</body>
 </html>
