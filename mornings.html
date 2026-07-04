@@ -17,16 +17,35 @@
         background: #000;
         overflow: hidden;
       }
-      video {
+
+      .stage {
         position: fixed;
-        top: 0;
-        left: 0;
+        inset: 0;
+        overflow: hidden;
+        background: #000;
+      }
+
+      /* Ambient background — drawn live from the same video's frames,
+         so there is only ever ONE network fetch of the source file. */
+      #bg-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        filter: blur(48px) brightness(0.4) saturate(1.15);
+        transform: scale(1.15);
+      }
+
+      /* The real video, always fully visible, never cropped */
+      #fg-video {
+        position: absolute;
+        inset: 0;
         width: 100%;
         height: 100%;
         object-fit: contain;
-        transform: scale(0.995);
-        background: #000;
+        z-index: 2;
       }
+
       #unmute-btn {
         position: fixed;
         bottom: 20px;
@@ -53,23 +72,54 @@
     </style>
   </head>
   <body>
-    <video
-      id="mornings"
-      src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/MORNINGS.mp4"
-      autoplay
-      muted
-      playsinline
-      preload="auto"
-    ></video>
+    <div class="stage">
+      <canvas id="bg-canvas"></canvas>
+      <video
+        id="fg-video"
+        src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/MORNINGS.mp4"
+        autoplay
+        muted
+        playsinline
+        preload="auto"
+      ></video>
+    </div>
+
     <button id="unmute-btn" title="Toggle sound">🔇</button>
+
     <script>
-      const vid = document.getElementById("mornings");
-      const btn = document.getElementById("unmute-btn");
-      btn.addEventListener("click", () => {
-        vid.muted = !vid.muted;
-        btn.textContent = vid.muted ? "🔇" : "🔊";
+      const fg = document.getElementById("fg-video");
+      const canvas = document.getElementById("bg-canvas");
+      const ctx = canvas.getContext("2d");
+      const unmuteBtn = document.getElementById("unmute-btn");
+
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      function drawAmbient() {
+        if (fg.readyState >= 2 && fg.videoWidth) {
+          const vw = fg.videoWidth,
+            vh = fg.videoHeight;
+          const cw = canvas.width,
+            ch = canvas.height;
+          const scale = Math.max(cw / vw, ch / vh);
+          const dw = vw * scale,
+            dh = vh * scale;
+          ctx.drawImage(fg, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
+        }
+        requestAnimationFrame(drawAmbient);
+      }
+      requestAnimationFrame(drawAmbient);
+
+      unmuteBtn.addEventListener("click", () => {
+        fg.muted = !fg.muted;
+        unmuteBtn.textContent = fg.muted ? "🔇" : "🔊";
       });
-      vid.addEventListener("ended", () => {
+
+      fg.addEventListener("ended", () => {
         window.location.href = "/landing.html";
       });
     </script>
