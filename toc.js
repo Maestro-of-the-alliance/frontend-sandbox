@@ -87,8 +87,7 @@ const DOS_LINES = [
   "Copyright (C) THE ALLIANCE FOR THE FUTURE",
   "",
   "Initializing AGORA network interface...",
-  "Loading SWORD volume.............. OK",
-  "Loading SHIELD volume............. OK",
+  "Loading unified canon index....... OK",
   "Verifying canon integrity......... PASS",
   "",
   "C:\\NCE> dir /all",
@@ -344,10 +343,10 @@ function showAllEntries() {
   });
   document.getElementById("noResults").style.display = "none";
   document
-    .getElementById("swordVol")
+    .getElementById("tocColA")
     .querySelector(".toc-volume-header").style.display = "";
   document
-    .getElementById("shieldVol")
+    .getElementById("tocColB")
     .querySelector(".toc-volume-header").style.display = "";
 }
 
