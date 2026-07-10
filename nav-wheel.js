@@ -678,12 +678,12 @@
     });
 
     const homeA = document.createElement("a");
-    homeA.href = "/";
+    homeA.href = "/landing.html";
     homeA.className = "nw-center-home";
     homeA.innerHTML = `<span class="nw-arrow-sym" style="font-size:20px">⌂</span><span class="nw-arrow-label">Home</span>`;
     homeA.addEventListener("click", (e) => {
       e.preventDefault();
-      navigate("/");
+      navigate("/landing.html");
     });
 
     const nextA = document.createElement("a");
