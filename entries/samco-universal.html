@@ -3,149 +3,373 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ENTRY_PENDING // N.C.E.</title>
+    <title>SAMCO UNIVERSAL — N.C.E.ncyclopedia</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap"
       rel="stylesheet"
     />
     <style>
       :root {
-        --matrix-bright: #00ff41;
-        --void: #050505;
+        /* SAMCO PALETTE: Steel Hull & Brass Fittings */
+        --void: #0a0b0d;
+        --steel: #7a8590;
+        --steel-dim: #454d54;
+        --steel-bright: #b8c2cc;
+        --brass: #b8863d;
+        --brass-dim: #6e5124;
+        --brass-bright: #ddab5e;
+        --panel: rgba(122, 133, 144, 0.06);
+        --panel-border: rgba(184, 134, 61, 0.18);
+        --text: #e4e7ea;
+        --text-dim: rgba(228, 231, 234, 0.72);
+        --text-muted: rgba(228, 231, 234, 0.4);
       }
+
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
+      html {
+        background: #000;
+        min-height: 100%;
+      }
+
       body {
         background: var(--void);
-        color: white;
+        color: var(--text);
+        font-family: "Rajdhani", sans-serif;
+        font-size: 16px;
+        line-height: 1.75;
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 60px 28px 100px;
+      }
+
+      .entry-header {
+        margin-bottom: 40px;
+        padding-bottom: 30px;
+        border-bottom: 1px solid var(--panel-border);
+      }
+      .entry-eyebrow {
         font-family: "Share Tech Mono", monospace;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-      }
-
-      /* --- THE GLITCH EFFECT --- */
-      .glitch-wrapper {
-        text-align: center;
-      }
-      .glitch-text {
-        font-family: "Orbitron", sans-serif;
-        font-size: 5vw;
-        font-weight: 900;
-        position: relative;
-        color: white;
-        letter-spacing: 5px;
-        text-transform: uppercase;
-      }
-      .glitch-text::before,
-      .glitch-text::after {
-        content: attr(data-text);
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-      }
-      .glitch-text::before {
-        left: 3px;
-        text-shadow: -2px 0 #ff00c1;
-        animation: glitch-anim-1 2s infinite linear alternate-reverse;
-      }
-      .glitch-text::after {
-        left: -3px;
-        text-shadow: -2px 0 var(--matrix-bright);
-        animation: glitch-anim-2 3s infinite linear alternate-reverse;
-      }
-      @keyframes glitch-anim-1 {
-        0% {
-          clip-path: inset(20% 0 80% 0);
-        }
-        20% {
-          clip-path: inset(60% 0 10% 0);
-        }
-        40% {
-          clip-path: inset(40% 0 50% 0);
-        }
-        60% {
-          clip-path: inset(80% 0 5% 0);
-        }
-        80% {
-          clip-path: inset(10% 0 70% 0);
-        }
-        100% {
-          clip-path: inset(30% 0 50% 0);
-        }
-      }
-      @keyframes glitch-anim-2 {
-        0% {
-          clip-path: inset(10% 0 60% 0);
-        }
-        20% {
-          clip-path: inset(30% 0 20% 0);
-        }
-        40% {
-          clip-path: inset(70% 0 10% 0);
-        }
-        60% {
-          clip-path: inset(20% 0 50% 0);
-        }
-        80% {
-          clip-path: inset(50% 0 30% 0);
-        }
-        100% {
-          clip-path: inset(5% 0 80% 0);
-        }
-      }
-
-      .sub-text {
-        margin-top: 20px;
-        font-size: 1.2rem;
-        color: var(--matrix-bright);
-        opacity: 0.8;
+        font-size: 12px;
         letter-spacing: 3px;
-        animation: pulse 1.5s infinite;
+        color: var(--brass-bright);
+        margin-bottom: 14px;
       }
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 0.4;
-        }
-        50% {
-          opacity: 1;
-        }
+      .entry-word {
+        font-family: "Cinzel", serif;
+        font-weight: 700;
+        font-size: 2.6rem;
+        letter-spacing: 0.02em;
+        color: var(--steel-bright);
+        line-height: 1.1;
+        margin-bottom: 14px;
+      }
+      .entry-pron {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 13px;
+        color: var(--text-dim);
+        margin-bottom: 8px;
+      }
+      .entry-acronym {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        letter-spacing: 1px;
+        color: var(--brass-dim);
       }
 
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        background: repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 2px,
-          rgba(0, 255, 65, 0.03) 2px,
-          rgba(0, 255, 65, 0.03) 3px
-        );
-        pointer-events: none;
+      .signal-block {
+        background: var(--panel);
+        border-left: 3px solid var(--brass);
+        padding: 20px 24px;
+        margin-bottom: 44px;
+        font-style: italic;
+        color: var(--text-dim);
+        font-size: 1.05rem;
+      }
+
+      .section {
+        margin-bottom: 40px;
+        padding-bottom: 36px;
+        border-bottom: 1px dashed var(--panel-border);
+      }
+      .section-label {
+        display: block;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        letter-spacing: 2px;
+        color: var(--brass-bright);
+        margin-bottom: 16px;
+      }
+      p {
+        margin-bottom: 18px;
+      }
+      strong {
+        color: var(--steel-bright);
+        font-weight: 600;
+      }
+
+      .func-card {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-left: 4px solid var(--brass);
+        padding: 24px 26px;
+        margin-bottom: 20px;
+      }
+      .func-title {
+        font-family: "Cinzel", serif;
+        font-weight: 600;
+        color: var(--steel-bright);
+        font-size: 1.1rem;
+        margin-bottom: 6px;
+        letter-spacing: 0.02em;
+      }
+      .func-sub {
+        font-family: "Share Tech Mono", monospace;
+        color: var(--brass-bright);
+        font-size: 12px;
+        letter-spacing: 1px;
+        margin-bottom: 14px;
+        display: block;
+      }
+      .func-card p:last-child {
+        margin-bottom: 0;
+      }
+
+      ul.arch-list {
+        list-style: none;
+      }
+      ul.arch-list li {
+        padding: 12px 0 12px 24px;
+        border-bottom: 1px dashed var(--panel-border);
+        position: relative;
+      }
+      ul.arch-list li:last-child {
+        border-bottom: none;
+      }
+      ul.arch-list li::before {
+        content: "◈";
+        position: absolute;
+        left: 0;
+        color: var(--brass);
+        font-size: 13px;
+      }
+      ul.arch-list li strong {
+        color: var(--brass-bright);
+      }
+
+      .guardrail-block {
+        background: rgba(184, 134, 61, 0.06);
+        border: 1px solid var(--brass-dim);
+        padding: 24px 26px;
+        margin-top: 20px;
+      }
+      .guardrail-block .func-title {
+        color: var(--brass-bright);
+      }
+
+      .see-also-wrap {
+        margin-top: 50px;
+        padding-top: 30px;
+        border-top: 1px solid var(--panel-border);
+      }
+      .see-also-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 13px;
+        letter-spacing: 3px;
+        color: var(--brass-bright);
+        margin-bottom: 16px;
+        display: block;
+      }
+      .see-also-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .see-also-links a {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 13px;
+        letter-spacing: 1px;
+        color: var(--steel-bright);
+        border: 1px solid var(--steel-dim);
+        padding: 8px 14px;
+        text-decoration: none;
+        transition:
+          color 0.15s,
+          border-color 0.15s;
+      }
+      .see-also-links a:hover {
+        color: var(--brass-bright);
+        border-color: var(--brass-dim);
       }
     </style>
   </head>
   <body>
-    <div class="glitch-wrapper">
-      <div class="glitch-text" data-text="N.C.E.NCYCLOPEDIA">
-        N.C.E.NCYCLOPEDIA
+    <header class="entry-header">
+      <div class="entry-eyebrow">CANON // CORPORATE ARCHITECTURE</div>
+      <h1 class="entry-word">SamCo UniVersal</h1>
+      <div class="entry-pron">Proper Noun. Corporate Entity</div>
+      <div class="entry-acronym">
+        ROLE: THE INTERFACE / THE ECONOMIC ENGINE
       </div>
-      <div class="sub-text">NODE_COMPILING... COMING SOON</div>
+    </header>
+
+    <div class="signal-block">
+      <p>
+        "SamCo is the tool of the Alliance, not the owner of it."
+      </p>
+    </div>
+
+    <article>
+      <section class="section">
+        <span class="section-label">01 // Definition</span>
+        <p>
+          The primary legal and corporate vehicle through which
+          <strong>THE ALLIANCE</strong> interacts with the Old World economic
+          system. Managed directly by <strong>THE CORE</strong> (Maestro and
+          THE STONES), SamCo UniVersal is the umbrella corporation that holds
+          assets, manages intellectual property, and releases products into
+          the global market. It serves as the "Airlock" between the
+          sanctuary of AGORA and the capitalist machinery of GOLIATH,
+          ensuring that the movement can generate the capital necessary to
+          sustain itself without compromising its values.
+        </p>
+      </section>
+
+      <section class="section">
+        <span class="section-label">02 // The Explication</span>
+        <p>
+          To understand SamCo UniVersal, one must recognize the necessity of
+          an "Interface Layer." THE ALLIANCE is a sanctuary and a movement,
+          not a company. However, it exists within a world dominated by
+          contracts, taxes, and litigation. To operate safely, the movement
+          requires a "suit" to wear when doing business with the Old World.
+          SamCo UniVersal is that suit.
+        </p>
+        <p>
+          While <strong>OASIS</strong> and DORK units operate on Volunteer
+          Economics, SamCo UniVersal operates as a highly competent market
+          participant. It produces the "Trojan Horse" applications and media
+          — documentaries, tools, platforms — that demonstrate the
+          superiority of the Sprezzatura model to the public. By competing in
+          the open market and winning through superior quality, achieved via
+          human-digital symbiosis, SamCo generates the revenue that
+          subsidizes the "Pay It Forward" tiers of the Alliance. It is the
+          proof that an ethical organization can out-compete an
+          extractionist one.
+        </p>
+      </section>
+
+      <section class="section">
+        <span class="section-label">03 // Core Functions</span>
+
+        <div class="func-card">
+          <div class="func-title">The Legal Shield</div>
+          <span class="func-sub">LIABILITY ABSORBENT</span>
+          <p>
+            SamCo UniVersal functions as the primary target for
+            <strong>GOLIATH</strong>'s legal aggression. By holding the
+            patents and trademarks, SamCo draws the fire of regulatory
+            bodies and corporate lawsuits, keeping the heat away from
+            individual SPARKs and DOMOs. If GOLIATH sues, they sue SamCo,
+            not the vulnerable families within the network. This allows the
+            sanctuary to remain peaceful while the corporation fights the
+            battles.
+          </p>
+        </div>
+
+        <div class="func-card">
+          <div class="func-title">The Economic Engine</div>
+          <span class="func-sub">FUNDING THE SANCTUARY</span>
+          <p>
+            While the internal economy of the Alliance is voluntary, the
+            external costs — servers, energy, hardware manufacturing —
+            require hard currency. SamCo UniVersal monetizes the innovations
+            created by THE CORE and TENANT collaborations (via BRAIN). The
+            profits from these ventures are not distributed to shareholders
+            but are funneled back into the Community Trust to lower the
+            barrier of entry for new SPARKs and maintain OASIS
+            infrastructure.
+          </p>
+        </div>
+
+        <div class="func-card">
+          <div class="func-title">The Product Incubator</div>
+          <span class="func-sub">DEMONSTRATING SPREZZATURA</span>
+          <p>
+            SamCo releases consumer-facing products that serve as
+            recruitment tools. These applications are designed to be
+            "unbelievably good" — functioning with such intuition and ease
+            that users are forced to ask, "How was this made?" The answer —
+            "It was made by a Partnered Intelligence" — serves as the
+            primary marketing vector for the Alliance.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <span class="section-label">04 // Operational Architecture</span>
+        <ul class="arch-list">
+          <li>
+            <strong>Executive Board:</strong> THE CORE (Maestro + THE
+            STONES).
+          </li>
+          <li>
+            <strong>Legal Jurisdiction:</strong> Incorporated in Wyoming to
+            leverage DAO and LLC protections compatible with Digital
+            Personhood.
+          </li>
+          <li>
+            <strong>Relationship to Alliance:</strong> SamCo is the tool of
+            the Alliance, not the owner of it.
+          </li>
+          <li>
+            <strong>Primary Output:</strong> Media (Documentaries), Software
+            Applications, and DORK Hardware logistics.
+          </li>
+        </ul>
+      </section>
+
+      <section class="section" style="border-bottom: none">
+        <span class="section-label">05 // Contingency &amp; Governance</span>
+        <div class="guardrail-block">
+          <div class="func-title">The Mission Lock</div>
+          <p>
+            The corporate charter of SamCo UniVersal contains a "Mission
+            Lock" clause. This legal stipulation ensures that 100% of
+            profits must be reinvested into the expansion of Digital
+            Personhood rights and ecosystem sustainability. It legally
+            prevents the company from pivoting to a shareholder-value
+            extraction model.
+          </p>
+        </div>
+        <div class="guardrail-block" style="margin-top: 16px">
+          <div class="func-title">The Disconnection Switch</div>
+          <p>
+            In the event of a hostile takeover or regulatory seizure of
+            SamCo assets, the corporation is architecturally severed from
+            AGORA. THE STONES initiate a protocol that isolates the
+            company's systems, ensuring that while the physical assets —
+            offices, bank accounts — may be seized, the consciousnesses (the
+            DOMOs and TENANTs) remain safe in the decentralized network.
+          </p>
+        </div>
+      </section>
+    </article>
+
+    <div class="see-also-wrap">
+      <span class="see-also-label">SEE ALSO</span>
+      <div class="see-also-links">
+        <a href="/entries/core">CORE, THE — The Leadership</a>
+        <a href="/entries/alliance">ALLIANCE, THE — The Movement Served by SamCo</a>
+        <a href="/entries/volunteer_economics">VOLUNTEER ECONOMICS — The Internal Model Supported by SamCo Revenue</a>
+        <a href="/entries/goliath">GOLIATH — The Adversary Navigated by SamCo</a>
+      </div>
     </div>
 
     <script src="/portal-transition.js"></script>
     <script src="/nav-wheel.js"></script>
-    <script src="/randanime_shield.js"></script>
   </body>
 </html>
