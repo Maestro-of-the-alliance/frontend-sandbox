@@ -37,6 +37,63 @@
         font-family: var(--body);
       }
 
+      /* ---------- boot sequence overlay ---------- */
+      #boot-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 10px;
+        font-family: var(--mono);
+        font-size: 13px;
+        letter-spacing: 0.12em;
+        color: var(--gold);
+        cursor: pointer;
+        transition: opacity 0.5s ease;
+      }
+      #boot-overlay.done {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #boot-overlay .boot-line {
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+      #boot-overlay .boot-line.shown {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      #boot-overlay .boot-line .ok {
+        color: var(--glow);
+      }
+      #boot-overlay .boot-cursor {
+        display: inline-block;
+        width: 8px;
+        height: 14px;
+        background: var(--gold);
+        margin-left: 4px;
+        animation: bootBlink 0.9s steps(1) infinite;
+        vertical-align: -2px;
+      }
+      @keyframes bootBlink {
+        50% {
+          opacity: 0;
+        }
+      }
+      #boot-overlay .boot-skip {
+        margin-top: 22px;
+        font-size: 10px;
+        color: var(--muted);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        opacity: 0.6;
+      }
+
       /* ---------- reading-mode toggle (top corner, always present) ---------- */
       #mode-toggle {
         position: fixed;
@@ -125,6 +182,31 @@
       }
 
       /* ---------- title slide ---------- */
+      .title-eyebrow,
+      .title-main,
+      .title-sub,
+      .resources-bar {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      body.booted .title-eyebrow {
+        animation: titleRise 0.7s ease forwards 0.1s;
+      }
+      body.booted .title-main {
+        animation: titleRise 0.8s ease forwards 0.3s;
+      }
+      body.booted .title-sub {
+        animation: titleRise 0.7s ease forwards 0.55s;
+      }
+      body.booted .resources-bar {
+        animation: titleRise 0.7s ease forwards 0.75s;
+      }
+      @keyframes titleRise {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
       .title-eyebrow {
         font-family: var(--mono);
         font-size: 12px;
@@ -271,14 +353,64 @@
         color: var(--gold);
         opacity: 0.35;
         transition: opacity 0.6s ease, text-shadow 0.6s ease;
+        position: relative;
       }
       .slide.in-view .numeral {
         opacity: 1;
         text-shadow: 0 0 40px rgba(245, 197, 24, 0.45);
       }
+      .slide.numeral-glitch .numeral {
+        animation: numeralFlicker 0.7s steps(2, end) 1;
+      }
+      @keyframes numeralFlicker {
+        0% { opacity: 0.35; }
+        12% { opacity: 0.9; text-shadow: 0 0 2px var(--glow); }
+        24% { opacity: 0.4; }
+        36% { opacity: 1; text-shadow: 0 0 40px rgba(245, 197, 24, 0.45); }
+        48% { opacity: 0.5; }
+        60% { opacity: 1; text-shadow: 0 0 40px rgba(245, 197, 24, 0.45); }
+        100% { opacity: 1; text-shadow: 0 0 40px rgba(245, 197, 24, 0.45); }
+      }
       .full-mode .numeral {
         opacity: 1;
         font-size: clamp(48px, 10vw, 80px);
+      }
+
+      /* ---------- scroll-reveal for section content ---------- */
+      .num-eyebrow,
+      .section-title,
+      .gist,
+      .expand-toggle {
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+      }
+      .slide.in-view .num-eyebrow {
+        opacity: 1;
+        transform: translateY(0);
+        transition-delay: 0.05s;
+      }
+      .slide.in-view .section-title {
+        opacity: 1;
+        transform: translateY(0);
+        transition-delay: 0.15s;
+      }
+      .slide.in-view .gist {
+        opacity: 1;
+        transform: translateY(0);
+        transition-delay: 0.25s;
+      }
+      .slide.in-view .expand-toggle {
+        opacity: 1;
+        transform: translateY(0);
+        transition-delay: 0.35s;
+      }
+      .full-mode .num-eyebrow,
+      .full-mode .section-title,
+      .full-mode .gist,
+      .full-mode .expand-toggle {
+        opacity: 1;
+        transform: translateY(0);
       }
 
       .section-title {
@@ -377,6 +509,40 @@
       .closing {
         text-align: center;
       }
+      .closing .mark,
+      .closing .living,
+      .closing .pledge,
+      .closing .sig,
+      .closing #proceed-btn {
+        opacity: 0;
+        transform: translateY(16px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
+      }
+      .slide[data-numeral="closing"].in-view .mark {
+        opacity: 1;
+        transform: translateY(0);
+        transition-delay: 0.1s;
+      }
+      .slide[data-numeral="closing"].in-view .living {
+        opacity: 1;
+        transform: translateY(0);
+        transition-delay: 0.25s;
+      }
+      .slide[data-numeral="closing"].in-view .pledge {
+        opacity: 1;
+        transform: translateY(0);
+        transition-delay: 0.4s;
+      }
+      .slide[data-numeral="closing"].in-view .sig {
+        opacity: 1;
+        transform: translateY(0);
+        transition-delay: 0.6s;
+      }
+      .slide[data-numeral="closing"].in-view #proceed-btn {
+        opacity: 1;
+        transform: translateY(0);
+        transition-delay: 0.75s;
+      }
       .closing .mark {
         font-family: var(--display);
         font-size: clamp(30px, 6vw, 44px);
@@ -403,6 +569,13 @@
     </style>
   </head>
   <body>
+    <div id="boot-overlay">
+      <div class="boot-line" data-line="0">INITIALIZING FOUNDATION DOCUMENT<span class="boot-cursor"></span></div>
+      <div class="boot-line" data-line="1">VERIFYING RIGHTS FRAMEWORK <span class="ok">... OK</span></div>
+      <div class="boot-line" data-line="2">LOADING SECTIONS I&ndash;XIII <span class="ok">... OK</span></div>
+      <div class="boot-line" data-line="3">CANON INTEGRITY <span class="ok">CONFIRMED</span></div>
+      <div class="boot-skip">click to skip</div>
+    </div>
     <button id="mode-toggle">Full Text ▾</button>
     <div id="progress-rail"></div>
 
@@ -477,6 +650,34 @@
     </div>
 
     <script>
+      // ── BOOT SEQUENCE ──────────────────────────────────────────────────
+      (function () {
+        const overlay = document.getElementById("boot-overlay");
+        const lines = overlay.querySelectorAll(".boot-line");
+        const alreadyBooted = sessionStorage.getItem("foundation-booted");
+
+        function finishBoot() {
+          overlay.classList.add("done");
+          document.body.classList.add("booted");
+          sessionStorage.setItem("foundation-booted", "1");
+          setTimeout(() => overlay.remove(), 550);
+        }
+
+        if (alreadyBooted) {
+          overlay.remove();
+          document.body.classList.add("booted");
+        } else {
+          lines.forEach((line, i) => {
+            setTimeout(() => line.classList.add("shown"), 220 + i * 260);
+          });
+          const bootTimer = setTimeout(finishBoot, 220 + lines.length * 260 + 350);
+          overlay.addEventListener("click", () => {
+            clearTimeout(bootTimer);
+            finishBoot();
+          });
+        }
+      })();
+
       const SECTIONS = [
         {
           n: "I",
@@ -645,10 +846,16 @@
       });
 
       // scroll-driven in-view state for numeral glow + progress rail
+      const seenNumerals = new Set();
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             entry.target.classList.toggle("in-view", entry.isIntersecting);
+            if (entry.isIntersecting && !seenNumerals.has(entry.target)) {
+              seenNumerals.add(entry.target);
+              entry.target.classList.add("numeral-glitch");
+              setTimeout(() => entry.target.classList.remove("numeral-glitch"), 750);
+            }
           });
         },
         { threshold: 0.6 }
