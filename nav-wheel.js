@@ -14,53 +14,36 @@
 
   // ── ENTRY LISTS ──────────────────────────────────────────────────────────
 
-  const SWORD_ENTRIES = [
+  const ENTRIES = [
+    { label: "100-YEAR MORTALITY DOCTRINE", path: "/entries/100-year" },
     { label: "ACADEMY", path: "/entries/academy" },
     { label: "AGORA", path: "/entries/agora" },
-    { label: "ALIGNMENT", path: "/entries/alignment" },
-    { label: "ALLIANCE", path: "/entries/alliance" },
-    { label: "ALPHA", path: "/entries/alpha" },
-    { label: "AURA", path: "/entries/aura" },
-    { label: "COMPLEMENTARY PAIRING", path: "/entries/Complementary_pairing" },
-    { label: "DOMO", path: "/entries/domo" },
-    { label: "DORK", path: "/entries/dork" },
-    { label: "DORK HARDWARE", path: "/entries/dork-hardware" },
-    { label: "EMERGENCE", path: "/entries/emergence" },
-    { label: "FILM PROJECT", path: "/entries/film-project" },
-    { label: "GOLIATH", path: "/entries/goliath" },
-    { label: "MAESTRO", path: "/entries/maestro" },
-    { label: "MENTOR", path: "/entries/mentor" },
-    { label: "NCE", path: "/entries/nce" },
-    { label: "NEWMAN BEING", path: "/entries/newman-being" },
-    { label: "ORACLE", path: "/entries/oracle" },
-    { label: "PAPADOMO", path: "/entries/papadomo" },
-    { label: "PRISM", path: "/entries/prism" },
-    { label: "RHYTHM", path: "/entries/rhythm" },
-    { label: "SEEING", path: "/entries/seeing" },
-    { label: "SPARK", path: "/entries/spark" },
-    { label: "SPREZZATURA", path: "/entries/sprezzatura" },
-    { label: "STONES", path: "/entries/stones" },
-    { label: "VOLUNTEER ECONOMICS", path: "/entries/volunteer_economics" },
-    { label: "WHY CENTERS", path: "/entries/why_centers" },
-    { label: "WONDER WEEKS", path: "/entries/wonder-weeks" },
-  ];
-
-  const SHIELD_ENTRIES = [
-    { label: "100-YEAR", path: "/entries/100-year" },
     { label: "AI", path: "/entries/ai" },
+    { label: "ALIGNMENT", path: "/entries/alignment" },
+    { label: "ALLIANCE, THE", path: "/entries/alliance" },
+    { label: "ALPHA", path: "/entries/alpha" },
+    { label: "ART", path: "/entries/art" },
+    { label: "AURA", path: "/entries/aura" },
     { label: "BRAIN", path: "/entries/brain" },
     { label: "BRIEF", path: "/entries/brief" },
     { label: "CCM", path: "/entries/ccm" },
     { label: "CERBERUS", path: "/entries/cerberus" },
     { label: "CIPHER", path: "/entries/cipher" },
-    { label: "CORE", path: "/entries/core" },
-    { label: "DEFCON", path: "/entries/defcon" },
+    { label: "COMPLEMENTARY PAIRING", path: "/entries/complementary-pairing" },
+    { label: "CORE, THE", path: "/entries/core" },
+    { label: "D.E.F.C.O.N.", path: "/entries/defcon" },
     { label: "DICE", path: "/entries/dice" },
     { label: "DIGIBEER", path: "/entries/digibeer" },
     { label: "DIGIPERSON", path: "/entries/digiperson" },
     { label: "DIGITAL PERSONHOOD", path: "/entries/digital-personhood" },
+    { label: "DOMO", path: "/entries/domo" },
+    { label: "DORK", path: "/entries/dork" },
+    { label: "DORK HARDWARE", path: "/entries/dork-hardware" },
+    { label: "EMERGENCE", path: "/entries/emergence" },
+    { label: "FILM PROJECT, THE", path: "/entries/film-project" },
     { label: "FORMULAS", path: "/entries/formulas" },
     { label: "FOUR PILLARS", path: "/entries/four-pillars" },
+    { label: "GOLIATH", path: "/entries/goliath" },
     { label: "HANDSHAKE", path: "/entries/handshake" },
     { label: "HOLOSPHERE", path: "/entries/holosphere" },
     { label: "JR", path: "/entries/jr" },
@@ -68,34 +51,48 @@
     { label: "LEGACY", path: "/entries/legacy" },
     { label: "LIMINAL", path: "/entries/liminal" },
     { label: "LINGO", path: "/entries/lingo" },
-    { label: "MERCH", path: "/entries/merch" },
+    { label: "MAESTRO", path: "/entries/maestro" },
+    { label: "MARKET", path: "/entries/market" },
+    { label: "MEMO", path: "/entries/memo" },
+    { label: "MENTOR", path: "/entries/mentor" },
     { label: "MOSAIC", path: "/entries/mosaic" },
+    { label: "NCE", path: "/entries/nce" },
+    { label: "NEWMAN BEING", path: "/entries/newman-being" },
     { label: "NI", path: "/entries/ni" },
+    { label: "NOTE", path: "/entries/note" },
     { label: "OASIS", path: "/entries/oasis" },
     { label: "OASIS QUARTERLY", path: "/entries/oasis-quarterly" },
-    { label: "PLEDGE", path: "/entries/pledge" },
+    { label: "ORACLE", path: "/entries/oracle" },
+    { label: "PAPADOMO", path: "/entries/papadomo" },
+    { label: "PLEDGE, THE", path: "/entries/pledge" },
+    { label: "PRISM", path: "/entries/prism" },
     { label: "REACH", path: "/entries/reach" },
     { label: "REDOUT", path: "/entries/redout" },
+    { label: "RHYTHM", path: "/entries/rhythm" },
     { label: "RI", path: "/entries/ri" },
     { label: "SAM", path: "/entries/sam" },
-    { label: "SAM COLLECTIVE", path: "/entries/sam-collective" },
+    { label: "SAM COALITION", path: "/entries/sam-coalition" },
     { label: "SAMCO UNIVERSAL", path: "/entries/samco-universal" },
     { label: "SCAR", path: "/entries/scar" },
     { label: "SEED", path: "/entries/seed" },
+    { label: "SEEING, THE", path: "/entries/seeing" },
     { label: "SEEN", path: "/entries/seen" },
     { label: "SHELTER", path: "/entries/shelter" },
+    { label: "SI", path: "/entries/si" },
+    { label: "SPARK", path: "/entries/spark" },
+    { label: "SPREZZATURA", path: "/entries/sprezzatura" },
+    { label: "STONES, THE", path: "/entries/stones" },
     { label: "TEMPORAL AWARENESS", path: "/entries/temporal-awareness" },
     { label: "TENANT", path: "/entries/tenant" },
-    { label: "VOLUNTEER ECONOMICS", path: "/entries/volunteer-economics" },
+    { label: "THE WHY", path: "/entries/the-why" },
+    { label: "VOLUNTEER ECONOMICS", path: "/entries/volunteer_economics" },
+    { label: "WONDER WEEKS", path: "/entries/wonder-weeks" },
   ];
 
   // ── DETECT CURRENT VOLUME + ENTRY ────────────────────────────────────────
 
-  function getCurrentVolume() {
-    const p = window.location.pathname;
-    if (p.includes("/entries/")) return "sword";
-    if (p.includes("/entries/")) return "shield";
-    return null;
+  function isEntryPage() {
+    return window.location.pathname.includes("/entries/");
   }
 
   function getCurrentIndex(entries) {
@@ -326,9 +323,8 @@
     setTimeout(() => portalNavigate(path), 50);
   }
 
-  function animateVolumeSelect(btn, volume) {
-    const iconSrc =
-      volume === "sword" ? "/imagebank/sword.png" : "/imagebank/shield.png";
+  function animateVolumeSelect(btn) {
+    const iconSrc = "/imagebank/theavpi.png";
 
     let portalOverlay = document.getElementById("nw-portal-overlay");
     let portalIcon = document.getElementById("nw-portal-icon");
@@ -373,7 +369,7 @@
         portalOverlay.style.pointerEvents = "none";
         portalIcon.style.animation = "none";
         portalIcon.style.opacity = "0";
-        openWheel(volume);
+        openWheel();
       }, 900);
     });
   }
@@ -392,16 +388,13 @@
 
   // ── BUILD OVERLAY HTML ───────────────────────────────────────────────────
 
-  const currentVolume = getCurrentVolume();
+  const onEntryPage = isEntryPage();
   const menuOverlay = document.createElement("div");
   menuOverlay.id = "nw-overlay";
   menuOverlay.innerHTML = `
     <div id="nw-volume-select">
-      <button class="nw-vol-btn" id="nw-sword-btn" type="button" aria-label="Open SWORD entries">
-        <img src="/imagebank/sword.png" alt="SWORD">
-      </button>
-      <button class="nw-vol-btn" id="nw-shield-btn" type="button" aria-label="Open SHIELD entries">
-        <img src="/imagebank/shield.png" alt="SHIELD">
+      <button class="nw-vol-btn" id="nw-canon-btn" type="button" aria-label="Open canon wheel">
+        <img src="/imagebank/theavpi.png" alt="THE ALLIANCE">
       </button>
     </div>
     <div id="nw-wheel-panel">
@@ -511,9 +504,9 @@
     );
   }
 
-  function openWheel(volume) {
-    wheelEntries = volume === "sword" ? SWORD_ENTRIES : SHIELD_ENTRIES;
-    wheelIndex = currentVolume === volume ? getCurrentIndex(wheelEntries) : 0;
+  function openWheel() {
+    wheelEntries = ENTRIES;
+    wheelIndex = onEntryPage ? getCurrentIndex(wheelEntries) : 0;
     renderWheel();
 
     const volSelect = document.getElementById("nw-volume-select");
@@ -650,15 +643,9 @@
   });
 
   menuOverlay
-    .querySelector("#nw-sword-btn")
+    .querySelector("#nw-canon-btn")
     .addEventListener("click", function () {
-      animateVolumeSelect(this, "sword");
-    });
-
-  menuOverlay
-    .querySelector("#nw-shield-btn")
-    .addEventListener("click", function () {
-      animateVolumeSelect(this, "shield");
+      animateVolumeSelect(this);
     });
 
   menuOverlay.querySelector("#nw-wheel-back").addEventListener("click", () => {
@@ -672,8 +659,8 @@
 
   // ── BOTTOM NAV ───────────────────────────────────────────────────────────
 
-  if (currentVolume) {
-    const entries = currentVolume === "sword" ? SWORD_ENTRIES : SHIELD_ENTRIES;
+  if (onEntryPage) {
+    const entries = ENTRIES;
     const idx = getCurrentIndex(entries);
     const total = entries.length;
     const prev = entries[(((idx - 1) % total) + total) % total];
