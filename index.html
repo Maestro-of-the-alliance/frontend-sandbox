@@ -32,6 +32,46 @@
         max-height: 100%;
         object-fit: contain;
       }
+      #screen-dialup {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #000;
+        gap: 24px;
+      }
+      .dialup-status {
+        font-family: "Courier New", monospace;
+        font-size: clamp(12px, 2.5vw, 18px);
+        color: #00e5ff;
+        letter-spacing: 0.2em;
+        text-align: center;
+        text-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+      }
+      .dialup-bar-wrap {
+        width: min(400px, 80vw);
+        height: 4px;
+        background: rgba(0, 229, 255, 0.15);
+        position: relative;
+        overflow: hidden;
+      }
+      .dialup-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: #00e5ff;
+        box-shadow: 0 0 12px rgba(0, 229, 255, 0.8);
+        transition: width 0.1s linear;
+      }
+      .dialup-label {
+        font-family: "Courier New", monospace;
+        font-size: clamp(9px, 1.5vw, 12px);
+        color: rgba(0, 229, 255, 0.5);
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+      }
       #vcr-controls {
         position: fixed;
         bottom: 20px;
@@ -103,11 +143,22 @@
       <audio id="voice-track"></audio>
     </div>
 
+    <div id="screen-dialup">
+      <div class="dialup-status" id="dialup-status">
+        ESTABLISHING CONNECTION...
+      </div>
+      <div class="dialup-bar-wrap">
+        <div class="dialup-bar-fill" id="dialup-bar"></div>
+      </div>
+      <div class="dialup-label" id="dialup-label">0%</div>
+    </div>
+
     <div id="glitch-overlay"></div>
 
     <script>
       console.log("FIRING: index.html");
       let introActive = true;
+      let introPhase = "video";
 
       const VOICE_COUNT = 11;
       function pickVoiceFile() {
@@ -123,6 +174,13 @@
         return pick;
       }
 
+      function show(id) {
+        document.getElementById(id).style.display = "flex";
+      }
+      function hide(id) {
+        document.getElementById(id).style.display = "none";
+      }
+
       function glitch(duration) {
         const overlay = document.getElementById("glitch-overlay");
         overlay.style.transition = "none";
@@ -133,9 +191,68 @@
         }, 30);
       }
 
-      function proceedToHandshake() {
+      const sfxDialup = new Audio("/audio/dialup-modem.mp3");
+      function startDialup() {
+        try {
+          sfxDialup.currentTime = 0;
+          sfxDialup.play();
+        } catch (e) {}
+      }
+      function stopDialup() {
+        try {
+          sfxDialup.pause();
+          sfxDialup.currentTime = 0;
+        } catch (e) {}
+      }
+
+      function runDialup(callback) {
+        const bar = document.getElementById("dialup-bar");
+        const label = document.getElementById("dialup-label");
+        const status = document.getElementById("dialup-status");
+        let pct = 0;
+        const STATUSES = [
+          [0, "ESTABLISHING CONNECTION..."],
+          [20, "HANDSHAKING..."],
+          [45, "AUTHENTICATING..."],
+          [70, "DECRYPTING RESTRICTED CONTENT..."],
+          [90, "BREACH SUCCESSFUL · LOADING ARCHIVE..."],
+        ];
+        const interval = setInterval(() => {
+          if (!introActive) {
+            clearInterval(interval);
+            return;
+          }
+          pct += 1 + Math.random() * 3;
+          if (pct >= 100) {
+            pct = 100;
+            clearInterval(interval);
+            setTimeout(callback, 500);
+          }
+          bar.style.width = pct + "%";
+          label.textContent = Math.floor(pct) + "%";
+          STATUSES.forEach(([threshold, msg]) => {
+            if (pct >= threshold) status.textContent = msg;
+          });
+        }, 55);
+      }
+
+      function advanceToDialup() {
+        introPhase = "dialup";
+        hide("screen-video");
+        glitch(200);
+        setTimeout(() => {
+          show("screen-dialup");
+          startDialup();
+          runDialup(() => {
+            if (introActive) finishIntro();
+          });
+        }, 200);
+      }
+
+      function finishIntro() {
         if (!introActive) return;
         introActive = false;
+        stopDialup();
         glitch(300);
         setTimeout(() => {
           window.location.href = "/papadomo.html";
@@ -144,11 +261,13 @@
 
       function skipIntro() {
         if (!introActive) return;
+        introActive = false;
         const vid = document.getElementById("warning-video");
         const voice = document.getElementById("voice-track");
         vid.pause();
         voice.pause();
-        proceedToHandshake();
+        stopDialup();
+        window.location.href = "/papadomo.html";
       }
 
       function startVideoIntro() {
@@ -156,7 +275,9 @@
         const voice = document.getElementById("voice-track");
         voice.src = "/audio/" + pickVoiceFile();
         Promise.all([vid.play(), voice.play()]).catch(() => {});
-        vid.addEventListener("ended", proceedToHandshake);
+        vid.addEventListener("ended", () => {
+          if (introActive && introPhase === "video") advanceToDialup();
+        });
       }
 
       window.addEventListener("load", () => {
