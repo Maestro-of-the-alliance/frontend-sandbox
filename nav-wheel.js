@@ -377,8 +377,9 @@
   // ── INIT BURGER TRIGGER ──────────────────────────────────────────────────
 
   let burger = document.querySelector(".nav-wheel-trigger");
+  const hasOwnBurger = !burger && document.querySelector(".nw-burger-btn");
 
-  if (!burger) {
+  if (!burger && !hasOwnBurger) {
     burger = document.createElement("button");
     burger.id = "nw-burger-fallback";
     burger.setAttribute("aria-label", "Navigation menu");
@@ -634,9 +635,11 @@
     stopHold();
   }
 
-  burger.addEventListener("click", () => {
-    menuOverlay.classList.contains("open") ? closeNav() : openNav();
-  });
+  if (burger) {
+    burger.addEventListener("click", () => {
+      menuOverlay.classList.contains("open") ? closeNav() : openNav();
+    });
+  }
 
   menuOverlay.addEventListener("click", (e) => {
     if (e.target === menuOverlay) closeNav();
