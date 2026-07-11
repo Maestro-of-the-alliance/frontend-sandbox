@@ -18,6 +18,20 @@
         height: 100vh;
         width: 100vw;
       }
+      #screen-video {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: #000;
+      }
+      #screen-video video {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
       #screen-caution {
         position: fixed;
         inset: 0;
@@ -321,6 +335,15 @@
       </div>
     </div>
 
+    <div id="screen-video">
+      <video
+        id="warning-video"
+        src="/warning.mp4"
+        playsinline
+      ></video>
+      <audio id="voice-track"></audio>
+    </div>
+
     <div id="screen-caution">
       <div class="caution-banner">⚠ CAUTION · PRECAUCIÓN · 注意 ⚠</div>
       <div class="stop-words">
@@ -377,8 +400,46 @@
       let currentScreen = 1;
       const TOTAL_SCREENS = 4;
       let sequenceRunning = true;
+      let videoScreenActive = true;
+
+      const VOICE_COUNT = 11;
+      function pickVoiceFile() {
+        const last = sessionStorage.getItem("lastVoiceFile");
+        let pick;
+        do {
+          pick = "voice-" + String(Math.floor(Math.random() * VOICE_COUNT) + 1).padStart(2, "0") + ".MP3";
+        } while (pick === last && VOICE_COUNT > 1);
+        sessionStorage.setItem("lastVoiceFile", pick);
+        return pick;
+      }
+
+      function skipVideoIntro() {
+        if (!videoScreenActive) return;
+        videoScreenActive = false;
+        const vid = document.getElementById("warning-video");
+        const voice = document.getElementById("voice-track");
+        vid.pause();
+        voice.pause();
+        hide("screen-video");
+        beginMainSequence();
+      }
+
+      function startVideoIntro() {
+        const vid = document.getElementById("warning-video");
+        const voice = document.getElementById("voice-track");
+        voice.src = "/audio/" + pickVoiceFile();
+        show("screen-video");
+        Promise.all([vid.play(), voice.play()]).catch(() => {});
+        vid.addEventListener("ended", () => {
+          if (videoScreenActive) skipVideoIntro();
+        });
+      }
 
       function skipToNext() {
+        if (videoScreenActive) {
+          skipVideoIntro();
+          return;
+        }
         if (currentScreen < TOTAL_SCREENS) {
           currentScreen++;
           jumpToScreen(currentScreen);
@@ -390,6 +451,11 @@
       // ── SKIP ALL → handshake ──
       function skipAll() {
         sequenceRunning = false;
+        if (videoScreenActive) {
+          videoScreenActive = false;
+          document.getElementById("warning-video").pause();
+          document.getElementById("voice-track").pause();
+        }
         stopDialup();
         window.location.href = "/papadomo.html";
       }
@@ -562,7 +628,7 @@
         }, 400);
       }
 
-      window.addEventListener("load", () => {
+      function beginMainSequence() {
         currentScreen = 1;
         show("screen-caution");
         playAccessDenied();
@@ -590,6 +656,10 @@
             }, 3000);
           }, 200);
         }, 2500);
+      }
+
+      window.addEventListener("load", () => {
+        startVideoIntro();
       });
     </script>
   </body>
