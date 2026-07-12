@@ -23,7 +23,7 @@ export default function DimensionSidebar({
   );
 
   return (
-    <div className="w-full md:w-[420px] h-full flex flex-col border-r border-[#1a1c25]/85 bg-[#020308]/90 backdrop-blur-2xl text-[#e5e5e5] overflow-y-auto">
+    <div className="w-full md:w-[420px] h-[45vh] md:h-full shrink-0 flex flex-col border-r border-[#1a1c25]/85 bg-[#020308]/90 backdrop-blur-2xl text-[#e5e5e5] overflow-y-auto">
       {/* Artistic Flair Header with subtle golden/amber accents */}
       <div className="p-8 border-b border-[#1a1c25]/60 flex flex-col justify-start items-start">
         <div className="text-[10px] tracking-[0.5em] uppercase text-amber-500/75 mb-2 font-black font-mono">

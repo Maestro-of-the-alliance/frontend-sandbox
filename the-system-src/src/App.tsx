@@ -101,7 +101,7 @@ export default function App() {
       />
 
       {/* MAIN 3D SIMULATION CONTAINER */}
-      <div className="flex-1 h-full relative" id="threejs-container">
+      <div className="flex-1 h-full min-h-0 relative" id="threejs-container">
         <SolarSystemCanvas
           selectedPlanetId={selectedPlanetId}
           onPlanetSelect={handlePlanetSelect}
