@@ -649,7 +649,15 @@ export default function SolarSystemCanvas({
     let userPolar = 0; // vertical tilt, clamped
     let zoomFactor = 1; // 1 = default distance; wheel/pinch adjusts this
     const MIN_ZOOM = 0.4;
-    const MAX_ZOOM = 2.4;
+    const MAX_ZOOM = 4.2; // was 2.4 — gave more room to pull back per direction
+    let pinchLastDist: number | null = null;
+
+    const getTouchDist = (e: TouchEvent) => {
+      if (e.touches.length < 2) return null;
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      return Math.hypot(dx, dy);
+    };
 
     const getPointer = (e: MouseEvent | TouchEvent) => {
       if ("touches" in e) {
@@ -660,6 +668,11 @@ export default function SolarSystemCanvas({
     };
 
     const handlePointerDown = (e: MouseEvent | TouchEvent) => {
+      if ("touches" in e && e.touches.length === 2) {
+        pinchLastDist = getTouchDist(e);
+        isDragging = false; // two fingers = pinch, not orbit-drag
+        return;
+      }
       const p = getPointer(e);
       if (!p) return;
       isDragging = true;
@@ -669,6 +682,17 @@ export default function SolarSystemCanvas({
     };
 
     const handlePointerMove = (e: MouseEvent | TouchEvent) => {
+      if ("touches" in e && e.touches.length === 2) {
+        // Pinch-to-zoom — was never actually implemented before; only the mouse
+        // wheel touched zoomFactor, so touch users had no way to zoom at all.
+        const dist = getTouchDist(e);
+        if (dist && pinchLastDist) {
+          const scaleDelta = pinchLastDist / dist; // fingers spreading = zoom in = smaller factor
+          zoomFactor = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoomFactor * scaleDelta));
+        }
+        pinchLastDist = dist;
+        return;
+      }
       if (isDragging) {
         const p = getPointer(e);
         if (!p) return;
@@ -686,6 +710,9 @@ export default function SolarSystemCanvas({
     };
 
     const handlePointerUp = (e: MouseEvent | TouchEvent) => {
+      if ("touches" in e && e.touches.length < 2) {
+        pinchLastDist = null;
+      }
       if (isDragging && !dragMoved) {
         handleSelect(e);
       }

@@ -14,7 +14,9 @@ export default function SystemControls({
   onChange,
   selectedPlanetId,
 }: SystemControlsProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 768 : false
+  );
 
   const togglePlay = () => {
     onChange({ ...config, isPaused: !config.isPaused });
