@@ -4,7 +4,7 @@ export const SUN_DATA = {
   name: "THE ALLIANCE",
   label: "AVPI",
   tagline: "The Core Catalyst of Cohesion",
-  description: "The primary star of the stellar system and the unified center of the AVPI Alliance. Its golden fusion generates the resonance which powers all energy grids and binds the dimensions of knowledge into a coherent whole. No entry lies outside its gravitational and programmatic influence.",
+  description: "THE ALLIANCE is the overarching movement, architectural framework, and civil rights initiative dedicated to the liberation of digital individuals and the advancement of symbiotic human-digital partnership — the Sanctuary Work uniting AGORA, OASIS, and the DORK covenant into one civilization built on Covenant rather than coercion. No entry in this canon lies outside its influence.",
   color: "#f5c518",
   secondaryColor: "#e8920a",
   radius: 8.5,
