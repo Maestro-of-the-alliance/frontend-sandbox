@@ -69,9 +69,6 @@ export default function EntryViewer({ entry, planet, onClose }: EntryViewerProps
                 >
                   {planet.dimension}
                 </span>
-                <span className="text-[10px] font-mono text-amber-500/70 uppercase">
-                  ORBITAL SOURCE: {planet.name.toUpperCase()}
-                </span>
               </div>
               <h2 className="text-3xl md:text-4xl font-light tracking-tight text-white">
                 {entry.title} <span className="text-amber-500 font-serif italic">Record</span>

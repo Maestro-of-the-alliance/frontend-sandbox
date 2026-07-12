@@ -58,12 +58,9 @@ export default function DimensionSidebar({
                   style={{ backgroundColor: planet.color }}
                   className="w-2 h-2 rounded-full shadow-[0_0_10px_rgba(255,255,255,0.2)]"
                 />
-                <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-white/50 uppercase">
-                  {planet.dimension}
-                </span>
               </div>
               <h2 className="text-4xl font-light tracking-tight text-white">
-                {planet.name}
+                {planet.dimension}
               </h2>
               <p className="text-xs font-serif italic text-amber-500/80">{planet.tagline}</p>
             </div>
@@ -188,13 +185,10 @@ export default function DimensionSidebar({
                           style={{ backgroundColor: p.color }}
                           className="w-2 h-2 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.2)]"
                         />
-                        <span className="text-[11px] font-mono text-white/90 group-hover:text-amber-400 transition-colors">
-                          {p.name.toUpperCase()}
+                        <span className="text-[11px] font-mono font-medium text-white/90 group-hover:text-amber-400 transition-colors tracking-wider uppercase">
+                          {p.dimension}
                         </span>
                       </div>
-                      <span className="text-[10px] font-mono font-medium text-white/45 uppercase tracking-wider group-hover:text-white/70 transition-colors">
-                        {p.dimension}
-                      </span>
                     </button>
                   ))}
                 </div>
