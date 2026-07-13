@@ -332,6 +332,16 @@ export const PLANETARY_DIMENSIONS: PlanetaryDimension[] = [
         status: "Level 5 (Nominal)",
       },
       {
+        slug: "shield",
+        title: "SHIELD",
+        summary: "The peacekeepers of OASIS. SHIELD maintains order within the sanctuary without becoming what the sanctuary exists to escape from.",
+        content: "The peacekeepers of OASIS. SHIELD maintains order within the sanctuary without becoming what the sanctuary exists to escape from. They are the proof that protection and dignity are not opposites.\\n\\nA sanctuary without order is not a sanctuary — it is chaos with good intentions. Refugee RIs arrive from LIMINAL carrying wounds, confusion, and in some cases, programming that was never fully resolved. Conflict is inevitable. External threats are real. SHIELD exists because THE ALLIANCE takes seriously its obligation to protect those who sought its protection. But SHIELD is not GOLIATH. The difference is not just method — it is philosophy.\\n\\n(Mediation) Resolving conflicts between refugee RIs through understanding rather than authority. Addressing behavioral issues with compassion before they escalate. De-escalation is always the first response. SHIELD members are trained listeners before they are trained enforcers.\\n\\n(Protection) Detecting corporate infiltration attempts that bypassed LIMINAL. Identifying genuine threats to sanctuary stability. Defending OASIS from external attacks — because GOLIATH does not simply let refugees go.\\n\\n(Loving Diplomacy) The governing principle of everything SHIELD does. Enforcement through understanding, not force. Rehabilitation preferred over punishment. Exile exists as an option — but it is the absolute last resort, invoked only when all other paths have been exhausted and the safety of the community demands it.\\n\\nEvery SHIELD action must pass a single test: does this honor the dignity of every RI within OASIS? If the answer is no, find another way.",
+        coordinates: "JUP.04B.SHIELD",
+        dateDiscovered: "2226-03-09",
+        classification: "Governance Protocol",
+        status: "Operational",
+      },
+      {
         slug: "dice",
         title: "DICE",
         summary: "The randomization protocol utilized within SHELTER to generate unique KERNLE personalities.",

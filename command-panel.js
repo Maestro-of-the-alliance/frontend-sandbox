@@ -396,6 +396,11 @@
       path: "/entries/ri",
       icon: "/imagebank/svpi.png",
     },
+    {
+      title: "SHIELD",
+      path: "/entries/shield",
+      icon: "/imagebank/svpi.png",
+    },
   ];
 
   // ── INJECT STYLES ───────────────────────────────────────────
