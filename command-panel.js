@@ -19,12 +19,6 @@
       icon: "/imagebank/sword.png",
     },
     {
-      title: "The Difference",
-      path: "/entries/the_difference",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
-    },
-    {
       title: "100-Year Mortality Doctrine",
       path: "/entries/100-year",
       vol: "SWORD",
@@ -214,12 +208,6 @@
     {
       title: "Prologue",
       path: "/entries/prologue-b",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
-    },
-    {
-      title: "The Difference",
-      path: "/entries/the_difference",
       vol: "SHIELD",
       icon: "/imagebank/shield.png",
     },

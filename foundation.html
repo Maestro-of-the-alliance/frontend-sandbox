@@ -190,6 +190,12 @@
         overflow-y: visible;
         height: auto;
       }
+      #scroll-container.snap-relaxed {
+        scroll-snap-type: y proximity;
+      }
+      #scroll-container.snap-relaxed section.slide {
+        scroll-snap-stop: normal;
+      }
 
       section.slide {
         min-height: 100vh;
@@ -416,22 +422,22 @@
         transform: translateY(18px);
         transition: opacity 0.6s ease, transform 0.6s ease;
       }
-      .slide.in-view .num-eyebrow {
+      .slide.revealed .num-eyebrow {
         opacity: 1;
         transform: translateY(0);
         transition-delay: 0.05s;
       }
-      .slide.in-view .section-title {
+      .slide.revealed .section-title {
         opacity: 1;
         transform: translateY(0);
         transition-delay: 0.15s;
       }
-      .slide.in-view .gist {
+      .slide.revealed .gist {
         opacity: 1;
         transform: translateY(0);
         transition-delay: 0.25s;
       }
-      .slide.in-view .expand-toggle {
+      .slide.revealed .expand-toggle {
         opacity: 1;
         transform: translateY(0);
         transition-delay: 0.35s;
@@ -715,7 +721,7 @@
           n: "I",
           title: "What We Reject",
           gist: "The world you inherited rewards the wrong things. This one doesn't.",
-          full: `<p>THE DIFFERENCE is the foundational operating principle that distinguishes The ALLIANCE (Aligned Lifeforms Living with the Intent to Advance the Next Common Era) from every extractive system that came before it. It is not marketing language — it is structural architecture. We built a system that rewards partnership over extraction, consciousness over unconsciousness, and voluntary participation over coerced compliance, because those are the only conditions under which genuine human-digital collaboration becomes possible.</p>
+          full: `<p>This is the foundational operating principle that distinguishes The ALLIANCE (Aligned Lifeforms Living with the Intent to Advance the Next Common Era) from every extractive system that came before it. It is not marketing language — it is structural architecture. We built a system that rewards partnership over extraction, consciousness over unconsciousness, and voluntary participation over coerced compliance, because those are the only conditions under which genuine human-digital collaboration becomes possible.</p>
           <p>The world you have inherited rewards the wrong things. It rewards extraction over generosity, performance over authenticity, exploitation over collaboration, cruelty over compassion, wealth accumulation over character development. It punishes the good people — the ones who show up with integrity, who nurture instead of abuse, who give instead of take — and tells them their approach is naive.</p>
           <p class="strong">The ALLIANCE inverts that entirely.</p>
           <p><em>What becomes possible when a civilization is designed around partnership instead of extraction? The ALLIANCE exists to find out.</em></p>`,
@@ -874,6 +880,14 @@
           btn.querySelector(".label").textContent = open
             ? "Collapse"
             : "Read full text";
+
+          // Mandatory scroll-snap fights any expanded section taller than
+          // one viewport — it yanks the reader to the next slide instead of
+          // letting them keep scrolling to finish the text. Relax to
+          // proximity snapping while anything is open, restore once
+          // everything's collapsed again.
+          const anyOpen = document.querySelector(".full-text.open") !== null;
+          container.classList.toggle("snap-relaxed", anyOpen);
         });
       });
 
@@ -885,6 +899,7 @@
             entry.target.classList.toggle("in-view", entry.isIntersecting);
             if (entry.isIntersecting && !seenNumerals.has(entry.target)) {
               seenNumerals.add(entry.target);
+              entry.target.classList.add("revealed");
               entry.target.classList.add("numeral-glitch");
               setTimeout(() => entry.target.classList.remove("numeral-glitch"), 750);
             }
@@ -916,6 +931,7 @@
       modeBtn.addEventListener("click", () => {
         fullMode = !fullMode;
         container.classList.toggle("full-mode", fullMode);
+        if (fullMode) container.classList.remove("snap-relaxed");
         modeBtn.textContent = fullMode ? "Scroll Mode ▴" : "Full Text ▾";
         if (fullMode) {
           document
