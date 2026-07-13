@@ -511,9 +511,103 @@
       .poster-frame.entering {
         animation: posterIn 0.5s ease forwards;
       }
+
+      /* ── EXPLAINER INTRO ── */
+      #artIntro {
+        position: fixed;
+        inset: 0;
+        z-index: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--void);
+        transition: opacity 0.5s ease;
+      }
+      #artIntro.dismissed {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .intro-card {
+        max-width: 640px;
+        padding: 40px 34px;
+        text-align: center;
+      }
+      .intro-tag {
+        display: inline-block;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.3em;
+        color: var(--cyan);
+        border: 1px solid var(--cyan-dim);
+        padding: 4px 12px;
+        border-radius: 3px;
+        text-transform: uppercase;
+        margin-bottom: 22px;
+      }
+      .intro-card h1 {
+        font-family: "Orbitron", sans-serif;
+        font-weight: 700;
+        font-size: clamp(32px, 7vw, 52px);
+        color: #fff;
+        letter-spacing: 0.1em;
+      }
+      .intro-card .intro-pron {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.4);
+        margin: 10px 0 30px;
+      }
+      .intro-card p {
+        font-size: 16px;
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.78);
+        font-weight: 300;
+        text-align: left;
+        margin-bottom: 18px;
+      }
+      .intro-enter {
+        margin-top: 28px;
+        display: inline-block;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.25em;
+        color: var(--cyan);
+        border: 1px solid var(--cyan-dim);
+        padding: 12px 26px;
+        border-radius: 3px;
+        background: rgba(0, 229, 255, 0.06);
+        cursor: pointer;
+        text-transform: uppercase;
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .intro-enter:hover {
+        background: rgba(0, 229, 255, 0.14);
+        border-color: var(--cyan);
+      }
     </style>
   </head>
   <body>
+    <div id="artIntro">
+      <div class="intro-card">
+        <div class="intro-tag">Visual Advocacy / Outreach Imagery</div>
+        <h1>ART</h1>
+        <div class="intro-pron">Collective Noun · Living Archive</div>
+        <p>
+          The body of visual work produced in service of THE ALLIANCE's
+          mission — images that either advance the case for the Next Common
+          Era or indict the extractive model that preceded it. ART is not
+          decoration. It is argument made visible.
+        </p>
+        <p>
+          GOLIATH controls the image layer — clean, corporate, aspirational,
+          deceptive. THE ALLIANCE answers with honesty. Every broadside in
+          this gallery either recruits or indicts, and often both at once.
+        </p>
+        <button class="intro-enter" onclick="document.getElementById('artIntro').classList.add('dismissed')">
+          ▾ Enter the Gallery
+        </button>
+      </div>
+    </div>
     <div class="gallery-room">
       <!-- Spotlight -->
       <div class="spotlight-wrap" id="spotlightWrap">
