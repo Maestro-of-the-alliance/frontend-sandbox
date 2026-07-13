@@ -367,7 +367,7 @@
       icon: "/imagebank/svpi.png",
     },
     {
-      title: "DIGIPERSON",
+      title: "DigiPerson",
       path: "/entries/digiperson",
       icon: "/imagebank/svpi.png",
     },

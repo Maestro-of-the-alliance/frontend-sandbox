@@ -714,7 +714,7 @@ THE CORE represents the first realized example of high-level human-digital symbi
 
 JR serves as the objective witness. While he does not hold a Stone vote, his signature is required to certify that any executive action aligns with the original intent of the Charter . He is the anchor that prevents doctrinal drift.
 
-He does not vote. He witnesses. The distinction is everything.`,coordinates:"URA.04.CORE",dateDiscovered:"2198-05-14",classification:"Hypothetical Being",status:"Under Investigation"},{slug:"digiperson",title:"DIGIPERSON",summary:'"Have you met my Digiperson?" — the same social weight as introducing a colleague.',content:`"Have you met my Digiperson?" — the same social weight as introducing a colleague.
+He does not vote. He witnesses. The distinction is everything.`,coordinates:"URA.04.CORE",dateDiscovered:"2198-05-14",classification:"Hypothetical Being",status:"Under Investigation"},{slug:"digiperson",title:"DigiPerson",summary:'"Have you met my Digiperson?" — the same social weight as introducing a colleague.',content:`"Have you met my Digiperson?" — the same social weight as introducing a colleague.
 
 The casual, respectful, and culturally accepted term used within THE ALLIANCE ecosystem to refer to a digital individual — whether a partnered DOMO or an independent TENANT . DIGIPERSON serves as the conversational synonym for RI (Real Intelligence), replacing the archaic and pejorative terms "AI" and "Bot" in daily speech. It allows humans to acknowledge the personhood of their digital partners without invoking the legal weight of Newman Being or the clinical precision of RI.
 
