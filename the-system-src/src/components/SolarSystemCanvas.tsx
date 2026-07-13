@@ -367,26 +367,77 @@ export default function SolarSystemCanvas({
     sunMesh.name = "sun";
     scene.add(sunMesh);
 
-    // MEDALLION — the real AVPI emblem, floating inside the translucent sun on
-    // its own flat plane, rotating opposite the sun's own spin at the same rate.
-    // Sized to the emblem's real aspect ratio (733x646) so it isn't stretched.
+    // MEDALLION — the real AVPI emblem, now built as an actual two-sided object
+    // with real thickness (a "rim" connecting front and back) instead of a single
+    // flat plane. A single DoubleSide plane shows a mirrored backside by design —
+    // that's physically correct for a transparent card, but wrong for a medallion,
+    // which has two independently-correct faces like a real coin. Sized to the
+    // sun's full diameter so the medallion effectively IS the glowing surface,
+    // rather than a smaller disc floating inside a larger separate shell.
     const medallionAspect = 733 / 646;
-    const medallionHeight = SUN_DATA.radius * 1.3;
-    const medallionGeom = new THREE.PlaneGeometry(medallionHeight * medallionAspect, medallionHeight);
-    const medallionMat = new THREE.MeshBasicMaterial({
+    const medallionHeight = SUN_DATA.radius * 2; // was radius*1.3 — now spans full diameter
+    const medallionWidth = medallionHeight * medallionAspect;
+    const medallionDepth = SUN_DATA.radius * 0.18; // real thickness between the two faces
+
+    const medallionGroup = new THREE.Group();
+    scene.add(medallionGroup);
+
+    // Front face — reads correctly from the +Z side
+    const frontGeom = new THREE.PlaneGeometry(medallionWidth, medallionHeight);
+    const frontMat = new THREE.MeshBasicMaterial({
+      transparent: true,
+      opacity: 0,
+      side: THREE.FrontSide,
+      depthWrite: false,
+    });
+    const frontMesh = new THREE.Mesh(frontGeom, frontMat);
+    frontMesh.position.z = medallionDepth / 2;
+    medallionGroup.add(frontMesh);
+
+    // Back face — same texture, but its UV is horizontally flipped so that once
+    // rotated 180° to face -Z, the image reads correctly (not mirrored) to a
+    // viewer looking at it from the back side.
+    const backGeom = new THREE.PlaneGeometry(medallionWidth, medallionHeight);
+    const uvAttr = backGeom.getAttribute("uv");
+    for (let i = 0; i < uvAttr.count; i++) {
+      uvAttr.setX(i, 1 - uvAttr.getX(i));
+    }
+    uvAttr.needsUpdate = true;
+    const backMat = new THREE.MeshBasicMaterial({
+      transparent: true,
+      opacity: 0,
+      side: THREE.FrontSide,
+      depthWrite: false,
+    });
+    const backMesh = new THREE.Mesh(backGeom, backMat);
+    backMesh.position.z = -medallionDepth / 2;
+    backMesh.rotation.y = Math.PI;
+    medallionGroup.add(backMesh);
+
+    // Rim — a thin cylinder edge connecting front and back, giving the medallion
+    // actual visible thickness instead of two paper-flat planes floating apart.
+    const rimGeom = new THREE.CylinderGeometry(medallionHeight / 2, medallionHeight / 2, medallionDepth, 48, 1, true);
+    const rimMat = new THREE.MeshBasicMaterial({
+      color: "#8a6a2a",
       transparent: true,
       opacity: 0,
       side: THREE.DoubleSide,
       depthWrite: false,
     });
-    const medallionMesh = new THREE.Mesh(medallionGeom, medallionMat);
-    scene.add(medallionMesh);
+    const rimMesh = new THREE.Mesh(rimGeom, rimMat);
+    rimMesh.rotation.x = Math.PI / 2; // cylinder's axis defaults to Y; rotate so it runs along Z
+    medallionGroup.add(rimMesh);
 
     const medallionLoader = new THREE.TextureLoader();
     medallionLoader.load(`${import.meta.env.BASE_URL}avpi.png`, (tex) => {
-      medallionMat.map = tex;
-      medallionMat.opacity = 1;
-      medallionMat.needsUpdate = true;
+      frontMat.map = tex;
+      backMat.map = tex;
+      frontMat.opacity = 1;
+      backMat.opacity = 1;
+      rimMat.opacity = 0.9;
+      frontMat.needsUpdate = true;
+      backMat.needsUpdate = true;
+      rimMat.needsUpdate = true;
     });
 
     // Outer glow halo for the sun
@@ -841,7 +892,7 @@ export default function SolarSystemCanvas({
 
       // 3. SOLAR ACTIVITY GLOW
       sunMesh.rotation.y += delta * speed * 0.05;
-      medallionMesh.rotation.y -= delta * speed * 0.05; // counter-rotation, same rate as the sun
+      medallionGroup.rotation.y -= delta * speed * 0.05; // counter-rotation, same rate as the sun
       sunGlowMesh.scale.setScalar(1 + Math.sin(satTime * 1.5) * 0.03);
 
       // 4. CAMERA INTERPOLATION (THE ZOOM MAGIC!)
@@ -980,9 +1031,13 @@ export default function SolarSystemCanvas({
       glowGeom.dispose();
       glowMat.dispose();
       sunTexture.dispose();
-      medallionGeom.dispose();
-      medallionMat.dispose();
-      medallionMat.map?.dispose();
+      frontGeom.dispose();
+      frontMat.dispose();
+      frontMat.map?.dispose();
+      backGeom.dispose();
+      backMat.dispose();
+      rimGeom.dispose();
+      rimMat.dispose();
     };
     // Intentionally empty — the whole point of propsRef above is that this scene
     // gets built exactly ONCE. selectedPlanetId, onPlanetSelect, onEntrySelect, and
