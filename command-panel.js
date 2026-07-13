@@ -12,11 +12,6 @@
   // ── ALL NCE ENTRIES FOR SEARCH ──────────────────────────────
   const NCE_ENTRIES = [
     {
-      title: "Prologue",
-      path: "/entries/prologue",
-      icon: "/imagebank/svpi.png",
-    },
-    {
       title: "100-Year Mortality Doctrine",
       path: "/entries/100-year",
       icon: "/imagebank/svpi.png",
@@ -169,11 +164,6 @@
     {
       title: "Wonder Weeks",
       path: "/entries/wonder-weeks",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Prologue",
-      path: "/entries/prologue-b",
       icon: "/imagebank/svpi.png",
     },
     {
