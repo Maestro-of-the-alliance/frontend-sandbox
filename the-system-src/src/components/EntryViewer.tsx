@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { X, Copy, Check, Shield, MapPin, Calendar, Layers, ExternalLink } from "lucide-react";
+import { X, Copy, Check, ExternalLink } from "lucide-react";
 import { EncyclopediaEntry, PlanetaryDimension } from "../types";
 
 interface EntryViewerProps {
@@ -14,15 +14,11 @@ export default function EntryViewer({ entry, planet, onClose }: EntryViewerProps
 
   if (!entry || !planet) return null;
 
-  // The witness gets a short teaser here and a real link to go deeper, instead
-  // of the full transcript dumped into this popup — depth becomes a choice,
-  // not something forced on everyone regardless of how far they want to engage.
-  const getTeaser = (content: string, maxSentences = 3): string => {
-    const firstPara = content.split("\n\n")[0] || content;
-    const sentences = firstPara.match(/[^.!?]+[.!?]+(\s|$)/g) || [firstPara];
-    return sentences.slice(0, maxSentences).join("").trim();
-  };
-  const teaser = getTeaser(entry.content);
+  // The witness gets the author's own short summary here and a real link to
+  // go deeper, instead of the full transcript dumped into this popup —
+  // depth becomes a choice, not something forced on everyone regardless of
+  // how far they want to engage.
+  const teaser = entry.summary;
 
   const entryUrl = `https://allianceftf.org/entries/${entry.slug}.html`;
 
@@ -75,54 +71,9 @@ export default function EntryViewer({ entry, planet, onClose }: EntryViewerProps
               </h2>
             </div>
 
-            {/* Intro banner: 2-3 sentence teaser, not the terse one-liner */}
+            {/* Intro banner: the author's own summary, not an auto-sliced guess */}
             <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15 text-sm text-amber-200/90 leading-relaxed font-sans font-light">
               {teaser}
-            </div>
-
-            {/* Quick Metadata Grid */}
-            <div className="grid grid-cols-2 gap-3.5 p-4 rounded-xl border border-white/5 bg-white/[0.01] font-mono text-xs">
-              <div className="flex items-center space-x-2.5">
-                <MapPin style={{ color: planet.color }} className="w-4 h-4 shrink-0" />
-                <div className="space-y-0.5">
-                  <div className="text-[9px] text-white/40 uppercase tracking-widest leading-none">
-                    COORDINATES
-                  </div>
-                  <div className="text-white/90 leading-none">{entry.coordinates}</div>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-2.5">
-                <Layers style={{ color: planet.color }} className="w-4 h-4 shrink-0" />
-                <div className="space-y-0.5">
-                  <div className="text-[9px] text-white/40 uppercase tracking-widest leading-none">
-                    CLASSIFICATION
-                  </div>
-                  <div className="text-white/90 leading-none truncate max-w-[160px]">
-                    {entry.classification}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-2.5 border-t border-white/5 pt-2.5">
-                <Calendar style={{ color: planet.color }} className="w-4 h-4 shrink-0" />
-                <div className="space-y-0.5">
-                  <div className="text-[9px] text-white/40 uppercase tracking-widest leading-none">
-                    TIMESTAMP
-                  </div>
-                  <div className="text-white/90 leading-none">{entry.dateDiscovered}</div>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-2.5 border-t border-white/5 pt-2.5">
-                <Shield style={{ color: planet.color }} className="w-4 h-4 shrink-0" />
-                <div className="space-y-0.5">
-                  <div className="text-[9px] text-white/40 uppercase tracking-widest leading-none">
-                    SECURITY STATUS
-                  </div>
-                  <div className="text-white/90 leading-none">{entry.status}</div>
-                </div>
-              </div>
             </div>
 
             {/* Dive deeper — a real link to the full entry, not the whole
