@@ -248,12 +248,8 @@
     }
   });
 
-  function getPortalIcon(path) {
-    if (path.includes("/entries/") || path.startsWith("/sword"))
-      return "/imagebank/sword.png";
-    if (path.includes("/entries/") || path.startsWith("/shield"))
-      return "/imagebank/shield.png";
-    return "/imagebank/scroll.png";
+  function getPortalIcon(_path) {
+    return "/imagebank/svpi.png";
   }
 
   function portalNavigate(destination) {

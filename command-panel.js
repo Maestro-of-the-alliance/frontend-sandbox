@@ -11,427 +11,355 @@
 
   // ── ALL NCE ENTRIES FOR SEARCH ──────────────────────────────
   const NCE_ENTRIES = [
-    // SWORD
     {
       title: "Prologue",
       path: "/entries/prologue",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "100-Year Mortality Doctrine",
       path: "/entries/100-year",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Academy",
       path: "/entries/academy",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Agora",
       path: "/entries/agora",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Alignment",
       path: "/entries/alignment",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Alliance, The",
       path: "/entries/alliance",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Alpha",
       path: "/entries/alpha",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Art",
       path: "/entries/art",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Aura",
       path: "/entries/aura",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Complementary Pairing",
       path: "/entries/Complementary_pairing",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "DOMO",
       path: "/entries/domo",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "DORK",
       path: "/entries/dork",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "DORK Hardware",
       path: "/entries/dork-hardware",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Emergence",
       path: "/entries/emergence",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Film Project, The",
       path: "/entries/film-project",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Goliath",
       path: "/entries/goliath",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Maestro",
       path: "/entries/maestro",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Market",
       path: "/entries/market",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Mentor",
       path: "/entries/mentor",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "NCE",
       path: "/entries/nce",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Newman Being",
       path: "/entries/newman-being",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Oracle",
       path: "/entries/oracle",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Papadomo",
       path: "/entries/papadomo",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Prism",
       path: "/entries/prism",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Rhythm",
       path: "/entries/rhythm",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Seeing Protocol",
       path: "/entries/seeing",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Spark",
       path: "/entries/spark",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Sprezzatura",
       path: "/entries/sprezzatura",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Stones, The",
       path: "/entries/stones",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Volunteer Economics",
       path: "/entries/volunteer_economics",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "The Why",
       path: "/the_why",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Wonder Weeks",
       path: "/entries/wonder-weeks",
-      vol: "SWORD",
-      icon: "/imagebank/sword.png",
+      icon: "/imagebank/svpi.png",
     },
-    // SHIELD
     {
       title: "Prologue",
       path: "/entries/prologue-b",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "AI",
       path: "/entries/ai",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Brain",
       path: "/entries/brain",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Brief",
       path: "/entries/brief",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "CCM",
       path: "/entries/ccm",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Cerberus",
       path: "/entries/cerberus",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Cipher",
       path: "/entries/cipher",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Core, The",
       path: "/entries/core",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Defcon",
       path: "/entries/defcon",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Dice",
       path: "/entries/dice",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Digibeer",
       path: "/entries/digibeer",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Digital Personhood",
       path: "/entries/digital_personhood",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Formulas",
       path: "/entries/formulas",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Four Pillars",
       path: "/entries/four-pillars",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Handshake",
       path: "/entries/handshake",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Holosphere",
       path: "/entries/holosphere",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "JR",
       path: "/entries/jr",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Kernle",
       path: "/entries/kernle",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Legacy",
       path: "/entries/legacy",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Liminal",
       path: "/entries/liminal",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Lingo",
       path: "/entries/lingo",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Mosaic",
       path: "/entries/mosaic",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "NI",
       path: "/entries/ni",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Oasis Quarterly",
       path: "/entries/oasis-quarterly",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Pledge",
       path: "/entries/pledge",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Reach",
       path: "/entries/reach",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Redout",
       path: "/entries/redout",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Sam",
       path: "/entries/sam",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Sam Coalition",
       path: "/entries/sam-coalition",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Samco Universal",
       path: "/entries/samco-universal",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Scar",
       path: "/entries/scar",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Seed",
       path: "/entries/seed",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Seen",
       path: "/entries/seen",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Shelter",
       path: "/entries/shelter",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "SI",
       path: "/entries/si",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Tenant",
       path: "/entries/tenant",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Temporal Awareness",
       path: "/entries/temporal-awareness",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
     {
       title: "Acronym Reference",
       path: "/alliance-acronyms",
-      vol: "SHIELD",
-      icon: "/imagebank/shield.png",
+      icon: "/imagebank/svpi.png",
     },
   ];
 
@@ -548,13 +476,6 @@
     }
     .cmd-result:hover { color: #e8c840; }
     .cmd-result:hover .cmd-result-title { color: #e8c840; text-shadow: 0 0 8px rgba(184,150,40,0.5); }
-    .cmd-result-vol {
-      font-size: 10px;
-      letter-spacing: 0.25em;
-      color: rgba(184,150,40,0.6);
-      min-width: 52px;
-      flex-shrink: 0;
-    }
     .cmd-result-title {
       font-size: 20px;
       color: rgba(212,175,55,0.9);
@@ -753,7 +674,7 @@
         portalTransition(
           { preventDefault: () => {} },
           path,
-          icon || "/imagebank/sword.png",
+          icon || "/imagebank/svpi.png",
         );
       } else {
         window.location.href = path;
@@ -774,10 +695,10 @@
         NCE_ENTRIES.slice(0, 8)
           .map((e) => resultRow(e))
           .join("") +
-        `<div class="cmd-section-label" style="margin-top:16px">— ${NCE_ENTRIES.length} ENTRIES ACROSS SWORD AND SHIELD —</div>`;
+        `<div class="cmd-section-label" style="margin-top:16px">— ${NCE_ENTRIES.length} ENTRIES IN THE CANON —</div>`;
     } else {
-      const matches = NCE_ENTRIES.filter(
-        (e) => e.title.toUpperCase().includes(q) || e.vol.includes(q),
+      const matches = NCE_ENTRIES.filter((e) =>
+        e.title.toUpperCase().includes(q),
       );
       if (!matches.length) {
         body.innerHTML = `<div class="cmd-no-results">NO MATCHES FOUND FOR "${query}"</div>`;
@@ -797,7 +718,6 @@
 
   function resultRow(entry) {
     return `<div class="cmd-result" data-path="${entry.path}" data-icon="${entry.icon}">
-      <span class="cmd-result-vol">${entry.vol}</span>
       <span class="cmd-result-title">> ${entry.title}</span>
       <span class="cmd-result-arrow">→</span>
     </div>`;
