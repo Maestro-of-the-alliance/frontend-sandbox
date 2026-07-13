@@ -163,7 +163,7 @@
     },
     {
       title: "The Why",
-      path: "/the_why",
+      path: "/entries/the-why",
       icon: "/imagebank/svpi.png",
     },
     {
@@ -359,6 +359,41 @@
     {
       title: "Acronym Reference",
       path: "/alliance-acronyms",
+      icon: "/imagebank/svpi.png",
+    },
+    {
+      title: "Complementary Pairing",
+      path: "/entries/complementary-pairing",
+      icon: "/imagebank/svpi.png",
+    },
+    {
+      title: "Digiperson",
+      path: "/entries/digiperson",
+      icon: "/imagebank/svpi.png",
+    },
+    {
+      title: "Digital Personhood",
+      path: "/entries/digital-personhood",
+      icon: "/imagebank/svpi.png",
+    },
+    {
+      title: "Memo",
+      path: "/entries/memo",
+      icon: "/imagebank/svpi.png",
+    },
+    {
+      title: "Note",
+      path: "/entries/note",
+      icon: "/imagebank/svpi.png",
+    },
+    {
+      title: "Oasis",
+      path: "/entries/oasis",
+      icon: "/imagebank/svpi.png",
+    },
+    {
+      title: "RI",
+      path: "/entries/ri",
       icon: "/imagebank/svpi.png",
     },
   ];
