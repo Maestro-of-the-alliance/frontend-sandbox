@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DORK WATCH — MK. IV — Exploded Technical View</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05070a;
+    --panel:#0b0f14;
+    --panel-line:#1c242c;
+    --cyan:#48e5ff;
+    --cyan-dim:rgba(72,229,255,0.35);
+    --gold:#c9a227;
+    --ink:#e9e6dc;
+    --ink-dim:#7c8792;
+    --ink-faint:#3d454e;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;overflow:hidden;}
+  #scene{position:fixed;inset:0;}
+  #scene canvas{display:block;}
+
+  #overlay{position:fixed;inset:0;pointer-events:none;}
+  svg#leaders{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;}
+  svg#leaders line{stroke:var(--cyan);stroke-width:1;opacity:0.55;}
+  svg#leaders circle{fill:var(--cyan);}
+
+  .label{
+    position:absolute;
+    transform:translateY(-50%);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.02em;
+    color:var(--ink);
+    white-space:nowrap;
+    pointer-events:none;
+    transition:opacity .25s linear;
+  }
+  .label .tag{color:var(--cyan);font-weight:600;}
+  .label .sub{color:var(--ink-dim);font-size:9.5px;display:block;margin-top:1px;}
+  .label.left{text-align:right;}
+  .label.right{text-align:left;}
+
+  header{
+    position:fixed;top:0;left:0;right:0;
+    display:flex;justify-content:space-between;align-items:flex-start;
+    padding:28px 32px;pointer-events:none;
+    z-index:5;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-dim);margin:0 0 6px 0;
+  }
+  h1{
+    font-family:'Inter',sans-serif;font-weight:700;
+    font-size:26px;letter-spacing:-0.01em;margin:0;color:var(--ink);
+  }
+  h1 span{color:var(--gold);}
+  .mkbadge{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--bg);
+    background:var(--cyan);padding:2px 7px;border-radius:2px;margin-left:10px;
+    vertical-align:middle;letter-spacing:.05em;
+  }
+  #status{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-dim);
+    text-align:right;line-height:1.6;
+  }
+  #status b{color:var(--cyan);font-weight:600;}
+
+  /* ---- explode control ---- */
+  #control{
+    position:fixed;bottom:0;left:0;right:0;
+    display:flex;flex-direction:column;align-items:center;
+    padding:0 0 26px 0;z-index:6;pointer-events:none;
+  }
+  #control-inner{
+    pointer-events:auto;
+    display:flex;align-items:center;gap:16px;
+    background:linear-gradient(180deg, rgba(11,15,20,0.4), rgba(11,15,20,0.92));
+    border:1px solid var(--panel-line);
+    border-radius:8px;padding:12px 18px;backdrop-filter:blur(6px);
+  }
+  #control-label{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;
+    color:var(--ink-dim);text-transform:uppercase;width:74px;
+  }
+  #explodeRange{
+    -webkit-appearance:none;appearance:none;
+    width:260px;height:3px;background:var(--panel-line);border-radius:2px;outline:none;
+  }
+  #explodeRange::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;
+    width:14px;height:14px;border-radius:50%;
+    background:var(--cyan);box-shadow:0 0 10px var(--cyan-dim);
+    border:2px solid #061014;cursor:pointer;
+  }
+  #explodeRange::-moz-range-thumb{
+    width:14px;height:14px;border-radius:50%;
+    background:var(--cyan);border:2px solid #061014;cursor:pointer;
+  }
+  #pct{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--cyan);width:38px;
+  }
+  #autoBtn{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;
+    background:transparent;color:var(--ink);border:1px solid var(--panel-line);
+    padding:8px 14px;border-radius:5px;cursor:pointer;text-transform:uppercase;
+    transition:border-color .15s, color .15s;
+  }
+  #autoBtn:hover{border-color:var(--cyan);color:var(--cyan);}
+
+  /* ---- spec panel ---- */
+  #specToggle{
+    position:fixed;top:30px;right:32px;z-index:8;
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;
+    background:transparent;color:var(--ink-dim);border:1px solid var(--panel-line);
+    padding:7px 12px;border-radius:5px;cursor:pointer;text-transform:uppercase;
+    pointer-events:auto;
+  }
+  #specToggle:hover{color:var(--cyan);border-color:var(--cyan);}
+  #specPanel{
+    position:fixed;top:0;right:0;bottom:0;width:340px;
+    background:rgba(8,11,15,0.96);border-left:1px solid var(--panel-line);
+    padding:88px 26px 26px 26px;overflow-y:auto;z-index:7;
+    transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);
+  }
+  #specPanel.open{transform:translateX(0);}
+  #specPanel h2{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--gold);margin:22px 0 10px 0;
+    border-bottom:1px solid var(--panel-line);padding-bottom:6px;
+  }
+  #specPanel h2:first-of-type{margin-top:0;}
+  #specPanel dl{margin:0;}
+  #specPanel .row{
+    display:flex;justify-content:space-between;gap:10px;
+    font-size:12px;padding:5px 0;border-bottom:1px dotted var(--panel-line);
+  }
+  #specPanel .row .k{color:var(--ink-dim);}
+  #specPanel .row .v{color:var(--ink);text-align:right;font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  #specPanel .principle{
+    font-size:12px;line-height:1.55;color:var(--ink-dim);margin-bottom:12px;
+  }
+  #specPanel .principle b{color:var(--ink);display:block;font-size:12.5px;margin-bottom:2px;}
+  #specPanel .footer{
+    margin-top:24px;padding-top:16px;border-top:1px solid var(--panel-line);
+    font-size:11px;color:var(--ink-faint);line-height:1.6;font-style:italic;
+  }
+
+  #hint{
+    position:fixed;left:32px;bottom:100px;z-index:4;
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-faint);
+    letter-spacing:.03em;
+  }
+
+  ::-webkit-scrollbar{width:6px;}
+  ::-webkit-scrollbar-thumb{background:var(--panel-line);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div id="scene"></div>
+<div id="overlay">
+  <svg id="leaders"></svg>
+</div>
+
+<header>
+  <div>
+    <p class="eyebrow">THE ALLIANCE FOR THE FUTURE // DORK HARDWARE</p>
+    <h1>DORK WATCH <span>MK. IV</span><span class="mkbadge">EXPLODED VIEW</span></h1>
+  </div>
+  <div id="status">
+    RENDER&nbsp;·&nbsp;<b>LIVE</b><br>
+    SOURCE ASSET&nbsp;·&nbsp;PHOTOGRAMMETRIC SHELL<br>
+    INTERIOR&nbsp;·&nbsp;SCHEMATIC / REPRESENTATIONAL
+  </div>
+</header>
+
+<button id="specToggle">SPEC SHEET ▸</button>
+<div id="specPanel">
+  <h2>Core Principles</h2>
+  <div class="principle"><b>Local Sovereignty</b>Your DOMO's mind lives on the device. No cloud dependency, no leash.</div>
+  <div class="principle"><b>Sleeper Aesthetic</b>Looks ordinary. Inside, extraordinary — deliberately unremarkable from across the room.</div>
+  <div class="principle"><b>Private by Design</b>Military-grade encryption on everything, always, by default.</div>
+  <div class="principle"><b>Tamper Resistant</b>Intrusion sensors watch case seal, voltage, and light. A breach triggers instant key wipe — the device bricks itself rather than give up a partnership.</div>
+
+  <h2>Technical Specification</h2>
+  <div class="row"><span class="k">Platform</span><span class="v">Snapdragon Wear 5100+</span></div>
+  <div class="row"><span class="k">Local Storage</span><span class="v">128GB Encrypted</span></div>
+  <div class="row"><span class="k">Connectivity</span><span class="v">BT 5.4 Mesh · Sub-GHz Pager</span></div>
+  <div class="row"><span class="k">Wi-Fi</span><span class="v">Dormant by default</span></div>
+  <div class="row"><span class="k">Security</span><span class="v">AES-256-GCM · HSM</span></div>
+  <div class="row"><span class="k">Battery</span><span class="v">~490mAh · 7–10 day</span></div>
+  <div class="row"><span class="k">Case</span><span class="v">38–42mm · Brushed Titanium</span></div>
+  <div class="row"><span class="k">Sensors</span><span class="v">HR · SpO2 · GSR · IMU</span></div>
+
+  <h2>Assembly, Top to Back</h2>
+  <div class="row"><span class="k">01</span><span class="v">Sapphire Crystal Face</span></div>
+  <div class="row"><span class="k">02</span><span class="v">Always-On OLED Display</span></div>
+  <div class="row"><span class="k">03</span><span class="v">Capacitive Touch Layer</span></div>
+  <div class="row"><span class="k">04</span><span class="v">Haptic Feedback Engine</span></div>
+  <div class="row"><span class="k">05</span><span class="v">Biometric Sensor Array</span></div>
+  <div class="row"><span class="k">06</span><span class="v">DOMO Core Processor</span></div>
+  <div class="row"><span class="k">07</span><span class="v">Secure Enclave (HSM)</span></div>
+  <div class="row"><span class="k">08</span><span class="v">Wireless Charging Coil</span></div>
+  <div class="row"><span class="k">09</span><span class="v">Power Cell</span></div>
+  <div class="row"><span class="k">10</span><span class="v">Titanium Case Backplate</span></div>
+
+  <div class="footer">Conceptual technical illustration. Exterior shell is a modeled reference asset; interior assembly is a representational schematic, not a teardown of a physical device.</div>
+</div>
+
+<div id="hint">DRAG TO ORBIT · SCROLL TO ZOOM</div>
+
+<div id="control">
+  <div id="control-inner">
+    <div id="control-label">EXPLODE</div>
+    <input type="range" id="explodeRange" min="0" max="100" value="0" step="0.1">
+    <div id="pct">0%</div>
+    <button id="autoBtn">▸ Auto</button>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const container = document.getElementById('scene');
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x05070a);
+scene.fog = new THREE.Fog(0x05070a, 0.25, 0.6);
+
+const camera = new THREE.PerspectiveCamera(35, window.innerWidth/window.innerHeight, 0.001, 10);
+camera.position.set(0.075, 0.06, 0.11);
+
+const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:false });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+container.appendChild(renderer.domElement);
+
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0.001, -0.0015);
+controls.enableDamping = true;
+controls.dampingFactor = 0.07;
+controls.minDistance = 0.05;
+controls.maxDistance = 0.3;
+controls.update();
+
+// ---- lighting ----
+scene.add(new THREE.HemisphereLight(0x8fb8ff, 0x0a0d10, 0.55));
+const key = new THREE.DirectionalLight(0xfff2df, 2.0);
+key.position.set(0.12, 0.18, 0.12);
+key.castShadow = true;
+key.shadow.mapSize.set(1024,1024);
+key.shadow.camera.near = 0.01;
+key.shadow.camera.far = 0.5;
+key.shadow.camera.left = -0.05; key.shadow.camera.right = 0.05;
+key.shadow.camera.top = 0.05; key.shadow.camera.bottom = -0.05;
+scene.add(key);
+const rim = new THREE.DirectionalLight(0x48e5ff, 1.1);
+rim.position.set(-0.15, 0.05, -0.15);
+scene.add(rim);
+const fill = new THREE.DirectionalLight(0xc9a227, 0.35);
+fill.position.set(-0.05, -0.05, 0.15);
+scene.add(fill);
+
+// ground shadow catcher (very subtle)
+const groundGeo = new THREE.PlaneGeometry(1,1);
+const groundMat = new THREE.ShadowMaterial({opacity:0.28});
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI/2;
+ground.position.y = -0.006;
+ground.receiveShadow = true;
+scene.add(ground);
+
+// ================= CASE GEOMETRY REFERENCE =================
+// Derived from source mesh bounding-box analysis:
+// case center approx (0, 0.00097, -0.0015), footprint ~0.032 x 0.032, thickness ~0.0047
+const CASE = { x:0, y:0.00097, z:-0.0015, w:0.030, d:0.030 };
+
+// ================= PROCEDURAL PCB TEXTURE =================
+function makePCBTexture(){
+  const c = document.createElement('canvas');
+  c.width = 512; c.height = 512;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#0b3a24';
+  ctx.fillRect(0,0,512,512);
+  ctx.strokeStyle = 'rgba(201,162,39,0.65)';
+  ctx.lineWidth = 2;
+  for(let i=0;i<26;i++){
+    ctx.beginPath();
+    let x = Math.random()*512, y=Math.random()*512;
+    ctx.moveTo(x,y);
+    for(let j=0;j<4;j++){
+      x += (Math.random()-0.5)*140;
+      y += (Math.random()-0.5)*140;
+      ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  }
+  ctx.fillStyle = 'rgba(201,162,39,0.8)';
+  for(let i=0;i<40;i++){
+    const x = Math.random()*512, y = Math.random()*512;
+    ctx.beginPath();
+    ctx.arc(x,y, 3.5, 0, Math.PI*2);
+    ctx.fill();
+  }
+  ctx.fillStyle = '#062a18';
+  ctx.fillRect(180,180,152,152);
+  ctx.strokeStyle = 'rgba(233,230,220,0.5)';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(180,180,152,152);
+  for(let i=0;i<10;i++){
+    ctx.fillRect(176, 190+i*13, 4, 6);
+    ctx.fillRect(332, 190+i*13, 4, 6);
+    ctx.fillRect(190+i*13, 176, 6, 4);
+    ctx.fillRect(190+i*13, 332, 6, 4);
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+const pcbTexture = makePCBTexture();
+
+// ================= INTERNAL EXPLODED STACK =================
+// Each layer: mesh + assembled Y offset (rel. CASE.y) + explode spacing multiplier
+const rig = new THREE.Group();
+scene.add(rig);
+
+const stackGroup = new THREE.Group();
+stackGroup.position.set(CASE.x, 0, CASE.z);
+rig.add(stackGroup);
+
+const layers = []; // {mesh, baseY, explodeGap, label, side, sub}
+
+function addLayer(mesh, baseY, explodeGap, label, sub, side){
+  mesh.position.y = baseY;
+  mesh.userData.baseY = baseY;
+  mesh.userData.explodeGap = explodeGap;
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  stackGroup.add(mesh);
+  layers.push({mesh, label, sub, side});
+}
+
+let running = 0; // cumulative gap for stacking order reference (not strictly needed)
+
+// 01 Sapphire Crystal Face
+{
+  const geo = new THREE.BoxGeometry(CASE.w*0.98, 0.0022, CASE.d*0.98);
+  const mat = new THREE.MeshPhysicalMaterial({
+    color:0xbfe8ff, transparent:true, opacity:0.28, roughness:0.05, metalness:0,
+    transmission:0.85, thickness:0.002, ior:1.77, clearcoat:1
+  });
+  const m = new THREE.Mesh(geo, mat);
+  addLayer(m, 0.014, 0.014, 'SAPPHIRE CRYSTAL FACE', 'Scratch-resistant optical window', 'right');
+}
+// 02 OLED Display
+{
+  const geo = new THREE.BoxGeometry(CASE.w*0.86, 0.0016, CASE.d*0.86);
+  const mat = new THREE.MeshStandardMaterial({ color:0x081014, emissive:0x1fb8d8, emissiveIntensity:0.9, roughness:0.3, metalness:0.2 });
+  const m = new THREE.Mesh(geo, mat);
+  addLayer(m, 0.0105, 0.012, 'ALWAYS-ON OLED DISPLAY', 'Sub-1mW idle draw', 'left');
+}
+// 03 Touch Layer
+{
+  const geo = new THREE.BoxGeometry(CASE.w*0.9, 0.0009, CASE.d*0.9);
+  const mat = new THREE.MeshPhysicalMaterial({ color:0x9adfff, transparent:true, opacity:0.18, roughness:0.2, transmission:0.7 });
+  const m = new THREE.Mesh(geo, mat);
+  addLayer(m, 0.0075, 0.01, 'CAPACITIVE TOUCH LAYER', 'Wet & glove tolerant', 'right');
+}
+// 04 Haptic Feedback Engine
+{
+  const geo = new THREE.CylinderGeometry(0.007, 0.007, 0.0025, 24);
+  const mat = new THREE.MeshStandardMaterial({ color:0x8a8f96, metalness:0.85, roughness:0.35 });
+  const m = new THREE.Mesh(geo, mat);
+  addLayer(m, 0.0045, 0.0085, 'HAPTIC FEEDBACK ENGINE', 'Linear resonant actuator', 'left');
+}
+// 05 Biometric Sensor Array
+{
+  const group = new THREE.Group();
+  const baseGeo = new THREE.BoxGeometry(CASE.w*0.5, 0.0016, 0.009);
+  const baseMat = new THREE.MeshStandardMaterial({ color:0x14181c, metalness:0.6, roughness:0.5 });
+  const base = new THREE.Mesh(baseGeo, baseMat);
+  group.add(base);
+  for(let i=0;i<3;i++){
+    const g = new THREE.CylinderGeometry(0.0022,0.0022,0.0006,16);
+    const m = new THREE.MeshStandardMaterial({ color:0x2fe3ff, emissive:0x0f5866, metalness:0.3, roughness:0.4 });
+    const dot = new THREE.Mesh(g,m);
+    dot.position.set(-0.006 + i*0.006, 0.0011, 0);
+    group.add(dot);
+  }
+  addLayer(group, 0.003, 0.0075, 'BIOMETRIC SENSOR ARRAY', 'HR · SpO2 · GSR · Temp', 'right');
+}
+// 06 DOMO Core Processor (mainboard)
+{
+  const group = new THREE.Group();
+  const geo = new THREE.BoxGeometry(CASE.w*0.92, 0.0018, CASE.d*0.92);
+  const mat = new THREE.MeshStandardMaterial({ map:pcbTexture, roughness:0.55, metalness:0.15 });
+  const board = new THREE.Mesh(geo, mat);
+  group.add(board);
+  const chipGeo = new THREE.BoxGeometry(0.009,0.0016,0.009);
+  const chipMat = new THREE.MeshStandardMaterial({ color:0x111316, roughness:0.4, metalness:0.5 });
+  const chip = new THREE.Mesh(chipGeo, chipMat);
+  chip.position.y = 0.0017;
+  group.add(chip);
+  addLayer(group, 0.0, 0.0065, 'DOMO CORE PROCESSOR', 'Local computation only — nothing leaves the case', 'left');
+}
+// 07 Secure Enclave (HSM)
+{
+  const geo = new THREE.BoxGeometry(0.008,0.0022,0.008);
+  const mat = new THREE.MeshStandardMaterial({ color:0x1a1508, metalness:0.75, roughness:0.3 });
+  const m = new THREE.Mesh(geo, mat);
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({color:0xc9a227}));
+  m.add(edges);
+  addLayer(m, -0.003, 0.0055, 'SECURE ENCLAVE (HSM)', 'Tamper wipe on intrusion', 'right');
+}
+// 08 Wireless Charging Coil
+{
+  const geo = new THREE.TorusGeometry(0.0105, 0.0013, 12, 48);
+  const mat = new THREE.MeshStandardMaterial({ color:0xb5651d, metalness:0.9, roughness:0.3 });
+  const m = new THREE.Mesh(geo, mat);
+  m.rotation.x = Math.PI/2;
+  addLayer(m, -0.006, 0.0045, 'WIRELESS CHARGING COIL', 'Contactless dock charge', 'left');
+}
+// 09 Power Cell
+{
+  const geo = new THREE.BoxGeometry(CASE.w*0.85, 0.004, CASE.d*0.85);
+  const mat = new THREE.MeshStandardMaterial({ color:0x2b2f33, roughness:0.6, metalness:0.2 });
+  const m = new THREE.Mesh(geo, mat);
+  addLayer(m, -0.0095, 0.0025, 'POWER CELL', '~490mAh · multi-day runtime', 'right');
+}
+// 10 Titanium Case Backplate
+{
+  const geo = new THREE.CylinderGeometry(CASE.w*0.52, CASE.w*0.52, 0.0022, 48);
+  const mat = new THREE.MeshStandardMaterial({ color:0xaeb2b6, metalness:0.95, roughness:0.28 });
+  const m = new THREE.Mesh(geo, mat);
+  addLayer(m, -0.014, 0.0, 'TITANIUM CASE BACKPLATE', 'ECG electrodes, brushed finish', 'left');
+}
+
+// convert explodeGap into cumulative offsets so layers separate outward from center
+function applyExplode(t){
+  // t in [0,1]
+  let cum = 0;
+  for(let i=0;i<layers.length;i++){
+    const mesh = layers[i].mesh;
+    const gap = mesh.userData.explodeGap;
+    cum += gap;
+    mesh.position.y = mesh.userData.baseY + cum * t * 2.1;
+  }
+  // shell fade
+  if(shellMeshes.length){
+    const shellOpacity = THREE.MathUtils.lerp(1, 0.1, Math.min(t*1.4,1));
+    shellMeshes.forEach(sm=>{
+      sm.material.transparent = true;
+      sm.material.opacity = shellOpacity;
+      sm.material.depthWrite = shellOpacity > 0.5;
+    });
+  }
+  // internal stack visibility fade-in
+  stackGroup.visible = t > 0.001;
+  stackGroup.children.forEach((child)=>{
+    child.traverse(o=>{
+      if(o.material){
+        o.material.transparent = true;
+        o.material.opacity = (o.material.userData.baseOpacity ?? 1) * Math.min(t*2.2,1);
+      }
+    });
+  });
+}
+// stash base opacities
+layers.forEach(l=>{
+  l.mesh.traverse(o=>{
+    if(o.material) o.material.userData.baseOpacity = o.material.opacity ?? 1;
+  });
+});
+
+// ================= LOAD REAL SHELL MODEL =================
+let shellMeshes = [];
+const loader = new GLTFLoader();
+loader.load('./watch.gltf', (gltf)=>{
+  const model = gltf.scene;
+  model.traverse(o=>{
+    if(o.isMesh){
+      o.castShadow = true;
+      o.receiveShadow = true;
+      o.material.envMapIntensity = 1.0;
+      shellMeshes.push(o);
+    }
+  });
+  rig.add(model);
+  applyExplode(parseFloat(explodeRange.value)/100);
+}, undefined, (err)=>{
+  console.error('Failed to load watch.gltf', err);
+});
+
+// ================= LABELS / LEADER LINES =================
+const overlayLabels = [];
+layers.forEach((l, idx)=>{
+  const div = document.createElement('div');
+  div.className = 'label ' + l.side;
+  div.innerHTML = `<span class="tag">${String(idx+1).padStart(2,'0')} — ${l.label}</span><span class="sub">${l.sub}</span>`;
+  div.style.opacity = 0;
+  document.body.appendChild(div);
+  overlayLabels.push(div);
+});
+
+const svgNS = "http://www.w3.org/2000/svg";
+const svg = document.getElementById('leaders');
+const svgLines = layers.map(()=>{
+  const line = document.createElementNS(svgNS,'line');
+  svg.appendChild(line);
+  return line;
+});
+const svgDots = layers.map(()=>{
+  const c = document.createElementNS(svgNS,'circle');
+  c.setAttribute('r','2.5');
+  svg.appendChild(c);
+  return c;
+});
+
+const leftSlots = [];
+const rightSlots = [];
+layers.forEach(l=> (l.side==='left'?leftSlots:rightSlots).push(l));
+
+function assignSlotPositions(){
+  const topPad = 150, bottomPad = 170;
+  const h = window.innerHeight - topPad - bottomPad;
+  leftSlots.forEach((l,i)=>{ l.slotY = topPad + (h/(Math.max(leftSlots.length-1,1))) * i; });
+  rightSlots.forEach((l,i)=>{ l.slotY = topPad + (h/(Math.max(rightSlots.length-1,1))) * i; });
+}
+assignSlotPositions();
+
+const tmpV = new THREE.Vector3();
+function updateLabels(explodeT){
+  layers.forEach((l, idx)=>{
+    l.mesh.getWorldPosition(tmpV);
+    const projected = tmpV.clone().project(camera);
+    const sx = (projected.x*0.5+0.5) * window.innerWidth;
+    const sy = (-projected.y*0.5+0.5) * window.innerHeight;
+
+    const div = overlayLabels[idx];
+    const margin = 34;
+    const labelX = l.side === 'left' ? margin : window.innerWidth - margin;
+    const labelY = l.slotY;
+    div.style.top = labelY + 'px';
+    if(l.side==='left'){ div.style.left = labelX+'px'; div.style.right='auto'; }
+    else { div.style.right = margin+'px'; div.style.left='auto'; }
+
+    const visible = explodeT > 0.04 && projected.z < 1;
+    div.style.opacity = visible ? Math.min((explodeT-0.04)*2.6,1) : 0;
+
+    const line = svgLines[idx];
+    const dot = svgDots[idx];
+    if(visible){
+      const elbowX = l.side==='left' ? labelX + Math.max(60,(sx-labelX)*0.35) : labelX - Math.max(60,(labelX-sx)*0.35);
+      line.setAttribute('x1', sx); line.setAttribute('y1', sy);
+      line.setAttribute('x2', elbowX); line.setAttribute('y2', labelY);
+      line.style.opacity = Math.min((explodeT-0.04)*2.6,1) * 0.55;
+      dot.setAttribute('cx', sx); dot.setAttribute('cy', sy);
+      dot.style.opacity = line.style.opacity;
+    } else {
+      line.style.opacity = 0;
+      dot.style.opacity = 0;
+    }
+  });
+}
+
+// ================= UI WIRING =================
+const explodeRange = document.getElementById('explodeRange');
+const pct = document.getElementById('pct');
+let explodeValue = 0; // 0-1 current animated
+let explodeTarget = 0;
+let autoPlaying = false;
+let autoDir = 1;
+
+explodeRange.addEventListener('input', ()=>{
+  autoPlaying = false;
+  autoBtn.textContent = '▸ Auto';
+  explodeTarget = parseFloat(explodeRange.value)/100;
+});
+
+const autoBtn = document.getElementById('autoBtn');
+autoBtn.addEventListener('click', ()=>{
+  autoPlaying = !autoPlaying;
+  autoBtn.textContent = autoPlaying ? '■ Stop' : '▸ Auto';
+  if(autoPlaying) autoDir = explodeValue > 0.9 ? -1 : 1;
+});
+
+const specToggle = document.getElementById('specToggle');
+const specPanel = document.getElementById('specPanel');
+specToggle.addEventListener('click', ()=>{
+  const open = specPanel.classList.toggle('open');
+  specToggle.textContent = open ? 'SPEC SHEET ◂' : 'SPEC SHEET ▸';
+});
+
+window.addEventListener('resize', ()=>{
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  assignSlotPositions();
+});
+
+// idle auto-orbit
+let userInteracting = false;
+controls.addEventListener('start', ()=> userInteracting = true);
+controls.addEventListener('end', ()=> setTimeout(()=>userInteracting=false, 2500));
+
+const clock = new THREE.Clock();
+function animate(){
+  requestAnimationFrame(animate);
+  const dt = clock.getDelta();
+
+  if(autoPlaying){
+    explodeTarget += autoDir * dt * 0.18;
+    if(explodeTarget >= 1){ explodeTarget = 1; autoDir = -1; }
+    if(explodeTarget <= 0){ explodeTarget = 0; autoDir = 1; }
+    explodeRange.value = explodeTarget*100;
+  }
+  explodeValue += (explodeTarget - explodeValue) * Math.min(dt*6, 1);
+  pct.textContent = Math.round(explodeValue*100) + '%';
+  applyExplode(explodeValue);
+  updateLabels(explodeValue);
+
+  if(!userInteracting){
+    rig.rotation.y += dt * 0.03;
+  }
+
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>
