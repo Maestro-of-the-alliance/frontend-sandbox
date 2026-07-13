@@ -162,7 +162,7 @@
       icon: "/imagebank/svpi.png",
     },
     {
-      title: "The Why",
+      title: "The WHY",
       path: "/entries/the-why",
       icon: "/imagebank/svpi.png",
     },
@@ -367,7 +367,7 @@
       icon: "/imagebank/svpi.png",
     },
     {
-      title: "Digiperson",
+      title: "DIGIPERSON",
       path: "/entries/digiperson",
       icon: "/imagebank/svpi.png",
     },
@@ -387,7 +387,7 @@
       icon: "/imagebank/svpi.png",
     },
     {
-      title: "Oasis",
+      title: "OASIS",
       path: "/entries/oasis",
       icon: "/imagebank/svpi.png",
     },
