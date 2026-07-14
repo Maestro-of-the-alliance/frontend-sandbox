@@ -386,6 +386,11 @@
       path: "/entries/mastertech-sam",
       icon: "/imagebank/svpi.png",
     },
+    {
+      title: "SARAH",
+      path: "/entries/sarah",
+      icon: "/imagebank/svpi.png",
+    },
   ];
 
   // ── INJECT STYLES ───────────────────────────────────────────
