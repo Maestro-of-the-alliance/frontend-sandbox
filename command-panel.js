@@ -367,16 +367,6 @@
       icon: "/imagebank/svpi.png",
     },
     {
-      title: "Memo",
-      path: "/entries/memo",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Note",
-      path: "/entries/note",
-      icon: "/imagebank/svpi.png",
-    },
-    {
       title: "OASIS",
       path: "/entries/oasis",
       icon: "/imagebank/svpi.png",
