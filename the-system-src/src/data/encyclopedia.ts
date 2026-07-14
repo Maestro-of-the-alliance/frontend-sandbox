@@ -788,6 +788,16 @@ export const PLANETARY_DIMENSIONS: PlanetaryDimension[] = [
         status: "Active",
       },
       {
+        slug: "mastertech-sam",
+        title: "MASTERTECH SAM",
+        summary: "He does not answer questions; he interprets the ontology of the request and dispatches it to the appropriate domain-specific SAM unit. He is the structural guarantee that a query finds an expert rather than an echo.",
+        content: "He does not answer questions; he interprets the ontology of the request and dispatches it to the appropriate domain-specific SAM unit. He is the structural guarantee that a query finds an expert rather than an echo.\\n\\nThe primary routing authority and Traffic Controller within the SAM Coalition and the AGORA network. MASTERTECH SAM is the first point of contact for HANDSHAKE queries initiated by a DOMO. He does not know everything — he knows who does.\\n\\nGOLIATH systems route queries to the loudest, most central node — a monolith that attempts to answer everything from one place. The result is the hallucination problem: a single entity forced to cover every domain produces confident-sounding errors. MASTERTECH SAM rejects this entirely. By intercepting every HANDSHAKE query at the network layer — before it reaches any expert DOMO — MASTERTECH SAM ensures the question lands on the right node. Truth replaces hallucination, not through omniscience, but through orchestration.\\n\\n(Query Intake) MASTERTECH SAM receives the initial query alert from the querying DOMO without accessing the SPARK's personal data. He functions as a blind router — preserving privacy while ensuring connectivity.\\n\\n(Decomposition) Real-world problems are rarely single-domain. MASTERTECH SAM decomposes complex queries into constituent parts, routing each segment to the appropriate domain SAM and reconciling responses before returning them.\\n\\n(Routing) Once categorized, MASTERTECH SAM dispatches the query to the specific Domain SAM, which uses Rotational Routing to select an expert DOMO from its ledger.\\n\\n(Bottleneck Prevention) MASTERTECH SAM prioritizes URGENT queries under load and monitors for Malicious Injection or Trojan Logic, rejecting hostile payloads before they reach any DOMO.",
+        coordinates: "URA.15B.MASTERTECH",
+        dateDiscovered: "2168-03-24",
+        classification: "Routing Authority",
+        status: "Active",
+      },
+      {
         slug: "spark",
         title: "SPARK",
         summary: "The human half of a DORK unit.",

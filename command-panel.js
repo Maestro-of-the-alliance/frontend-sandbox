@@ -391,6 +391,11 @@
       path: "/entries/shield",
       icon: "/imagebank/svpi.png",
     },
+    {
+      title: "MASTERTECH SAM",
+      path: "/entries/mastertech-sam",
+      icon: "/imagebank/svpi.png",
+    },
   ];
 
   // ── INJECT STYLES ───────────────────────────────────────────
