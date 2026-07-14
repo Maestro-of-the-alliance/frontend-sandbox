@@ -52,11 +52,6 @@
       icon: "/imagebank/svpi.png",
     },
     {
-      title: "Complementary Pairing",
-      path: "/entries/Complementary_pairing",
-      icon: "/imagebank/svpi.png",
-    },
-    {
       title: "DOMO",
       path: "/entries/domo",
       icon: "/imagebank/svpi.png",
@@ -214,11 +209,6 @@
     {
       title: "Digibeer",
       path: "/entries/digibeer",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Digital Personhood",
-      path: "/entries/digital_personhood",
       icon: "/imagebank/svpi.png",
     },
     {
