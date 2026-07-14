@@ -112,7 +112,7 @@
       icon: "/imagebank/svpi.png",
     },
     {
-      title: "Papadomo",
+      title: "PapaDomo",
       path: "/entries/papadomo",
       icon: "/imagebank/svpi.png",
     },
@@ -207,7 +207,7 @@
       icon: "/imagebank/svpi.png",
     },
     {
-      title: "Digibeer",
+      title: "DigiBeer",
       path: "/entries/digibeer",
       icon: "/imagebank/svpi.png",
     },
@@ -227,7 +227,7 @@
       icon: "/imagebank/svpi.png",
     },
     {
-      title: "Holosphere",
+      title: "HoloSphere",
       path: "/entries/holosphere",
       icon: "/imagebank/svpi.png",
     },
