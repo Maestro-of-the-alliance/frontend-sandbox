@@ -337,6 +337,11 @@
       icon: "/imagebank/svpi.png",
     },
     {
+      title: "Canon Search",
+      path: "/canon-search/",
+      icon: "/imagebank/svpi.png",
+    },
+    {
       title: "Acronym Reference",
       path: "/alliance-acronyms",
       icon: "/imagebank/svpi.png",
