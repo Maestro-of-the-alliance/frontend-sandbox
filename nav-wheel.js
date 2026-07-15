@@ -15,6 +15,7 @@
   // ── ENTRY LISTS ──────────────────────────────────────────────────────────
 
   const ENTRIES = [
+    { label: "CANON SEARCH", path: "/canon-search/" },
     { label: "100-YEAR MORTALITY DOCTRINE", path: "/entries/100-year" },
     { label: "ACADEMY", path: "/entries/academy" },
     { label: "AGORA", path: "/entries/agora" },
