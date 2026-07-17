@@ -146,6 +146,13 @@ export default function App() {
     return userSector;
   }, [userSector, inspectedSectorId]);
 
+  // Growth Invitation: additive panel shown alongside the full result (never
+  // replacing it) for the extreme individualism + consequentialism corner.
+  // No denial, no lockout — everyone always sees their complete CCM result.
+  const showGrowthInvitation = useMemo<boolean>(() => {
+    return userCoordinates.x >= 8 && userCoordinates.y >= 8;
+  }, [userCoordinates]);
+
   // Calculation of percentage metrics for visual progress bars based on final coords
   const metrics = useMemo(() => {
     const x = userCoordinates.x; // Range -10 to +10
@@ -1010,6 +1017,20 @@ ${appUrl}`;
                     })}
                   </div>
                 </div>
+
+                {/* Growth Invitation — additive only, never replaces the result above.
+                    No denial, no lockout, no persistence required. */}
+                {showGrowthInvitation && (
+                  <div className="max-w-3xl mx-auto mt-8 bg-amber-950/5 border border-amber-500/20 p-6 md:p-8 rounded-2xl space-y-4 shadow-sm">
+                    <div className="flex items-center gap-2 text-amber-700 font-mono text-[10px] font-bold tracking-widest uppercase">
+                      <span className="w-1.5 h-1.5 bg-amber-600 rounded-full animate-pulse" />
+                      A Note on This Result
+                    </div>
+                    <p className="text-stone-700 text-sm font-serif leading-relaxed border-l-2 border-amber-500/50 pl-4 italic">
+                      "This is where you stand today — not who you are forever. Real growth takes time. We'd genuinely encourage revisiting this assessment a year from now, after some reflection, and seeing where you land then. The door isn't closed. It's just worth walking back through, deliberately, when you're ready."
+                    </p>
+                  </div>
+                )}
 
               </motion.div>
             )}
