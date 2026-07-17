@@ -103,7 +103,7 @@
         <span class="text-cyberCyan text-xl font-orbitron tracking-widest font-black uppercase">THE ALLIANCE</span>
         <span class="text-xs bg-cyan-950 text-cyberCyan px-2 py-0.5 border border-cyan-800 font-mono">CANON SEARCH</span>
       </div>
-      <div class="text-xs font-mono text-cyan-700 hidden sm:block">
+      <div class="text-xs font-mono text-cyan-700 hidden sm:block" id="sys-ver">
         SYS_VER: 2026.07.13 // RECON_ACTIVE
       </div>
     </div>
@@ -184,5 +184,16 @@
 
   <!-- Search Engine Script -->
   <script src="search.js"></script>
+  <script>
+    (function () {
+      const el = document.getElementById("sys-ver");
+      if (!el) return;
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      el.textContent = `SYS_VER: ${y}.${m}.${day} // RECON_ACTIVE`;
+    })();
+  </script>
 </body>
 </html>
