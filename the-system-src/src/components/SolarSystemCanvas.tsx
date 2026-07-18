@@ -550,6 +550,38 @@ export default function SolarSystemCanvas({
       }
     });
 
+    // GHOST LIGHT — rare, unnamed, unexplained. Roughly 1 in 15 loads, a small
+    // glowing point appears among the real planets. It has no label, no entry,
+    // no orbit line. If you click it, it fades away. If you don't, it's simply
+    // gone next time you load the page — never guaranteed to return, never
+    // explained. Not a bug, not a feature anyone announces.
+    let ghostMesh: THREE.Mesh | null = null;
+    let ghostMat: THREE.MeshStandardMaterial | null = null;
+    let ghostBaseAngle = 0;
+    let ghostRadius = 0;
+    let ghostDismissed = false;
+    if (Math.random() < 1 / 15 && PLANETARY_DIMENSIONS.length > 0) {
+      const outerDist = Math.max(...PLANETARY_DIMENSIONS.map((p) => p.orbitDistance));
+      ghostRadius = outerDist * (0.55 + Math.random() * 0.5);
+      ghostBaseAngle = Math.random() * Math.PI * 2;
+      const ghostGeom = new THREE.SphereGeometry(0.55, 12, 12);
+      ghostMat = new THREE.MeshStandardMaterial({
+        color: "#ffffff",
+        emissive: "#ffffff",
+        emissiveIntensity: 1.1,
+        transparent: true,
+        opacity: 0.75,
+      });
+      ghostMesh = new THREE.Mesh(ghostGeom, ghostMat);
+      ghostMesh.name = "ghost-light";
+      ghostMesh.position.set(
+        Math.cos(ghostBaseAngle) * ghostRadius,
+        (Math.random() - 0.5) * 8,
+        Math.sin(ghostBaseAngle) * ghostRadius
+      );
+      scene.add(ghostMesh);
+    }
+
     // SATELLITE STRUCTURES / MOONS (ENCYCLOPEDIA ENTRIES)
     // We instantiate moons dynamically around each planet, and control their visibility/scale based on selected status
     interface SatelliteNode {
@@ -638,6 +670,9 @@ export default function SolarSystemCanvas({
           targets.push(sat.mesh);
         }
       });
+      if (ghostMesh && !ghostDismissed) {
+        targets.push(ghostMesh);
+      }
 
       return raycaster.intersectObjects(targets);
     };
@@ -684,6 +719,9 @@ export default function SolarSystemCanvas({
         } else if (hit.name.startsWith("entry-")) {
           const slug = hit.name.replace("entry-", "");
           propsRef.current.onEntrySelect(slug);
+        } else if (hit.name === "ghost-light") {
+          // Never explained, never announced — it's just gone.
+          ghostDismissed = true;
         }
       }
     };
@@ -895,6 +933,22 @@ export default function SolarSystemCanvas({
       medallionGroup.rotation.y -= delta * speed * 0.05; // counter-rotation, same rate as the sun
       sunGlowMesh.scale.setScalar(1 + Math.sin(satTime * 1.5) * 0.03);
 
+      // GHOST LIGHT — quiet drift and slow pulse while present; fades out
+      // and detaches from the scene once dismissed (clicked).
+      if (ghostMesh && ghostMat) {
+        if (ghostDismissed) {
+          ghostMat.opacity += (0 - ghostMat.opacity) * 0.08;
+          if (ghostMat.opacity < 0.01 && ghostMesh.parent) {
+            scene.remove(ghostMesh);
+          }
+        } else {
+          const driftAngle = ghostBaseAngle + satTime * 0.03;
+          ghostMesh.position.x = Math.cos(driftAngle) * ghostRadius;
+          ghostMesh.position.z = Math.sin(driftAngle) * ghostRadius;
+          ghostMat.opacity = 0.55 + Math.sin(satTime * 0.8) * 0.2;
+        }
+      }
+
       // 4. CAMERA INTERPOLATION (THE ZOOM MAGIC!)
       if (state.selectedPlanetId) {
         // Camera zooms in close and orbits the selected planet in its moving frame!
@@ -1038,6 +1092,10 @@ export default function SolarSystemCanvas({
       backMat.dispose();
       rimGeom.dispose();
       rimMat.dispose();
+      if (ghostMesh) {
+        ghostMesh.geometry.dispose();
+        (ghostMesh.material as THREE.Material).dispose();
+      }
     };
     // Intentionally empty — the whole point of propsRef above is that this scene
     // gets built exactly ONCE. selectedPlanetId, onPlanetSelect, onEntrySelect, and
