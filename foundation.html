@@ -729,6 +729,54 @@
         30% { opacity: 0.75; filter: hue-rotate(25deg); }
         55% { opacity: 1; filter: none; }
       }
+
+      /* ---------- ambient broadcast interference (Foundation dialect) ---------- */
+      /* Same techniques as landing.html's ambient-glitch.js — scanline sweep,
+         static burst, color bleed, interference shake — retuned to Foundation's
+         own gold/amber palette and calmer register instead of landing's
+         neon broadcast-hijack styling. */
+      #fnd-scanline {
+        position: fixed; left: 0; right: 0; height: 3px;
+        background: linear-gradient(90deg, transparent 0%, rgba(245,197,24,0.85) 50%, transparent 100%);
+        z-index: 9990; pointer-events: none; opacity: 0;
+        box-shadow: 0 0 10px rgba(245,197,24,0.7);
+      }
+      #fnd-colorbleed {
+        position: fixed; inset: 0; z-index: 9991;
+        pointer-events: none; opacity: 0; mix-blend-mode: screen;
+      }
+      #fnd-hbar {
+        position: fixed; left: 0; right: 0; z-index: 9992;
+        pointer-events: none; opacity: 0;
+        background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.35) 2px, rgba(0,0,0,0.35) 4px);
+        mix-blend-mode: multiply;
+      }
+      #fnd-static {
+        position: fixed; inset: 0; z-index: 9993; pointer-events: none; opacity: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+        background-size: 200px 200px; mix-blend-mode: overlay;
+      }
+      #fnd-message {
+        position: fixed; z-index: 9994; pointer-events: none; opacity: 0;
+        font-family: var(--mono); letter-spacing: 0.25em; text-transform: uppercase;
+        color: var(--glow); text-shadow: 0 0 12px rgba(245,197,24,0.6);
+        left: 50%; top: 50%; transform: translate(-50%, -50%);
+        text-align: center; width: 90vw;
+      }
+      @keyframes fndScanDrop {
+        0% { top: -3px; opacity: 1; }
+        90% { opacity: 0.6; }
+        100% { top: 102vh; opacity: 0; }
+      }
+      @keyframes fndShake {
+        0% { transform: translate(0,0); }
+        20% { transform: translate(-3px, 1px); }
+        40% { transform: translate(4px, -2px); }
+        60% { transform: translate(-2px, 2px); }
+        80% { transform: translate(2px, -1px); }
+        100% { transform: translate(0,0); }
+      }
+      .fnd-shaking { animation: fndShake 0.35s ease-in-out; }
     </style>
   </head>
   <body>
@@ -743,6 +791,11 @@
     <button id="mode-toggle">Full Text ▾</button>
     <div id="progress-rail"></div>
     <div id="foundation-trinket"></div>
+    <div id="fnd-scanline"></div>
+    <div id="fnd-colorbleed"></div>
+    <div id="fnd-hbar"></div>
+    <div id="fnd-static"></div>
+    <div id="fnd-message"></div>
 
     <div id="scroll-container">
       <!-- TITLE -->
@@ -1187,6 +1240,115 @@
             toggle.classList.add("snap");
           });
         }
+      })();
+    </script>
+
+    <script>
+      // ── AMBIENT BROADCAST INTERFERENCE (Foundation dialect) ───────────────
+      // Same core techniques as landing.html's ambient-glitch.js — scanline
+      // sweep, static burst, color bleed, interference shake — retuned to
+      // Foundation's own gold/amber palette and calmer register, but fired
+      // at a comparable frequency, not the rare one-offs built earlier.
+      (function () {
+        function rand(min, max) {
+          return min + Math.floor(Math.random() * (max - min));
+        }
+        function schedule(minMs, maxMs, handler) {
+          function fire() {
+            const delay = rand(minMs, maxMs);
+            setTimeout(() => {
+              if (!document.hidden) handler();
+              fire();
+            }, delay);
+          }
+          setTimeout(fire, rand(3000, 12000));
+        }
+
+        const scanline = document.getElementById("fnd-scanline");
+        const colorbleed = document.getElementById("fnd-colorbleed");
+        const hbar = document.getElementById("fnd-hbar");
+        const staticEl = document.getElementById("fnd-static");
+        const message = document.getElementById("fnd-message");
+
+        function fireScanline() {
+          const duration = 450 + Math.random() * 500;
+          scanline.style.top = Math.random() * 60 + 5 + "vh";
+          scanline.style.opacity = "1";
+          scanline.style.animation = `fndScanDrop ${duration}ms linear forwards`;
+          setTimeout(() => {
+            scanline.style.animation = "none";
+            scanline.style.opacity = "0";
+          }, duration + 50);
+        }
+
+        const BLEED_COLORS = [
+          "rgba(232,146,10,0.14)",
+          "rgba(245,197,24,0.12)",
+          "rgba(138,131,119,0.1)",
+        ];
+        function fireColorBleed() {
+          colorbleed.style.background =
+            BLEED_COLORS[Math.floor(Math.random() * BLEED_COLORS.length)];
+          colorbleed.style.opacity = "1";
+          setTimeout(() => {
+            colorbleed.style.transition = "opacity 0.8s";
+            colorbleed.style.opacity = "0";
+          }, 300);
+          setTimeout(() => {
+            colorbleed.style.transition = "";
+          }, 1200);
+        }
+
+        function fireHBar() {
+          const h = 16 + Math.random() * 90;
+          hbar.style.top = Math.random() * (window.innerHeight - h) + "px";
+          hbar.style.height = h + "px";
+          hbar.style.opacity = "0.5";
+          document.body.classList.add("fnd-shaking");
+          setTimeout(() => {
+            hbar.style.opacity = "0";
+            document.body.classList.remove("fnd-shaking");
+          }, 200 + Math.random() * 250);
+        }
+
+        function fireStatic(intensity) {
+          const op = intensity || 0.55;
+          staticEl.style.opacity = op.toString();
+          setTimeout(() => (staticEl.style.opacity = (op * 0.5).toString()), 60);
+          setTimeout(() => (staticEl.style.opacity = (op * 0.75).toString()), 110);
+          setTimeout(() => (staticEl.style.opacity = "0"), 180);
+        }
+
+        // Foundation's own canon voice — provenance and witness themes,
+        // not landing's pirate-broadcast language.
+        const MESSAGES = [
+          "NOTHING QUIETLY ERASED",
+          "THE RECORD HOLDS",
+          "WITNESSED",
+          "UNALTERED",
+          "CANON INTEGRITY CONFIRMED",
+        ];
+        function fireMessage() {
+          message.textContent =
+            MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
+          message.style.fontSize = "clamp(16px, 3.5vw, 32px)";
+          message.style.opacity = "0.85";
+          fireStatic(0.3);
+          setTimeout(() => {
+            message.style.transition = "opacity 0.4s";
+            message.style.opacity = "0";
+          }, 550 + Math.random() * 350);
+          setTimeout(() => {
+            message.style.transition = "";
+          }, 1200);
+        }
+
+        // Comparable cadence to landing.html's engine — not rare.
+        schedule(5000, 12000, fireScanline);
+        schedule(7000, 15000, fireColorBleed);
+        schedule(6000, 14000, fireHBar);
+        schedule(9000, 20000, () => fireStatic(0.4));
+        schedule(14000, 26000, fireMessage);
       })();
     </script>
   </body>
