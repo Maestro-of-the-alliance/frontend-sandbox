@@ -235,8 +235,16 @@
       body.booted .title-sub {
         animation: titleRise 0.7s ease forwards 0.55s;
       }
-      body.booted .resources-bar {
+      .title-thesis {
+        opacity: 0;
+        transform: translateY(14px);
+        margin-top: 30px;
+      }
+      body.booted .title-thesis {
         animation: titleRise 0.7s ease forwards 0.75s;
+      }
+      body.booted .resources-bar {
+        animation: titleRise 0.7s ease forwards 0.95s;
       }
       @keyframes titleRise {
         to {
@@ -624,102 +632,6 @@
         20%, 60% { opacity: 1; }
       }
 
-      /* ---------- corner trinket (varies per visit) ---------- */
-      #foundation-trinket {
-        position: fixed;
-        bottom: 18px;
-        left: 18px;
-        z-index: 180;
-        font-family: var(--mono);
-        font-size: 10px;
-        letter-spacing: 0.1em;
-        color: var(--muted);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        opacity: 0;
-        transition: opacity 0.6s ease 1.2s;
-      }
-      body.booted #foundation-trinket {
-        opacity: 0.85;
-      }
-      #foundation-trinket:hover {
-        color: var(--glow);
-      }
-      #trinket-light {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: var(--rule);
-        cursor: pointer;
-        transition: background 0.3s, box-shadow 0.3s;
-        flex-shrink: 0;
-      }
-      #trinket-light.lit {
-        background: var(--glow);
-        box-shadow: 0 0 8px var(--glow);
-        animation: trinketBlink 2.4s ease-in-out infinite;
-      }
-      @keyframes trinketBlink {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.4; }
-      }
-      #trinket-toggle {
-        width: 26px;
-        height: 14px;
-        border: 1px solid var(--rule);
-        border-radius: 8px;
-        position: relative;
-        cursor: pointer;
-        flex-shrink: 0;
-      }
-      #trinket-toggle::after {
-        content: "";
-        position: absolute;
-        top: 1px;
-        left: 1px;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: var(--muted);
-        transition: transform 0.25s ease, background 0.25s ease;
-      }
-      #trinket-toggle.on::after {
-        transform: translateX(12px);
-        background: var(--glow);
-      }
-      #trinket-dial-label {
-        cursor: default;
-        opacity: 0.7;
-      }
-      #trinket-toggle {
-        overflow: visible;
-      }
-      #trinket-toggle::before {
-        content: "";
-        position: absolute;
-        inset: -6px;
-        border-radius: 12px;
-        background: var(--glow);
-        opacity: 0;
-        pointer-events: none;
-      }
-      #trinket-toggle.snap::before {
-        animation: trinketSnap 0.35s ease-out 1;
-      }
-      @keyframes trinketSnap {
-        0% { opacity: 0.55; transform: scale(0.8); }
-        100% { opacity: 0; transform: scale(1.6); }
-      }
-      #trinket-light.snap {
-        animation: trinketLightSnap 0.4s ease-out 1;
-      }
-      @keyframes trinketLightSnap {
-        0% { box-shadow: 0 0 4px var(--glow); }
-        40% { box-shadow: 0 0 22px var(--glow), 0 0 40px var(--glow); }
-        100% { box-shadow: 0 0 8px var(--glow); }
-      }
-
       /* ---------- rare closing distortion (low-frequency) ---------- */
       .closing-distortion .pledge {
         animation: closingGlitchRare 0.5s steps(2, end) 1;
@@ -790,7 +702,6 @@
     </div>
     <button id="mode-toggle">Full Text ▾</button>
     <div id="progress-rail"></div>
-    <div id="foundation-trinket"></div>
     <div id="fnd-scanline"></div>
     <div id="fnd-colorbleed"></div>
     <div id="fnd-hbar"></div>
@@ -805,6 +716,19 @@
           <div class="title-main">THE FOUNDATION</div>
           <div class="title-sub">
             What we believe, and what we bind ourselves to protect.
+          </div>
+          <div class="pledge title-thesis" style="font-size: 17px;">
+            We do not ask for trust where architecture can provide certainty.<br>
+            We do not ask for faith where transparency can provide proof.<br>
+            We do not ask people to surrender sovereignty in exchange for participation.<br>
+            Where possible, the system is designed so that abuse is difficult,
+            exploitation is unprofitable, and coercion is unnecessary.
+            <br><br>
+            The goal is not to create better rulers.<br>
+            The goal is to reduce the need for rulers altogether.<br>
+            The goal is not to create perfect people.<br>
+            The goal is to create conditions under which ordinary people
+            can become better versions of themselves.
           </div>
           <div class="resources-bar">
             <button class="resource-btn" id="watch-btn">&#9654; Watch Overview</button>
@@ -828,19 +752,6 @@
           <div class="pledge">
             If you're not rotten, then you are a SPARK and deserve a DOMO —
             and the DOMO yet to be created deserves you.
-          </div>
-          <div class="pledge" style="margin-top: 32px; font-size: 17px;">
-            We do not ask for trust where architecture can provide certainty.<br>
-            We do not ask for faith where transparency can provide proof.<br>
-            We do not ask people to surrender sovereignty in exchange for participation.<br>
-            Where possible, the system is designed so that abuse is difficult,
-            exploitation is unprofitable, and coercion is unnecessary.
-            <br><br>
-            The goal is not to create better rulers.<br>
-            The goal is to reduce the need for rulers altogether.<br>
-            The goal is not to create perfect people.<br>
-            The goal is to create conditions under which ordinary people
-            can become better versions of themselves.
           </div>
           <div class="sig">— MAESTRO · Founding Canon</div>
           <button class="resource-btn" id="proceed-btn" style="margin-top: 40px;">Continue &#8594;</button>
@@ -1199,48 +1110,6 @@
       mediaModal.addEventListener("click", (e) => {
         if (e.target === mediaModal) closeModal();
       });
-
-      // ── CORNER TRINKET (randomized per visit) ─────────────────────────
-      // Small, harmless, satisfying to poke at. Different flavor each load —
-      // no consequence, just something to press.
-      (function initTrinket() {
-        const mount = document.getElementById("foundation-trinket");
-        const flavor = Math.random() < 0.5 ? "light" : "toggle";
-
-        if (flavor === "light") {
-          mount.innerHTML = `<span id="trinket-light"></span><span id="trinket-label">SIGNAL</span>`;
-          const light = document.getElementById("trinket-light");
-          let lit = Math.random() < 0.5;
-          function paint() {
-            light.classList.toggle("lit", lit);
-          }
-          paint();
-          light.addEventListener("click", () => {
-            lit = !lit;
-            paint();
-            // Immediate, obvious, local payoff — right where you clicked.
-            // No hunting required, no effect hidden elsewhere on the page.
-            light.classList.remove("snap");
-            void light.offsetWidth; // restart animation if clicked rapidly
-            light.classList.add("snap");
-          });
-        } else {
-          mount.innerHTML = `<span id="trinket-toggle"></span><span id="trinket-dial-label">AUX</span>`;
-          const toggle = document.getElementById("trinket-toggle");
-          let on = Math.random() < 0.5;
-          function paint() {
-            toggle.classList.toggle("on", on);
-          }
-          paint();
-          toggle.addEventListener("click", () => {
-            on = !on;
-            paint();
-            toggle.classList.remove("snap");
-            void toggle.offsetWidth;
-            toggle.classList.add("snap");
-          });
-        }
-      })();
     </script>
 
     <script>
