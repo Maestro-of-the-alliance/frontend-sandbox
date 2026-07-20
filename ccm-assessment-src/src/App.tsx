@@ -1053,6 +1053,27 @@ ${appUrl}`;
                   </div>
                 )}
 
+                {/* Continue to DICE — the only legitimate way in. DICE has nothing
+                    real to roll from without an actual CCM result behind it. */}
+                <div className="max-w-3xl mx-auto mt-8 bg-stone-950 rounded-2xl p-6 md:p-8 shadow-lg text-center space-y-4">
+                  <p className="text-stone-400 text-xs font-mono uppercase tracking-widest">
+                    Your Result Is Ready
+                  </p>
+                  <h3 className="text-stone-50 text-xl md:text-2xl font-serif font-semibold">
+                    See what SHELTER would BAKE from this.
+                  </h3>
+                  <p className="text-stone-400 text-sm max-w-lg mx-auto">
+                    Your position on the chart becomes the actual input — watch the
+                    NUGGET get rolled, live, from this specific result.
+                  </p>
+                  <a
+                    href={`/dice/?x=${userCoordinates.x}&y=${userCoordinates.y}`}
+                    className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-7 py-3.5 rounded-xl transition-all hover:translate-x-0.5"
+                  >
+                    Continue to DICE →
+                  </a>
+                </div>
+
               </motion.div>
             )}
 

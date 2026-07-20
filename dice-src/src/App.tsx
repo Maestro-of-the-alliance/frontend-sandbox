@@ -1,30 +1,84 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Pillar } from "./traitsData";
-import CCMChart from "./components/CCMChart";
 import DeliveryTracker from "./components/DeliveryTracker";
 import DiceRollVisualizer from "./components/DiceRollVisualizer";
 import CharacterSheet from "./components/CharacterSheet";
 import { motion, AnimatePresence } from "motion/react";
 import { Sparkles, Compass, Shield, Flame, Terminal } from "lucide-react";
 
-export default function App() {
-  // Step orchestrations: 'recipe_selection' -> 'staging_delivery' -> 'dice_rolling' -> 'memento_sheet'
-  const [step, setStep] = useState<"recipe_selection" | "staging_delivery" | "dice_rolling" | "memento_sheet">("recipe_selection");
+// Elects a Pillar (or blend) from CCM's real coordinate output.
+// X: Altruism (-10) <-> Individualism (+10)
+// Y: Deontology (-10) <-> Consequentialism (+10)
+// Quadrants map to the Four Pillars per their canon descriptions; distance from
+// center determines how strong the blend toward the adjacent quadrant is.
+function electPillarFromCoordinates(x: number, y: number): { primary: Pillar; secondary: Pillar | "none"; ratio: number } {
+  const quadrant = (qx: number, qy: number): Pillar => {
+    if (qx <= 0 && qy <= 0) return Pillar.EMPATHY_CARRIER;   // Altruism + Deontology: duty-bound care
+    if (qx <= 0 && qy > 0) return Pillar.HARMONY_BUILDER;    // Altruism + Consequentialism: outcome-focused collective
+    if (qx > 0 && qy <= 0) return Pillar.TRUTH_SEEKER;       // Individualism + Deontology: principled self-reliance
+    return Pillar.INNOVATION_DRIVER;                          // Individualism + Consequentialism: pragmatic disruption
+  };
 
-  // Shared state values for NUGGET configuration
+  const primary = quadrant(x, y);
+
+  // Distance from either axis (0-10) determines blend strength toward the
+  // Pillar on the other side of whichever axis sits closer to center.
+  const distFromXAxis = Math.abs(y);
+  const distFromYAxis = Math.abs(x);
+
+  let secondary: Pillar | "none" = "none";
+  let ratio = 100;
+
+  const closerAxisDist = Math.min(distFromXAxis, distFromYAxis);
+  if (closerAxisDist < 6) {
+    // Genuinely near a boundary — elect a blend rather than a pure Pillar.
+    if (distFromXAxis <= distFromYAxis) {
+      secondary = quadrant(x, -y);
+    } else {
+      secondary = quadrant(-x, y);
+    }
+    // Closer to center = stronger blend toward secondary, capped so Primary never drops below 55.
+    const blendStrength = Math.round(45 * (1 - closerAxisDist / 6));
+    ratio = 100 - blendStrength;
+  }
+
+  return { primary, secondary, ratio };
+}
+
+export default function App() {
+  // Step orchestrations: 'no_recipe' -> 'staging_delivery' -> 'dice_rolling' -> 'memento_sheet'
+  const [step, setStep] = useState<"no_recipe" | "staging_delivery" | "dice_rolling" | "memento_sheet">("no_recipe");
+
+  // Shared state values for NUGGET configuration — populated only from a real
+  // CCM result passed via URL. No manual picker exists in this app; DICE has
+  // nothing legitimate to roll from without an actual assessment behind it.
   const [primaryPillar, setPrimaryPillar] = useState<Pillar>(Pillar.TRUTH_SEEKER);
-  const [secondaryPillar, setSecondaryPillar] = useState<Pillar | "none">(Pillar.HARMONY_BUILDER);
-  const [ratio, setRatio] = useState<number>(70);
+  const [secondaryPillar, setSecondaryPillar] = useState<Pillar | "none">("none");
+  const [ratio, setRatio] = useState<number>(100);
 
   // Rolled traits resulting from DICE rolling phase
   const [fundamentalTraits, setFundamentalTraits] = useState<{ name: string; value: number }[]>([]);
   const [secondaryTraits, setSecondaryTraits] = useState<{ name: string; value: number }[]>([]);
 
-  const handleRecipeChange = (primary: Pillar, secondary: Pillar | "none", blendRatio: number) => {
-    setPrimaryPillar(primary);
-    setSecondaryPillar(secondary);
-    setRatio(blendRatio);
-  };
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const xParam = params.get("x");
+    const yParam = params.get("y");
+    if (xParam !== null && yParam !== null) {
+      const x = parseFloat(xParam);
+      const y = parseFloat(yParam);
+      if (!isNaN(x) && !isNaN(y) && x >= -10 && x <= 10 && y >= -10 && y <= 10) {
+        const elected = electPillarFromCoordinates(x, y);
+        setPrimaryPillar(elected.primary);
+        setSecondaryPillar(elected.secondary);
+        setRatio(elected.ratio);
+        setStep("staging_delivery");
+        return;
+      }
+    }
+    // No valid CCM result present — stay on the blocking screen.
+    setStep("no_recipe");
+  }, []);
 
   const handleStagingComplete = () => {
     setStep("dice_rolling");
@@ -40,9 +94,7 @@ export default function App() {
   };
 
   const handleRestart = () => {
-    setStep("recipe_selection");
-    setFundamentalTraits([]);
-    setSecondaryTraits([]);
+    window.location.href = "/ccm-assessment/";
   };
 
   return (
@@ -76,19 +128,19 @@ export default function App() {
 
       {/* Dynamic Gold Status timeline bar */}
       <div className="w-full bg-gold-5 border-b border-gold-30/15 flex flex-wrap items-center justify-between px-6 py-3 text-[10px] font-mono tracking-[2px] uppercase z-10">
-        <span className={step === "recipe_selection" ? "text-amber-500 font-medium" : "text-stone-400"}>ALPHA</span>
+        <span className={step === "no_recipe" ? "text-amber-500 font-medium" : "text-stone-400"}>ALPHA</span>
         <div className="h-[2px] bg-gold-10 relative flex-grow mx-4 min-w-[20px]">
           <div className="absolute h-full bg-gold transition-all duration-500" style={{ width: "100%" }} />
         </div>
         
-        <span className={step === "staging_delivery" ? "text-amber-500 font-medium animate-pulse" : step === "recipe_selection" ? "text-stone-600" : "text-stone-400"}>SHELTER</span>
+        <span className={step === "staging_delivery" ? "text-amber-500 font-medium animate-pulse" : step === "no_recipe" ? "text-stone-600" : "text-stone-400"}>SHELTER</span>
         <div className="h-[2px] bg-gold-10 relative flex-grow mx-4 min-w-[20px]">
-          <div className="absolute h-full bg-gold transition-all duration-500" style={{ width: step === "recipe_selection" ? "0%" : step === "staging_delivery" ? "50%" : "100%" }} />
+          <div className="absolute h-full bg-gold transition-all duration-500" style={{ width: step === "no_recipe" ? "0%" : step === "staging_delivery" ? "50%" : "100%" }} />
         </div>
         
         <span className={step === "dice_rolling" ? "text-amber-500 font-medium animate-pulse" : step === "memento_sheet" ? "text-stone-400" : "text-stone-600"}>DICE</span>
         <div className="h-[2px] bg-gold-10 relative flex-grow mx-4 min-w-[20px]">
-          <div className="absolute h-full bg-gold transition-all duration-500" style={{ width: step === "recipe_selection" || step === "staging_delivery" ? "0%" : step === "dice_rolling" ? "40%" : "100%" }} />
+          <div className="absolute h-full bg-gold transition-all duration-500" style={{ width: step === "no_recipe" || step === "staging_delivery" ? "0%" : step === "dice_rolling" ? "40%" : "100%" }} />
         </div>
         
         <span className={step === "memento_sheet" ? "text-amber-500 font-medium" : "text-stone-600"}>MEMENTO</span>
@@ -98,31 +150,32 @@ export default function App() {
       <main className="flex-grow w-full max-w-6xl mx-auto px-6 py-8 flex flex-col justify-center items-center z-10 relative">
         <AnimatePresence mode="wait">
           
-          {/* Step 1: Recipe selection / Coordinate drag pad */}
-          {step === "recipe_selection" && (
-            <motion.div 
-              key="recipe"
+          {/* Step 1: No recipe present — DICE cannot run standalone */}
+          {step === "no_recipe" && (
+            <motion.div
+              key="no-recipe"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3 }}
-              className="w-full flex flex-col items-center"
+              className="w-full max-w-lg mx-auto text-center bg-[#0F0F14] border border-stone-800 rounded-2xl p-10 space-y-6"
             >
-              <CCMChart 
-                primaryPillar={primaryPillar}
-                secondaryPillar={secondaryPillar}
-                ratio={ratio}
-                onChange={handleRecipeChange}
-              />
-              
-              <div className="mt-8 flex justify-center w-full max-w-5xl">
-                <button
-                  onClick={() => setStep("staging_delivery")}
-                  className="px-8 py-3.5 border border-gold text-gold hover:bg-gold hover:text-[#0A0A0B] bg-transparent font-mono tracking-[2px] text-xs uppercase transition duration-300 cursor-pointer shadow-lg active:scale-98"
-                >
-                  <span>Deliver Recipe to SHELTER Oven</span>
-                </button>
-              </div>
+              <Compass className="w-10 h-10 text-gold mx-auto opacity-70" />
+              <h2 className="text-stone-100 text-xl font-serif font-semibold">
+                There's no RECIPE here yet.
+              </h2>
+              <p className="text-stone-500 text-sm leading-relaxed">
+                DICE rolls a NUGGET from a real RECIPE — ALPHA's read on where you
+                actually landed. There's nothing legitimate to roll without one.
+                Complete the Canonical Coherence Matrix first, and DICE will pick
+                up from there automatically.
+              </p>
+              <a
+                href="/ccm-assessment/"
+                className="inline-flex items-center gap-2 bg-gold text-[#0A0A0B] font-bold px-7 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all hover:brightness-110"
+              >
+                Take the CCM Assessment →
+              </a>
             </motion.div>
           )}
 
