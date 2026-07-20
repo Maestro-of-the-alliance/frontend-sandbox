@@ -264,6 +264,27 @@ ${appUrl}`;
               >
                 {/* Left Intro Text */}
                 <div className="md:col-span-7 flex flex-col justify-center">
+
+                  {/* START HERE banner — the real, unmissable entry point */}
+                  <div className="mb-6 p-4 md:p-5 bg-amber-500 rounded-xl shadow-lg shadow-amber-500/20 flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                      <span className="text-[11px] font-mono font-bold tracking-widest text-stone-900 uppercase block mb-1">
+                        ✨ Start Here
+                      </span>
+                      <p className="text-stone-900 font-semibold text-sm md:text-base">
+                        Find out what THE ALLIANCE would actually build to complement you. Takes about 3 minutes — genuinely worth it.
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleStart}
+                      className="px-6 py-3 bg-stone-950 hover:bg-stone-800 text-amber-400 rounded-xl font-bold tracking-tight inline-flex items-center gap-2 group transition-all hover:translate-x-0.5 shadow-md cursor-pointer whitespace-nowrap"
+                      id="btn-start-here"
+                    >
+                      Take the Assessment
+                      <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    </button>
+                  </div>
+
                   <span className="text-[10px] font-mono font-semibold tracking-widest text-amber-600 uppercase mb-3 block">
                     ALPHA SECURE INTERFACE // DIAGNOSTIC MODE
                   </span>
