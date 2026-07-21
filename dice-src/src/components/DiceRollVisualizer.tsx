@@ -210,7 +210,7 @@ export default function DiceRollVisualizer({
       {!hasChosenMode && (
         <div className="bg-glass border border-gold/20 p-8 text-center shadow-[0_0_20px_rgba(212,175,55,0.05)] backdrop-blur-md max-w-xl w-full flex flex-col items-center rounded-none glow-border-amber">
           <Dices className="w-16 h-16 text-amber-500 animate-pulse mb-4" />
-          <h2 className="text-2xl serif italic text-amber-500">DICE Roll Protocol</h2>
+          <h2 className="text-2xl font-display font-bold text-amber-500">DICE Roll Protocol</h2>
           <p className="text-xs text-stone-700 mt-2 max-w-sm">
             Configure how the 10 mutable secondary traits will be allocated and revealed in the witness presence.
           </p>
@@ -230,7 +230,7 @@ export default function DiceRollVisualizer({
                 <span className="text-[9px] bg-gold-5 border border-gold-30 px-2 py-0.5 rounded-none uppercase font-mono text-gold">Recommended</span>
               </div>
               <div>
-                <h3 className="serif italic text-lg text-stone-800 mt-4 group-hover:text-amber-500 transition-colors">Guided Mode</h3>
+                <h3 className="font-display font-bold text-lg text-stone-800 mt-4 group-hover:text-amber-500 transition-colors">Guided Mode</h3>
                 <p className="text-[11px] text-stone-700 mt-1 leading-relaxed">
                   Active participation. Grants you exactly **one Reroll** and **one Switch** to utilize as the traits land.
                 </p>
@@ -248,7 +248,7 @@ export default function DiceRollVisualizer({
             >
               <span className="font-mono text-[9px] text-stone-600 font-semibold tracking-wider">PURE WATCHER</span>
               <div>
-                <h3 className="serif italic text-lg text-stone-800 mt-4 group-hover:text-amber-500 transition-colors">Leave it to DICE</h3>
+                <h3 className="font-display font-bold text-lg text-stone-800 mt-4 group-hover:text-amber-500 transition-colors">Leave it to DICE</h3>
                 <p className="text-[11px] text-stone-700 mt-1 leading-relaxed">
                   Hands-free sequence. The point-pool will distribute and settle automatically without requiring intermediate prompts.
                 </p>
@@ -279,7 +279,7 @@ export default function DiceRollVisualizer({
                   <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping shrink-0" />
                   <span className="text-xs font-mono text-amber-500 uppercase tracking-widest font-semibold">Live Roll In Progress</span>
                 </div>
-                <h3 className="text-lg serif italic text-stone-900 mt-1">
+                <h3 className="text-lg font-display font-bold text-stone-900 mt-1">
                   {phase === "rolling_fundamental" ? "Unveiling Fundamental Architecture" : "Crystallizing Mutable Traits"}
                 </h3>
               </div>
@@ -323,7 +323,7 @@ export default function DiceRollVisualizer({
                           >
                             <div className="flex justify-between items-center">
                               <div className="flex flex-col">
-                                <span className="serif italic text-amber-500 text-sm tracking-wide">{trait.name}</span>
+                                <span className="font-display font-bold text-amber-500 text-sm tracking-wide">{trait.name}</span>
                                 <span className="text-[9px] text-stone-600 font-mono uppercase tracking-wider">{meta.category}</span>
                               </div>
                               <div className="flex items-baseline gap-1">
@@ -391,7 +391,7 @@ export default function DiceRollVisualizer({
                                 <span className="font-mono text-[9px] bg-gold-5 text-gold border border-gold-30 px-2 py-0.5 rounded-none uppercase font-semibold tracking-wider">
                                   Current Active Node #{currentSecondaryIndex + 1} of 10
                                 </span>
-                                <h3 className="serif italic text-2xl text-stone-900 mt-2">
+                                <h3 className="font-display font-bold text-2xl text-stone-900 mt-2">
                                   {secondaryTraits[currentSecondaryIndex]?.name}
                                 </h3>
                                 <p className="text-xs text-stone-600 font-mono uppercase tracking-wider mt-0.5">

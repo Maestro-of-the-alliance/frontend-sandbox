@@ -73,7 +73,7 @@ export default function App() {
         <div className="flex items-center gap-4">
           <span className="font-mono text-[10px] tracking-[4px] text-amber-500/60 uppercase">PROTOCOL // DICE_v4.1</span>
           <div className="h-[1px] w-12 bg-gold-30/30 hidden sm:block"></div>
-          <h1 className="serif italic text-2xl text-amber-500">Nugget Reveal</h1>
+          <h1 className="font-display font-bold text-2xl text-amber-500">Nugget Reveal</h1>
         </div>
 
         {/* Live witness status marker */}

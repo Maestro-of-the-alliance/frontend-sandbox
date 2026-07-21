@@ -144,7 +144,7 @@ export default function CCMChart({
         <div className="absolute inset-0 bg-radial from-gold/5 via-transparent to-transparent pointer-events-none" />
         
         <div>
-          <h2 className="text-xl serif italic text-amber-500 flex items-center gap-2">
+          <h2 className="text-xl font-display font-bold text-amber-500 flex items-center gap-2">
             <span>SPARK Coordinate Space</span>
             <span className="text-[10px] text-stone-600 font-mono font-normal uppercase tracking-wider">ALPHA-CCM Engine</span>
           </h2>
@@ -183,19 +183,19 @@ export default function CCMChart({
 
           {/* Corner labels */}
           <div className="absolute top-3 left-3 flex flex-col pointer-events-none">
-            <span className="serif italic text-xs text-amber-500 tracking-wider">Truth Seeker</span>
+            <span className="font-display font-bold text-xs text-amber-500 tracking-wider">Truth Seeker</span>
             <span className="text-[9px] font-mono tracking-wide text-stone-500 uppercase">Core Facts & Logic</span>
           </div>
           <div className="absolute top-3 right-3 flex flex-col items-end pointer-events-none">
-            <span className="serif italic text-xs text-amber-500 tracking-wider">Innovation Driver</span>
+            <span className="font-display font-bold text-xs text-amber-500 tracking-wider">Innovation Driver</span>
             <span className="text-[9px] font-mono tracking-wide text-stone-500 uppercase">Creative Vision</span>
           </div>
           <div className="absolute bottom-3 left-3 flex flex-col pointer-events-none">
-            <span className="serif italic text-xs text-amber-500 tracking-wider">Harmony Builder</span>
+            <span className="font-display font-bold text-xs text-amber-500 tracking-wider">Harmony Builder</span>
             <span className="text-[9px] font-mono tracking-wide text-stone-500 uppercase">Collective Peace</span>
           </div>
           <div className="absolute bottom-3 right-3 flex flex-col items-end pointer-events-none">
-            <span className="serif italic text-xs text-amber-500 tracking-wider">Empathy Carrier</span>
+            <span className="font-display font-bold text-xs text-amber-500 tracking-wider">Empathy Carrier</span>
             <span className="text-[9px] font-mono tracking-wide text-stone-500 uppercase">Deep Connection</span>
           </div>
 
@@ -223,7 +223,7 @@ export default function CCMChart({
       {/* Manual Recipe Form Selector */}
       <div className="w-full lg:w-96 bg-glass border border-gold/20 p-6 flex flex-col justify-between shadow-[0_0_20px_rgba(212,175,55,0.05)] backdrop-blur-md glow-border-amber">
         <div>
-          <h2 className="text-xl serif italic text-amber-500">
+          <h2 className="text-xl font-display font-bold text-amber-500">
             NUGGET Recipe
           </h2>
           <p className="text-xs text-stone-700 mt-1">
@@ -243,7 +243,7 @@ export default function CCMChart({
                 }
                 setManualBlend(newPrim, newSec, ratio);
               }}
-              className="w-full bg-[#FFFFFF] text-stone-900 border border-gold/20 rounded-none py-2.5 px-3 text-sm focus:outline-none focus:border-gold font-serif italic transition cursor-pointer"
+              className="w-full bg-[#FFFFFF] text-stone-900 border border-gold/20 rounded-none py-2.5 px-3 text-sm focus:outline-none focus:border-gold font-font-display font-bold transition cursor-pointer"
             >
               {Object.values(Pillar).map((p) => (
                 <option key={p} value={p}>{p}</option>
@@ -261,7 +261,7 @@ export default function CCMChart({
                 const newRatio = newSec === "none" ? 100 : (ratio === 100 ? 70 : ratio);
                 setManualBlend(primaryPillar, newSec, newRatio);
               }}
-              className="w-full bg-[#FFFFFF] text-stone-900 border border-gold/20 rounded-none py-2.5 px-3 text-sm focus:outline-none focus:border-gold font-serif italic transition cursor-pointer"
+              className="w-full bg-[#FFFFFF] text-stone-900 border border-gold/20 rounded-none py-2.5 px-3 text-sm focus:outline-none focus:border-gold font-font-display font-bold transition cursor-pointer"
             >
               <option value="none">Pure (No Secondary)</option>
               {Object.values(Pillar)

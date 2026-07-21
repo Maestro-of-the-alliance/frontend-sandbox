@@ -100,7 +100,7 @@ export default function DeliveryTracker({
         <span className="text-[9px] font-mono tracking-[3px] text-amber-500 uppercase border border-gold/25 bg-gold-5 px-3 py-1">
           Secure Core Logistics Pipeline
         </span>
-        <h2 className="text-2xl serif italic text-amber-500 tracking-wide mt-4">
+        <h2 className="text-2xl font-display font-bold text-amber-500 tracking-wide mt-4">
           NUGGET Deployment Staging
         </h2>
         <p className="text-xs text-stone-700 mt-2 font-mono uppercase tracking-widest">

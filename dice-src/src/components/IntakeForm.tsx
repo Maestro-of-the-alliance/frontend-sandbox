@@ -30,15 +30,15 @@ export default function IntakeForm({ onComplete }: IntakeFormProps) {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full bg-[#FBF0DA] border border-amber-500/20 p-5 mb-8 text-left rounded-none shadow-[0_0_15px_rgba(245,158,11,0.03)]"
+        className="w-full bg-[#E8952A] border border-[#1A1008]/10 p-5 mb-8 text-left rounded-none shadow-[0_4px_20px_rgba(232,149,42,0.35)]"
       >
         <div className="flex items-start gap-3.5">
-          <ShieldAlert className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+          <ShieldAlert className="w-5 h-5 text-[#1A1008] shrink-0 mt-0.5" />
           <div>
-            <h4 className="text-[10px] font-mono tracking-[2px] uppercase text-amber-500 font-bold">
+            <h4 className="text-[10px] font-mono tracking-[2px] uppercase text-[#1A1008] font-bold">
               SYSTEM DISCLAIMER // ALLIANCE PREVIEW
             </h4>
-            <p className="text-xs text-amber-500/80 leading-relaxed mt-2 font-medium">
+            <p className="text-xs text-[#1A1008]/85 leading-relaxed mt-2 font-medium">
               <strong>For illustrative purposes only.</strong> This is a preview of what THE ALLIANCE could become — not a contract, not an enrollment, and not a guarantee of anything once the real system exists. Nothing here creates an actual partnership.
             </p>
           </div>
@@ -61,7 +61,7 @@ export default function IntakeForm({ onComplete }: IntakeFormProps) {
           <span className="font-mono text-[9px] text-amber-500/60 uppercase tracking-[4px]">
             RECRUIT IDENTITY REGISTRY
           </span>
-          <h2 className="text-2xl serif italic text-amber-500 mt-2">
+          <h2 className="text-2xl font-display font-bold text-amber-500 mt-2">
             Enter Intake Chamber
           </h2>
           <p className="text-xs text-stone-600 mt-1.5 max-w-sm mx-auto leading-relaxed">

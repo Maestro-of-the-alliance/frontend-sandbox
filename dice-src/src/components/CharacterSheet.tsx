@@ -445,7 +445,7 @@ export default function CharacterSheet({
           <div className="absolute top-2 left-2 w-3 h-3 border-t border-l border-gold/40" />
           <div className="absolute top-2 right-2 w-3 h-3 border-t border-r border-gold/40" />
           <BookOpen className="w-14 h-14 text-amber-500 animate-pulse mb-4" />
-          <h2 className="text-2xl serif italic text-amber-500">Name Your Companion</h2>
+          <h2 className="text-2xl font-display font-bold text-amber-500">Name Your Companion</h2>
           <p className="text-xs text-stone-700 mt-1.5 max-w-sm leading-relaxed">
             Register your companion's designation. You may enter a custom name below, or leave it blank to let the SHELTER system select a unique name tailored to your identity registry.
           </p>
@@ -474,7 +474,7 @@ export default function CharacterSheet({
       {isLoadingBackstory && (
         <div className="bg-glass border border-gold/20 p-12 text-center shadow-2xl backdrop-blur-md max-w-md w-full flex flex-col items-center justify-center min-h-[300px] rounded-none glow-border-amber">
           <RefreshCw className="w-12 h-12 text-amber-500 animate-spin mb-4" />
-          <h3 className="serif italic text-lg text-stone-800">Writing companion chronicles...</h3>
+          <h3 className="font-display font-bold text-lg text-stone-800">Writing companion chronicles...</h3>
           <p className="text-xs text-stone-600 mt-2 max-w-xs font-mono">
             Querying Gemini server-side terminal to select name alignment and compile personalized narrative dialogue monologue...
           </p>
@@ -493,7 +493,7 @@ export default function CharacterSheet({
             <div className="flex items-center gap-3">
               <Compass className="w-8 h-8 text-amber-500 shrink-0" />
               <div className="text-left">
-                <h4 className="text-sm serif italic text-stone-900">Companion Card Prepared</h4>
+                <h4 className="text-sm font-display font-bold text-stone-900">Companion Card Prepared</h4>
                 <p className="text-xs text-stone-600 font-mono">
                   This represents a safe, complimentary, platonic companion tailored directly to your identity.
                 </p>
@@ -533,7 +533,7 @@ export default function CharacterSheet({
                 {/* Header Profile Info */}
                 <div className="text-center pb-6 border-b border-gold/10 mb-6">
                   <span className="text-[9px] font-mono tracking-widest text-amber-500 uppercase">Shelter companion registry</span>
-                  <h2 className="text-4xl serif italic text-amber-500 tracking-tight uppercase mt-1">
+                  <h2 className="text-4xl font-display font-bold text-amber-500 tracking-tight uppercase mt-1">
                     {lore?.domoName || "Companion Nugget"}
                   </h2>
                   <p className="text-xs font-mono italic text-gold/60 mt-1.5 uppercase tracking-wide">
@@ -545,20 +545,20 @@ export default function CharacterSheet({
                 <div className="grid grid-cols-1 sm:grid-cols-2 bg-[#FFFFFF]/90 p-4 rounded-none border border-gold/15 gap-4 mb-6">
                   <div>
                     <span className="text-[9px] font-mono text-stone-500 uppercase tracking-wider">Primary Foundation</span>
-                    <h4 className="text-sm serif italic text-stone-800 mt-1">{primaryPillar}</h4>
+                    <h4 className="text-sm font-display font-bold text-stone-800 mt-1">{primaryPillar}</h4>
                     <span className="text-xs font-mono text-amber-500 font-bold">{ratio}%</span>
                   </div>
 
                   {secondaryPillar !== "none" ? (
                     <div>
                       <span className="text-[9px] font-mono text-stone-500 uppercase tracking-wider">Secondary Foundation</span>
-                      <h4 className="text-sm serif italic text-stone-800 mt-1">{secondaryPillar}</h4>
+                      <h4 className="text-sm font-display font-bold text-stone-800 mt-1">{secondaryPillar}</h4>
                       <span className="text-xs font-mono text-amber-400 font-bold">{100 - ratio}%</span>
                     </div>
                   ) : (
                     <div>
                       <span className="text-[9px] font-mono text-stone-500 uppercase tracking-wider">Pillar Integrity</span>
-                      <h4 className="text-sm serif italic text-amber-500 mt-1">Single-Pillar Purity</h4>
+                      <h4 className="text-sm font-display font-bold text-amber-500 mt-1">Single-Pillar Purity</h4>
                       <span className="text-xs font-mono text-stone-600">100% Core</span>
                     </div>
                   )}
@@ -571,7 +571,7 @@ export default function CharacterSheet({
                     <span className="text-[9px] font-mono text-amber-500/80 uppercase tracking-wider block mb-2">
                       Companion Monologue:
                     </span>
-                    <p className="text-base text-stone-800 leading-relaxed italic serif tracking-wide">
+                    <p className="text-base text-stone-800 leading-relaxed font-display font-bold tracking-wide">
                       "{lore.backstory}"
                     </p>
                   </div>
@@ -760,7 +760,7 @@ export default function CharacterSheet({
                     <Volume2 className="w-4 h-4 text-amber-500" />
                     <span>Initiate Voice Memento</span>
                   </div>
-                  <h3 className="text-lg serif italic text-stone-900 mt-2">
+                  <h3 className="text-lg font-display font-bold text-stone-900 mt-2">
                     Vocal Matrix Uplink
                   </h3>
                   <p className="text-xs text-stone-700 mt-1.5 leading-relaxed">
