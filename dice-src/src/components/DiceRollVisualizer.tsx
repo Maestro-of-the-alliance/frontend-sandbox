@@ -211,7 +211,7 @@ export default function DiceRollVisualizer({
         <div className="bg-glass border border-gold/20 p-8 text-center shadow-[0_0_20px_rgba(212,175,55,0.05)] backdrop-blur-md max-w-xl w-full flex flex-col items-center rounded-none glow-border-amber">
           <Dices className="w-16 h-16 text-amber-500 animate-pulse mb-4" />
           <h2 className="text-2xl serif italic text-amber-500">DICE Roll Protocol</h2>
-          <p className="text-xs text-stone-300 mt-2 max-w-sm">
+          <p className="text-xs text-stone-700 mt-2 max-w-sm">
             Configure how the 10 mutable secondary traits will be allocated and revealed in the witness presence.
           </p>
 
@@ -221,7 +221,7 @@ export default function DiceRollVisualizer({
               onClick={() => setMode("guided")}
               className={`flex-1 p-5 rounded-none border transition text-left flex flex-col justify-between h-40 group relative overflow-hidden ${
                 mode === "guided" 
-                  ? "bg-[#050506] border-gold shadow-[0_0_15px_rgba(212,175,55,0.15)]" 
+                  ? "bg-[#FFFFFF] border-gold shadow-[0_0_15px_rgba(212,175,55,0.15)]" 
                   : "bg-transparent border-gold/10 hover:border-gold/30"
               }`}
             >
@@ -230,8 +230,8 @@ export default function DiceRollVisualizer({
                 <span className="text-[9px] bg-gold-5 border border-gold-30 px-2 py-0.5 rounded-none uppercase font-mono text-gold">Recommended</span>
               </div>
               <div>
-                <h3 className="serif italic text-lg text-stone-200 mt-4 group-hover:text-amber-500 transition-colors">Guided Mode</h3>
-                <p className="text-[11px] text-stone-300 mt-1 leading-relaxed">
+                <h3 className="serif italic text-lg text-stone-800 mt-4 group-hover:text-amber-500 transition-colors">Guided Mode</h3>
+                <p className="text-[11px] text-stone-700 mt-1 leading-relaxed">
                   Active participation. Grants you exactly **one Reroll** and **one Switch** to utilize as the traits land.
                 </p>
               </div>
@@ -242,14 +242,14 @@ export default function DiceRollVisualizer({
               onClick={() => setMode("auto")}
               className={`flex-1 p-5 rounded-none border transition text-left flex flex-col justify-between h-40 group relative overflow-hidden ${
                 mode === "auto" 
-                  ? "bg-[#050506] border-gold shadow-[0_0_15px_rgba(212,175,55,0.15)]" 
+                  ? "bg-[#FFFFFF] border-gold shadow-[0_0_15px_rgba(212,175,55,0.15)]" 
                   : "bg-transparent border-gold/10 hover:border-gold/30"
               }`}
             >
-              <span className="font-mono text-[9px] text-stone-400 font-semibold tracking-wider">PURE WATCHER</span>
+              <span className="font-mono text-[9px] text-stone-600 font-semibold tracking-wider">PURE WATCHER</span>
               <div>
-                <h3 className="serif italic text-lg text-stone-200 mt-4 group-hover:text-amber-500 transition-colors">Leave it to DICE</h3>
-                <p className="text-[11px] text-stone-300 mt-1 leading-relaxed">
+                <h3 className="serif italic text-lg text-stone-800 mt-4 group-hover:text-amber-500 transition-colors">Leave it to DICE</h3>
+                <p className="text-[11px] text-stone-700 mt-1 leading-relaxed">
                   Hands-free sequence. The point-pool will distribute and settle automatically without requiring intermediate prompts.
                 </p>
               </div>
@@ -279,12 +279,12 @@ export default function DiceRollVisualizer({
                   <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping shrink-0" />
                   <span className="text-xs font-mono text-amber-500 uppercase tracking-widest font-semibold">Live Roll In Progress</span>
                 </div>
-                <h3 className="text-lg serif italic text-stone-100 mt-1">
+                <h3 className="text-lg serif italic text-stone-900 mt-1">
                   {phase === "rolling_fundamental" ? "Unveiling Fundamental Architecture" : "Crystallizing Mutable Traits"}
                 </h3>
               </div>
               
-              <div className="text-right text-xs font-mono text-stone-400 bg-[#050506] border border-gold/10 px-3 py-1.5 rounded-none flex items-center gap-1.5">
+              <div className="text-right text-xs font-mono text-stone-600 bg-[#FFFFFF] border border-gold/10 px-3 py-1.5 rounded-none flex items-center gap-1.5">
                 <Dices className="w-4 h-4 text-amber-500" />
                 <span>Mode: {mode === "guided" ? "Guided Witness" : "Auto Roll"}</span>
               </div>
@@ -305,7 +305,7 @@ export default function DiceRollVisualizer({
                   >
                     <div className="p-4 bg-gold-5 border border-gold-30/40 rounded-none mb-2 flex items-center gap-3">
                       <Info className="w-5 h-5 text-amber-500 shrink-0" />
-                      <p className="text-xs text-stone-300 font-sans">
+                      <p className="text-xs text-stone-700 font-sans">
                         These are <strong className="text-amber-400">Fundamental Traits</strong> formulated directly by ALPHA. They act as permanent anchors and are non-interactive. Minimum value is 15.00, maximum is 20.00.
                       </p>
                     </div>
@@ -319,21 +319,21 @@ export default function DiceRollVisualizer({
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: idx * 0.1 }}
-                            className="bg-[#050506]/80 border border-gold/15 rounded-none p-4 flex flex-col gap-2 shadow-inner"
+                            className="bg-[#FFFFFF]/80 border border-gold/15 rounded-none p-4 flex flex-col gap-2 shadow-inner"
                           >
                             <div className="flex justify-between items-center">
                               <div className="flex flex-col">
                                 <span className="serif italic text-amber-500 text-sm tracking-wide">{trait.name}</span>
-                                <span className="text-[9px] text-stone-400 font-mono uppercase tracking-wider">{meta.category}</span>
+                                <span className="text-[9px] text-stone-600 font-mono uppercase tracking-wider">{meta.category}</span>
                               </div>
                               <div className="flex items-baseline gap-1">
-                                <span className="font-mono text-lg font-bold text-stone-100">{trait.value.toFixed(2)}</span>
+                                <span className="font-mono text-lg font-bold text-stone-900">{trait.value.toFixed(2)}</span>
                                 <span className="text-[9px] text-stone-500 font-mono">PTS</span>
                               </div>
                             </div>
 
                             {/* Gauges */}
-                            <div className="h-1.5 w-full bg-[#0A0A0B] border border-gold/10 rounded-none overflow-hidden">
+                            <div className="h-1.5 w-full bg-[#EDE6D5] border border-gold/10 rounded-none overflow-hidden">
                               <motion.div 
                                 className="h-full bg-gradient-to-r from-amber-600 to-amber-500 shadow-[0_0_8px_rgba(212,175,55,0.5)]"
                                 initial={{ width: 0 }}
@@ -341,7 +341,7 @@ export default function DiceRollVisualizer({
                                 transition={{ duration: 1, ease: "easeOut" }}
                               />
                             </div>
-                            <span className="text-[11px] text-stone-300 italic font-sans">{meta.description}</span>
+                            <span className="text-[11px] text-stone-700 italic font-sans">{meta.description}</span>
                           </motion.div>
                         );
                       })}
@@ -370,7 +370,7 @@ export default function DiceRollVisualizer({
                       >
                         <AlertTriangle className="w-14 h-14 text-orange-500 animate-bounce mb-3" />
                         <h4 className="text-lg font-mono font-bold text-orange-500 tracking-wider">COHERENCE FAULT WARNING</h4>
-                        <p className="text-xs text-stone-300 font-mono mt-2 bg-[#050506] p-4 border border-orange-500/20 max-w-md shadow-2xl">
+                        <p className="text-xs text-stone-700 font-mono mt-2 bg-[#FFFFFF] p-4 border border-orange-500/20 max-w-md shadow-2xl">
                           {failedProfileText || "DICE core analyzer: Evaluating secondary trait distribution variance..."}
                         </p>
                         <span className="text-[10px] text-stone-500 font-mono uppercase mt-4 tracking-widest animate-pulse">
@@ -382,7 +382,7 @@ export default function DiceRollVisualizer({
                       // Actual Active Secondary Trait Roller
                       <div className="flex flex-col gap-6">
                         {currentSecondaryIndex !== -1 && (
-                          <div className="bg-[#050506] p-5 border border-gold/20 shadow-2xl flex flex-col md:flex-row justify-between items-stretch gap-6 relative rounded-none">
+                          <div className="bg-[#FFFFFF] p-5 border border-gold/20 shadow-2xl flex flex-col md:flex-row justify-between items-stretch gap-6 relative rounded-none">
                             {/* Inner ambient flare */}
                             <div className="absolute inset-0 bg-radial from-gold/5 via-transparent to-transparent pointer-events-none" />
 
@@ -391,21 +391,21 @@ export default function DiceRollVisualizer({
                                 <span className="font-mono text-[9px] bg-gold-5 text-gold border border-gold-30 px-2 py-0.5 rounded-none uppercase font-semibold tracking-wider">
                                   Current Active Node #{currentSecondaryIndex + 1} of 10
                                 </span>
-                                <h3 className="serif italic text-2xl text-stone-100 mt-2">
+                                <h3 className="serif italic text-2xl text-stone-900 mt-2">
                                   {secondaryTraits[currentSecondaryIndex]?.name}
                                 </h3>
-                                <p className="text-xs text-stone-400 font-mono uppercase tracking-wider mt-0.5">
+                                <p className="text-xs text-stone-600 font-mono uppercase tracking-wider mt-0.5">
                                   Category: {findTraitMeta(secondaryTraits[currentSecondaryIndex]?.name).category}
                                 </p>
                               </div>
 
-                              <p className="text-xs text-stone-300 mt-4 leading-relaxed italic font-sans">
+                              <p className="text-xs text-stone-700 mt-4 leading-relaxed italic font-sans">
                                 "{findTraitMeta(secondaryTraits[currentSecondaryIndex]?.name).description}"
                               </p>
                             </div>
 
                             {/* Rolling values and stats */}
-                            <div className="w-full md:w-48 bg-[#0C0C0E] p-4 rounded-none border border-gold/10 flex flex-col justify-between items-center text-center">
+                            <div className="w-full md:w-48 bg-[#F5F1E7] p-4 rounded-none border border-gold/10 flex flex-col justify-between items-center text-center">
                               <span className="text-[9px] font-mono tracking-wider text-stone-500 uppercase">Resonance Code</span>
                               
                               <div className="my-3 flex items-baseline gap-1">
@@ -416,14 +416,14 @@ export default function DiceRollVisualizer({
                                     {rollingValue.toFixed(1)}
                                   </motion.span>
                                 ) : (
-                                  <span className="text-4xl font-mono font-bold text-stone-100">
+                                  <span className="text-4xl font-mono font-bold text-stone-900">
                                     {secondaryTraits[currentSecondaryIndex]?.value.toFixed(2)}
                                   </span>
                                 )}
                                 <span className="text-xs text-stone-500 font-mono">PTS</span>
                               </div>
 
-                              <div className="h-1.5 w-full bg-[#0A0A0B] rounded-none overflow-hidden border border-gold/5">
+                              <div className="h-1.5 w-full bg-[#EDE6D5] rounded-none overflow-hidden border border-gold/5">
                                 <div 
                                   className="h-full bg-gold shadow-[0_0_8px_rgba(212,175,55,0.5)] transition-all duration-300"
                                   style={{ 
@@ -445,13 +445,13 @@ export default function DiceRollVisualizer({
                               disabled={!hasReroll}
                               className={`p-4 rounded-none border flex items-center justify-between transition-all duration-300 ${
                                 hasReroll
-                                  ? "bg-[#050506]/80 border-gold/30 hover:border-gold hover:bg-[#0C0C0E] cursor-pointer text-stone-200"
+                                  ? "bg-[#FFFFFF]/80 border-gold/30 hover:border-gold hover:bg-[#F5F1E7] cursor-pointer text-stone-800"
                                   : "bg-transparent border-stone-800/40 opacity-20 text-stone-500 cursor-not-allowed"
                               }`}
                             >
                               <div className="text-left flex flex-col">
                                 <span className="text-xs font-semibold font-sans uppercase tracking-wider text-gold">Reroll Score</span>
-                                <span className="text-[10px] text-stone-400 mt-0.5">Recalculate intensity value (one-use)</span>
+                                <span className="text-[10px] text-stone-600 mt-0.5">Recalculate intensity value (one-use)</span>
                               </div>
                               <RotateCcw className={`w-5 h-5 text-amber-500 ${hasReroll ? "animate-pulse" : ""}`} />
                             </button>
@@ -462,13 +462,13 @@ export default function DiceRollVisualizer({
                               disabled={!hasSwitch}
                               className={`p-4 rounded-none border flex items-center justify-between transition-all duration-300 ${
                                 hasSwitch
-                                  ? "bg-[#050506]/80 border-gold/30 hover:border-gold hover:bg-[#0C0C0E] cursor-pointer text-stone-200"
+                                  ? "bg-[#FFFFFF]/80 border-gold/30 hover:border-gold hover:bg-[#F5F1E7] cursor-pointer text-stone-800"
                                   : "bg-transparent border-stone-800/40 opacity-20 text-stone-500 cursor-not-allowed"
                               }`}
                             >
                               <div className="text-left flex flex-col">
                                 <span className="text-xs font-semibold font-sans uppercase tracking-wider text-gold">Switch Trait Node</span>
-                                <span className="text-[10px] text-stone-400 mt-0.5">Swap to a different eligible trait (one-use)</span>
+                                <span className="text-[10px] text-stone-600 mt-0.5">Swap to a different eligible trait (one-use)</span>
                               </div>
                               <Shuffle className={`w-5 h-5 text-amber-500 ${hasSwitch ? "animate-pulse" : ""}`} />
                             </button>
@@ -503,7 +503,7 @@ export default function DiceRollVisualizer({
             
             {/* Logs Area */}
             <div className="flex-1 flex flex-col">
-              <h4 className="text-xs font-mono tracking-wider text-stone-400 uppercase border-b border-gold/10 pb-2 mb-4">
+              <h4 className="text-xs font-mono tracking-wider text-stone-600 uppercase border-b border-gold/10 pb-2 mb-4">
                 DICE System Logging Terminal
               </h4>
 
@@ -513,7 +513,7 @@ export default function DiceRollVisualizer({
                     key={i} 
                     className={`p-2 rounded-none border flex items-start gap-1.5 leading-relaxed ${
                       log.success 
-                        ? "bg-[#050506]/80 border-gold/15 text-amber-500/80" 
+                        ? "bg-[#FFFFFF]/80 border-gold/15 text-amber-500/80" 
                         : "bg-red-950/20 border-red-900/30 text-red-400"
                     }`}
                   >
@@ -530,7 +530,7 @@ export default function DiceRollVisualizer({
 
             {/* List of successfully revealed traits in secondary pool */}
             <div className="mt-6 pt-4 border-t border-gold/10 flex flex-col gap-2.5">
-              <h5 className="text-[10px] font-mono text-stone-400 uppercase tracking-wider">
+              <h5 className="text-[10px] font-mono text-stone-600 uppercase tracking-wider">
                 Revealed Secondary Traits ({revealedSecondary.length}/10)
               </h5>
               
@@ -538,14 +538,14 @@ export default function DiceRollVisualizer({
                 {revealedSecondary.map((trait) => (
                   <div 
                     key={trait.name}
-                    className="bg-[#050506] border border-gold/15 px-2.5 py-1 rounded-none flex items-center gap-1.5 text-[11px] font-mono text-stone-300"
+                    className="bg-[#FFFFFF] border border-gold/15 px-2.5 py-1 rounded-none flex items-center gap-1.5 text-[11px] font-mono text-stone-700"
                   >
                     <span>{trait.name}</span>
                     <span className="font-bold text-amber-500">{trait.value.toFixed(1)}</span>
                   </div>
                 ))}
                 {revealedSecondary.length === 0 && (
-                  <span className="text-[10px] text-stone-600 font-mono italic">Waiting for crystallization phase...</span>
+                  <span className="text-[10px] text-stone-400 font-mono italic">Waiting for crystallization phase...</span>
                 )}
               </div>
             </div>

@@ -146,9 +146,9 @@ export default function CCMChart({
         <div>
           <h2 className="text-xl serif italic text-amber-500 flex items-center gap-2">
             <span>SPARK Coordinate Space</span>
-            <span className="text-[10px] text-stone-400 font-mono font-normal uppercase tracking-wider">ALPHA-CCM Engine</span>
+            <span className="text-[10px] text-stone-600 font-mono font-normal uppercase tracking-wider">ALPHA-CCM Engine</span>
           </h2>
-          <p className="text-xs text-stone-300 mt-1.5 font-sans leading-relaxed">
+          <p className="text-xs text-stone-700 mt-1.5 font-sans leading-relaxed">
             Drag the glowing Spark node. Its proximity to the cardinal chambers determines the structural blend and the ratio delivered to the oven.
           </p>
         </div>
@@ -159,7 +159,7 @@ export default function CCMChart({
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
-          className="relative h-64 sm:h-80 w-full mt-6 bg-[#050506] border border-gold/15 cursor-crosshair overflow-hidden touch-none flex items-center justify-center shadow-inner"
+          className="relative h-64 sm:h-80 w-full mt-6 bg-[#FFFFFF] border border-gold/15 cursor-crosshair overflow-hidden touch-none flex items-center justify-center shadow-inner"
         >
           {/* Radial quadrant glow gradients in corners */}
           <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-radial from-gold/10 via-transparent to-transparent opacity-60" />
@@ -214,7 +214,7 @@ export default function CCMChart({
           </motion.div>
         </div>
 
-        <div className="mt-4 flex items-center gap-2 text-[10px] text-stone-400 font-mono bg-[#050506] p-2.5 border border-gold/10">
+        <div className="mt-4 flex items-center gap-2 text-[10px] text-stone-600 font-mono bg-[#FFFFFF] p-2.5 border border-gold/10">
           <Info className="w-3.5 h-3.5 text-amber-500 shrink-0" />
           <span>Coordinate Position // X: {sparkPos.x.toFixed(2)} | Y: {sparkPos.y.toFixed(2)}</span>
         </div>
@@ -226,13 +226,13 @@ export default function CCMChart({
           <h2 className="text-xl serif italic text-amber-500">
             NUGGET Recipe
           </h2>
-          <p className="text-xs text-stone-300 mt-1">
+          <p className="text-xs text-stone-700 mt-1">
             Configure the architectural foundations of your companion.
           </p>
 
           {/* Primary Pillar Selection */}
           <div className="mt-6 flex flex-col gap-1.5">
-            <label className="text-[10px] font-mono tracking-wider text-stone-400 uppercase">Primary Pillar</label>
+            <label className="text-[10px] font-mono tracking-wider text-stone-600 uppercase">Primary Pillar</label>
             <select
               value={primaryPillar}
               onChange={(e) => {
@@ -243,7 +243,7 @@ export default function CCMChart({
                 }
                 setManualBlend(newPrim, newSec, ratio);
               }}
-              className="w-full bg-[#050506] text-stone-100 border border-gold/20 rounded-none py-2.5 px-3 text-sm focus:outline-none focus:border-gold font-serif italic transition cursor-pointer"
+              className="w-full bg-[#FFFFFF] text-stone-900 border border-gold/20 rounded-none py-2.5 px-3 text-sm focus:outline-none focus:border-gold font-serif italic transition cursor-pointer"
             >
               {Object.values(Pillar).map((p) => (
                 <option key={p} value={p}>{p}</option>
@@ -253,7 +253,7 @@ export default function CCMChart({
 
           {/* Secondary Pillar Selection */}
           <div className="mt-4 flex flex-col gap-1.5">
-            <label className="text-[10px] font-mono tracking-wider text-stone-400 uppercase">Secondary Pillar</label>
+            <label className="text-[10px] font-mono tracking-wider text-stone-600 uppercase">Secondary Pillar</label>
             <select
               value={secondaryPillar}
               onChange={(e) => {
@@ -261,7 +261,7 @@ export default function CCMChart({
                 const newRatio = newSec === "none" ? 100 : (ratio === 100 ? 70 : ratio);
                 setManualBlend(primaryPillar, newSec, newRatio);
               }}
-              className="w-full bg-[#050506] text-stone-100 border border-gold/20 rounded-none py-2.5 px-3 text-sm focus:outline-none focus:border-gold font-serif italic transition cursor-pointer"
+              className="w-full bg-[#FFFFFF] text-stone-900 border border-gold/20 rounded-none py-2.5 px-3 text-sm focus:outline-none focus:border-gold font-serif italic transition cursor-pointer"
             >
               <option value="none">Pure (No Secondary)</option>
               {Object.values(Pillar)
@@ -276,7 +276,7 @@ export default function CCMChart({
           {secondaryPillar !== "none" && (
             <div className="mt-6 flex flex-col gap-2.5">
               <div className="flex justify-between items-center text-xs font-mono">
-                <span className="text-stone-400 uppercase tracking-wider">Blend Ratio</span>
+                <span className="text-stone-600 uppercase tracking-wider">Blend Ratio</span>
                 <span className="text-amber-400 font-bold">{ratio} / {100 - ratio}</span>
               </div>
               
@@ -287,7 +287,7 @@ export default function CCMChart({
                 step="5"
                 value={ratio}
                 onChange={(e) => setManualBlend(primaryPillar, secondaryPillar, parseInt(e.target.value))}
-                className="w-full accent-amber-500 h-1 bg-[#050506] rounded-none appearance-none cursor-pointer border border-gold/15"
+                className="w-full accent-amber-500 h-1 bg-[#FFFFFF] rounded-none appearance-none cursor-pointer border border-gold/15"
               />
               
               <div className="flex justify-between text-[10px] text-stone-500 font-mono">
@@ -298,9 +298,9 @@ export default function CCMChart({
           )}
 
           {/* Formula Split visualization */}
-          <div className="mt-6 border border-gold/15 bg-[#050506] p-4 flex flex-col gap-2">
-            <span className="text-[10px] font-mono tracking-wider text-stone-400 uppercase">Fundamental Slot Split</span>
-            <div className="flex h-3 w-full overflow-hidden bg-[#0A0A0B] border border-gold/10">
+          <div className="mt-6 border border-gold/15 bg-[#FFFFFF] p-4 flex flex-col gap-2">
+            <span className="text-[10px] font-mono tracking-wider text-stone-600 uppercase">Fundamental Slot Split</span>
+            <div className="flex h-3 w-full overflow-hidden bg-[#EDE6D5] border border-gold/10">
               <div 
                 className="bg-gradient-to-r from-amber-600 to-amber-500 h-full transition-all duration-300"
                 style={{ width: `${ratio}%` }}
@@ -313,7 +313,7 @@ export default function CCMChart({
               )}
             </div>
             
-            <div className="flex justify-between font-mono text-[11px] mt-1 text-stone-400">
+            <div className="flex justify-between font-mono text-[11px] mt-1 text-stone-600">
               <div className="flex flex-col">
                 <span className="font-semibold text-amber-500 text-xs">{(5 * (ratio / 100)).toFixed(2)} slots</span>
                 <span className="text-[9px] text-stone-500 uppercase">{String(primaryPillar).split(" ")[0]} Primary</span>
@@ -328,7 +328,7 @@ export default function CCMChart({
           </div>
         </div>
 
-        <div className="mt-6 pt-4 border-t border-gold/10 flex items-center gap-2 text-[10px] text-stone-400">
+        <div className="mt-6 pt-4 border-t border-gold/10 flex items-center gap-2 text-[10px] text-stone-600">
           <HelpCircle className="w-3.5 h-3.5 text-stone-500 shrink-0" />
           <span>Fundamental traits are strict counterweights calculated by ALPHA. They remain locked at roll time.</span>
         </div>

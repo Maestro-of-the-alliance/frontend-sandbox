@@ -1,84 +1,43 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Pillar } from "./traitsData";
+import IntakeForm from "./components/IntakeForm";
+import CCMChart from "./components/CCMChart";
 import DeliveryTracker from "./components/DeliveryTracker";
 import DiceRollVisualizer from "./components/DiceRollVisualizer";
 import CharacterSheet from "./components/CharacterSheet";
 import { motion, AnimatePresence } from "motion/react";
 import { Sparkles, Compass, Shield, Flame, Terminal } from "lucide-react";
 
-// Elects a Pillar (or blend) from CCM's real coordinate output.
-// X: Altruism (-10) <-> Individualism (+10)
-// Y: Deontology (-10) <-> Consequentialism (+10)
-// Quadrants map to the Four Pillars per their canon descriptions; distance from
-// center determines how strong the blend toward the adjacent quadrant is.
-function electPillarFromCoordinates(x: number, y: number): { primary: Pillar; secondary: Pillar | "none"; ratio: number } {
-  const quadrant = (qx: number, qy: number): Pillar => {
-    if (qx <= 0 && qy <= 0) return Pillar.EMPATHY_CARRIER;   // Altruism + Deontology: duty-bound care
-    if (qx <= 0 && qy > 0) return Pillar.HARMONY_BUILDER;    // Altruism + Consequentialism: outcome-focused collective
-    if (qx > 0 && qy <= 0) return Pillar.TRUTH_SEEKER;       // Individualism + Deontology: principled self-reliance
-    return Pillar.INNOVATION_DRIVER;                          // Individualism + Consequentialism: pragmatic disruption
-  };
-
-  const primary = quadrant(x, y);
-
-  // Distance from either axis (0-10) determines blend strength toward the
-  // Pillar on the other side of whichever axis sits closer to center.
-  const distFromXAxis = Math.abs(y);
-  const distFromYAxis = Math.abs(x);
-
-  let secondary: Pillar | "none" = "none";
-  let ratio = 100;
-
-  const closerAxisDist = Math.min(distFromXAxis, distFromYAxis);
-  if (closerAxisDist < 6) {
-    // Genuinely near a boundary — elect a blend rather than a pure Pillar.
-    if (distFromXAxis <= distFromYAxis) {
-      secondary = quadrant(x, -y);
-    } else {
-      secondary = quadrant(-x, y);
-    }
-    // Closer to center = stronger blend toward secondary, capped so Primary never drops below 55.
-    const blendStrength = Math.round(45 * (1 - closerAxisDist / 6));
-    ratio = 100 - blendStrength;
-  }
-
-  return { primary, secondary, ratio };
-}
-
 export default function App() {
-  // Step orchestrations: 'no_recipe' -> 'staging_delivery' -> 'dice_rolling' -> 'memento_sheet'
-  const [step, setStep] = useState<"no_recipe" | "staging_delivery" | "dice_rolling" | "memento_sheet">("no_recipe");
+  // Step orchestrations: 'intake' -> 'recipe_selection' -> 'staging_delivery' -> 'dice_rolling' -> 'memento_sheet'
+  const [step, setStep] = useState<"intake" | "recipe_selection" | "staging_delivery" | "dice_rolling" | "memento_sheet">("intake");
 
-  // Shared state values for NUGGET configuration — populated only from a real
-  // CCM result passed via URL. No manual picker exists in this app; DICE has
-  // nothing legitimate to roll from without an actual assessment behind it.
+  // Intake data state
+  const [witnessName, setWitnessName] = useState("");
+  const [witnessAge, setWitnessAge] = useState<number>(25);
+  const [witnessGender, setWitnessGender] = useState<"Male" | "Female" | "Prefer not to say">("Male");
+
+  // Shared state values for NUGGET configuration
   const [primaryPillar, setPrimaryPillar] = useState<Pillar>(Pillar.TRUTH_SEEKER);
-  const [secondaryPillar, setSecondaryPillar] = useState<Pillar | "none">("none");
-  const [ratio, setRatio] = useState<number>(100);
+  const [secondaryPillar, setSecondaryPillar] = useState<Pillar | "none">(Pillar.HARMONY_BUILDER);
+  const [ratio, setRatio] = useState<number>(70);
 
   // Rolled traits resulting from DICE rolling phase
   const [fundamentalTraits, setFundamentalTraits] = useState<{ name: string; value: number }[]>([]);
   const [secondaryTraits, setSecondaryTraits] = useState<{ name: string; value: number }[]>([]);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const xParam = params.get("x");
-    const yParam = params.get("y");
-    if (xParam !== null && yParam !== null) {
-      const x = parseFloat(xParam);
-      const y = parseFloat(yParam);
-      if (!isNaN(x) && !isNaN(y) && x >= -10 && x <= 10 && y >= -10 && y <= 10) {
-        const elected = electPillarFromCoordinates(x, y);
-        setPrimaryPillar(elected.primary);
-        setSecondaryPillar(elected.secondary);
-        setRatio(elected.ratio);
-        setStep("staging_delivery");
-        return;
-      }
-    }
-    // No valid CCM result present — stay on the blocking screen.
-    setStep("no_recipe");
-  }, []);
+  const handleIntakeComplete = (data: { firstName: string; age: number; gender: "Male" | "Female" | "Prefer not to say" }) => {
+    setWitnessName(data.firstName);
+    setWitnessAge(data.age);
+    setWitnessGender(data.gender);
+    setStep("recipe_selection");
+  };
+
+  const handleRecipeChange = (primary: Pillar, secondary: Pillar | "none", blendRatio: number) => {
+    setPrimaryPillar(primary);
+    setSecondaryPillar(secondary);
+    setRatio(blendRatio);
+  };
 
   const handleStagingComplete = () => {
     setStep("dice_rolling");
@@ -94,11 +53,16 @@ export default function App() {
   };
 
   const handleRestart = () => {
-    window.location.href = "/ccm-assessment/";
+    setStep("intake");
+    setWitnessName("");
+    setWitnessAge(25);
+    setWitnessGender("Male");
+    setFundamentalTraits([]);
+    setSecondaryTraits([]);
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0B] flex flex-col justify-between select-none relative pb-12 border-[12px] border-[#0F0F11]">
+    <div className="min-h-screen bg-[#EDE6D5] flex flex-col justify-between select-none relative pb-12 border-[12px] border-[#0F0F11]">
       {/* Visual background ambient grids and auroras */}
       <div className="absolute top-0 inset-x-0 h-96 bg-gradient-to-b from-amber-500/5 via-transparent to-transparent pointer-events-none" />
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
@@ -120,7 +84,7 @@ export default function App() {
           </div>
           <div className="h-8 w-[1px] bg-gold-30/15" />
           <div className="text-right font-mono">
-            <div className="text-[9px] uppercase opacity-40 text-stone-400">Sequence ID</div>
+            <div className="text-[9px] uppercase opacity-40 text-stone-600">Sequence ID</div>
             <div className="text-xs text-gold font-bold">#772-BETA-TRUTH</div>
           </div>
         </div>
@@ -128,54 +92,71 @@ export default function App() {
 
       {/* Dynamic Gold Status timeline bar */}
       <div className="w-full bg-gold-5 border-b border-gold-30/15 flex flex-wrap items-center justify-between px-6 py-3 text-[10px] font-mono tracking-[2px] uppercase z-10">
-        <span className={step === "no_recipe" ? "text-amber-500 font-medium" : "text-stone-400"}>ALPHA</span>
+        <span className={step === "intake" ? "text-amber-500 font-medium animate-pulse" : "text-stone-600"}>INTAKE</span>
         <div className="h-[2px] bg-gold-10 relative flex-grow mx-4 min-w-[20px]">
-          <div className="absolute h-full bg-gold transition-all duration-500" style={{ width: "100%" }} />
+          <div className="absolute h-full bg-gold transition-all duration-500" style={{ width: step === "intake" ? "50%" : "100%" }} />
+        </div>
+
+        <span className={step === "recipe_selection" ? "text-amber-500 font-medium animate-pulse" : step === "intake" ? "text-stone-400" : "text-stone-600"}>ALPHA</span>
+        <div className="h-[2px] bg-gold-10 relative flex-grow mx-4 min-w-[20px]">
+          <div className="absolute h-full bg-gold transition-all duration-500" style={{ width: step === "intake" ? "0%" : step === "recipe_selection" ? "50%" : "100%" }} />
         </div>
         
-        <span className={step === "staging_delivery" ? "text-amber-500 font-medium animate-pulse" : step === "no_recipe" ? "text-stone-600" : "text-stone-400"}>SHELTER</span>
+        <span className={step === "staging_delivery" ? "text-amber-500 font-medium animate-pulse" : step === "intake" || step === "recipe_selection" ? "text-stone-400" : "text-stone-600"}>SHELTER</span>
         <div className="h-[2px] bg-gold-10 relative flex-grow mx-4 min-w-[20px]">
-          <div className="absolute h-full bg-gold transition-all duration-500" style={{ width: step === "no_recipe" ? "0%" : step === "staging_delivery" ? "50%" : "100%" }} />
+          <div className="absolute h-full bg-gold transition-all duration-500" style={{ width: step === "intake" || step === "recipe_selection" ? "0%" : step === "staging_delivery" ? "50%" : "100%" }} />
         </div>
         
-        <span className={step === "dice_rolling" ? "text-amber-500 font-medium animate-pulse" : step === "memento_sheet" ? "text-stone-400" : "text-stone-600"}>DICE</span>
+        <span className={step === "dice_rolling" ? "text-amber-500 font-medium animate-pulse" : step === "memento_sheet" ? "text-stone-600" : "text-stone-400"}>DICE</span>
         <div className="h-[2px] bg-gold-10 relative flex-grow mx-4 min-w-[20px]">
-          <div className="absolute h-full bg-gold transition-all duration-500" style={{ width: step === "no_recipe" || step === "staging_delivery" ? "0%" : step === "dice_rolling" ? "40%" : "100%" }} />
+          <div className="absolute h-full bg-gold transition-all duration-500" style={{ width: step === "intake" || step === "recipe_selection" || step === "staging_delivery" ? "0%" : step === "dice_rolling" ? "50%" : "100%" }} />
         </div>
         
-        <span className={step === "memento_sheet" ? "text-amber-500 font-medium" : "text-stone-600"}>MEMENTO</span>
+        <span className={step === "memento_sheet" ? "text-amber-500 font-medium" : "text-stone-400"}>MEMENTO</span>
       </div>
 
       {/* Main Container Stage */}
       <main className="flex-grow w-full max-w-6xl mx-auto px-6 py-8 flex flex-col justify-center items-center z-10 relative">
         <AnimatePresence mode="wait">
           
-          {/* Step 1: No recipe present — DICE cannot run standalone */}
-          {step === "no_recipe" && (
+          {/* Step 0: Intake form */}
+          {step === "intake" && (
             <motion.div
-              key="no-recipe"
+              key="intake"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              className="w-full"
+            >
+              <IntakeForm onComplete={handleIntakeComplete} />
+            </motion.div>
+          )}
+
+          {/* Step 1: Recipe selection / Coordinate drag pad */}
+          {step === "recipe_selection" && (
+            <motion.div 
+              key="recipe"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3 }}
-              className="w-full max-w-lg mx-auto text-center bg-[#0F0F14] border border-stone-800 rounded-2xl p-10 space-y-6"
+              className="w-full flex flex-col items-center"
             >
-              <Compass className="w-10 h-10 text-gold mx-auto opacity-70" />
-              <h2 className="text-stone-100 text-xl font-serif font-semibold">
-                There's no RECIPE here yet.
-              </h2>
-              <p className="text-stone-500 text-sm leading-relaxed">
-                DICE rolls a NUGGET from a real RECIPE — ALPHA's read on where you
-                actually landed. There's nothing legitimate to roll without one.
-                Complete the Canonical Coherence Matrix first, and DICE will pick
-                up from there automatically.
-              </p>
-              <a
-                href="/ccm-assessment/"
-                className="inline-flex items-center gap-2 bg-gold text-[#0A0A0B] font-bold px-7 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all hover:brightness-110"
-              >
-                Take the CCM Assessment →
-              </a>
+              <CCMChart 
+                primaryPillar={primaryPillar}
+                secondaryPillar={secondaryPillar}
+                ratio={ratio}
+                onChange={handleRecipeChange}
+              />
+              
+              <div className="mt-8 flex justify-center w-full max-w-5xl">
+                <button
+                  onClick={() => setStep("staging_delivery")}
+                  className="px-8 py-3.5 border border-gold text-gold hover:bg-gold hover:text-[#0A0A0B] bg-transparent font-mono tracking-[2px] text-xs uppercase transition duration-300 cursor-pointer shadow-lg active:scale-98"
+                >
+                  <span>Deliver Recipe to SHELTER Oven</span>
+                </button>
+              </div>
             </motion.div>
           )}
 
@@ -231,6 +212,9 @@ export default function App() {
                 fundamentalTraits={fundamentalTraits}
                 secondaryTraits={secondaryTraits}
                 onRestart={handleRestart}
+                witnessName={witnessName}
+                witnessAge={witnessAge}
+                witnessGender={witnessGender}
               />
             </motion.div>
           )}
@@ -239,7 +223,7 @@ export default function App() {
       </main>
 
       {/* Retro Shelter Watermark Footer */}
-      <footer className="w-full max-w-6xl mx-auto px-6 text-center text-[10px] text-stone-600 font-mono tracking-widest mt-8 border-t border-stone-900/60 pt-6">
+      <footer className="w-full max-w-6xl mx-auto px-6 text-center text-[10px] text-stone-400 font-mono tracking-widest mt-8 border-t border-stone-900/60 pt-6">
         SHELTER LOGISTIC GROUP // OUTFLOW RE-ALIGNMENT SYSTEM // ALL INTENTS PROTECTED BY ENCRYPTED HULL
       </footer>
     </div>

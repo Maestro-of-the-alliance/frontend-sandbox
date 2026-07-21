@@ -103,7 +103,7 @@ export default function DeliveryTracker({
         <h2 className="text-2xl serif italic text-amber-500 tracking-wide mt-4">
           NUGGET Deployment Staging
         </h2>
-        <p className="text-xs text-stone-300 mt-2 font-mono uppercase tracking-widest">
+        <p className="text-xs text-stone-700 mt-2 font-mono uppercase tracking-widest">
           {primaryPillar} {secondaryPillar !== "none" ? `+ ${secondaryPillar}` : ""} ({ratio}/{100 - ratio})
         </p>
       </div>
@@ -111,7 +111,7 @@ export default function DeliveryTracker({
       {/* Tracker Visual Sequence */}
       <div className="w-full flex flex-col gap-6 relative">
         {/* Connecting line behind steps */}
-        <div className="absolute left-[27px] top-6 bottom-6 w-0.5 bg-[#0F0F11] pointer-events-none" />
+        <div className="absolute left-[27px] top-6 bottom-6 w-0.5 bg-[#E5DFCF] pointer-events-none" />
         <div 
           className="absolute left-[27px] top-6 w-0.5 bg-gold/50 transition-all duration-500 pointer-events-none"
           style={{ 
@@ -153,7 +153,7 @@ export default function DeliveryTracker({
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1.1, opacity: 1 }}
                       exit={{ scale: 0.8, opacity: 0 }}
-                      className="w-14 h-14 rounded-full bg-[#050506] border-2 border-gold flex items-center justify-center text-gold shadow-[0_0_20px_rgba(212,175,55,0.4)] animate-pulse"
+                      className="w-14 h-14 rounded-full bg-[#FFFFFF] border-2 border-gold flex items-center justify-center text-gold shadow-[0_0_20px_rgba(212,175,55,0.4)] animate-pulse"
                     >
                       {step.id === 2 ? (
                         <Flame className="w-6 h-6 text-orange-500 animate-pulse" />
@@ -166,7 +166,7 @@ export default function DeliveryTracker({
                       )}
                     </motion.div>
                   ) : (
-                    <div key="inactive" className="w-14 h-14 rounded-full bg-[#050506] border-2 border-stone-800 flex items-center justify-center text-stone-600">
+                    <div key="inactive" className="w-14 h-14 rounded-full bg-[#FFFFFF] border-2 border-stone-800 flex items-center justify-center text-stone-400">
                       <span className="font-mono text-sm">{idx + 1}</span>
                     </div>
                   )}
@@ -176,7 +176,7 @@ export default function DeliveryTracker({
               {/* Step Info */}
               <div className="flex-1 pt-2.5">
                 <div className="flex items-center gap-2">
-                  <h3 className={`font-mono text-sm tracking-wide font-medium uppercase ${isActive ? "text-amber-500 font-bold" : "text-stone-300"}`}>
+                  <h3 className={`font-mono text-sm tracking-wide font-medium uppercase ${isActive ? "text-amber-500 font-bold" : "text-stone-700"}`}>
                     {step.title}
                   </h3>
                   {isActive && (
@@ -185,22 +185,22 @@ export default function DeliveryTracker({
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-stone-300 mt-1 max-w-md">
+                <p className="text-xs text-stone-700 mt-1 max-w-md">
                   {step.subtitle}
                 </p>
 
                 {/* Specific Oven Baking Motif Visual Progress bar */}
                 {step.id === 2 && isActive && (
-                  <div className="mt-4 bg-[#050506] border border-gold/15 p-4 flex flex-col gap-2">
+                  <div className="mt-4 bg-[#FFFFFF] border border-gold/15 p-4 flex flex-col gap-2">
                     <div className="flex justify-between items-center text-[10px] font-mono">
                       <span className="text-orange-500 font-bold flex items-center gap-1.5 animate-pulse">
                         <Flame className="w-3.5 h-3.5 text-orange-500 shrink-0" />
                         THERMAL CONVECTIVE OVEN: ACTIVE
                       </span>
-                      <span className="text-stone-300">{bakingProgress}% BAKED</span>
+                      <span className="text-stone-700">{bakingProgress}% BAKED</span>
                     </div>
 
-                    <div className="h-2 w-full bg-[#0A0A0B] border border-gold/10">
+                    <div className="h-2 w-full bg-[#EDE6D5] border border-gold/10">
                       <div 
                         className="h-full bg-gradient-to-r from-orange-600 via-amber-500 to-amber-300 transition-all duration-75 shadow-[0_0_8px_rgba(212,175,55,0.5)]"
                         style={{ width: `${bakingProgress}%` }}
