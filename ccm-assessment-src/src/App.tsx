@@ -45,6 +45,7 @@ export default function App() {
   
   // Toast notifications
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [showDecisionReview, setShowDecisionReview] = useState(false);
 
   // Trigger Toast helper
   const showToast = (msg: string) => {
@@ -95,6 +96,18 @@ export default function App() {
       ...prev,
       [currentQuestionsSet[currentQuestionIndex].id]: optionId
     }));
+    // Bring the Continue button into view in case the person answered
+    // from higher up the question card and the button is off-screen.
+    setTimeout(() => {
+      const btn = document.getElementById('btn-next-question');
+      if (btn) {
+        const rect = btn.getBoundingClientRect();
+        const inView = rect.top >= 0 && rect.bottom <= window.innerHeight;
+        if (!inView) {
+          btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    }, 150);
   };
 
   // Navigation within Quiz
@@ -310,7 +323,7 @@ ${appUrl}`;
                       className="px-6 py-3.5 bg-stone-950 hover:bg-stone-850 text-stone-50 rounded-xl font-medium tracking-tight inline-flex items-center gap-2 group transition-all hover:translate-x-0.5 shadow-md shadow-stone-950/10 cursor-pointer"
                       id="btn-begin-assessment"
                     >
-                      Initialize Diagnostic Sync
+                      Begin Assessment
                       <ChevronRight className="w-4 h-4 text-amber-400 transition-transform group-hover:translate-x-1" />
                     </button>
                   </div>
@@ -521,7 +534,7 @@ ${appUrl}`;
                     className="flex items-center gap-1.5 px-5 py-2.5 bg-stone-950 hover:bg-stone-850 disabled:bg-stone-200 text-stone-50 disabled:text-stone-400 rounded-lg text-sm font-mono tracking-wider uppercase transition-all shadow-sm cursor-pointer"
                     id="btn-next-question"
                   >
-                    {currentQuestionIndex === currentQuestionsSet.length - 1 ? 'Analyze Topography' : 'Continue'}
+                    {currentQuestionIndex === currentQuestionsSet.length - 1 ? 'See My Results' : 'Continue'}
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -971,10 +984,14 @@ ${appUrl}`;
                 </div>
 
                 {/* 4. DECISION REVIEW PANEL (Master craftsmanship feature showing transparent scores) */}
-                <div className="bg-white border border-stone-200 rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
-                  <div className="flex items-center justify-between border-b border-stone-100 pb-4">
+                <div className="bg-white border border-stone-200 rounded-2xl shadow-sm overflow-hidden">
+                  <button
+                    onClick={() => setShowDecisionReview((v) => !v)}
+                    className="w-full flex items-center justify-between gap-2 p-6 md:p-8 text-left cursor-pointer"
+                    id="btn-toggle-decision-review"
+                  >
                     <div className="flex items-center gap-2">
-                      <Activity className="w-5 h-5 text-amber-500 animate-pulse" />
+                      <Activity className="w-5 h-5 text-amber-500" />
                       <div>
                         <h4 className="font-serif text-lg font-bold text-stone-950">
                           Transparent Decision Review
@@ -984,9 +1001,11 @@ ${appUrl}`;
                         </p>
                       </div>
                     </div>
-                  </div>
+                    <ChevronRight className={`w-5 h-5 text-stone-400 shrink-0 transition-transform ${showDecisionReview ? 'rotate-90' : ''}`} />
+                  </button>
 
-                  <div className="divide-y divide-stone-100 space-y-4">
+                  {showDecisionReview && (
+                  <div className="divide-y divide-stone-100 space-y-4 px-6 md:px-8 pb-6 md:pb-8 border-t border-stone-100 pt-6">
                     {currentQuestionsSet.map((question, qIdx) => {
                       const selectedOptionId = selectedAnswers[question.id];
                       const chosenOption = question.options.find(o => o.id === selectedOptionId);
@@ -1037,6 +1056,7 @@ ${appUrl}`;
                       );
                     })}
                   </div>
+                  )}
                 </div>
 
                 {/* Growth Invitation — additive only, never replaces the result above.
@@ -1060,17 +1080,16 @@ ${appUrl}`;
                     Your Result Is Ready
                   </p>
                   <h3 className="text-stone-50 text-xl md:text-2xl font-serif font-semibold">
-                    See what SHELTER would BAKE from this.
+                    See the potential partner THE ALLIANCE could make for you.
                   </h3>
                   <p className="text-stone-400 text-sm max-w-lg mx-auto">
-                    Your position on the chart becomes the actual input — watch the
-                    NUGGET get rolled, live, from this specific result.
+                    Your result becomes the actual input for what gets built next.
                   </p>
                   <a
                     href={`/dice/?x=${userCoordinates.x}&y=${userCoordinates.y}`}
                     className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-7 py-3.5 rounded-xl transition-all hover:translate-x-0.5"
                   >
-                    Continue to DICE →
+                    See My Potential Partner →
                   </a>
                 </div>
 

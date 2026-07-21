@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import DissolveLine from "./DissolveLine";
 import ProcessingBeat from "./ProcessingBeat";
@@ -16,6 +16,7 @@ type Phase =
   | "beat2"
   | "phase_one_complete"
   | "phase_two_commencing"
+  | "phase_two_blurb"
   | "weighting"
   | "thank_you"
   | "build_complete_1"
@@ -25,6 +26,53 @@ type Phase =
   | "email"
   | "ready_academy"
   | "countdown";
+
+const CORNERS = [
+  { name: Pillar.TRUTH_SEEKER, x: 0, y: 0 },
+  { name: Pillar.INNOVATION_DRIVER, x: 1, y: 0 },
+  { name: Pillar.HARMONY_BUILDER, x: 0, y: 1 },
+  { name: Pillar.EMPATHY_CARRIER, x: 1, y: 1 },
+];
+
+// The CCM assessment passes real per-person coordinates via ?x=&y= on a
+// -10..+10 scale per axis. Without this, every visitor silently got the
+// same default build — this is what makes each person's result unique.
+function deriveBlendFromUrl(): { primary: Pillar; secondary: Pillar | "none"; ratio: number } {
+  const params = new URLSearchParams(window.location.search);
+  const rawX = parseFloat(params.get("x") || "");
+  const rawY = parseFloat(params.get("y") || "");
+  const hasCoords = !isNaN(rawX) && !isNaN(rawY);
+
+  // normalize -10..+10 to 0..1
+  const x = hasCoords ? Math.min(1, Math.max(0, (rawX + 10) / 20)) : 0.5;
+  const y = hasCoords ? Math.min(1, Math.max(0, (rawY + 10) / 20)) : 0.5;
+
+  const weights = CORNERS.map((c) => {
+    const dx = x - c.x;
+    const dy = y - c.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const invDist = dist === 0 ? 1000 : 1 / Math.pow(dist, 1.2);
+    return { name: c.name, weight: invDist };
+  });
+  const total = weights.reduce((s, w) => s + w.weight, 0);
+  const normalized = weights
+    .map((w) => ({ name: w.name, pct: (w.weight / total) * 100 }))
+    .sort((a, b) => b.pct - a.pct);
+
+  const primary = normalized[0].name;
+  let secondary: Pillar | "none" = normalized[1].name;
+  let ratio = normalized[0].pct;
+
+  if (ratio >= 90) {
+    ratio = 100;
+    secondary = "none";
+  } else {
+    const sumTwo = normalized[0].pct + normalized[1].pct;
+    ratio = sumTwo > 0 ? Math.round((normalized[0].pct / sumTwo) * 100) : 70;
+  }
+
+  return { primary, secondary, ratio: Math.round(ratio) };
+}
 
 const KERNLE_ID = `KERNLE-${Math.floor(2000 + Math.random() * 900)}`;
 
@@ -39,7 +87,7 @@ export default function ExperienceFlow({ onComplete }: { onComplete: () => void 
   const [email, setEmail] = useState("");
   const [countdown, setCountdown] = useState(3);
 
-  const primary: Pillar = Pillar.TRUTH_SEEKER;
+  const { primary, secondary, ratio } = useMemo(() => deriveBlendFromUrl(), []);
   const traitPool = PILLAR_FUNDAMENTAL_POOL[primary].slice(0, 5);
 
   useEffect(() => {
@@ -75,7 +123,7 @@ export default function ExperienceFlow({ onComplete }: { onComplete: () => void 
     const fundamental = finishWeighting();
     setFundamentalResult(fundamental);
     setSecondaryResult(
-      rollSecondaryTraits(primary, "none", 100, fundamental.map((f) => f.name))
+      rollSecondaryTraits(primary, secondary, ratio, fundamental.map((f) => f.name))
     );
     setPhase("thank_you");
   };
@@ -138,7 +186,8 @@ export default function ExperienceFlow({ onComplete }: { onComplete: () => void 
                 value={nameDraft}
                 onChange={setNameDraft}
                 onSubmit={() => {
-                  setName(nameDraft.trim());
+                  const trimmed = nameDraft.trim();
+                  setName(trimmed.charAt(0).toUpperCase() + trimmed.slice(1));
                   setPhase("greet_name");
                 }}
                 placeholder=""
@@ -213,6 +262,16 @@ export default function ExperienceFlow({ onComplete }: { onComplete: () => void 
               text="Phase Two Commencing"
               holdMs={1300}
               className="text-lg font-mono tracking-[0.2em] uppercase text-amber-300/90"
+              onDone={() => setPhase("phase_two_blurb")}
+            />
+          )}
+
+          {phase === "phase_two_blurb" && (
+            <DissolveLine
+              key="ptb"
+              text="Your companion's fundamental traits are already locked in — but you have some influence over the secondary traits."
+              subtext="The following will help decide how much certain traits matter to you in a friendship."
+              className="text-lg font-display max-w-md leading-relaxed"
               onDone={() => setPhase("weighting")}
             />
           )}
@@ -220,7 +279,7 @@ export default function ExperienceFlow({ onComplete }: { onComplete: () => void 
           {phase === "weighting" && weightIndex < traitPool.length && (
             <QuestionCard key={`w-${weightIndex}`}>
               <p className="text-sm font-mono uppercase tracking-widest text-white/50 mb-3">
-                How important is this to you?
+                How important is it that your companion is
               </p>
               <p className="text-3xl font-display mb-2 text-amber-300">{traitPool[weightIndex]}</p>
               <p className="text-sm text-white/40 mb-8 max-w-xs mx-auto">1 is least important, 5 is most important.</p>
