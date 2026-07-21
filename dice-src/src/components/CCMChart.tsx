@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Pillar } from "../traitsData";
 import { motion } from "motion/react";
 import { Info, HelpCircle } from "lucide-react";
+import RevealText from "./RevealText";
 
 interface CCMChartProps {
   primaryPillar: Pillar;
@@ -140,17 +141,46 @@ export default function CCMChart({
   return (
     <div id="ccm-stage" className="flex flex-col lg:flex-row gap-8 items-stretch w-full max-w-5xl mx-auto">
       {/* Interactive Spark Coordinate Space */}
-      <div className="flex-1 bg-glass border border-gold/20 p-6 flex flex-col justify-between select-none shadow-[0_0_20px_rgba(212,175,55,0.05)] relative overflow-hidden backdrop-blur-md glow-border-amber">
+      <motion.div
+        initial={{ opacity: 0, x: -24 }}
+        animate={{
+          opacity: 1,
+          x: 0,
+          boxShadow: [
+            "0 0 0px rgba(200,146,42,0.0)",
+            "0 0 22px rgba(200,146,42,0.16)",
+            "0 0 0px rgba(200,146,42,0.0)",
+          ],
+        }}
+        transition={{
+          opacity: { duration: 0.5 },
+          x: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+          boxShadow: { delay: 0.5, duration: 4.5, repeat: Infinity, ease: "easeInOut" },
+        }}
+        className="flex-1 bg-glass border border-gold/20 p-6 flex flex-col justify-between select-none shadow-[0_0_20px_rgba(212,175,55,0.05)] relative overflow-hidden backdrop-blur-md glow-border-amber"
+      >
         <div className="absolute inset-0 bg-radial from-gold/5 via-transparent to-transparent pointer-events-none" />
         
         <div>
           <h2 className="text-xl font-display font-bold text-amber-500 flex items-center gap-2">
-            <span>SPARK Coordinate Space</span>
-            <span className="text-[10px] text-stone-600 font-mono font-normal uppercase tracking-wider">ALPHA-CCM Engine</span>
+            <RevealText text="SPARK Coordinate Space" as="span" delay={0.15} />
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.9, duration: 0.3 }}
+              className="text-[10px] text-stone-600 font-mono font-normal uppercase tracking-wider"
+            >
+              ALPHA-CCM Engine
+            </motion.span>
           </h2>
-          <p className="text-xs text-stone-700 mt-1.5 font-sans leading-relaxed">
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.0, duration: 0.4 }}
+            className="text-xs text-stone-700 mt-1.5 font-sans leading-relaxed"
+          >
             Drag the glowing Spark node. Its proximity to the cardinal chambers determines the structural blend and the ratio delivered to the oven.
-          </p>
+          </motion.p>
         </div>
 
         {/* The 2D Interactive Pad */}
@@ -218,20 +248,54 @@ export default function CCMChart({
           <Info className="w-3.5 h-3.5 text-amber-500 shrink-0" />
           <span>Coordinate Position // X: {sparkPos.x.toFixed(2)} | Y: {sparkPos.y.toFixed(2)}</span>
         </div>
-      </div>
+      </motion.div>
 
       {/* Manual Recipe Form Selector */}
-      <div className="w-full lg:w-96 bg-glass border border-gold/20 p-6 flex flex-col justify-between shadow-[0_0_20px_rgba(212,175,55,0.05)] backdrop-blur-md glow-border-amber">
+      <motion.div
+        initial={{ opacity: 0, x: 24 }}
+        animate={{
+          opacity: 1,
+          x: 0,
+          boxShadow: [
+            "0 0 0px rgba(200,146,42,0.0)",
+            "0 0 22px rgba(200,146,42,0.16)",
+            "0 0 0px rgba(200,146,42,0.0)",
+          ],
+        }}
+        transition={{
+          opacity: { duration: 0.5, delay: 0.1 },
+          x: { duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] },
+          boxShadow: { delay: 0.6, duration: 4.5, repeat: Infinity, ease: "easeInOut" },
+        }}
+        className="w-full lg:w-96 bg-glass border border-gold/20 p-6 flex flex-col justify-between shadow-[0_0_20px_rgba(212,175,55,0.05)] backdrop-blur-md glow-border-amber"
+      >
         <div>
           <h2 className="text-xl font-display font-bold text-amber-500">
-            NUGGET Recipe
+            <RevealText text="NUGGET Recipe" as="span" delay={0.3} />
           </h2>
-          <p className="text-xs text-stone-700 mt-1">
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.75, duration: 0.4 }}
+            className="text-xs text-stone-700 mt-1"
+          >
             Configure the architectural foundations of your companion.
-          </p>
+          </motion.p>
 
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.13, delayChildren: 0.9 } },
+            }}
+          >
           {/* Primary Pillar Selection */}
-          <div className="mt-6 flex flex-col gap-1.5">
+          <motion.div
+            variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
+            transition={{ duration: 0.4 }}
+            className="mt-6 flex flex-col gap-1.5"
+          >
             <label className="text-[10px] font-mono tracking-wider text-stone-600 uppercase">Primary Pillar</label>
             <select
               value={primaryPillar}
@@ -249,10 +313,14 @@ export default function CCMChart({
                 <option key={p} value={p}>{p}</option>
               ))}
             </select>
-          </div>
+          </motion.div>
 
           {/* Secondary Pillar Selection */}
-          <div className="mt-4 flex flex-col gap-1.5">
+          <motion.div
+            variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
+            transition={{ duration: 0.4 }}
+            className="mt-4 flex flex-col gap-1.5"
+          >
             <label className="text-[10px] font-mono tracking-wider text-stone-600 uppercase">Secondary Pillar</label>
             <select
               value={secondaryPillar}
@@ -270,11 +338,15 @@ export default function CCMChart({
                   <option key={p} value={p}>{p}</option>
                 ))}
             </select>
-          </div>
+          </motion.div>
 
           {/* Blend Ratio Slider */}
           {secondaryPillar !== "none" && (
-            <div className="mt-6 flex flex-col gap-2.5">
+            <motion.div
+              variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
+              transition={{ duration: 0.4 }}
+              className="mt-6 flex flex-col gap-2.5"
+            >
               <div className="flex justify-between items-center text-xs font-mono">
                 <span className="text-stone-600 uppercase tracking-wider">Blend Ratio</span>
                 <span className="text-amber-400 font-bold">{ratio} / {100 - ratio}</span>
@@ -294,17 +366,28 @@ export default function CCMChart({
                 <span>{String(primaryPillar).split(" ")[0]} ({ratio}%)</span>
                 <span>{String(secondaryPillar).split(" ")[0]} ({100 - ratio}%)</span>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* Formula Split visualization */}
-          <div className="mt-6 border border-gold/15 bg-[#FFFFFF] p-4 flex flex-col gap-2">
+          <motion.div
+            variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
+            transition={{ duration: 0.4 }}
+            className="mt-6 border border-gold/15 bg-[#FFFFFF] p-4 flex flex-col gap-2"
+          >
             <span className="text-[10px] font-mono tracking-wider text-stone-600 uppercase">Fundamental Slot Split</span>
-            <div className="flex h-3 w-full overflow-hidden bg-[#EDE6D5] border border-gold/10">
+            <div className="flex h-3 w-full overflow-hidden bg-[#EDE6D5] border border-gold/10 relative">
               <div 
-                className="bg-gradient-to-r from-amber-600 to-amber-500 h-full transition-all duration-300"
+                className="bg-gradient-to-r from-amber-600 to-amber-500 h-full transition-all duration-300 relative overflow-hidden"
                 style={{ width: `${ratio}%` }}
-              />
+              >
+                <motion.div
+                  className="absolute inset-y-0 w-8 bg-white/40"
+                  style={{ filter: "blur(4px)" }}
+                  animate={{ left: ["-10%", "110%"] }}
+                  transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", repeatDelay: 0.6 }}
+                />
+              </div>
               {secondaryPillar !== "none" && (
                 <div 
                   className="bg-gradient-to-r from-amber-400 to-amber-300 h-full transition-all duration-300"
@@ -325,14 +408,15 @@ export default function CCMChart({
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
+          </motion.div>
         </div>
 
         <div className="mt-6 pt-4 border-t border-gold/10 flex items-center gap-2 text-[10px] text-stone-600">
           <HelpCircle className="w-3.5 h-3.5 text-stone-500 shrink-0" />
           <span>Fundamental traits are strict counterweights calculated by ALPHA. They remain locked at roll time.</span>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Pillar } from "./traitsData";
 import IntakeForm from "./components/IntakeForm";
 import CCMChart from "./components/CCMChart";
@@ -11,6 +11,12 @@ import { Sparkles, Compass, Shield, Flame, Terminal } from "lucide-react";
 export default function App() {
   // Step orchestrations: 'intake' -> 'recipe_selection' -> 'staging_delivery' -> 'dice_rolling' -> 'memento_sheet'
   const [step, setStep] = useState<"intake" | "recipe_selection" | "staging_delivery" | "dice_rolling" | "memento_sheet">("intake");
+
+  // Every step change lands the witness at the top of the new page instead of
+  // carrying over whatever scroll position they were at on the previous step.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+  }, [step]);
 
   // Intake data state
   const [witnessName, setWitnessName] = useState("");
