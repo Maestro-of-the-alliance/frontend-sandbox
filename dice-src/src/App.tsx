@@ -62,11 +62,9 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#EDE6D5] flex flex-col justify-between select-none relative pb-12 border-[12px] border-[#0F0F11]">
+    <div className="min-h-screen bg-white flex flex-col justify-between select-none relative pb-12 border-[12px] border-[#0F0F11]">
       {/* Visual background ambient grids and auroras */}
-      <div className="absolute top-0 inset-x-0 h-96 bg-gradient-to-b from-amber-500/5 via-transparent to-transparent pointer-events-none" />
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 right-10 w-96 h-96 bg-amber-400/5 rounded-full blur-3xl opacity-20 pointer-events-none" />
+      {/* ambient glows removed — flat crisp background matching CCM */}
 
       {/* Main Terminal Header */}
       <header className="w-full max-w-6xl mx-auto px-6 pt-6 pb-4 flex flex-col sm:flex-row justify-between items-center gap-4 z-10 border-b border-gold-30/15">
@@ -152,7 +150,7 @@ export default function App() {
               <div className="mt-8 flex justify-center w-full max-w-5xl">
                 <button
                   onClick={() => setStep("staging_delivery")}
-                  className="px-8 py-3.5 border border-gold text-gold hover:bg-gold hover:text-[#0A0A0B] bg-transparent font-mono tracking-[2px] text-xs uppercase transition duration-300 cursor-pointer shadow-lg active:scale-98"
+                  className="px-8 py-3.5 border border-[#141110] bg-[#141110] text-gold hover:bg-gold hover:text-[#141110] font-mono tracking-[2px] text-xs uppercase transition duration-300 cursor-pointer shadow-lg active:scale-98"
                 >
                   <span>Deliver Recipe to SHELTER Oven</span>
                 </button>

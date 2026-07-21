@@ -462,7 +462,7 @@ export default function CharacterSheet({
 
             <button
               type="submit"
-              className="w-full py-4 border border-gold text-gold hover:bg-gold hover:text-[#0A0A0B] bg-transparent font-mono tracking-[2px] text-xs uppercase transition duration-300 cursor-pointer shadow-lg"
+              className="w-full py-4 border border-[#141110] bg-[#141110] text-gold hover:bg-gold hover:text-[#141110] font-mono tracking-[2px] text-xs uppercase transition duration-300 cursor-pointer shadow-lg"
             >
               <span>{customName.trim() ? "Commit Name & Generate Memento" : "Let SHELTER Choose Name & Generate"}</span>
             </button>
@@ -503,7 +503,7 @@ export default function CharacterSheet({
             <div className="flex gap-2 w-full sm:w-auto">
               <button
                 onClick={downloadMementoCard}
-                className="flex-1 sm:flex-initial px-5 py-2.5 border border-gold text-gold hover:bg-gold hover:text-[#0A0A0B] bg-transparent font-mono tracking-[1px] text-[10px] uppercase transition duration-300 cursor-pointer shadow-md flex items-center justify-center gap-2"
+                className="flex-1 sm:flex-initial px-5 py-2.5 border border-[#141110] bg-[#141110] text-gold hover:bg-gold hover:text-[#141110] font-mono tracking-[1px] text-[10px] uppercase transition duration-300 cursor-pointer shadow-md flex items-center justify-center gap-2"
               >
                 <Download className="w-4 h-4" />
                 <span>Download Memento Sheet (PNG)</span>
@@ -805,7 +805,7 @@ export default function CharacterSheet({
                       className={`w-full py-3 border font-mono tracking-[1px] text-[10px] uppercase transition duration-300 cursor-pointer flex items-center justify-center gap-2 ${
                         isSendingVoice || !emailInput.trim()
                           ? "bg-transparent border-stone-800 text-stone-500 cursor-not-allowed"
-                          : "border-gold text-gold hover:bg-gold hover:text-[#0A0A0B] bg-transparent shadow-md"
+                          : "border border-[#141110] bg-[#141110] text-gold hover:bg-gold hover:text-[#141110] shadow-md"
                       }`}
                     >
                       {isSendingVoice ? (

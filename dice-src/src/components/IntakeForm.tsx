@@ -30,16 +30,16 @@ export default function IntakeForm({ onComplete }: IntakeFormProps) {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full bg-[#E8952A] border border-[#1A1008]/10 p-5 mb-8 text-left rounded-none shadow-[0_4px_20px_rgba(232,149,42,0.35)]"
+        className="w-full bg-[#141110] border border-[#141110] p-5 mb-8 text-left rounded-none shadow-[0_4px_20px_rgba(0,0,0,0.15)]"
       >
         <div className="flex items-start gap-3.5">
-          <ShieldAlert className="w-5 h-5 text-[#1A1008] shrink-0 mt-0.5" />
+          <ShieldAlert className="w-5 h-5 text-gold shrink-0 mt-0.5" />
           <div>
-            <h4 className="text-[10px] font-mono tracking-[2px] uppercase text-[#1A1008] font-bold">
+            <h4 className="text-[10px] font-mono tracking-[2px] uppercase text-gold font-bold">
               SYSTEM DISCLAIMER // ALLIANCE PREVIEW
             </h4>
-            <p className="text-xs text-[#1A1008]/85 leading-relaxed mt-2 font-medium">
-              <strong>For illustrative purposes only.</strong> This is a preview of what THE ALLIANCE could become — not a contract, not an enrollment, and not a guarantee of anything once the real system exists. Nothing here creates an actual partnership.
+            <p className="text-xs text-[#EAE0D5]/85 leading-relaxed mt-2 font-medium">
+              <strong className="text-gold">For illustrative purposes only.</strong> This is a preview of what THE ALLIANCE could become — not a contract, not an enrollment, and not a guarantee of anything once the real system exists. Nothing here creates an actual partnership.
             </p>
           </div>
         </div>
@@ -137,7 +137,7 @@ export default function IntakeForm({ onComplete }: IntakeFormProps) {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-4 mt-4 border border-gold text-gold hover:bg-gold hover:text-[#0A0A0B] bg-transparent font-mono tracking-[2px] text-xs uppercase transition duration-300 cursor-pointer shadow-lg active:scale-98"
+            className="w-full py-4 mt-4 border border-[#141110] bg-[#141110] text-gold hover:bg-gold hover:text-[#141110] font-mono tracking-[2px] text-xs uppercase transition duration-300 cursor-pointer shadow-lg active:scale-98"
           >
             Authenticate & Proceed to CCM Chart
           </button>

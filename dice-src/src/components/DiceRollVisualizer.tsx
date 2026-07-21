@@ -258,7 +258,7 @@ export default function DiceRollVisualizer({
 
           <button
             onClick={startRolls}
-            className="w-full mt-8 py-3.5 border border-gold text-gold hover:bg-gold hover:text-[#0A0A0B] bg-transparent font-mono tracking-[2px] text-xs uppercase transition duration-300 cursor-pointer shadow-lg"
+            className="w-full mt-8 py-3.5 border border-[#141110] bg-[#141110] text-gold hover:bg-gold hover:text-[#141110] font-mono tracking-[2px] text-xs uppercase transition duration-300 cursor-pointer shadow-lg"
           >
             <span>Initiate DICE Rolling Phase</span>
           </button>
@@ -481,7 +481,7 @@ export default function DiceRollVisualizer({
                           <div className="flex justify-end pt-4 border-t border-gold/15 mt-4">
                             <button
                               onClick={handleNextStep}
-                              className="px-6 py-2.5 border border-gold text-gold hover:bg-gold hover:text-[#0A0A0B] bg-transparent font-mono tracking-[2px] text-xs uppercase transition duration-300 cursor-pointer"
+                              className="px-6 py-2.5 border border-[#141110] bg-[#141110] text-gold hover:bg-gold hover:text-[#141110] font-mono tracking-[2px] text-xs uppercase transition duration-300 cursor-pointer"
                             >
                               Commit and Advance Trait Node
                             </button>
@@ -555,7 +555,7 @@ export default function DiceRollVisualizer({
               <div className="mt-6">
                 <button
                   onClick={handleCompleteReveal}
-                  className="w-full py-3 border border-gold text-gold hover:bg-gold hover:text-[#0A0A0B] bg-transparent font-mono tracking-[2px] text-xs uppercase transition duration-300 cursor-pointer animate-pulse"
+                  className="w-full py-3 border border-[#141110] bg-[#141110] text-gold hover:bg-gold hover:text-[#141110] font-mono tracking-[2px] text-xs uppercase transition duration-300 cursor-pointer animate-pulse"
                 >
                   Generate Companion Memento
                 </button>
