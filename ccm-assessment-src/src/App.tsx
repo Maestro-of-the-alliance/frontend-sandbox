@@ -285,7 +285,7 @@ ${appUrl}`;
                         ✨ Start Here
                       </span>
                       <p className="text-stone-900 font-semibold text-sm md:text-base">
-                        Find out what THE ALLIANCE would actually build to complement you. Takes about 3 minutes — genuinely worth it.
+                        Find out what The ALLIANCE would actually build to complement you. Takes about 3 minutes — genuinely worth it.
                       </p>
                     </div>
                     <button
@@ -1080,7 +1080,7 @@ ${appUrl}`;
                     Your Result Is Ready
                   </p>
                   <h3 className="text-stone-50 text-xl md:text-2xl font-serif font-semibold">
-                    See the potential partner THE ALLIANCE could make for you.
+                    See the potential partner The ALLIANCE could make for you.
                   </h3>
                   <p className="text-stone-400 text-sm max-w-lg mx-auto">
                     Your result becomes the actual input for what gets built next.

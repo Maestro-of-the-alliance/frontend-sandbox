@@ -135,7 +135,7 @@ export default function ExperienceFlow({ onComplete }: { onComplete: () => void 
     const top = [...fundamentalResult].sort((a, b) => b.value - a.value).slice(0, 2);
     const secTop = [...secondaryResult].sort((a, b) => b.value - a.value).slice(0, 1);
     const descs = [...top, ...secTop].map((t) => findTraitMeta(t.name).description);
-    return `${name ? name + "'s" : "Your"} companion is, above all, ${lowerFirst(descs[0])} On top of that, ${lowerFirst(descs[1])}${descs[2] ? " And in quieter moments, " + lowerFirst(descs[2]) : ""}`;
+    return `${name ? name + "'s" : "Your"} companion, above all, ${lowerFirst(descs[0])} On top of that, ${lowerFirst(descs[1])}${descs[2] ? " And in quieter moments, " + lowerFirst(descs[2]) : ""}`;
   };
 
   return (
