@@ -26,6 +26,7 @@
   "use strict";
 
   const IMAGE_URL = "/imagebank/papadomo-guide.png";
+  const STAR_ICON_URL = "/imagebank/papadomo-star-trigger.png";
 
   const DEFAULT_CONTENT = {
     tldr: "This page is part of the N.C.E.ncyclopedia — THE ALLIANCE's living canon. Not sure where to start? Try the search icon at the top, or the Cross Reference links at the bottom of the page.",
@@ -72,7 +73,7 @@
         width: 46px;
         height: 46px;
         border-radius: 50%;
-        background: radial-gradient(circle at 50% 50%, rgba(120,190,255,0.18), transparent 70%);
+        background: transparent;
         border: none;
         cursor: pointer;
         z-index: 9998;
@@ -84,17 +85,15 @@
       #papadomo-guide-trigger:hover {
         transform: scale(1.1);
       }
-      #papadomo-guide-trigger svg {
-        width: 40px;
-        height: 40px;
-        filter: drop-shadow(0 0 6px rgba(120, 190, 255, 0.75)) drop-shadow(0 0 12px rgba(120, 190, 255, 0.4));
-      }
-      #papadomo-guide-trigger .pg-halo-ring {
+      #papadomo-guide-trigger img {
+        width: 46px;
+        height: 46px;
+        filter: drop-shadow(0 0 6px rgba(120, 190, 255, 0.55));
         animation: papadomo-halo-pulse 3.2s ease-in-out infinite;
       }
       @keyframes papadomo-halo-pulse {
-        0%, 100% { opacity: 0.35; r: 15; }
-        50% { opacity: 0.7; r: 17; }
+        0%, 100% { filter: drop-shadow(0 0 4px rgba(120, 190, 255, 0.4)); }
+        50% { filter: drop-shadow(0 0 10px rgba(120, 190, 255, 0.75)); }
       }
 
       #papadomo-guide-panel {
@@ -190,13 +189,7 @@
     trigger.id = "papadomo-guide-trigger";
     trigger.setAttribute("role", "button");
     trigger.setAttribute("aria-label", "Open page guide");
-    trigger.innerHTML = `
-      <svg viewBox="0 0 48 48" fill="none">
-        <circle class="pg-halo-ring" cx="24" cy="24" r="16" stroke="#78bfff" stroke-width="1.5" fill="rgba(120,190,255,0.08)"/>
-        <path d="M24 12l3.2 8 8.4 0.7-6.4 5.5 2 8.3L24 30.2l-7.2 4.3 2-8.3-6.4-5.5 8.4-0.7z"
-          fill="#ffe9a8" stroke="#f5c518" stroke-width="1" stroke-linejoin="round"/>
-      </svg>
-    `;
+    trigger.innerHTML = `<img src="${STAR_ICON_URL}" alt="" />`;
 
     const panel = document.createElement("div");
     panel.id = "papadomo-guide-panel";
