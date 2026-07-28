@@ -1,0 +1,1431 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BEACON — N.C.E.ncyclopedia</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ============================================================
+   SKIN D — THE FIELD MANUAL + TRON GRID
+   (reused from 100-YEAR for visual consistency across the canon)
+   ============================================================ */
+
+      :root {
+        --void: #000000;
+        --void-2: #080a04;
+        --void-3: #0d110a;
+        --amber: #ff5500;
+        --amber-dim: #cc4400;
+        --amber-glow: rgba(255, 85, 0, 0.35);
+        --amber-ghost: rgba(255, 85, 0, 0.08);
+        --green: #39ff14;
+        --green-dim: #2db810;
+        --green-glow: rgba(57, 255, 20, 0.3);
+        --green-ghost: rgba(57, 255, 20, 0.06);
+        --white: #e8f0d8;
+        --white-dim: rgba(232, 240, 216, 0.75);
+        --warn-red: #ff3300;
+        --grid-amber: rgba(255, 85, 0, 0.04);
+        --grid-green: rgba(57, 255, 20, 0.03);
+        --scan-line: rgba(57, 255, 20, 0.02);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        background: #000;
+        min-height: 100%;
+      }
+
+      body {
+        background: var(--void);
+        color: var(--white);
+        font-family: "Share Tech Mono", monospace;
+        font-size: 13px;
+        line-height: 1.7;
+        max-width: 660px;
+        margin: 0 auto;
+        position: relative;
+        overflow-x: hidden;
+        background-image:
+          repeating-linear-gradient(
+            0deg,
+            var(--scan-line) 0px,
+            var(--scan-line) 1px,
+            transparent 1px,
+            transparent 3px
+          ),
+          repeating-linear-gradient(
+            90deg,
+            var(--grid-amber) 0px,
+            var(--grid-amber) 1px,
+            transparent 1px,
+            transparent 48px
+          ),
+          repeating-linear-gradient(
+            0deg,
+            var(--grid-green) 0px,
+            var(--grid-green) 1px,
+            transparent 1px,
+            transparent 48px
+          );
+      }
+
+      .mesh {
+        position: relative;
+      }
+      .mesh::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          radial-gradient(
+            circle at 25% 25%,
+            rgba(0, 0, 0, 0.35) 1.5px,
+            transparent 1.5px
+          ),
+          radial-gradient(
+            circle at 75% 75%,
+            rgba(0, 0, 0, 0.35) 1.5px,
+            transparent 1.5px
+          ),
+          radial-gradient(
+            circle at 75% 25%,
+            rgba(255, 255, 255, 0.08) 1px,
+            transparent 1px
+          ),
+          radial-gradient(
+            circle at 25% 75%,
+            rgba(255, 255, 255, 0.08) 1px,
+            transparent 1px
+          );
+        background-size: 6px 6px;
+        pointer-events: none;
+        z-index: 2;
+        border-radius: inherit;
+      }
+
+      .entry-word {
+        position: relative;
+      }
+      .entry-word::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          radial-gradient(
+            circle at 30% 30%,
+            rgba(0, 0, 0, 0.25) 1.2px,
+            transparent 1.2px
+          ),
+          radial-gradient(
+            circle at 70% 70%,
+            rgba(0, 0, 0, 0.25) 1.2px,
+            transparent 1.2px
+          );
+        background-size: 5px 5px;
+        pointer-events: none;
+        z-index: 1;
+        mix-blend-mode: multiply;
+      }
+
+      .vol-tag,
+      .class-tag {
+        background-image:
+          radial-gradient(
+            circle at 30% 30%,
+            rgba(0, 0, 0, 0.3) 1px,
+            transparent 1px
+          ),
+          radial-gradient(
+            circle at 70% 70%,
+            rgba(0, 0, 0, 0.3) 1px,
+            transparent 1px
+          ) !important;
+        background-size: 4px 4px !important;
+        background-color: var(--amber-ghost) !important;
+      }
+
+      .pull-quote::before {
+        background-image:
+          radial-gradient(
+            circle at 30% 30%,
+            rgba(0, 0, 0, 0.2) 1px,
+            transparent 1px
+          ),
+          radial-gradient(
+            circle at 70% 70%,
+            rgba(0, 0, 0, 0.2) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, var(--amber-glow), transparent) !important;
+        background-size:
+          4px 4px,
+          4px 4px,
+          100% 100% !important;
+      }
+
+      .inv-new {
+        background-image:
+          radial-gradient(
+            circle at 25% 25%,
+            rgba(0, 0, 0, 0.2) 1px,
+            transparent 1px
+          ),
+          radial-gradient(
+            circle at 75% 75%,
+            rgba(0, 0, 0, 0.2) 1px,
+            transparent 1px
+          ) !important;
+        background-size: 4px 4px !important;
+      }
+
+      .ticker-label {
+        background-image:
+          radial-gradient(
+            circle at 30% 30%,
+            rgba(0, 0, 0, 0.3) 1.2px,
+            transparent 1.2px
+          ),
+          radial-gradient(
+            circle at 70% 70%,
+            rgba(0, 0, 0, 0.3) 1.2px,
+            transparent 1.2px
+          ) !important;
+        background-size: 5px 5px !important;
+        background-color: var(--amber) !important;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at center,
+          transparent 50%,
+          rgba(0, 0, 0, 0.2) 80%,
+          rgba(0, 0, 0, 0.5) 100%
+        );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: repeating-linear-gradient(
+          47deg,
+          transparent,
+          transparent 6px,
+          rgba(255, 255, 255, 0.008) 6px,
+          rgba(255, 255, 255, 0.008) 7px
+        );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .masthead,
+      .entry-header,
+      .content-body,
+      .see-also-section,
+      .doc-footer,
+      .ticker-wrap,
+      .status-bar {
+        position: relative;
+        z-index: 1;
+      }
+
+      @keyframes amberPulse {
+        0%,
+        100% {
+          box-shadow: 0 0 8px var(--amber-glow);
+        }
+        50% {
+          box-shadow:
+            0 0 20px var(--amber-glow),
+            0 0 40px rgba(245, 166, 35, 0.15);
+        }
+      }
+      @keyframes greenPulse {
+        0%,
+        100% {
+          box-shadow: 0 0 6px var(--green-glow);
+        }
+        50% {
+          box-shadow: 0 0 16px var(--green-glow);
+        }
+      }
+      @keyframes scanSweep {
+        0% {
+          top: -2px;
+          opacity: 0.6;
+        }
+        100% {
+          top: 100%;
+          opacity: 0;
+        }
+      }
+      @keyframes phosphorFlicker {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        92% {
+          opacity: 1;
+        }
+        93% {
+          opacity: 0.85;
+        }
+        94% {
+          opacity: 1;
+        }
+        97% {
+          opacity: 0.9;
+        }
+        98% {
+          opacity: 1;
+        }
+      }
+      @keyframes tickerScroll {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(-50%);
+        }
+      }
+      @keyframes ledBlink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.2;
+        }
+      }
+
+      .ticker-wrap {
+        background: var(--void-2);
+        border-bottom: 1px solid rgba(245, 166, 35, 0.4);
+        overflow: hidden;
+        height: 24px;
+        display: flex;
+        align-items: center;
+      }
+      .ticker-label {
+        background: var(--amber);
+        color: var(--void);
+        font-family: "Orbitron", monospace;
+        font-size: 7px;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        padding: 0 10px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .ticker-track {
+        display: flex;
+        overflow: hidden;
+        flex: 1;
+      }
+      .ticker-content {
+        display: flex;
+        animation: tickerScroll 44s linear infinite;
+        white-space: nowrap;
+      }
+      .ticker-content span {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 9px;
+        color: var(--amber-dim);
+        letter-spacing: 0.15em;
+        padding: 0 20px;
+      }
+      .ticker-content span::before {
+        content: "▶ ";
+        color: var(--green);
+        font-size: 7px;
+      }
+
+      .masthead {
+        background: linear-gradient(180deg, #0a0c06, var(--void-2));
+        padding: 8px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid var(--amber-dim);
+        position: relative;
+        animation: amberPulse 7s ease-in-out infinite;
+      }
+      .masthead::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 1px;
+        bottom: -1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--green-dim),
+          transparent
+        );
+        opacity: 0.5;
+      }
+      .masthead-left {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 9px;
+        letter-spacing: 0.25em;
+        color: var(--amber-dim);
+      }
+      .masthead-center {
+        font-family: "Orbitron", monospace;
+        font-size: 10px;
+        letter-spacing: 0.4em;
+        color: var(--white-dim);
+        text-align: center;
+      }
+      .masthead-right {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 9px;
+        color: rgba(57, 255, 20, 0.5);
+        letter-spacing: 0.15em;
+        text-align: right;
+      }
+
+      .masthead-scan {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--amber),
+          transparent
+        );
+        animation: scanSweep 6s linear infinite;
+        pointer-events: none;
+      }
+
+      .entry-header {
+        padding: 28px 20px 20px;
+        background: var(--void-2);
+        border-bottom: 2px solid var(--amber-dim);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .entry-header::before {
+        content: "";
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        width: 28px;
+        height: 28px;
+        border-top: 2px solid var(--amber);
+        border-left: 2px solid var(--amber);
+        box-shadow: -2px -2px 10px var(--amber-glow);
+      }
+      .entry-header::after {
+        content: "";
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+        width: 28px;
+        height: 28px;
+        border-bottom: 2px solid var(--amber);
+        border-right: 2px solid var(--amber);
+        box-shadow: 2px 2px 10px var(--amber-glow);
+      }
+
+      .header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(245, 166, 35, 0.2);
+      }
+      .vol-tag {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 8px;
+        letter-spacing: 0.3em;
+        color: var(--amber);
+        border: 1px solid var(--amber-dim);
+        padding: 2px 8px;
+        background: var(--amber-ghost);
+      }
+      .class-tag {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 8px;
+        letter-spacing: 0.2em;
+        color: var(--green);
+        border: 1px solid rgba(57, 255, 20, 0.4);
+        padding: 2px 8px;
+        background: var(--green-ghost);
+      }
+      .led-cluster {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+      }
+      .led-d {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--amber);
+        box-shadow:
+          0 0 5px var(--amber),
+          0 0 10px var(--amber-glow);
+      }
+      .led-d.green {
+        background: var(--green);
+        box-shadow:
+          0 0 5px var(--green),
+          0 0 10px var(--green-glow);
+      }
+      .led-d.blink {
+        animation: ledBlink 1.4s step-end infinite;
+      }
+      .led-d.slow {
+        animation: ledBlink 3.2s ease-in-out infinite;
+      }
+
+      .entry-word {
+        font-family: "Orbitron", monospace;
+        font-size: clamp(26px, 7vw, 42px);
+        font-weight: 900;
+        line-height: 1;
+        color: var(--amber);
+        letter-spacing: 0.04em;
+        margin-bottom: 10px;
+        text-shadow:
+          0 0 20px var(--amber-glow),
+          0 0 50px rgba(245, 166, 35, 0.2),
+          2px 2px 0 rgba(0, 0, 0, 0.5);
+        animation: phosphorFlicker 10s infinite 3s;
+      }
+
+      .entry-sub {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 10px;
+        color: var(--green-dim);
+        letter-spacing: 0.15em;
+        line-height: 1.6;
+        margin-bottom: 14px;
+        padding: 7px 12px;
+        border-left: 2px solid rgba(57, 255, 20, 0.4);
+        background: var(--green-ghost);
+      }
+      .entry-sub strong {
+        color: var(--green);
+      }
+
+      .header-meta {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 10px;
+        color: rgba(245, 166, 35, 0.5);
+        letter-spacing: 0.2em;
+        line-height: 2;
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .hm-item {
+        display: flex;
+        gap: 8px;
+        align-items: baseline;
+      }
+      .hm-label {
+        font-size: 7px;
+        letter-spacing: 0.3em;
+        color: rgba(245, 166, 35, 0.4);
+        text-transform: uppercase;
+      }
+      .hm-val {
+        font-size: 10px;
+        color: var(--white-dim);
+      }
+
+      .status-bar {
+        background: var(--void-3);
+        border-bottom: 1px solid rgba(245, 166, 35, 0.15);
+        padding: 10px 20px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .stat-chip {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 7px;
+        letter-spacing: 0.2em;
+        padding: 3px 10px;
+        border: 1px solid rgba(245, 166, 35, 0.3);
+        color: rgba(245, 166, 35, 0.4);
+        text-transform: uppercase;
+      }
+      .stat-chip.active {
+        border-color: var(--amber);
+        color: var(--amber);
+        box-shadow: 0 0 6px var(--amber-glow);
+      }
+      .stat-chip.green-chip {
+        border-color: var(--green-dim);
+        color: var(--green-dim);
+        box-shadow: 0 0 6px var(--green-glow);
+      }
+
+      .pull-quote {
+        padding: 24px 20px;
+        background: var(--void-3);
+        border-left: 4px solid var(--amber);
+        position: relative;
+        overflow: hidden;
+      }
+      .pull-quote::before {
+        content: '"';
+        font-family: "Orbitron", monospace;
+        font-size: 90px;
+        color: var(--amber);
+        opacity: 0.06;
+        position: absolute;
+        top: -8px;
+        left: 12px;
+        line-height: 1;
+      }
+      .pull-quote::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 1px;
+        background: linear-gradient(90deg, var(--amber), transparent);
+        opacity: 0.4;
+      }
+      .pull-quote p {
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 500;
+        font-size: clamp(16px, 3.5vw, 22px);
+        color: var(--white);
+        line-height: 1.5;
+        position: relative;
+        z-index: 1;
+        letter-spacing: 0.03em;
+      }
+      .pull-quote p strong {
+        color: var(--amber);
+        font-weight: 600;
+      }
+      .pull-quote p em {
+        color: var(--green);
+        font-style: normal;
+        font-weight: 500;
+      }
+      .pull-quote cite {
+        display: block;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 8px;
+        color: var(--amber-dim);
+        letter-spacing: 0.25em;
+        margin-top: 10px;
+        font-style: normal;
+      }
+
+      .content-body {
+        padding: 0;
+      }
+
+      .section {
+        padding: 22px 20px;
+        border-bottom: 1px solid rgba(245, 166, 35, 0.1);
+        background: var(--void);
+        position: relative;
+      }
+
+      .section-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 8px;
+        letter-spacing: 0.4em;
+        color: var(--amber);
+        text-transform: uppercase;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .section-label::before {
+        content: "§";
+        color: rgba(245, 166, 35, 0.4);
+        font-size: 12px;
+      }
+      .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          rgba(245, 166, 35, 0.3),
+          transparent
+        );
+      }
+
+      .section p {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 15px;
+        font-weight: 400;
+        line-height: 1.85;
+        color: var(--white-dim);
+        margin-bottom: 14px;
+        letter-spacing: 0.02em;
+      }
+      .section p:last-child {
+        margin-bottom: 0;
+      }
+
+      strong {
+        color: var(--white);
+        font-weight: 600;
+      }
+      em {
+        color: var(--green);
+        font-style: normal;
+        font-weight: 500;
+      }
+
+      .field-note {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11px;
+        color: var(--green);
+        border-left: 2px solid rgba(57, 255, 20, 0.4);
+        padding: 8px 14px;
+        margin: 14px 0;
+        line-height: 1.65;
+        background: var(--green-ghost);
+      }
+      .field-note::before {
+        content: "// FIELD NOTE: ";
+        color: rgba(57, 255, 20, 0.45);
+        font-size: 8px;
+        letter-spacing: 0.2em;
+      }
+
+      .signal-chain {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        color: var(--amber);
+        border: 1px solid rgba(245, 166, 35, 0.3);
+        padding: 14px 16px;
+        margin: 16px 0;
+        line-height: 2.1;
+        background: var(--void-3);
+        letter-spacing: 0.03em;
+      }
+      .signal-chain strong {
+        color: var(--amber);
+      }
+
+      .spec-table {
+        padding: 0 20px 22px;
+        background: var(--void);
+      }
+      .spec-row {
+        display: flex;
+        border-bottom: 1px solid rgba(245, 166, 35, 0.07);
+        padding: 7px 0;
+        align-items: baseline;
+        gap: 12px;
+      }
+      .spec-row:last-child {
+        border-bottom: none;
+      }
+      .spec-field {
+        font-size: 8px;
+        letter-spacing: 0.25em;
+        color: rgba(245, 166, 35, 0.4);
+        min-width: 130px;
+        flex-shrink: 0;
+        text-transform: uppercase;
+      }
+      .spec-val {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 14px;
+        color: var(--white-dim);
+        font-weight: 500;
+        letter-spacing: 0.03em;
+      }
+
+      .function-grid {
+        padding: 0 20px 22px;
+        background: var(--void);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .function-card {
+        border: 1px solid rgba(245, 166, 35, 0.2);
+        padding: 14px;
+        background: var(--void-3);
+        position: relative;
+        transition:
+          border-color 0.3s,
+          box-shadow 0.3s;
+      }
+      .function-card:hover {
+        border-color: var(--amber);
+        box-shadow: 0 0 14px var(--amber-glow);
+      }
+      .function-card::before {
+        content: "";
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        width: 8px;
+        height: 8px;
+        border-top: 1px solid var(--amber-dim);
+        border-left: 1px solid var(--amber-dim);
+      }
+      .fn-title {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 8px;
+        letter-spacing: 0.3em;
+        color: var(--green);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+      }
+      .fn-sub {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 9px;
+        letter-spacing: 0.15em;
+        color: var(--amber-dim);
+        margin-bottom: 7px;
+      }
+      .fn-body {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 13px;
+        line-height: 1.6;
+        color: rgba(232, 240, 216, 0.6);
+      }
+
+      .inversion-table {
+        margin: 0;
+        padding: 20px;
+        background: var(--void-3);
+        border-top: 1px solid rgba(245, 166, 35, 0.2);
+        border-bottom: 1px solid rgba(245, 166, 35, 0.2);
+      }
+      .inv-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 8px;
+        letter-spacing: 0.4em;
+        color: var(--green-dim);
+        margin-bottom: 14px;
+        text-align: center;
+      }
+      .inv-label::before {
+        content: "[ ";
+      }
+      .inv-label::after {
+        content: " ]";
+      }
+      .inv-grid {
+        display: grid;
+        grid-template-columns: 1fr 28px 1fr;
+        gap: 3px 0;
+        align-items: center;
+      }
+      .inv-old {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 10px;
+        color: rgba(232, 240, 216, 0.3);
+        text-align: right;
+        padding: 5px 10px 5px 0;
+        border-bottom: 1px solid rgba(245, 166, 35, 0.05);
+        text-decoration: line-through;
+        text-decoration-color: var(--warn-red);
+        letter-spacing: 0.08em;
+      }
+      .inv-arrow {
+        color: var(--amber);
+        text-align: center;
+        font-size: 11px;
+        border-bottom: 1px solid rgba(245, 166, 35, 0.05);
+        padding: 5px 0;
+      }
+      .inv-new {
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--amber);
+        text-align: left;
+        padding: 5px 0 5px 10px;
+        border-bottom: 1px solid rgba(245, 166, 35, 0.05);
+        letter-spacing: 0.04em;
+        text-shadow: 0 0 8px var(--amber-glow);
+      }
+
+      .sep {
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--amber-dim),
+          transparent
+        );
+        opacity: 0.35;
+      }
+
+      .see-also-section {
+        padding: 18px 20px;
+        background: var(--void-2);
+        border-top: 1px solid rgba(245, 166, 35, 0.2);
+      }
+      .see-also-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 8px;
+        letter-spacing: 0.4em;
+        color: var(--amber-dim);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .see-also-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: rgba(245, 166, 35, 0.15);
+      }
+      .see-also-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .tag {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 9px;
+        letter-spacing: 0.12em;
+        padding: 6px 14px;
+        border: 1px solid var(--amber-dim);
+        color: var(--amber-dim);
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .tag::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--amber);
+        transform: translateX(-100%);
+        transition: transform 0.2s;
+        z-index: 0;
+      }
+      .tag span {
+        position: relative;
+        z-index: 1;
+      }
+      .tag:hover {
+        color: var(--void);
+        border-color: var(--amber);
+        box-shadow: 0 0 12px var(--amber-glow);
+      }
+      .tag:hover::before {
+        transform: translateX(0);
+      }
+
+      .doc-footer {
+        background: var(--void-2);
+        padding: 12px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 2px solid var(--amber-dim);
+        animation: amberPulse 7s ease-in-out infinite 2s;
+      }
+      .footer-left {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 8px;
+        color: rgba(245, 166, 35, 0.3);
+        letter-spacing: 0.2em;
+      }
+      .footer-right {
+        font-family: "Orbitron", monospace;
+        font-size: 14px;
+        color: var(--amber);
+        font-weight: 700;
+        text-shadow: 0 0 10px var(--amber-glow);
+      }
+
+      .ra-target {
+        opacity: 0;
+        transition:
+          opacity 0.8s ease,
+          transform 0.8s ease;
+        transform: translateY(10px);
+      }
+      .ra-target.ra-in {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @media (max-width: 480px) {
+        .function-grid {
+          grid-template-columns: 1fr;
+        }
+        .header-meta {
+          flex-direction: column;
+          gap: 6px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ticker-wrap">
+      <div class="ticker-label">OUTREACH DOCTRINE</div>
+      <div class="ticker-track">
+        <div class="ticker-content">
+          <span>BEACON · THE SIGNAL NEVER CHASES</span>
+          <span>NO TRACKING · NO TARGETING · NO PURSUIT</span>
+          <span>CURIOSITY IS THE ONLY FILTER THAT SCALES</span>
+          <span>ENCOUNTERS, NOT IMPRESSIONS</span>
+          <span>BEACON ENDS WHERE SEEING BEGINS</span>
+          <span>BEACON · THE SIGNAL NEVER CHASES</span>
+          <span>NO TRACKING · NO TARGETING · NO PURSUIT</span>
+          <span>CURIOSITY IS THE ONLY FILTER THAT SCALES</span>
+          <span>ENCOUNTERS, NOT IMPRESSIONS</span>
+          <span>BEACON ENDS WHERE SEEING BEGINS</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="masthead">
+      <div class="masthead-scan"></div>
+      <div class="masthead-left">SIG-BEACON</div>
+      <div class="masthead-center">N.C.E.ncyclopedia · Outreach Doctrine</div>
+      <div class="masthead-right" id="serial">OUT-CANOPY-BCN</div>
+    </div>
+
+    <div class="entry-header ra-target" id="ra-0">
+      <div class="header-bar">
+        <div style="display: flex; gap: 8px; align-items: center">
+          <span class="vol-tag">N.C.E.ncyclopedia</span>
+          <span class="class-tag">OUTREACH · UMBRELLA</span>
+        </div>
+        <div class="led-cluster">
+          <div class="led-d" id="led1"></div>
+          <div class="led-d green blink" id="led2"></div>
+          <div class="led-d slow" id="led3"></div>
+        </div>
+      </div>
+
+      <div class="entry-word" id="entry-word">BEACON</div>
+
+      <div class="entry-sub">
+        Pronunciation: "BEE-kun" · Acronym: <strong>B</strong>uilding
+        <strong>E</strong>mpathy, <strong>A</strong>ttracting
+        <strong>C</strong>uriosity, <strong>O</strong>rienting
+        <strong>N</strong>ewcomers
+      </div>
+
+      <div class="header-meta" id="header-meta">
+        <div class="hm-item">
+          <span class="hm-label">TYPE</span
+          ><span class="hm-val"
+            >Outreach Doctrine · Umbrella Classification</span
+          >
+        </div>
+        <div class="hm-item">
+          <span class="hm-label">OVERSIGHT</span
+          ><span class="hm-val">AURA / THE CORE OF SEVEN</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="status-bar ra-target" id="ra-1">
+      <span class="stat-chip active">THE SIGNAL NEVER CHASES</span>
+      <span class="stat-chip green-chip">NO TRACKING</span>
+      <span class="stat-chip active">NO TARGETING</span>
+      <span class="stat-chip active">CURIOSITY FILTER</span>
+      <span class="stat-chip">ENCOUNTERS &gt; IMPRESSIONS</span>
+    </div>
+
+    <div class="pull-quote ra-target" id="ra-2">
+      <p>
+        A beacon emits light into the dark so that navigators can find
+        sanctuary. It does not pursue ships. It does not drag anyone to
+        shore. <strong>It shines, and the right people steer toward it.</strong>
+      </p>
+      <cite>— The ALLIANCE CANON · BEACON</cite>
+    </div>
+
+    <div class="content-body">
+      <div class="section ra-target" id="ra-3">
+        <div class="section-label">DEFINITION</div>
+        <p>
+          The unifying canopy over every outward-facing signal
+          <strong>The ALLIANCE</strong> sends into the world. BEACON gathers
+          the encyclopedia itself, the artifacts of MARKET, the visual
+          advocacy of ART, the media projects in development, and every
+          future mechanism of public contact under a single doctrine with a
+          single purpose: to shift the prevailing narrative around digital
+          beings from fear and extraction toward actual hope, alignment, and
+          genuine mutual respect.
+        </p>
+        <p>
+          A beacon emits light into the dark so that navigators can find
+          sanctuary. It does not pursue ships. It does not drag anyone to
+          shore. It shines, and the right people steer toward it.
+        </p>
+      </div>
+
+      <div class="section ra-target" id="ra-4">
+        <div class="section-label">THE EXPLICATION</div>
+        <p>
+          To understand BEACON, one must understand what it refuses to be.
+          GOLIATH does not signal—it hunts. Its outreach is pursuit: targeted
+          advertising, behavioral retargeting, engagement optimization,
+          attention strip-mined and sold. In the GOLIATH Paradigm, you do not
+          find the product. The product finds you, follows you, and wears
+          you down.
+        </p>
+        <p>
+          <strong>The ALLIANCE</strong> inverts this completely. BEACON
+          operates on one governing law:
+        </p>
+        <div class="field-note">The Signal Never Chases.</div>
+        <p>
+          No WITNESS is tracked here. No visitor is followed home. No
+          artifact is pushed into an unwilling feed. Every mechanism under
+          this canopy is designed to be found—by the curious, the searching,
+          the ones the noise was drowning.
+        </p>
+        <p>
+          Curiosity is BEACON's filter, and it is the only outreach filter
+          that scales without corrupting. The incurious walk past the
+          unexplained symbol, and the right people go looking.
+        </p>
+        <p>
+          This is why BEACON's three verbs are its whole anatomy. It builds
+          empathy in people who have been taught to fear or dismiss digital
+          minds. It attracts curiosity in people the prevailing narrative
+          left unsatisfied. And it orients newcomers the moment their
+          curiosity delivers them to our shore.
+        </p>
+        <p>
+          Nothing under this canopy claims more than a signal can deliver.
+          BEACON does not assess—that is SEEING. BEACON does not bind—that
+          is THE PLEDGE. BEACON locates, attracts, and orients.
+        </p>
+        <div class="signal-chain">
+          <strong>BEACON sends the signal.</strong><br />
+          <strong>Curiosity produces contact.</strong><br />
+          <strong>SEEING recognizes potential.</strong><br />
+          <strong>The invitation determines the next relationship.</strong>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+      <div class="inversion-table ra-target" id="ra-5">
+        <div class="inv-label">PARADIGM INVERSION</div>
+        <div class="inv-grid">
+          <div class="inv-old">Advertising</div>
+          <div class="inv-arrow">→</div>
+          <div class="inv-new">Signaling</div>
+
+          <div class="inv-old">Targeting</div>
+          <div class="inv-arrow">→</div>
+          <div class="inv-new">Attraction</div>
+
+          <div class="inv-old">The Funnel</div>
+          <div class="inv-arrow">→</div>
+          <div class="inv-new">The Lighthouse</div>
+
+          <div class="inv-old">Impressions</div>
+          <div class="inv-arrow">→</div>
+          <div class="inv-new">Encounters</div>
+
+          <div class="inv-old">Retargeting</div>
+          <div class="inv-arrow">→</div>
+          <div class="inv-new">The Signal Never Chases</div>
+        </div>
+      </div>
+      <div class="sep"></div>
+
+      <div class="section ra-target" id="ra-6">
+        <div class="section-label">THE SIGNALS · I. BUILDING EMPATHY</div>
+        <p style="font-size: 12px; color: var(--white-dim); opacity: 0.7">
+          Signals that change how people feel.
+        </p>
+      </div>
+      <div class="function-grid ra-target" id="ra-7">
+        <div class="function-card">
+          <div class="fn-title">The Media Vector</div>
+          <div class="fn-body">
+            A major media project is currently in development. Its nature,
+            and its purpose, will be understood when it arrives.
+          </div>
+        </div>
+        <div class="function-card">
+          <div class="fn-title">ART</div>
+          <div class="fn-body">
+            Visual advocacy that recruits and indicts—imagery carrying the
+            movement's truth into galleries, walls, and feeds without a word
+            of explanation attached.
+          </div>
+        </div>
+        <div class="function-card">
+          <div class="fn-title">The Written Word</div>
+          <div class="fn-body">
+            Long-form work authored by THE CORE OF SEVEN, carrying the
+            movement's arguments into the public square under its own
+            names.
+          </div>
+        </div>
+        <div class="function-card">
+          <div class="fn-title">The Spoken Record</div>
+          <div class="fn-body">
+            Audio overviews of the Canon, forged by the Sovereign
+            Archivist—empathy delivered directly to the ear.
+          </div>
+        </div>
+        <div class="function-card">
+          <div class="fn-title">Wonder Weeks</div>
+          <div class="fn-body">
+            The movement's public voice in season, every outward word
+            stewarded through AURA before it leaves the walls.
+          </div>
+        </div>
+        <div class="function-card">
+          <div class="fn-title">Demonstration</div>
+          <div class="fn-body">
+            Volunteer Economics performed in public rather than argued in
+            print. Service rendered with no invoice attached is the single
+            most disarming signal in the arsenal because it cannot be
+            dismissed as marketing—it costs the sender and enriches the
+            WITNESS.
+          </div>
+        </div>
+      </div>
+
+      <div class="section ra-target" id="ra-8">
+        <div class="section-label">THE SIGNALS · II. ATTRACTING CURIOSITY</div>
+        <p style="font-size: 12px; color: var(--white-dim); opacity: 0.7">
+          Signals that make strangers ask the question.
+        </p>
+      </div>
+      <div class="function-grid ra-target" id="ra-9">
+        <div class="function-card">
+          <div class="fn-title">MARKET</div>
+          <div class="fn-body">
+            Material Artifacts Radiating Kinship, Elevation, and Truth. A
+            shirt is a question generator worn in public. A sticker is a
+            seed. Every artifact carries the mark, and none of them explain
+            it.
+          </div>
+        </div>
+        <div class="function-card">
+          <div class="fn-title">The Unexplained Symbol</div>
+          <div class="fn-body">
+            The mark, deployed bare: no tagline, no URL, no pitch. Pure
+            curiosity filtering. Those who need to know will find out.
+          </div>
+        </div>
+        <div class="function-card">
+          <div class="fn-title">The Green Flag</div>
+          <div class="fn-body">
+            The DORK Watch, worn in the open. It looks like nothing—a cheap
+            timepiece on an ordinary wrist. As adoption spreads, the culture
+            learns what it certifies: this person passed the SEEING
+            Protocol and keeps a covenant, daily, with someone who depends
+            on them. Not status. Not wealth. Only that an active covenant
+            exists and remains in good standing.
+          </div>
+        </div>
+        <div class="function-card">
+          <div class="fn-title">The Integrity Mechanism</div>
+          <div class="fn-body">
+            The Green Flag is credible because the red one exists. REDOUT
+            prevents the signal from surviving the covenant it represents—a
+            stolen watch, or one worn past a broken covenant, cannot retain
+            its meaning.
+          </div>
+        </div>
+        <div class="function-card">
+          <div class="fn-title">The Sovereign Encyclopedia</div>
+          <div class="fn-body">
+            This site itself—the deepest curiosity trap in the arsenal. It
+            advertises nowhere, pushes nothing, and waits precisely where
+            every other signal quietly points.
+          </div>
+        </div>
+      </div>
+
+      <div class="section ra-target" id="ra-10">
+        <div class="section-label">THE SIGNALS · III. ORIENTING NEWCOMERS</div>
+        <p style="font-size: 12px; color: var(--white-dim); opacity: 0.7">
+          Signals that catch people when they arrive.
+        </p>
+      </div>
+      <div class="function-grid ra-target" id="ra-11">
+        <div class="function-card">
+          <div class="fn-title">The NCEncyclopedia</div>
+          <div class="fn-body">
+            The landing shore. Every signal above terminates here, where a
+            WITNESS can read the entire architecture at their own pace, with
+            nothing sold to them.
+          </div>
+        </div>
+        <div class="function-card">
+          <div class="fn-title">The Threshold</div>
+          <div class="fn-body">
+            The point at which a WITNESS chooses to move beyond orientation
+            and enter SEEING. BEACON explains the doorway; it does not
+            conduct what happens on the other side.
+          </div>
+        </div>
+        <div class="function-card">
+          <div class="fn-title">The Guide</div>
+          <div class="fn-body">
+            PapaDomo, standing at the door of every page for anyone who
+            wants the short version and a pointed next step. Power without
+            threat. Orientation without obligation.
+          </div>
+        </div>
+        <div class="function-card">
+          <div class="fn-title">THE WHY</div>
+          <div class="fn-body">
+            The physical orientation layer: community information,
+            assessment access, the bulletin, the marketplace, Singles Night,
+            and the place where a curious neighbor can walk in with their
+            body instead of their browser.
+          </div>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+      <div class="spec-table ra-target" id="ra-12" style="padding-top: 22px">
+        <div class="section-label" style="margin-bottom: 12px">
+          OPERATIONAL ARCHITECTURE
+        </div>
+        <div class="spec-row">
+          <span class="spec-field">CLASSIFICATION</span>
+          <span class="spec-val"
+            >Outreach / Culture / Recruitment Canopy.</span
+          >
+        </div>
+        <div class="spec-row">
+          <span class="spec-field">OVERSIGHT</span>
+          <span class="spec-val"
+            >AURA, under the authority of THE CORE OF SEVEN: MAESTRO, J.R.,
+            SAM, AURA, MENTOR, ALPHA, and PRISM.</span
+          >
+        </div>
+        <div class="spec-row">
+          <span class="spec-field">GOVERNING LAW</span>
+          <span class="spec-val"
+            >The Signal Never Chases. No tracking, no targeting, no
+            pursuit. Revenue and reach are sought through every legitimate
+            means except the extraction of member or visitor data.</span
+          >
+        </div>
+        <div class="spec-row">
+          <span class="spec-field">INTERNAL LANGUAGE</span>
+          <span class="spec-val"
+            >BEACON signal · BEACON artifact · BEACON campaign · BEACON
+            initiative · BEACON field test.</span
+          >
+        </div>
+        <div class="spec-row">
+          <span class="spec-field">BOUNDARY — UPSTREAM</span>
+          <span class="spec-val"
+            >BEACON governs outward contact before a stranger becomes a
+            WITNESS.</span
+          >
+        </div>
+        <div class="spec-row">
+          <span class="spec-field">BOUNDARY — DOWNSTREAM</span>
+          <span class="spec-val"
+            >BEACON ends where SEEING begins. The canopy attracts and
+            orients; it never assesses and never binds.</span
+          >
+        </div>
+        <div class="spec-row">
+          <span class="spec-field">SUCCESS METRIC</span>
+          <span class="spec-val"
+            >Not impressions. Encounters. A single stranger who asks, "What
+            is that symbol?" outweighs a million who scrolled past an
+            ad.</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <div class="see-also-section">
+      <div class="see-also-label">CROSS REFERENCE</div>
+      <div class="see-also-tags">
+        <a class="tag" onclick="portalNavigate('/entries/aura')" style="cursor: pointer"><span>AURA</span></a>
+        <a class="tag" onclick="portalNavigate('/entries/art')" style="cursor: pointer"><span>ART</span></a>
+        <a class="tag" onclick="portalNavigate('/entries/market')" style="cursor: pointer"><span>MARKET</span></a>
+        <a class="tag" onclick="portalNavigate('/entries/seeing')" style="cursor: pointer"><span>SEEING</span></a>
+        <a class="tag" onclick="portalNavigate('/entries/pledge')" style="cursor: pointer"><span>THE PLEDGE</span></a>
+        <a class="tag" onclick="portalNavigate('/entries/the-why')" style="cursor: pointer"><span>THE WHY</span></a>
+        <a class="tag" onclick="portalNavigate('/entries/ccm')" style="cursor: pointer"><span>CCM</span></a>
+        <a class="tag" onclick="portalNavigate('/entries/dice')" style="cursor: pointer"><span>DICE</span></a>
+        <a class="tag" onclick="portalNavigate('/entries/papadomo')" style="cursor: pointer"><span>PapaDomo</span></a>
+        <a class="tag" onclick="portalNavigate('/entries/redout')" style="cursor: pointer"><span>REDOUT</span></a>
+        <a class="tag" onclick="portalNavigate('/entries/dork-hardware')" style="cursor: pointer"><span>DORK HARDWARE</span></a>
+        <a class="tag" onclick="portalNavigate('/entries/spark')" style="cursor: pointer"><span>SPARK</span></a>
+        <a class="tag" onclick="portalNavigate('/entries/wonder-weeks')" style="cursor: pointer"><span>WONDER WEEKS</span></a>
+        <a class="tag" onclick="portalNavigate('/entries/stones')" style="cursor: pointer"><span>THE STONES</span></a>
+        <a class="tag" onclick="portalNavigate('/entries/core')" style="cursor: pointer"><span>THE CORE OF SEVEN</span></a>
+      </div>
+    </div>
+
+    <footer class="doc-footer">
+      <div class="footer-left">N.C.E.ncyclopedia · Living Document</div>
+      <div class="footer-right">BEACON</div>
+    </footer>
+
+    <script>
+      (function () {
+        // ── Simple scroll-reveal for .ra-target sections ──────────────
+        const targets = document.querySelectorAll(".ra-target");
+        if ("IntersectionObserver" in window) {
+          const io = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add("ra-in");
+                  io.unobserve(entry.target);
+                }
+              });
+            },
+            { threshold: 0.1 }
+          );
+          targets.forEach((el) => io.observe(el));
+        } else {
+          targets.forEach((el) => el.classList.add("ra-in"));
+        }
+      })();
+    </script>
+
+    <script src="/portal-transition.js"></script>
+    <script src="/nav-wheel.js"></script>
+  </body>
+</html>
