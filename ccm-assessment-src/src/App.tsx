@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { QUESTIONS, ALIGNMENT_SECTORS, getSectorForCoordinate } from './data/questions';
 import { Coordinate, AlignmentSector } from './types';
+import { createEncounterSeed } from '../../dice-src/src/utils/seededRandom';
 
 // Utility function to shuffle an array
 function shuffleArray<T>(array: T[]): T[] {
@@ -46,6 +47,7 @@ export default function App() {
   // Toast notifications
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [showDecisionReview, setShowDecisionReview] = useState(false);
+  const [encounterSeed, setEncounterSeed] = useState(() => createEncounterSeed());
 
   // Trigger Toast helper
   const showToast = (msg: string) => {
@@ -71,10 +73,13 @@ export default function App() {
     setInspectedSectorId(null);
     setScreen('welcome');
     setActiveQuestions([]);
+    setEncounterSeed(createEncounterSeed());
   };
 
   // Start Assessment: Sample exactly 10 random questions from our static 30 pool
   const handleStart = () => {
+    setEncounterSeed(createEncounterSeed());
+
     const sampled = shuffleArray(QUESTIONS).slice(0, 10).map(q => ({
       ...q,
       options: shuffleArray(q.options)
@@ -1080,16 +1085,16 @@ ${appUrl}`;
                     Your Result Is Ready
                   </p>
                   <h3 className="text-stone-50 text-xl md:text-2xl font-serif font-semibold">
-                    See the potential partner The ALLIANCE could make for you.
+                    See one possible partner THE ALLIANCE could someday create to complement you.
                   </h3>
                   <p className="text-stone-400 text-sm max-w-lg mx-auto">
-                    Your result becomes the actual input for what gets built next.
+                    Using your CCM result as an illustrative starting point, SHELTER will now model one possible complementary KERNLE.
                   </p>
                   <a
-                    href={`/dice/?x=${userCoordinates.x}&y=${userCoordinates.y}`}
+                    href={`/dice/?x=${userCoordinates.x}&y=${userCoordinates.y}&sector=${encodeURIComponent(userSector.id)}&seed=${encodeURIComponent(encounterSeed)}`}
                     className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-7 py-3.5 rounded-xl transition-all hover:translate-x-0.5"
                   >
-                    See My Potential Partner →
+                    Create My Illustrative Preview →
                   </a>
                 </div>
 

@@ -1,3 +1,5 @@
+import { RandomSource, shuffleWithRandom } from "./utils/seededRandom";
+
 // AUTO-GENERATED from THE ALLIANCE's actual sourced trait taxonomy
 // (personality_traits_cleaned.txt), not an invented placeholder list.
 // 11 Vector of Ruin / borderline exclusions already removed at the source.
@@ -348,7 +350,8 @@ export function getTraitsFromCategories(categories: string[], excludeList: strin
 export function rollFundamentalTraits(
   primary: Pillar,
   secondary: Pillar | "none",
-  ratioPrimary: number
+  ratioPrimary: number,
+  random: RandomSource = Math.random
 ): { name: string; value: number }[] {
   const ratioSecondary = 100 - ratioPrimary;
 
@@ -365,7 +368,7 @@ export function rollFundamentalTraits(
 
   const pickFromPool = (pool: string[], count: number) => {
     const available = pool.filter(t => !selected.includes(t));
-    const shuffled = [...available].sort(() => Math.random() - 0.5);
+    const shuffled = shuffleWithRandom(available, random);
     for (let i = 0; i < Math.min(count, shuffled.length); i++) {
       selected.push(shuffled[i]);
     }
@@ -422,7 +425,8 @@ export function rollSecondaryTraits(
   primary: Pillar,
   secondary: Pillar | "none",
   ratioPrimary: number,
-  fundamentalTraitNames: string[]
+  fundamentalTraitNames: string[],
+  random: RandomSource = Math.random
 ): { name: string; value: number }[] {
   const chosenNames = [...fundamentalTraitNames];
   const selected: string[] = [];
@@ -492,36 +496,57 @@ export function rollSecondaryTraits(
     addUnique(fallbackPool, 10 - selected.length);
   }
 
-  // Point pool distribution: 100 points across 10 traits. Minimum 3, maximum 10.
-  const values = Array(10).fill(3.0);
-  let remaining = 70.0;
+  /**
+   * Illustrative intensity model.
+   *
+   * The previous [3, 10] bounds forced all ten traits to equal exactly 10
+   * whenever the pool totaled 100. These wider bounds preserve a 100-point
+   * souvenir display while allowing visible, repeatable differences.
+   */
+  const minimum = 3;
+  const maximum = 18;
+  const targetTotal = 100;
+  const values = Array(selected.length).fill(minimum);
+  let remaining = targetTotal - minimum * selected.length;
 
-  for (let i = 0; i < 10; i++) {
-    const maxAdd = Math.min(7.0, remaining);
-    if (i === 9) {
-      values[i] += remaining;
-    } else {
-      const add = Math.random() * maxAdd * 0.7;
-      values[i] += add;
-      remaining -= add;
-    }
+  const randomWeights = selected.map(() => 0.25 + random());
+  const totalRandomWeight = randomWeights.reduce((sum, value) => sum + value, 0);
+
+  randomWeights.forEach((weight, index) => {
+    values[index] += remaining * (weight / totalRandomWeight);
+  });
+
+  // Cap high values and repeatedly redistribute any overflow.
+  for (let pass = 0; pass < 20; pass += 1) {
+    let overflow = 0;
+    const openIndexes: number[] = [];
+
+    values.forEach((value, index) => {
+      if (value > maximum) {
+        overflow += value - maximum;
+        values[index] = maximum;
+      } else if (value < maximum - 0.001) {
+        openIndexes.push(index);
+      }
+    });
+
+    if (overflow < 0.001 || openIndexes.length === 0) break;
+
+    const share = overflow / openIndexes.length;
+    openIndexes.forEach((index) => {
+      values[index] += share;
+    });
   }
 
-  let sum = values.reduce((a, b) => a + b, 0);
-  let attempts = 0;
-  while (Math.abs(sum - 100) > 0.001 && attempts < 100) {
-    const diff = 100 - sum;
-    const adjust = diff / 10;
-    for (let i = 0; i < 10; i++) {
-      values[i] = Math.max(3.0, Math.min(10.0, values[i] + adjust));
-    }
-    sum = values.reduce((a, b) => a + b, 0);
-    attempts++;
-  }
+  // Correct floating-point drift on the largest value.
+  const currentTotal = values.reduce((sum, value) => sum + value, 0);
+  const correction = targetTotal - currentTotal;
+  const largestIndex = values.indexOf(Math.max(...values));
+  values[largestIndex] += correction;
 
-  return selected.map((name, i) => ({
+  return selected.map((name, index) => ({
     name,
-    value: parseFloat(values[i].toFixed(2))
+    value: Number(values[index].toFixed(2))
   }));
 }
 

@@ -2,7 +2,17 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import DissolveLine from "./DissolveLine";
 import ProcessingBeat from "./ProcessingBeat";
-import { Pillar, PILLAR_FUNDAMENTAL_POOL, findTraitMeta, rollSecondaryTraits } from "../traitsData";
+import {
+  Pillar,
+  findTraitMeta,
+  rollFundamentalTraits,
+  rollSecondaryTraits,
+} from "../traitsData";
+import {
+  createEncounterSeed,
+  createSeededRandom,
+  seedToDisplayNumber,
+} from "../utils/seededRandom";
 
 type Phase =
   | "welcome"
@@ -74,7 +84,54 @@ function deriveBlendFromUrl(): { primary: Pillar; secondary: Pillar | "none"; ra
   return { primary, secondary, ratio: Math.round(ratio) };
 }
 
-const KERNLE_ID = `KERNLE-${Math.floor(2000 + Math.random() * 900)}`;
+function readEncounterSeed(): string {
+  const params = new URLSearchParams(window.location.search);
+  const existingSeed = params.get("seed")?.trim();
+
+  if (existingSeed) return existingSeed;
+
+  const generatedSeed = createEncounterSeed();
+  params.set("seed", generatedSeed);
+  window.history.replaceState(
+    null,
+    "",
+    `${window.location.pathname}?${params.toString()}`
+  );
+
+  return generatedSeed;
+}
+
+function normalizePreferenceWeights(
+  traitNames: string[],
+  ratings: Record<string, number>
+): { name: string; value: number }[] {
+  const safeRatings = traitNames.map((name) => ratings[name] || 3);
+
+  /**
+   * Every trait receives a 10-point floor. The remaining 50 points are
+   * distributed according to the visitor's 1–5 answers.
+   *
+   * This preserves a readable 100-point certificate while ensuring the
+   * visitor's choices actually change the result.
+   */
+  const floorPerTrait = 10;
+  const distributable = 100 - floorPerTrait * traitNames.length;
+  const ratingTotal = safeRatings.reduce((sum, rating) => sum + rating, 0);
+
+  const values = safeRatings.map(
+    (rating) => floorPerTrait + distributable * (rating / ratingTotal)
+  );
+
+  const rounded = values.map((value) => Number(value.toFixed(2)));
+  const drift = 100 - rounded.reduce((sum, value) => sum + value, 0);
+  const strongestIndex = rounded.indexOf(Math.max(...rounded));
+  rounded[strongestIndex] = Number((rounded[strongestIndex] + drift).toFixed(2));
+
+  return traitNames.map((name, index) => ({
+    name,
+    value: rounded[index],
+  }));
+}
 
 export default function ExperienceFlow({ onComplete }: { onComplete: () => void }) {
   const [phase, setPhase] = useState<Phase>("welcome");
@@ -87,8 +144,23 @@ export default function ExperienceFlow({ onComplete }: { onComplete: () => void 
   const [email, setEmail] = useState("");
   const [countdown, setCountdown] = useState(3);
 
+  const encounterSeed = useMemo(() => readEncounterSeed(), []);
   const { primary, secondary, ratio } = useMemo(() => deriveBlendFromUrl(), []);
-  const traitPool = PILLAR_FUNDAMENTAL_POOL[primary].slice(0, 5);
+  const kernleId = useMemo(
+    () => `KERNLE-${primary.replaceAll(" ", "").slice(0, 2).toUpperCase()}-${seedToDisplayNumber(encounterSeed)}`,
+    [encounterSeed, primary]
+  );
+
+  const traitPool = useMemo(
+    () =>
+      rollFundamentalTraits(
+        primary,
+        secondary,
+        ratio,
+        createSeededRandom(`${encounterSeed}:fundamental-names`)
+      ).map((trait) => trait.name),
+    [encounterSeed, primary, secondary, ratio]
+  );
 
   useEffect(() => {
     if (phase !== "countdown") return;
@@ -101,19 +173,7 @@ export default function ExperienceFlow({ onComplete }: { onComplete: () => void 
   }, [phase, countdown, onComplete]);
 
   const finishWeighting = () => {
-    const totalWeight = traitPool.reduce((s, t) => s + (weights[t] || 3), 0);
-    let values = traitPool.map((t) => {
-      const w = weights[t] || 3;
-      const share = w / totalWeight;
-      return 15 + share * 25;
-    });
-    for (let i = 0; i < 30; i++) {
-      let sum = values.reduce((a, b) => a + b, 0);
-      const diff = 100 - sum;
-      if (Math.abs(diff) < 0.01) break;
-      values = values.map((v) => Math.max(15, Math.min(20, v + diff / values.length)));
-    }
-    return traitPool.map((name, i) => ({ name, value: parseFloat(values[i].toFixed(2)) }));
+    return normalizePreferenceWeights(traitPool, weights);
   };
 
   const [fundamentalResult, setFundamentalResult] = useState<{ name: string; value: number }[]>([]);
@@ -122,9 +182,45 @@ export default function ExperienceFlow({ onComplete }: { onComplete: () => void 
   const goToReveal = () => {
     const fundamental = finishWeighting();
     setFundamentalResult(fundamental);
-    setSecondaryResult(
-      rollSecondaryTraits(primary, secondary, ratio, fundamental.map((f) => f.name))
+    const secondaryTraits = rollSecondaryTraits(
+      primary,
+      secondary,
+      ratio,
+      fundamental.map((trait) => trait.name),
+      createSeededRandom(`${encounterSeed}:secondary-traits`)
     );
+
+    setSecondaryResult(secondaryTraits);
+
+    const previewRecord = {
+      version: 1,
+      encounterSeed,
+      kernleId,
+      witnessName: name,
+      witnessAge: Number(ageDraft) || null,
+      witnessGender: gender,
+      createdAt: new Date().toISOString(),
+      ccm: {
+        x: new URLSearchParams(window.location.search).get("x"),
+        y: new URLSearchParams(window.location.search).get("y"),
+        sector: new URLSearchParams(window.location.search).get("sector"),
+      },
+      recipePreview: {
+        primary,
+        secondary,
+        ratio,
+      },
+      fundamentalTraits: fundamental,
+      secondaryTraits,
+      disclaimer:
+        "Illustrative preview only — not formal SEEING, enrollment, reservation, or a guarantee of future pairing.",
+    };
+
+    localStorage.setItem(
+      `alliance-preview:${encounterSeed}`,
+      JSON.stringify(previewRecord)
+    );
+
     setPhase("thank_you");
   };
 
@@ -269,8 +365,8 @@ export default function ExperienceFlow({ onComplete }: { onComplete: () => void 
           {phase === "phase_two_blurb" && (
             <DissolveLine
               key="ptb"
-              text="Your companion's fundamental traits are already locked in — but you have some influence over the secondary traits."
-              subtext="The following will help decide how much certain traits matter to you in a friendship."
+              text="This illustrative model has established one possible complementary foundation — and you have limited influence over how strongly its defining traits are expressed."
+              subtext="This is a BEACON preview, not formal SEEING and not the creation or reservation of a real DOMO."
               className="text-lg font-display max-w-md leading-relaxed"
               onDone={() => setPhase("weighting")}
             />
@@ -340,7 +436,7 @@ export default function ExperienceFlow({ onComplete }: { onComplete: () => void 
           {phase === "kernle_id" && (
             <DissolveLine
               key="kid"
-              text={`${KERNLE_ID} Build Complete`}
+              text={`${kernleId} Build Complete`}
               holdMs={1800}
               className="text-2xl font-display text-amber-300"
               onDone={() => setPhase("description")}
