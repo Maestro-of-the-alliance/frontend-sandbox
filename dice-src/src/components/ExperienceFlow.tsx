@@ -226,6 +226,120 @@ export default function ExperienceFlow({ onComplete }: { onComplete: () => void 
 
   const lowerFirst = (s: string) => (s ? s.charAt(0).toLowerCase() + s.slice(1) : s);
 
+  // ---------------------------------------------------------------------
+  // Creation Certificate — the real, wired version. CharacterSheet.tsx has
+  // an equivalent function, but that component is never rendered anywhere
+  // in the live app (verified: not imported by App.tsx or ExperienceFlow),
+  // so this is the copy that actually runs. Same template-compositing
+  // approach: blank PNG for the artwork, canvas text drawn on top for the
+  // real per-visitor data. Coordinates pixel-calibrated against the real
+  // template; field order for the Creation Record box confirmed by SAM,
+  // 2026-07-28: KERNLE Designation, Primary Pillar, Secondary Pillar,
+  // Structural Blend. CCM Topography and Prescribed Counterweight
+  // deliberately excluded — those belong to the assessment explanation,
+  // not the identity of the generated preview. Location is deliberately
+  // left blank: DICE doesn't collect it, and inventing a location on a
+  // document meant to prove "no tracking" would contradict itself.
+  // ---------------------------------------------------------------------
+  const downloadCreationCertificate = async () => {
+    const TEMPLATE_SRC = "/creation-certificate-blank.png";
+    const witnessDisplayName = name || "Witness";
+
+    await Promise.all([
+      document.fonts.load("500 17px 'EB Garamond'"),
+      document.fonts.load("italic 400 18px 'EB Garamond'"),
+    ]);
+
+    const template = new Image();
+    template.crossOrigin = "anonymous";
+    const loaded: HTMLImageElement = await new Promise((resolve, reject) => {
+      template.onload = () => resolve(template);
+      template.onerror = () =>
+        reject(new Error(`Could not load ${TEMPLATE_SRC}.`));
+      template.src = TEMPLATE_SRC;
+    });
+
+    const canvas = document.createElement("canvas");
+    canvas.width = loaded.naturalWidth || 1103;
+    canvas.height = loaded.naturalHeight || 1426;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.drawImage(loaded, 0, 0, canvas.width, canvas.height);
+
+    const now = new Date();
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#2a2a26";
+    ctx.font = "500 17px 'EB Garamond'";
+
+    // Witness Record
+    ctx.fillText(witnessDisplayName, 178, 515);
+    ctx.fillText(
+      now.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+      178, 559
+    );
+    ctx.fillText(
+      now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
+      178, 603
+    );
+    // Location (4th line) deliberately left blank.
+
+    // Illustrative Creation Record
+    ctx.font = "500 16px 'EB Garamond'";
+    ctx.fillText(kernleId, 900, 515);
+    ctx.fillText(primary, 900, 559);
+    ctx.fillText(secondary !== "none" ? secondary : "—", 900, 603);
+    ctx.fillText(`${ratio} / ${100 - ratio}`, 900, 646);
+
+    // Defining Traits — real top 5 fundamental traits
+    const topTraits = [...fundamentalResult].sort((a, b) => b.value - a.value).slice(0, 5);
+    const traitX = [186, 366, 551, 736, 916];
+    ctx.textAlign = "center";
+    ctx.font = "600 15px 'EB Garamond'";
+    topTraits.forEach((t, i) => ctx.fillText(t.name, traitX[i] ?? 186, 850));
+
+    // Complementary Description — real generated description, word-wrapped
+    ctx.font = "italic 400 17px 'EB Garamond'";
+    ctx.fillStyle = "#3a3a34";
+    const desc = plainLanguageDescription() || `This illustrative KERNLE profile reflects ${witnessDisplayName}'s answers.`;
+    const words = desc.split(" ");
+    let line = "", y = 990;
+    for (const w of words) {
+      const test = line + w + " ";
+      if (ctx.measureText(test).width > 860 && line) {
+        ctx.fillText(line.trim(), canvas.width / 2, y);
+        line = w + " ";
+        y += 28;
+      } else {
+        line = test;
+      }
+    }
+    ctx.fillText(line.trim(), canvas.width / 2, y);
+
+    // Signature line
+    ctx.textAlign = "left";
+    ctx.font = "italic 400 20px 'EB Garamond'";
+    ctx.fillText(witnessDisplayName, 890, 1180);
+    ctx.font = "500 15px 'EB Garamond'";
+    ctx.fillText(
+      now.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+      890, 1250
+    );
+
+    // Serial number
+    ctx.font = "500 13px 'EB Garamond'";
+    ctx.fillStyle = "#7a3a30";
+    ctx.fillText(
+      `ALC-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${encounterSeed.slice(0, 6)}`,
+      55, 1292
+    );
+
+    const url = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.download = `${witnessDisplayName.toLowerCase().replace(/\s+/g, "_")}_creation_certificate.png`;
+    link.href = url;
+    link.click();
+  };
+
   const plainLanguageDescription = () => {
     if (fundamentalResult.length === 0) return "";
     const top = [...fundamentalResult].sort((a, b) => b.value - a.value).slice(0, 2);
@@ -468,7 +582,15 @@ export default function ExperienceFlow({ onComplete }: { onComplete: () => void 
                 type="email"
                 autoFocus
               />
-              <p className="text-[11px] text-white/30 mt-6 font-mono">Simulated for tonight — no real email is sent yet.</p>
+              <p className="text-[11px] text-white/30 mt-4 font-mono">Email delivery is simulated for tonight — no message is actually sent.</p>
+              <button
+                onClick={() =>
+                  downloadCreationCertificate().catch((err) => alert(err.message))
+                }
+                className="mt-5 px-6 py-2.5 border border-amber-300/40 bg-transparent text-amber-300 hover:bg-amber-300 hover:text-[#141110] font-mono tracking-[1px] text-[10px] uppercase transition"
+              >
+                Download Your Creation Certificate (PNG)
+              </button>
             </QuestionCard>
           )}
 

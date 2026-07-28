@@ -465,7 +465,6 @@ export default function CharacterSheet({
     const TEMPLATE_SRC = "/creation-certificate-blank.png"; // supplied by SAM
 
     const name = customName.trim() || witnessName || "Witness";
-    const designation = lore?.designation || `The ${primaryPillar}`;
     const kernleDesignation = `KERNLE-${primaryPillar.slice(0, 2).toUpperCase()}${
       secondaryPillar !== "none" ? secondaryPillar.slice(0, 2).toUpperCase() : "XX"
     }-${Math.floor(100 + Math.random() * 900)}`;
@@ -500,33 +499,39 @@ export default function CharacterSheet({
 
     ctx.drawImage(loaded, 0, 0, canvas.width, canvas.height);
 
+    // Baselines below are calibrated from actual pixel measurement of the
+    // template's dotted fill-in lines (at y = 523, 567, 611, 654 in both
+    // boxes), offset up ~8px so text sits just above each line rather
+    // than on top of it. Confirmed field order per SAM, 2026-07-28.
+
     // ── WITNESS RECORD block ──────────────────────────────────────────
     ctx.textAlign = "left";
     ctx.fillStyle = "#2a2a26";
     ctx.font = "500 17px 'EB Garamond'";
-    ctx.fillText(name, 178, 512);
-
     const now = new Date();
+    ctx.fillText(name, 178, 515);                                              // Witness Name
     ctx.fillText(
       now.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
-      178,
-      556
-    );
+      178, 559
+    );                                                                          // Encounter Date
     ctx.fillText(
       now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
-      178,
-      600
-    );
-    // Location intentionally omitted — see note above.
+      178, 603
+    );                                                                          // Encounter Time
+    // Location (line 4, baseline 646): deliberately left blank — DICE
+    // doesn't collect it, and BEACON's governing law is no tracking.
+    // Still an open question for you/SAM/Maestro to confirm, not yet resolved.
 
     // ── ILLUSTRATIVE CREATION RECORD block ────────────────────────────
+    // Confirmed 2026-07-28: KERNLE Designation, Primary Pillar, Secondary
+    // Pillar, Structural Blend. CCM Topography and Prescribed Counterweight
+    // deliberately excluded per SAM — those belong to the assessment/result
+    // explanation, not the identity of the generated preview itself.
     ctx.font = "500 16px 'EB Garamond'";
-    ctx.fillText(kernleDesignation, 900, 508);
-    // CCM Topography intentionally omitted until threaded from CCM — see note above.
-    ctx.fillText(designation, 900, 564);
-    ctx.fillText(primaryPillar, 900, 596);
-    ctx.fillText(secondaryPillar !== "none" ? secondaryPillar : "—", 900, 628);
-    ctx.fillText(`${ratio} / ${100 - ratio}`, 900, 660);
+    ctx.fillText(kernleDesignation, 900, 515);                                 // KERNLE Designation
+    ctx.fillText(primaryPillar, 900, 559);                                     // Primary Pillar
+    ctx.fillText(secondaryPillar !== "none" ? secondaryPillar : "—", 900, 603); // Secondary Pillar
+    ctx.fillText(`${ratio} / ${100 - ratio}`, 900, 646);                       // Structural Blend
 
     // ── DEFINING TRAITS — top 5 fundamental traits, real values ───────
     const topTraits = [...fundamentalTraits]
