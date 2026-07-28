@@ -114,6 +114,7 @@ function performLiteralSearch(query) {
     
     let matchScore = 0;
     let matchSnippet = "";
+    let rawMatchedText = "";
     
     // Check for exact phrase first (gives highest priority)
     const exactPhraseIndex = textLower.indexOf(query.toLowerCase());
@@ -129,6 +130,10 @@ function performLiteralSearch(query) {
       
       // Highlight the query phrase in the snippet
       matchSnippet = highlightText(snippet, query);
+      // Raw (unhighlighted) matched text — used to build the deep-link
+      // Text Fragment. Keep it short (a few words); very long fragments
+      // are less reliable for the browser to locate on the page.
+      rawMatchedText = doc.content.substring(exactPhraseIndex, exactPhraseIndex + query.length);
     } else {
       // Check for partial keyword matches
       let matchedWordsCount = 0;
@@ -166,6 +171,11 @@ function performLiteralSearch(query) {
             highlighted = highlightText(highlighted, word);
           });
           matchSnippet = highlighted;
+          // Short surrounding phrase (not just the single matched word) —
+          // more reliable for the browser to locate uniquely on the page
+          // than one common word by itself.
+          const fragEnd = Math.min(doc.content.length, firstMatchIndex + 40);
+          rawMatchedText = doc.content.substring(firstMatchIndex, fragEnd).trim();
         }
       }
     }
@@ -175,6 +185,7 @@ function performLiteralSearch(query) {
         doc,
         score: matchScore,
         snippet: matchSnippet || doc.content.substring(0, 150) + "...",
+        matchedText: rawMatchedText,
         type: 'exact'
       });
     }
@@ -321,10 +332,21 @@ function renderResults(results, query = "") {
     <div class="space-y-4">
   `;
   
-  results.forEach(({ doc, score, snippet, type }) => {
+  results.forEach(({ doc, score, snippet, matchedText, type }) => {
     const liveSiteUrl = doc.url.startsWith('/') 
       ? `https://allianceftf.org${doc.url}` 
       : `https://allianceftf.org/entries/${doc.slug}.html`;
+
+    // Deep-link straight to the matched passage using a Text Fragment
+    // (#:~:text=...). Supported by Chrome, Edge, and most Chromium-based
+    // browsers — the page auto-scrolls to and highlights that exact text.
+    // Not supported by Safari; on unsupported browsers this just loads
+    // the page normally at the top, so it degrades gracefully rather
+    // than breaking. Only literal/phrase matches have real quoted text
+    // to jump to — semantic matches fall back to the plain top-of-page link.
+    const deepLinkUrl = matchedText
+      ? `${liveSiteUrl}#:~:text=${encodeURIComponent(matchedText)}`
+      : liveSiteUrl;
       
     const isSemantic = type === 'semantic';
     const accentColor = isSemantic ? 'border-amber-500/30' : 'border-cyan-500/30';
@@ -338,7 +360,7 @@ function renderResults(results, query = "") {
           <!-- Title & Badges -->
           <div class="flex flex-wrap items-center gap-2">
             <h3 class="text-xl font-orbitron font-bold text-white tracking-wide hover:text-cyberCyan transition-all">
-              <a href="${liveSiteUrl}" target="_blank" rel="noopener noreferrer">
+              <a href="${liveSiteUrl}" target="_blank" rel="noopener noreferrer" title="Go to the beginning of this entry">
                 ${escapeHtml(doc.title)}
               </a>
             </h3>
@@ -350,10 +372,16 @@ function renderResults(results, query = "") {
             </span>
           </div>
           
-          <!-- Snippet -->
-          <div class="text-sm font-sans text-gray-400 leading-relaxed">
+          <!-- Snippet — clickable straight to the matched passage -->
+          <a
+            href="${deepLinkUrl}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block text-sm font-sans text-gray-400 leading-relaxed hover:text-gray-200 transition-colors"
+            title="${matchedText ? 'Jump to this exact passage' : 'Go to the beginning of this entry'}"
+          >
             ${snippet}
-          </div>
+          </a>
           
           <!-- Live Link metadata -->
           <div class="text-3xs font-mono text-cyan-700 select-all truncate">
@@ -373,11 +401,12 @@ function renderResults(results, query = "") {
             </div>
           </div>
           
-          <!-- Site Redirect -->
+          <!-- Site Redirect — goes to the beginning of the entry -->
           <a 
             href="${liveSiteUrl}" 
             target="_blank" 
             rel="noopener noreferrer"
+            title="Go to the beginning of this entry"
             class="px-3 py-1.5 rounded bg-cyan-950 hover:bg-cyberCyan hover:text-black border border-cyan-800 hover:border-cyberCyan font-mono text-2xs uppercase tracking-widest text-cyberCyan text-center block transition-all shrink-0"
           >
             LAUNCH ↗
