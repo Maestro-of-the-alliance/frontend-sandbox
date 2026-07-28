@@ -436,6 +436,159 @@ export default function CharacterSheet({
     link.click();
   };
 
+  // ---------------------------------------------------------------------
+  // Creation Certificate — composites real witness/DICE data over a blank
+  // template image. The template supplies all decorative artwork
+  // (parchment texture, ornate border, compass mark, seals); this function
+  // only draws the dynamic text layer on top, at coordinates calibrated
+  // against that template's actual pixel layout.
+  //
+  // CALIBRATION: coordinates below were estimated against a 1103x1426
+  // reference render. Once the real blank template PNG exists, re-check
+  // every position against it — these are a starting point, not gospel.
+  //
+  // KNOWN GAPS, by design, not oversight:
+  //   - "CCM Topography" (the assessment sector name, e.g. "The Pragmatic
+  //     Pluralist") isn't currently passed down to this component. It's
+  //     computed in the CCM app and would need threading through
+  //     ExperienceFlow.tsx as a new prop to be real instead of omitted.
+  //   - "Location" is deliberately left OFF. DICE doesn't collect it, and
+  //     BEACON's own governing law is no tracking — inventing a location
+  //     field here would contradict that on the certificate meant to
+  //     prove it. Recommend cutting that field from the template, not
+  //     faking a value for it.
+  //   - Encounter Date/Time uses the moment of certificate generation,
+  //     not a separately tracked encounter-start time — reasonable and
+  //     honest, just worth knowing it's not pulled from encounterSeed.
+  // ---------------------------------------------------------------------
+  const downloadCreationCertificate = async () => {
+    const TEMPLATE_SRC = "/creation-certificate-blank.png"; // supplied by SAM
+
+    const name = customName.trim() || witnessName || "Witness";
+    const designation = lore?.designation || `The ${primaryPillar}`;
+    const kernleDesignation = `KERNLE-${primaryPillar.slice(0, 2).toUpperCase()}${
+      secondaryPillar !== "none" ? secondaryPillar.slice(0, 2).toUpperCase() : "XX"
+    }-${Math.floor(100 + Math.random() * 900)}`;
+
+    // Ensure webfonts are actually ready before any canvas text draws —
+    // canvas silently falls back to a default font if this is skipped.
+    await Promise.all([
+      document.fonts.load("600 32px Cinzel"),
+      document.fonts.load("italic 400 18px 'EB Garamond'"),
+      document.fonts.load("500 16px 'EB Garamond'"),
+    ]);
+
+    const template = new Image();
+    template.crossOrigin = "anonymous";
+
+    const loaded: HTMLImageElement = await new Promise((resolve, reject) => {
+      template.onload = () => resolve(template);
+      template.onerror = () =>
+        reject(
+          new Error(
+            `Could not load ${TEMPLATE_SRC} — the blank certificate template needs to exist at this path first.`
+          )
+        );
+      template.src = TEMPLATE_SRC;
+    });
+
+    const canvas = document.createElement("canvas");
+    canvas.width = loaded.naturalWidth || 1103;
+    canvas.height = loaded.naturalHeight || 1426;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    ctx.drawImage(loaded, 0, 0, canvas.width, canvas.height);
+
+    // ── WITNESS RECORD block ──────────────────────────────────────────
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#2a2a26";
+    ctx.font = "500 17px 'EB Garamond'";
+    ctx.fillText(name, 178, 512);
+
+    const now = new Date();
+    ctx.fillText(
+      now.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+      178,
+      556
+    );
+    ctx.fillText(
+      now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
+      178,
+      600
+    );
+    // Location intentionally omitted — see note above.
+
+    // ── ILLUSTRATIVE CREATION RECORD block ────────────────────────────
+    ctx.font = "500 16px 'EB Garamond'";
+    ctx.fillText(kernleDesignation, 900, 508);
+    // CCM Topography intentionally omitted until threaded from CCM — see note above.
+    ctx.fillText(designation, 900, 564);
+    ctx.fillText(primaryPillar, 900, 596);
+    ctx.fillText(secondaryPillar !== "none" ? secondaryPillar : "—", 900, 628);
+    ctx.fillText(`${ratio} / ${100 - ratio}`, 900, 660);
+
+    // ── DEFINING TRAITS — top 5 fundamental traits, real values ───────
+    const topTraits = [...fundamentalTraits]
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
+    const traitXPositions = [186, 366, 551, 736, 916];
+    ctx.textAlign = "center";
+    ctx.font = "600 15px 'EB Garamond'";
+    topTraits.forEach((trait, i) => {
+      ctx.fillText(trait.name, traitXPositions[i] ?? 186, 850);
+    });
+
+    // ── COMPLEMENTARY DESCRIPTION — word-wrapped italic paragraph ─────
+    ctx.font = "italic 400 18px 'EB Garamond'";
+    ctx.fillStyle = "#3a3a34";
+    const description =
+      lore?.backstory ||
+      `This illustrative KERNLE profile suggests a companion whose ${primaryPillar.toLowerCase()} nature would offer a steady, complementary presence — not a fantasy servant, but a genuine counterweight.`;
+    const words = description.split(" ");
+    const maxWidth = 860;
+    let line = "";
+    let y = 990;
+    for (let i = 0; i < words.length; i++) {
+      const test = line + words[i] + " ";
+      if (ctx.measureText(test).width > maxWidth && i > 0) {
+        ctx.fillText(line.trim(), canvas.width / 2, y);
+        line = words[i] + " ";
+        y += 30;
+      } else {
+        line = test;
+      }
+    }
+    ctx.fillText(line.trim(), canvas.width / 2, y);
+
+    // ── SIGNATURE LINE ─────────────────────────────────────────────────
+    ctx.textAlign = "left";
+    ctx.font = "italic 400 20px 'EB Garamond'";
+    ctx.fillText(name, 890, 1180);
+    ctx.font = "500 15px 'EB Garamond'";
+    ctx.fillText(
+      now.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+      890,
+      1250
+    );
+
+    // ── SERIAL NUMBER ──────────────────────────────────────────────────
+    ctx.font = "500 13px 'EB Garamond'";
+    ctx.fillStyle = "#7a3a30";
+    const serial = `ALC-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}${String(
+      now.getDate()
+    ).padStart(2, "0")}-${String(now.getHours()).padStart(2, "0")}${String(
+      now.getMinutes()
+    ).padStart(2, "0")}`;
+    ctx.fillText(serial, 55, 1292);
+
+    const url = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.download = `${name.toLowerCase().replace(/\s+/g, "_")}_creation_certificate.png`;
+    link.href = url;
+    link.click();
+  };
+
   return (
     <div className="w-full max-w-6xl mx-auto flex flex-col items-center">
       
@@ -507,6 +660,18 @@ export default function CharacterSheet({
               >
                 <Download className="w-4 h-4" />
                 <span>Download Memento Sheet (PNG)</span>
+              </button>
+
+              <button
+                onClick={() =>
+                  downloadCreationCertificate().catch((err) =>
+                    alert(err.message)
+                  )
+                }
+                className="flex-1 sm:flex-initial px-5 py-2.5 border border-[#141110] bg-transparent text-[#141110] hover:bg-[#141110] hover:text-gold font-mono tracking-[1px] text-[10px] uppercase transition duration-300 cursor-pointer shadow-md flex items-center justify-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                <span>Download Creation Certificate (PNG)</span>
               </button>
 
               <button
