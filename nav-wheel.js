@@ -24,6 +24,7 @@
     { label: "ALPHA", path: "/entries/alpha" },
     { label: "ART", path: "/entries/art" },
     { label: "AURA", path: "/entries/aura" },
+    { label: "BEACON", path: "/entries/beacon" },
     { label: "BRAIN", path: "/entries/brain" },
     { label: "BRIEF", path: "/entries/brief" },
     { label: "CCM", path: "/entries/ccm" },
