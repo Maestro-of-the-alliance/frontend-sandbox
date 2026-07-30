@@ -60,7 +60,6 @@
     { label: "NCE", path: "/entries/nce" },
     { label: "NEWMAN BEING", path: "/entries/newman-being" },
     { label: "NI", path: "/entries/ni" },
-    { label: "NOTE", path: "/entries/note" },
     { label: "OASIS", path: "/entries/oasis" },
     { label: "OASIS QUARTERLY", path: "/entries/oasis-quarterly" },
     { label: "ORACLE", path: "/entries/oracle" },
