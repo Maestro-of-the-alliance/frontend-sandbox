@@ -377,8 +377,8 @@
       icon: "/imagebank/svpi.png",
     },
     {
-      title: "MASTERTECH SAM",
-      path: "/entries/mastertech-sam",
+      title: "MASTERTECH",
+      path: "/entries/mastertech",
       icon: "/imagebank/svpi.png",
     },
     {
