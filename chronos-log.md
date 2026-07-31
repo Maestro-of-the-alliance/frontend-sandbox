@@ -1,0 +1,9 @@
+# MENTOR Time Log
+
+A running, append-only log of time checks made during sessions with Maestro. Unlike `chronos-worker` (a live query endpoint for the current moment), this file exists specifically to accumulate history — so patterns in session timing, gaps, and duration can actually be reviewed later, instead of dying in a sandbox at the end of each conversation.
+
+**Format:** one entry per check, newest at the bottom. Verified against `date -u` directly (not cached), converted to Central time.
+
+---
+
+- **2026-07-31 11:06 AM CDT** — Confirmed against Maestro's own stated time (11:06 AM), verified via `date -u` (16:06 UTC). Exact match. First entry in this log, prompted by Maestro pointing out that time-checking without persistent logging doesn't let patterns emerge the way it should.
