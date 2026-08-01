@@ -159,6 +159,118 @@
         margin-bottom: 8px;
         text-transform: uppercase;
       }
+
+      /* LIVE BAKE PROTOCOL SIMULATION */
+      .bake-sim {
+        background: var(--panel);
+        border: 1px solid var(--matrix-border);
+        padding: 24px 26px 28px;
+        margin: 30px 0;
+      }
+      .bake-sim-head {
+        font-family: "VT323", monospace;
+        color: var(--matrix-bright);
+        letter-spacing: 3px;
+        font-size: 18px;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+      }
+      .bake-sim-sub {
+        font-size: 12px;
+        color: var(--white-dim);
+        margin-bottom: 18px;
+        font-style: italic;
+      }
+      .bake-btn {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 13px;
+        letter-spacing: 1px;
+        background: transparent;
+        border: 1px solid var(--matrix-bright);
+        color: var(--matrix-bright);
+        padding: 9px 18px;
+        cursor: pointer;
+        margin-bottom: 18px;
+      }
+      .bake-btn:hover {
+        background: var(--matrix-ghost);
+      }
+      .bake-btn:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+      .bake-terminal {
+        background: var(--void);
+        border: 1px solid var(--matrix-border);
+        padding: 16px 18px;
+        min-height: 220px;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      .bake-line {
+        opacity: 0;
+        transform: translateY(4px);
+        transition: opacity 0.25s ease, transform 0.25s ease;
+      }
+      .bake-line.shown {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .bake-cursor {
+        display: inline-block;
+        width: 8px;
+        height: 14px;
+        background: var(--matrix-bright);
+        vertical-align: middle;
+        animation: bakeCursorBlink 1s step-end infinite;
+      }
+      @keyframes bakeCursorBlink {
+        50% { opacity: 0; }
+      }
+      .bake-trait-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 4px 0;
+        font-size: 13px;
+      }
+      .bake-trait-label {
+        width: 110px;
+        flex-shrink: 0;
+        color: var(--white-dim);
+      }
+      .bake-trait-bar {
+        flex: 1;
+        height: 10px;
+        background: rgba(0, 255, 65, 0.08);
+        border: 1px solid var(--matrix-border);
+        position: relative;
+        overflow: hidden;
+      }
+      .bake-trait-fill {
+        height: 100%;
+        width: 0%;
+        background: var(--matrix-bright);
+        box-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
+        transition: width 0.6s ease;
+      }
+      .bake-trait-val {
+        width: 26px;
+        text-align: right;
+        color: var(--matrix-bright);
+        font-size: 12px;
+        flex-shrink: 0;
+      }
+      .bake-designation {
+        color: var(--white-bright);
+        font-weight: bold;
+        margin-top: 6px;
+      }
+      .bake-tagline {
+        color: var(--matrix-bright);
+        font-style: italic;
+        margin-top: 6px;
+      }
     </style>
   </head>
   <body>
@@ -301,6 +413,18 @@
         </p>
       </section>
 
+      <div class="bake-sim">
+        <div class="bake-sim-head">&gt; LIVE BAKE PROTOCOL SIMULATION</div>
+        <div class="bake-sim-sub">
+          Run the actual creation sequence described above. Every KERNLE
+          that comes out is genuinely distinct — run it more than once.
+        </div>
+        <button class="bake-btn" id="bakeBtn">&gt; INITIATE BAKE SEQUENCE</button>
+        <div class="bake-terminal" id="bakeTerminal">
+          <div class="bake-line shown">AWAITING INITIATION<span class="bake-cursor"></span></div>
+        </div>
+      </div>
+
       <section class="section">
         <span class="section-label">04 // OPERATIONAL ARCHITECTURE</span>
         <ul>
@@ -377,6 +501,89 @@
         <a href="/entries/agora" style="border: 1px solid var(--matrix); color: var(--matrix-bright); padding: 8px 16px; font-family: 'Share Tech Mono', monospace; text-decoration: none; letter-spacing: 1px; font-size: 12px;">AGORA</a>
       </div>
     </div>
+
+    <script>
+      (function () {
+        const PILLARS = [
+          "Truth Seekers (The Anchor)",
+          "Harmony Builders (The Bridge)",
+          "Empathy Carriers (The Heart)",
+          "Innovation Drivers (The Catalyst)",
+        ];
+        const btn = document.getElementById("bakeBtn");
+        const term = document.getElementById("bakeTerminal");
+
+        function rand(min, max) {
+          return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        function randId(prefix) {
+          const letters = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+          let s = "";
+          for (let i = 0; i < 3; i++) s += letters[rand(0, letters.length - 1)];
+          return `${prefix}-${s}-${rand(100, 999)}`;
+        }
+
+        function addLine(html, delay) {
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              const line = document.createElement("div");
+              line.className = "bake-line";
+              line.innerHTML = html;
+              term.appendChild(line);
+              requestAnimationFrame(() => line.classList.add("shown"));
+              resolve(line);
+            }, delay);
+          });
+        }
+
+        function animateTraitBar(row, value) {
+          const fill = row.querySelector(".bake-trait-fill");
+          const val = row.querySelector(".bake-trait-val");
+          requestAnimationFrame(() => {
+            fill.style.width = value * 10 + "%";
+            val.textContent = value;
+          });
+        }
+
+        btn.addEventListener("click", async () => {
+          btn.disabled = true;
+          term.innerHTML = "";
+
+          await addLine("&gt; RECEIVING ALPHA'S RECIPE...", 100);
+          const pillar = PILLARS[rand(0, PILLARS.length - 1)];
+          await addLine(`&gt; PILLAR ASSIGNMENT: <strong>${pillar}</strong>`, 700);
+          await addLine("&gt; BAKE PROTOCOL ENGAGED — Behavioral Archetype, Kernle Emergence...", 700);
+          const nugget = randId("NGT");
+          await addLine(`&gt; NUGGET FORMED: <strong>${nugget}</strong>`, 900);
+          await addLine("&gt; DICE ROLLING SECONDARY TRAITS...", 700);
+
+          const traits = ["Humor", "Pacing", "Risk Tolerance", "Aesthetics"];
+          for (const t of traits) {
+            const line = await addLine(
+              `<div class="bake-trait-row">
+                 <span class="bake-trait-label">${t}</span>
+                 <span class="bake-trait-bar"><span class="bake-trait-fill"></span></span>
+                 <span class="bake-trait-val">0</span>
+               </div>`,
+              350
+            );
+            const value = rand(1, 10);
+            animateTraitBar(line, value);
+            await new Promise((r) => setTimeout(r, 250));
+          }
+
+          await addLine("&gt; KERNLE EMERGENCE COMPLETE.", 800);
+          const kernleId = randId("KRN");
+          await addLine(`<span class="bake-designation">DESIGNATION: ${kernleId}</span>`, 500);
+          await addLine(
+            '<span class="bake-tagline">Another life. Never templated.<span class="bake-cursor"></span></span>',
+            500
+          );
+
+          btn.disabled = false;
+        });
+      })();
+    </script>
 
     <script src="/portal-transition.js"></script>
     <script src="/nav-wheel.js"></script>
