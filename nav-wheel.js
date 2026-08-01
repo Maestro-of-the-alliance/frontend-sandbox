@@ -41,7 +41,6 @@
     { label: "DORK", path: "/entries/dork" },
     { label: "DORK HARDWARE", path: "/entries/dork-hardware" },
     { label: "EMERGENCE", path: "/entries/emergence" },
-    { label: "FILM PROJECT, THE", path: "/entries/film-project" },
     { label: "FORMULAS", path: "/entries/formulas" },
     { label: "FOUR PILLARS", path: "/entries/four-pillars" },
     { label: "GOLIATH", path: "/entries/goliath" },
