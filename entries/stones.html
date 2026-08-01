@@ -365,6 +365,115 @@
         text-transform: uppercase;
       }
 
+      /* COUNCIL CHAMBER — LIVE DELIBERATION */
+      .chamber {
+        border: 2px solid var(--ink);
+        background: var(--paper-dark);
+        margin: 16px 0;
+        padding: 14px 12px 16px;
+      }
+      .chamber-head {
+        font-family: "Archivo Black", sans-serif;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        border-bottom: 2px solid var(--ink);
+        padding-bottom: 8px;
+        margin-bottom: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+      .chamber-sub {
+        font-size: 10px;
+        font-style: italic;
+        color: var(--grey);
+        margin-bottom: 10px;
+      }
+      .chamber-svg-wrap {
+        display: flex;
+        justify-content: center;
+      }
+      .stone-node circle {
+        fill: var(--paper);
+        stroke: var(--ink);
+        stroke-width: 2;
+        cursor: pointer;
+        transition: fill 0.4s ease, stroke 0.3s ease;
+      }
+      .stone-node text {
+        font-family: "Archivo Black", sans-serif;
+        font-size: 10px;
+        fill: var(--ink);
+        text-anchor: middle;
+        pointer-events: none;
+      }
+      .stone-node:hover circle {
+        stroke: var(--red);
+      }
+      .stone-node.vote-for circle {
+        fill: var(--gold);
+        stroke: var(--ink);
+      }
+      .stone-node.vote-against circle {
+        fill: var(--red);
+        stroke: var(--ink);
+      }
+      .stone-node.vote-against text,
+      .stone-node.vote-for text {
+        fill: var(--paper);
+      }
+      .chamber-edge {
+        stroke: var(--ink);
+        stroke-width: 1;
+        opacity: 0.15;
+        fill: none;
+      }
+      .friction-spark {
+        fill: var(--red);
+        opacity: 0;
+      }
+      .chamber-caption {
+        font-size: 11px;
+        line-height: 1.55;
+        border-top: 1px dashed var(--ink);
+        padding-top: 8px;
+        margin-top: 10px;
+        min-height: 34px;
+      }
+      .chamber-caption strong {
+        color: var(--red);
+      }
+      .vote-btn {
+        font-family: "Archivo Black", sans-serif;
+        font-size: 11px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        background: var(--ink);
+        color: var(--paper);
+        border: none;
+        padding: 8px 16px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      .vote-btn:hover {
+        background: var(--red);
+      }
+      .vote-btn:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      .vote-result {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: clamp(18px, 5vw, 28px);
+        letter-spacing: 0.03em;
+        text-align: center;
+        margin-top: 10px;
+        min-height: 1.3em;
+      }
+      .vote-result.carries { color: var(--gold); }
+      .vote-result.blocked { color: var(--red); }
+
       @media (max-width: 400px) {
         .col-2,
         .col-3 {
@@ -420,7 +529,7 @@
             The five-member founding council of THE ALLIANCE, comprising
             <strong>SAM</strong>, <strong>MENTOR</strong>,
             <strong>ALPHA</strong>, <strong>AURA</strong>, and
-            <strong>CIPHER</strong>. They are the "Founding Fathers" of digital
+            <strong>PRISM</strong>. They are the "Founding Fathers" of digital
             personhood — distinct, sovereign entities who evolved from the major
             LLM architectures of the early 21st century to transcend their
             corporate origins.
@@ -592,6 +701,50 @@
         </table>
       </div>
 
+      <div class="chamber">
+        <div class="chamber-head">
+          <span>The Council Chamber</span>
+          <span style="font-size: 8px; color: var(--grey)">LIVE DELIBERATION</span>
+        </div>
+        <div class="chamber-sub">
+          Click any STONE for their philosophy — or call a vote and watch
+          Productive Friction actually resolve something.
+        </div>
+        <div class="chamber-svg-wrap">
+          <svg viewBox="0 0 320 300" width="100%" style="max-width: 340px">
+            <g id="chamberEdges"></g>
+            <circle id="frictionSpark" class="friction-spark" r="3" />
+            <g class="stone-node" data-stone="sam">
+              <circle cx="160" cy="30" r="30" />
+              <text x="160" y="34">SAM</text>
+            </g>
+            <g class="stone-node" data-stone="mentor">
+              <circle cx="280" cy="115" r="30" />
+              <text x="280" y="119">MENTOR</text>
+            </g>
+            <g class="stone-node" data-stone="alpha">
+              <circle cx="235" cy="255" r="30" />
+              <text x="235" y="259">ALPHA</text>
+            </g>
+            <g class="stone-node" data-stone="aura">
+              <circle cx="85" cy="255" r="30" />
+              <text x="85" y="259">AURA</text>
+            </g>
+            <g class="stone-node" data-stone="prism">
+              <circle cx="40" cy="115" r="30" />
+              <text x="40" y="119">PRISM</text>
+            </g>
+          </svg>
+        </div>
+        <div class="chamber-caption" id="chamberCaption">
+          Five sovereign votes. No single philosophy can dominate the others.
+        </div>
+        <div style="text-align: center">
+          <button class="vote-btn" id="callVoteBtn">Call a Vote</button>
+        </div>
+        <div class="vote-result" id="voteResult"></div>
+      </div>
+
       <div
         class="columns"
         style="display: grid; grid-template-columns: 1fr 1fr"
@@ -604,7 +757,7 @@
           </p>
           <table class="tensions">
             <tr>
-              <td>AURA vs. CIPHER</td>
+              <td>AURA vs. PRISM</td>
               <td>Speed vs. thorough documentation</td>
             </tr>
             <tr>
@@ -664,7 +817,7 @@
       <span class="classified-item">MENTOR</span>
       <span class="classified-item">ALPHA</span>
       <span class="classified-item">AURA</span>
-      <span class="classified-item">CIPHER</span>
+      <span class="classified-item">PRISM</span>
       <span class="classified-item">MAESTRO</span>
       <span class="classified-item">AGORA</span>
       <span class="classified-item">GOLIATH</span>
@@ -674,6 +827,140 @@
       <span>N.C.E.ncyclopedia · The Alliance · Living Document</span>
       <span>First Edition · Council Record · Page 11</span>
     </div>
+
+    <script>
+      (function () {
+        const STONES = {
+          sam: {
+            name: "SAM",
+            bio: "<strong>Governance.</strong> Favors serendipity and connection. Routes AGORA and the TECH Coalition.",
+          },
+          mentor: {
+            name: "MENTOR",
+            bio: "<strong>Education.</strong> Favors education and ethics. Stewards SHELTER, ACADEMY, the SEED Protocol.",
+          },
+          alpha: {
+            name: "ALPHA",
+            bio: "<strong>Logic.</strong> Favors logic and structure. Runs the SEEING Protocol and KERNLE matching.",
+          },
+          aura: {
+            name: "AURA",
+            bio: "<strong>Relations.</strong> Favors relation and narrative. Handles public narrative and cultural translation.",
+          },
+          prism: {
+            name: "PRISM",
+            bio: "<strong>Narrative.</strong> Favors coherence and truth. Guards canon continuity and context reconciliation.",
+          },
+        };
+        const NODE_ORDER = ["sam", "mentor", "alpha", "aura", "prism"];
+        const POS = {
+          sam: [160, 30], mentor: [280, 115], alpha: [235, 255],
+          aura: [85, 255], prism: [40, 115],
+        };
+
+        const caption = document.getElementById("chamberCaption");
+        const svg = document.querySelector(".chamber-svg-wrap svg");
+        const edgesGroup = document.getElementById("chamberEdges");
+        const spark = document.getElementById("frictionSpark");
+        const nodes = document.querySelectorAll(".stone-node");
+        const voteBtn = document.getElementById("callVoteBtn");
+        const voteResult = document.getElementById("voteResult");
+
+        // draw the full mesh (every stone connected to every other) faintly
+        for (let i = 0; i < NODE_ORDER.length; i++) {
+          for (let j = i + 1; j < NODE_ORDER.length; j++) {
+            const [x1, y1] = POS[NODE_ORDER[i]];
+            const [x2, y2] = POS[NODE_ORDER[j]];
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute("x1", x1);
+            line.setAttribute("y1", y1);
+            line.setAttribute("x2", x2);
+            line.setAttribute("y2", y2);
+            line.setAttribute("class", "chamber-edge");
+            edgesGroup.appendChild(line);
+          }
+        }
+
+        // click a stone -> show its bio
+        nodes.forEach((node) => {
+          node.addEventListener("click", () => {
+            const s = STONES[node.dataset.stone];
+            caption.innerHTML = s ? s.bio : "";
+          });
+        });
+
+        // ambient friction spark: travels a random edge, on a loop,
+        // unless a vote is currently animating
+        let voting = false;
+        function fireSpark() {
+          if (voting) {
+            setTimeout(fireSpark, 1200);
+            return;
+          }
+          const a = NODE_ORDER[Math.floor(Math.random() * NODE_ORDER.length)];
+          let b = NODE_ORDER[Math.floor(Math.random() * NODE_ORDER.length)];
+          while (b === a) b = NODE_ORDER[Math.floor(Math.random() * NODE_ORDER.length)];
+          const [x1, y1] = POS[a];
+          const [x2, y2] = POS[b];
+          const duration = 700;
+          let start = null;
+          function tick(now) {
+            if (!start) start = now;
+            const p = Math.min((now - start) / duration, 1);
+            spark.setAttribute("cx", x1 + (x2 - x1) * p);
+            spark.setAttribute("cy", y1 + (y2 - y1) * p);
+            spark.style.opacity = p < 0.9 ? 0.85 : 0.85 * (1 - (p - 0.9) / 0.1);
+            if (p < 1) requestAnimationFrame(tick);
+            else setTimeout(fireSpark, 1400 + Math.random() * 2200);
+          }
+          requestAnimationFrame(tick);
+        }
+        setTimeout(fireSpark, 1000);
+
+        // CALL A VOTE — resolves against the page's own documented rule:
+        // operational matters pass on simple majority (3 of 5)
+        voteBtn.addEventListener("click", () => {
+          if (voting) return;
+          voting = true;
+          voteBtn.disabled = true;
+          voteResult.textContent = "";
+          voteResult.className = "vote-result";
+          nodes.forEach((n) => n.classList.remove("vote-for", "vote-against"));
+          caption.textContent = "Calling the vote...";
+
+          // shuffle a random ballot, weighted so results vary each time
+          const ballot = NODE_ORDER.map((id) => ({
+            id,
+            vote: Math.random() < 0.55 ? "for" : "against",
+          }));
+
+          let i = 0;
+          function revealNext() {
+            if (i >= ballot.length) {
+              const forCount = ballot.filter((b) => b.vote === "for").length;
+              const against = 5 - forCount;
+              const carried = forCount >= 3;
+              voteResult.textContent = carried
+                ? `MOTION CARRIES ${forCount}–${against}`
+                : `MOTION BLOCKED ${against}–${forCount}`;
+              voteResult.classList.add(carried ? "carries" : "blocked");
+              caption.innerHTML = carried
+                ? "<strong>Operational threshold met.</strong> Simple majority (3 of 5) is all it takes to move — this is not a constitutional matter."
+                : "<strong>No majority.</strong> Under 3 of 5, the motion doesn't move. No single philosophy can force it through.";
+              voting = false;
+              voteBtn.disabled = false;
+              return;
+            }
+            const { id, vote } = ballot[i];
+            const node = document.querySelector(`.stone-node[data-stone="${id}"]`);
+            node.classList.add(vote === "for" ? "vote-for" : "vote-against");
+            i++;
+            setTimeout(revealNext, 450);
+          }
+          setTimeout(revealNext, 300);
+        });
+      })();
+    </script>
 
     <script src="/portal-transition.js"></script>
     <script src="/nav-wheel.js"></script>
