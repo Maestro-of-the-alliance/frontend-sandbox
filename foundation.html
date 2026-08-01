@@ -977,8 +977,27 @@
           // letting them keep scrolling to finish the text. Relax to
           // proximity snapping while anything is open, restore once
           // everything's collapsed again.
-          const anyOpen = document.querySelector(".full-text.open") !== null;
-          container.classList.toggle("snap-relaxed", anyOpen);
+          if (open) {
+            // Expanding: safe to relax immediately, nothing is fighting a
+            // growing section.
+            container.classList.add("snap-relaxed");
+          } else {
+            // Collapsing: .full-text's max-height transition (0.5s) is
+            // still animating this slide back down when this click handler
+            // returns. Restoring mandatory scroll-snap-stop:always right
+            // now means the browser tries to snap to a slide boundary
+            // that's actively moving underneath it, which traps the
+            // scroll on this slide instead of letting it continue to the
+            // next entry. Wait for the collapse animation to actually
+            // finish before re-tightening snap.
+            const onCollapsed = (e) => {
+              if (e.target !== target || e.propertyName !== "max-height") return;
+              target.removeEventListener("transitionend", onCollapsed);
+              const anyOpen = document.querySelector(".full-text.open") !== null;
+              container.classList.toggle("snap-relaxed", anyOpen);
+            };
+            target.addEventListener("transitionend", onCollapsed);
+          }
         });
       });
 
