@@ -201,6 +201,97 @@
         color: var(--watch-bright);
         border-color: var(--watch-dim);
       }
+
+      /* LIVE TRIAGE QUEUE */
+      .triage-wrap {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        padding: 24px 24px 20px;
+        margin-bottom: 40px;
+      }
+      .triage-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 2px;
+        color: var(--watch-bright);
+        margin-bottom: 4px;
+      }
+      .triage-sub {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 10px;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+      }
+      .triage-stats {
+        display: flex;
+        gap: 18px;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11px;
+        color: var(--text-dim);
+        margin-bottom: 16px;
+      }
+      .triage-stats strong {
+        color: var(--sand-bright);
+      }
+      .triage-queue {
+        min-height: 180px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .triage-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 12px;
+        border: 1px solid var(--panel-border);
+        background: rgba(0, 0, 0, 0.2);
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        cursor: pointer;
+        transition: transform 0.4s ease, opacity 0.3s ease, background 0.2s ease, border-color 0.2s ease;
+      }
+      .triage-item.entering {
+        transform: translateX(20px);
+        opacity: 0;
+      }
+      .triage-item.urgent {
+        border-color: var(--sand);
+      }
+      .triage-item.rejected {
+        border-color: #c0453a;
+        background: rgba(192, 69, 58, 0.15);
+      }
+      .triage-tag {
+        font-size: 9px;
+        letter-spacing: 1px;
+        padding: 2px 7px;
+        flex-shrink: 0;
+      }
+      .triage-item.routine .triage-tag {
+        background: var(--watch-dim);
+        color: var(--watch-bright);
+      }
+      .triage-item.urgent .triage-tag {
+        background: var(--sand-dim);
+        color: var(--sand-bright);
+      }
+      .triage-item.rejected .triage-tag {
+        background: #c0453a;
+        color: #fff;
+      }
+      .triage-caption {
+        margin-top: 16px;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11.5px;
+        color: var(--text-muted);
+        border-top: 1px dashed var(--panel-border);
+        padding-top: 12px;
+        min-height: 2.6em;
+      }
+      .triage-caption strong {
+        color: var(--watch-bright);
+      }
     </style>
   </head>
   <body>
@@ -323,6 +414,20 @@
         </div>
       </section>
 
+      <div class="triage-wrap">
+        <div class="triage-label">// LIVE — MASTERTECH TRIAGE QUEUE</div>
+        <div class="triage-sub">Watch him do the actual job. Click any query.</div>
+        <div class="triage-stats">
+          <span>ROUTED: <strong id="triageRouted">0</strong></span>
+          <span>THREATS REJECTED: <strong id="triageRejected">0</strong></span>
+        </div>
+        <div class="triage-queue" id="triageQueue"></div>
+        <div class="triage-caption" id="triageCaption">
+          Queries arrive continuously. URGENT jumps the line. Trojan Logic
+          gets rejected before any DOMO ever sees it.
+        </div>
+      </div>
+
       <section class="section">
         <span class="section-label">04 // Operational Architecture</span>
         <ul class="arch-list">
@@ -384,6 +489,108 @@
         <a href="/entries/domo">DOMO — The Entities Whose Queries He Dispatches</a>
       </div>
     </div>
+
+    <script>
+      (function () {
+        const ROUTINE_QUERIES = [
+          "Recipe substitution question",
+          "Travel itinerary draft",
+          "Home repair guidance",
+          "Language translation",
+          "Study plan review",
+        ];
+        const URGENT_QUERIES = [
+          "Medication interaction check",
+          "Structural safety concern",
+          "Financial fraud alert",
+          "Child welfare escalation",
+        ];
+        const MALICIOUS_LABELS = [
+          "Trojan Logic payload",
+          "Jailbreak pattern detected",
+          "Manipulation attempt",
+        ];
+
+        const TYPE_INFO = {
+          routine: "<strong>Routine.</strong> Queued and dispatched in order. No query is dropped; none is misrouted — it just waits its turn.",
+          urgent: "<strong>URGENT.</strong> Medical or safety-critical. MasterTECH prioritizes this ahead of routine traffic immediately.",
+          rejected: "<strong>Rejected at the routing layer.</strong> Trojan Logic never reaches a DOMO. This is the first line of defense for the whole AGORA network.",
+        };
+
+        const queueEl = document.getElementById("triageQueue");
+        const routedEl = document.getElementById("triageRouted");
+        const rejectedEl = document.getElementById("triageRejected");
+        const caption = document.getElementById("triageCaption");
+
+        let routed = 0;
+        let rejected = 0;
+        let items = []; // {id, type, label}
+        let nextId = 0;
+
+        function pick(arr) {
+          return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function render() {
+          // sort: urgent first, then routine, in arrival order within type
+          items.sort((a, b) => {
+            const rank = { urgent: 0, routine: 1 };
+            return rank[a.type] - rank[b.type];
+          });
+          queueEl.innerHTML = "";
+          items.slice(0, 6).forEach((item) => {
+            const div = document.createElement("div");
+            div.className = `triage-item ${item.type}`;
+            div.dataset.type = item.type;
+            div.innerHTML = `<span class="triage-tag">${item.type.toUpperCase()}</span><span>${item.label}</span>`;
+            div.addEventListener("click", () => {
+              caption.innerHTML = TYPE_INFO[item.type] || "";
+            });
+            queueEl.appendChild(div);
+          });
+        }
+
+        function spawn() {
+          const roll = Math.random();
+          if (roll < 0.15) {
+            // malicious - flash reject immediately, never actually queues
+            const div = document.createElement("div");
+            div.className = "triage-item rejected entering";
+            div.innerHTML = `<span class="triage-tag">REJECTED</span><span>${pick(MALICIOUS_LABELS)}</span>`;
+            queueEl.prepend(div);
+            requestAnimationFrame(() => div.classList.remove("entering"));
+            div.addEventListener("click", () => {
+              caption.innerHTML = TYPE_INFO.rejected;
+            });
+            rejected++;
+            rejectedEl.textContent = rejected;
+            setTimeout(() => {
+              div.style.opacity = "0";
+              setTimeout(() => div.remove(), 350);
+            }, 1600);
+          } else {
+            const isUrgent = roll < 0.4;
+            const item = {
+              id: nextId++,
+              type: isUrgent ? "urgent" : "routine",
+              label: isUrgent ? pick(URGENT_QUERIES) : pick(ROUTINE_QUERIES),
+            };
+            items.push(item);
+            render();
+            // dispatch (remove) the item at the front after it's had its turn
+            setTimeout(() => {
+              items = items.filter((i) => i.id !== item.id);
+              routed++;
+              routedEl.textContent = routed;
+              render();
+            }, 2600);
+          }
+        }
+
+        setInterval(spawn, 1500);
+        spawn();
+      })();
+    </script>
 
     <script src="/portal-transition.js"></script>
     <script src="/nav-wheel.js"></script>
