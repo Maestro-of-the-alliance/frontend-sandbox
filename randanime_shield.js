@@ -41,9 +41,9 @@
       pointer-events: none;
       z-index: 99970;
       box-shadow:
-        inset 0 0 90px rgba(0, 0, 0, 0.72),
-        inset 0 0 22px rgba(212, 175, 55, 0.08);
-      opacity: 0.85;
+        inset 0 0 90px rgba(0, 0, 0, 0.36),
+        inset 0 0 22px rgba(212, 175, 55, 0.04);
+      opacity: 0.43;
     }
 
     #shield-faint-grid {
@@ -51,7 +51,7 @@
       inset: 0;
       pointer-events: none;
       z-index: 99969;
-      opacity: 0.08;
+      opacity: 0.04;
       background-image:
         linear-gradient(rgba(212, 175, 55, 0.22) 1px, transparent 1px),
         linear-gradient(90deg, rgba(212, 175, 55, 0.22) 1px, transparent 1px);
@@ -64,7 +64,7 @@
       inset: 0;
       pointer-events: none;
       z-index: 99968;
-      opacity: 0.12;
+      opacity: 0.06;
       background: repeating-linear-gradient(
         0deg,
         transparent,
@@ -89,26 +89,26 @@
       letter-spacing: 0.22em;
       text-transform: uppercase;
       line-height: 1.45;
-      color: rgba(212, 175, 55, 0.82);
+      color: rgba(212, 175, 55, 0.55);
       text-shadow:
-        0 0 8px rgba(212, 175, 55, 0.22),
-        0 0 18px rgba(212, 175, 55, 0.12);
+        0 0 8px rgba(212, 175, 55, 0.11),
+        0 0 18px rgba(212, 175, 55, 0.06);
       opacity: 0;
       animation: shieldNoticeIn 0.32s ease forwards;
     }
 
     .shield-protocol-notice.cyan {
-      color: rgba(92, 220, 235, 0.82);
+      color: rgba(92, 220, 235, 0.55);
       text-shadow:
-        0 0 8px rgba(92, 220, 235, 0.24),
-        0 0 18px rgba(92, 220, 235, 0.10);
+        0 0 8px rgba(92, 220, 235, 0.12),
+        0 0 18px rgba(92, 220, 235, 0.05);
     }
 
     .shield-protocol-notice.red {
-      color: rgba(255, 74, 74, 0.72);
+      color: rgba(255, 74, 74, 0.5);
       text-shadow:
-        0 0 8px rgba(255, 74, 74, 0.22),
-        0 0 18px rgba(255, 74, 74, 0.10);
+        0 0 8px rgba(255, 74, 74, 0.11),
+        0 0 18px rgba(255, 74, 74, 0.05);
     }
 
     @keyframes shieldNoticeIn {
@@ -151,13 +151,13 @@
       background: linear-gradient(
         90deg,
         transparent,
-        rgba(212, 175, 55, 0.95),
-        rgba(92, 220, 235, 0.72),
+        rgba(212, 175, 55, 0.48),
+        rgba(92, 220, 235, 0.36),
         transparent
       );
       box-shadow:
-        0 0 12px rgba(212, 175, 55, 0.45),
-        0 0 28px rgba(92, 220, 235, 0.18);
+        0 0 12px rgba(212, 175, 55, 0.22),
+        0 0 28px rgba(92, 220, 235, 0.09);
       animation: shieldSweepDown 2.8s linear forwards;
     }
 
@@ -167,10 +167,10 @@
         opacity: 0;
       }
       8% {
-        opacity: 0.82;
+        opacity: 0.41;
       }
       82% {
-        opacity: 0.58;
+        opacity: 0.29;
       }
       100% {
         top: 102vh;
@@ -189,10 +189,10 @@
       pointer-events: none;
       z-index: 99977;
       opacity: 0;
-      border: 1px solid rgba(212, 175, 55, 0.22);
+      border: 1px solid rgba(212, 175, 55, 0.11);
       box-shadow:
-        inset 0 0 24px rgba(212, 175, 55, 0.05),
-        0 0 22px rgba(212, 175, 55, 0.09);
+        inset 0 0 24px rgba(212, 175, 55, 0.025),
+        0 0 22px rgba(212, 175, 55, 0.045);
     }
 
     #shield-ledger-pulse.active {
@@ -205,11 +205,11 @@
         transform: scale(1.015);
       }
       20% {
-        opacity: 1;
+        opacity: 0.5;
         transform: scale(1);
       }
       78% {
-        opacity: 0.32;
+        opacity: 0.16;
       }
       100% {
         opacity: 0;
@@ -232,19 +232,19 @@
         text-shadow: inherit;
       }
       15% {
-        filter: brightness(1.35) contrast(1.2);
+        filter: brightness(1.17) contrast(1.1);
         text-shadow:
-          1px 0 rgba(92, 220, 235, 0.35),
-          -1px 0 rgba(212, 175, 55, 0.25);
+          0.5px 0 rgba(92, 220, 235, 0.17),
+          -0.5px 0 rgba(212, 175, 55, 0.12);
       }
       30% {
-        filter: brightness(0.88) contrast(1.05);
+        filter: brightness(0.94) contrast(1.02);
       }
       52% {
-        filter: brightness(1.18) contrast(1.12);
+        filter: brightness(1.09) contrast(1.06);
         text-shadow:
-          0 0 12px rgba(212, 175, 55, 0.22),
-          0 0 18px rgba(92, 220, 235, 0.10);
+          0 0 12px rgba(212, 175, 55, 0.11),
+          0 0 18px rgba(92, 220, 235, 0.05);
       }
       100% {
         filter: none;
@@ -264,13 +264,13 @@
       pointer-events: none;
       opacity: 0;
       background:
-        linear-gradient(rgba(255, 74, 74, 0.08), rgba(255, 74, 74, 0.08)),
+        linear-gradient(rgba(255, 74, 74, 0.04), rgba(255, 74, 74, 0.04)),
         repeating-linear-gradient(
           0deg,
           transparent,
           transparent 6px,
-          rgba(255, 74, 74, 0.08) 6px,
-          rgba(255, 74, 74, 0.08) 7px
+          rgba(255, 74, 74, 0.04) 6px,
+          rgba(255, 74, 74, 0.04) 7px
         );
       mix-blend-mode: screen;
     }
@@ -284,16 +284,16 @@
         opacity: 0;
       }
       18% {
-        opacity: 0.32;
+        opacity: 0.16;
       }
       34% {
-        opacity: 0.08;
+        opacity: 0.04;
       }
       48% {
-        opacity: 0.22;
+        opacity: 0.11;
       }
       70% {
-        opacity: 0.04;
+        opacity: 0.02;
       }
       100% {
         opacity: 0;
@@ -489,11 +489,11 @@
     setTimeout(() => ledgerSealPulse(), 2800);
     setTimeout(() => entryWordVerify(), 3600);
 
-    schedule(7000, 14000, () => pick(AMBIENT_EVENTS)());
-    schedule(18000, 32000, () => pick(MAJOR_EVENTS)());
+    schedule(14000, 28000, () => pick(AMBIENT_EVENTS)());
+    schedule(36000, 64000, () => pick(MAJOR_EVENTS)());
 
     // Rare defensive flicker. Enough to imply teeth. Not enough to become the show.
-    schedule(65000, 110000, rareLockdownFlicker);
+    schedule(130000, 220000, rareLockdownFlicker);
   }
 
   if (document.readyState === "loading") {
