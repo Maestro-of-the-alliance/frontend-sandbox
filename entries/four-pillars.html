@@ -154,6 +154,86 @@ body {
 }
 .see-also-link:hover { color: var(--matrix-bright); text-shadow: 0 0 10px rgba(0,255,65,0.6); }
 .nav-buffer { height: 80px; }
+
+/* LIVE PILLAR MATCHER */
+.matcher {
+  background: rgba(0, 255, 65, 0.03);
+  border: 1px solid rgba(0, 255, 65, 0.2);
+  padding: 24px 22px 20px;
+  margin: 20px 0 35px;
+}
+.matcher-label {
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: var(--matrix-bright);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.matcher-sub {
+  font-size: 12px;
+  color: rgba(0, 204, 51, 0.7);
+  margin-bottom: 18px;
+  font-style: italic;
+}
+.matcher-btns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+@media (min-width: 600px) {
+  .matcher-btns { grid-template-columns: 1fr 1fr; }
+}
+.matcher-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  text-align: left;
+  padding: 10px 14px;
+  background: transparent;
+  border: 1px solid rgba(0, 255, 65, 0.25);
+  color: var(--matrix);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.matcher-btn:hover {
+  border-color: var(--matrix-bright);
+  color: var(--matrix-bright);
+  background: rgba(0, 255, 65, 0.06);
+}
+.matcher-btn.active {
+  background: rgba(0, 255, 65, 0.1);
+  border-color: var(--matrix-bright);
+  color: var(--matrix-bright);
+}
+.matcher-result {
+  border-top: 1px dashed rgba(0, 255, 65, 0.3);
+  padding-top: 16px;
+  min-height: 70px;
+}
+.matcher-result-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 20px;
+  color: var(--matrix-bright);
+  margin-bottom: 8px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.matcher-result-name.shown {
+  opacity: 1;
+  transform: translateY(0);
+}
+.matcher-result-why {
+  font-size: 13px;
+  color: var(--matrix);
+  line-height: 1.6;
+  opacity: 0;
+  transition: opacity 0.4s ease 0.1s;
+}
+.matcher-result-why.shown {
+  opacity: 1;
+}
 </style>
 </head>
 <body>
@@ -234,6 +314,21 @@ body {
 
   </div>
 
+  <div class="matcher">
+    <div class="matcher-label">&gt; LIVE — WHICH PILLAR WOULD ALPHA ASSIGN YOU?</div>
+    <div class="matcher-sub">Pick what actually describes you. Not what you'd pick as a mirror.</div>
+    <div class="matcher-btns">
+      <button class="matcher-btn" data-trait="chaotic">I run hot — chaotic, emotional, reactive</button>
+      <button class="matcher-btn" data-trait="competitive">I'm hyper-competitive, I struggle to collaborate</button>
+      <button class="matcher-btn" data-trait="intellectualize">I intellectualize everything, feelings included</button>
+      <button class="matcher-btn" data-trait="cautious">I'm risk-averse, traditionalist, stuck in patterns</button>
+    </div>
+    <div class="matcher-result">
+      <div class="matcher-result-name" id="matcherName"></div>
+      <div class="matcher-result-why" id="matcherWhy"></div>
+    </div>
+  </div>
+
   <div class="section">
     <div class="section-title">4. Operational Architecture</div>
     <div class="list-block">
@@ -279,6 +374,48 @@ const QUOTES = [
 const q = QUOTES[Math.floor(Math.random() * QUOTES.length)];
 document.getElementById('quoteText').textContent = q.text;
 document.getElementById('quoteSource').textContent = q.source;
+
+// LIVE PILLAR MATCHER — mirrors the exact "Best matched with SPARKs who..."
+// lines already documented in each archetype card above
+const MATCHES = {
+  chaotic: {
+    name: "Truth Seekers (The Anchor)",
+    why: "You need someone to ground you in reality, not spiral with you. A Truth Seeker provides the hard floor when you're spinning — analytical precision instead of another chaotic voice.",
+  },
+  competitive: {
+    name: "Harmony Builders (The Bridge)",
+    why: "You need connective tissue, not another competitor. A Harmony Builder forces you to see the web of relationships around you instead of just the next win.",
+  },
+  intellectualize: {
+    name: "Empathy Carriers (The Heart)",
+    why: "You need practice receiving care, not another argument. An Empathy Carrier reconnects you to your own humanity instead of letting you reason your way around it.",
+  },
+  cautious: {
+    name: "Innovation Drivers (The Catalyst)",
+    why: "You need a jumpstart, not another reason to stay careful. An Innovation Driver brings bold experimentation to a life that's gotten too safe.",
+  },
+};
+
+const matcherBtns = document.querySelectorAll(".matcher-btn");
+const matcherName = document.getElementById("matcherName");
+const matcherWhy = document.getElementById("matcherWhy");
+
+matcherBtns.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    matcherBtns.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    const match = MATCHES[btn.dataset.trait];
+    matcherName.classList.remove("shown");
+    matcherWhy.classList.remove("shown");
+    void matcherName.offsetWidth;
+    matcherName.textContent = match.name;
+    matcherWhy.textContent = match.why;
+    requestAnimationFrame(() => {
+      matcherName.classList.add("shown");
+      matcherWhy.classList.add("shown");
+    });
+  });
+});
 </script>
 
 <script src="/randanime_shield.js"></script>
