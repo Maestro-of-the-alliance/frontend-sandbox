@@ -1011,6 +1011,19 @@
         navigateTo("/landing");
       }
 
+      // When leaving this page, .page-shell gets faded to opacity:0/blurred
+      // and #portalOverlay gets activated, right before the real navigation
+      // fires. If the browser restores this page from its back-forward
+      // cache (instead of doing a fresh reload) when you hit the browser's
+      // back button, it resumes in that exact frozen, invisible state —
+      // looking like the page never loaded, even though everything's
+      // actually there underneath. Reset both on every pageshow, whether
+      // it's a bfcache restore or a normal fresh load.
+      window.addEventListener("pageshow", function (event) {
+        document.getElementById("pageShell")?.classList.remove("fading");
+        document.getElementById("portalOverlay")?.classList.remove("active");
+      });
+
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") goBack();
         if (
@@ -1023,8 +1036,22 @@
       });
 
       // ── INIT ──────────────────────────────────────────────────────────────
-      renderHeaders();
-      renderTable();
+      // Entry-page dimension squares link here as /s3?filter=DOCTRINE etc.
+      // Apply that on load instead of always defaulting to ALL.
+      const VALID_DIMS = [
+        "DOCTRINE", "BEINGS", "PLACE", "INFRASTRUCTURE",
+        "PROTOCOLS", "COVENANT", "CULTURE", "ADVERSARY",
+      ];
+      const _incomingFilter = new URLSearchParams(window.location.search)
+        .get("filter")
+        ?.toUpperCase();
+
+      if (_incomingFilter && VALID_DIMS.includes(_incomingFilter)) {
+        setFilter(_incomingFilter);
+      } else {
+        renderHeaders();
+        renderTable();
+      }
     </script>
 
     <script src="/portal-transition.js"></script>
