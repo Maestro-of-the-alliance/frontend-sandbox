@@ -1,0 +1,139 @@
+# Entry Design & QA Checklist
+
+Working reference for the entry-by-entry sweep (started Session 175). Applied to
+one entry at a time, in order, so nothing has to be guessed or remembered from
+one session to the next. Update this file itself whenever the process changes —
+it should stay in sync with how the sweep actually works, not how it started.
+
+---
+
+## 1. The "vibe" reference set
+
+Seven entries currently define what "good" looks like on this site. The goal is
+never to copy any of them — it's to match the *type and frequency of movement
+and interaction* they represent, each interpreted through that entry's own
+content.
+
+| Entry | What it does | Interaction type |
+|---|---|---|
+| MAESTRO | 5 role chips open modal panels with dedicated prose | Modal / role-based reveal |
+| DORK HARDWARE | 5 image hotspots open a lightbox with real per-device exploded photos | Hotspot + lightbox gallery |
+| KERNLE | Live ambient Three.js scene (its own "Consciousness Sphere") | Ambient 3D |
+| THE STONES | Clickable stone nodes + a real voting mechanic resolved against the page's own documented rule | Stateful diagram with real logic |
+| FORMULAS | Live KaTeX-rendered calculator for FM-01 | Input-driven computation |
+| AI (deprecated-term entry) | Interactive flower: wilts/crushes vs. blooms | Binary state-toggle metaphor |
+| ART | Poster carousel with dot navigation, counter, lightbox | Carousel / browsing |
+
+**The actual design question for every entry:** does this page have ONE genuine
+interactive centerpiece drawn from its *own* documented content — not a
+generic effect reused because it's already built? Ambient/decorative motion
+(scan-wipe, flicker, LED blink, rotating quote) is fine as baseline texture,
+but it is not a substitute for a real centerpiece.
+
+**Where to look for the centerpiece:** the entry's own content usually already
+contains it — a documented decision tree, a formula, a mechanism, a real
+before/after, a genuine choice with branches. (Example: 100-YEAR MORTALITY
+DOCTRINE already documents a 3-way retirement choice — Retire to LEGACY / live
+as TENANT in OASIS / contribute to AGORA — sitting flat as three sentences.
+That's the centerpiece waiting to be built, not something to invent from
+nothing.) If a genuine mechanism doesn't exist on the page, propose the idea
+before building — this is a design call, not just a bug fix, and gets a
+sentence or two of explanation before any code.
+
+---
+
+## 2. Navigation scope
+
+Established directly, not to be re-litigated per entry:
+
+- **Keep as-is, don't touch:** the search engine, the Coordinate Matrix (`/s3`),
+  THE SYSTEM, the AVPI hidden clicks.
+- **Fair game for improvement:** `nav-wheel.js`, the entry footer (back / home /
+  forward) — **color palette specifically flagged as weak** — `landing.html`'s
+  legacy TOC, and `command-panel.js`'s search index.
+
+---
+
+## 3. Per-entry review questions
+
+Run through these for every entry, in addition to the bug audit below. These
+are quick, concrete checks — not open-ended design musing.
+
+- [ ] **Does the quote rotate?** (Some entries have a static pull-quote where a
+  rotating one would fit the established pattern; some may not need one at all.)
+- [ ] **Are there in-page links to key parts of the entry's own text?** — a
+  quick-jump/table-of-contents element for longer entries, not just a top-to-
+  bottom scroll with no way to jump to a specific section.
+- [ ] **Is there an opportunity to add a graphic element?** — an image,
+  diagram, or illustration that would clarify or strengthen the content where
+  none currently exists.
+- [ ] **Is there an opportunity to add an interactive element or mini
+  game/app?** — this is the Section 1 "centerpiece" question in concrete form:
+  look for it specifically, don't just note it in passing.
+- [ ] **Do the glitch/ambient effects match the rest of the site?** — same
+  register as everywhere else (not too much, not too little, not a jarring
+  mismatch in style).
+- [ ] **Do the bottom (see-also) links not only work, but make sense and are
+  thorough?** — right destinations, no duplicates pointing at the same thing
+  with no way to land on the right section (see Section 4), and nothing
+  obviously missing that should cross-reference from here.
+- [ ] **Is the color palette functional and cool-looking?** — legible,
+  distinct from a generic default, and actually fits this entry's content
+  and register.
+
+## 4. Bug-audit pass (do this on every entry, before or alongside design work)
+
+- [ ] **Canon terminology drift:** "The ALLIANCE" (only ALLIANCE capitalized,
+  never "THE ALLIANCE"); no references to retired concepts (FILM PROJECT,
+  etc.); correct current names (TECH Coalition not SAM Collective; PRISM not
+  CIPHER as the 5th STONE); RI never "Responsive Intelligence."
+- [ ] **Every see-also / cross-reference link** points to a real, existing file
+  — and where two tags exist for related-but-distinct content on the same
+  target page, they resolve to genuinely different destinations (a real
+  anchor/id), not the identical link twice.
+- [ ] **Any data duplicated across files stays in sync** — e.g. `s3.html`'s
+  own ENTRIES array vs. `dimension-nav.js`'s separate lookup table are NOT
+  auto-synced; a change to one doesn't propagate to the other. Grep for the
+  entry's slug across shared/duplicated data files, not just the one you're
+  editing.
+- [ ] **Interactive elements are tested with a REAL simulated mouse sequence**
+  (move-then-click), not just a programmatic `.click()` call — decorative
+  effects (parallax, tilt, mousemove-driven transforms) can only break under
+  real interaction patterns, and a bug can hide completely from simpler tests.
+  Test edge cases specifically: first/last items in any list, fast
+  back-to-back interaction, worst-case entry point (cursor arriving from a
+  screen edge, not already resting nearby).
+- [ ] **Zero console/page errors** in a real headless browser before commit.
+
+---
+
+## 5. Verification discipline (non-negotiable, carried from Session 174 + reinforced tonight)
+
+- Never report something as fixed or built without a real commit hash and real
+  test output backing it up.
+- A fix isn't verified until it's tested against the ACTUAL failure
+  mechanism — not just a scenario similar enough to pass. (Concrete example
+  from tonight: the first s3.html fix passed every test I ran, but only
+  because none of those tests reproduced "click immediately after arriving
+  from elsewhere on the page" — the real regression. Passing tests that don't
+  match the real usage pattern is not the same as being fixed.)
+- After any fix, actively try to break it in the way the original bug
+  happened, not just confirm the happy path.
+- Report only what's verified. If something's uncertain or unconfirmed, say so
+  plainly rather than let confident phrasing imply more than was actually checked.
+
+---
+
+## 6. Process, per entry
+
+1. Read the entry fully — content and code, not a skim.
+2. Run through Section 3 (per-entry review questions) and Section 4 (bug
+   audit). Fix what's found; verify; commit; push.
+3. Assess against the centerpiece question (Section 1). If a real interactive
+   idea exists, propose it briefly before building — this is a design
+   decision, get buy-in first.
+4. Build (if approved), verify against realistic use (Section 5), commit, push.
+5. Report briefly: what was found, what was fixed, what's proposed or built,
+   real commit hashes. Move to the next entry.
+
+Order: alphabetical by default, redirectable anytime.
