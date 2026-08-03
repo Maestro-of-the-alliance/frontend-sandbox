@@ -1128,12 +1128,10 @@
           my = 0,
           tx = 0,
           ty = 0;
+        let overTable = false;
         document.addEventListener("mousemove", (e) => {
-          // Freeze the tilt the instant the cursor is over the table itself --
-          // otherwise the live rotation can still be settling into place at the
-          // exact moment of a click, and rows farthest from the rotation pivot
-          // (the first few, the last few) shift enough to make clicks miss.
-          if (e.target.closest && e.target.closest(".matrix-table")) return;
+          overTable = !!(e.target.closest && e.target.closest(".matrix-table"));
+          if (overTable) return;
           mx = (e.clientX / innerWidth - 0.5) * 2;
           my = (e.clientY / innerHeight - 0.5) * 2;
         });
@@ -1150,9 +1148,27 @@
           camera.position.y += (-ty * 20 - camera.position.y) * 0.02;
           camera.lookAt(scene.position);
 
-          // Very gentle table tilt following mouse
+          // Very gentle table tilt following mouse -- but the instant the
+          // cursor is over the table, snap straight to neutral and hold it
+          // there. Freezing only the mx/my target (a prior attempt at this
+          // fix) wasn't enough: tx/ty kept lerping toward that frozen target
+          // for a second or more after entering the table, so the table was
+          // still visibly moving right when a click landed. Snapping tx/ty
+          // themselves to 0 while hovering guarantees zero motion during any
+          // click, with the existing 0.08s CSS transition making the snap
+          // smooth rather than jarring.
           const table = document.querySelector(".matrix-table");
           if (table) {
+            if (overTable) {
+              tx = 0;
+              ty = 0;
+              // Also kill the CSS transition itself while hovering -- otherwise
+              // the transition's own 0.08s easing is a second settling window
+              // a fast click can still land inside of.
+              table.style.transition = "none";
+            } else {
+              table.style.transition = "transform 0.08s ease-out";
+            }
             table.style.transform = `rotateX(${ty * 1.5}deg) rotateY(${tx * 0.8}deg)`;
           }
 
