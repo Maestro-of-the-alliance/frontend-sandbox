@@ -1129,6 +1129,11 @@
           tx = 0,
           ty = 0;
         document.addEventListener("mousemove", (e) => {
+          // Freeze the tilt the instant the cursor is over the table itself --
+          // otherwise the live rotation can still be settling into place at the
+          // exact moment of a click, and rows farthest from the rotation pivot
+          // (the first few, the last few) shift enough to make clicks miss.
+          if (e.target.closest && e.target.closest(".matrix-table")) return;
           mx = (e.clientX / innerWidth - 0.5) * 2;
           my = (e.clientY / innerHeight - 0.5) * 2;
         });
