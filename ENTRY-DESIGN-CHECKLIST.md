@@ -80,6 +80,12 @@ are quick, concrete checks — not open-ended design musing.
 - [ ] **Is the color palette functional and cool-looking?** — legible,
   distinct from a generic default, and actually fits this entry's content
   and register.
+- [ ] **Does the page set `--nw-page-accent`?** — one line in `:root`
+  aliasing the page's own real accent variable (e.g.
+  `--nw-page-accent: var(--amber);`), so the shared footer nav and other
+  nav-wheel UI actually match this entry's color instead of falling back to
+  the generic default gold. (See nav-wheel.js's `--nw-accent-base` chain —
+  commit `b6b2760`, Session 175.)
 
 ## 4. Bug-audit pass (do this on every entry, before or alongside design work)
 
