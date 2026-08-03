@@ -109,9 +109,16 @@
   const style = document.createElement("style");
   style.textContent = `
     :root {
-      --nw-accent: var(--ghost-teal, var(--cyan, var(--blood-red, #b89628)));
-      --nw-accent-dim: var(--ghost-teal-dim, var(--cyan-dim, rgba(184,150,40,0.55)));
-      --nw-accent-faint: var(--ghost-teal-faint, var(--cyan-ghost, rgba(184,150,40,0.15)));
+      /* --nw-page-accent is the one thing each entry needs to set (a single
+         alias to whatever its own real accent variable is, e.g.
+         "--nw-page-accent: var(--amber);"). Everything else derives from it
+         automatically via color-mix, so no page has to hand-specify dim/faint
+         variants. Falls back to the old chain, then a neutral gold, if a page
+         hasn't set it yet -- nothing breaks for pages not yet touched. */
+      --nw-accent-base: var(--nw-page-accent, var(--ghost-teal, var(--cyan, var(--blood-red, #b89628))));
+      --nw-accent: var(--nw-accent-base);
+      --nw-accent-dim: var(--ghost-teal-dim, var(--cyan-dim, color-mix(in srgb, var(--nw-accent-base) 55%, transparent)));
+      --nw-accent-faint: var(--ghost-teal-faint, var(--cyan-ghost, color-mix(in srgb, var(--nw-accent-base) 15%, transparent)));
       --nw-text: var(--ghost-white, var(--white-ghost, #ffffff));
       --nw-text-dim: var(--ghost-white-dim, var(--white-dim, rgba(255,255,255,0.4)));
       --nw-bg: var(--void-deep, var(--void, #050508));
