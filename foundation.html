@@ -244,12 +244,15 @@
         animation: titleRise 0.7s ease forwards 0.75s;
       }
       .title-thesis {
+        overflow: hidden;
+        max-height: 0;
         opacity: 0;
-        transform: translateY(14px);
-        margin-top: 30px;
+        transition: max-height 0.6s ease, opacity 0.4s ease;
       }
-      body.booted .title-thesis {
-        animation: titleRise 0.7s ease forwards 0.95s;
+      .title-thesis.open {
+        max-height: 2000px;
+        opacity: 1;
+        margin-top: 30px;
       }
       @keyframes titleRise {
         to {
@@ -1052,7 +1055,9 @@
             const onCollapsed = (e) => {
               if (e.target !== target || e.propertyName !== "max-height") return;
               target.removeEventListener("transitionend", onCollapsed);
-              const anyOpen = document.querySelector(".full-text.open") !== null;
+              const anyOpen =
+                document.querySelector(".full-text.open") !== null ||
+                document.querySelector(".title-thesis.open") !== null;
               container.classList.toggle("snap-relaxed", anyOpen);
             };
             target.addEventListener("transitionend", onCollapsed);
@@ -1181,7 +1186,33 @@
       document.getElementById("format-watch").addEventListener("click", () => openModal("video"));
       document.getElementById("format-listen").addEventListener("click", () => openModal("audio"));
       document.getElementById("format-read").addEventListener("click", () => {
-        document.querySelector(".title-thesis").scrollIntoView({ behavior: "smooth", block: "start" });
+        const thesis = document.querySelector(".title-thesis");
+        const open = thesis.classList.toggle("open");
+        // Same fix as the section expand/collapse toggles above: mandatory
+        // scroll-snap fights an expanding/collapsing section taller than one
+        // viewport, so relax to proximity snapping while it's open and only
+        // re-tighten once the collapse animation has actually finished.
+        if (open) {
+          container.classList.add("snap-relaxed");
+          thesis.addEventListener(
+            "transitionend",
+            (e) => {
+              if (e.propertyName !== "max-height") return;
+              thesis.scrollIntoView({ behavior: "smooth", block: "start" });
+            },
+            { once: true }
+          );
+        } else {
+          const onCollapsed = (e) => {
+            if (e.propertyName !== "max-height") return;
+            thesis.removeEventListener("transitionend", onCollapsed);
+            const anyOpen =
+              document.querySelector(".full-text.open") !== null ||
+              document.querySelector(".title-thesis.open") !== null;
+            container.classList.toggle("snap-relaxed", anyOpen);
+          };
+          thesis.addEventListener("transitionend", onCollapsed);
+        }
       });
       // keyboard activation for the format boxes (role="button", tabindex="0")
       [document.getElementById("format-read"), document.getElementById("format-watch"), document.getElementById("format-listen")]
