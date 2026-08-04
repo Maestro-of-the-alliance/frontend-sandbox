@@ -110,6 +110,13 @@ are quick, concrete checks — not open-ended design musing.
   back-to-back interaction, worst-case entry point (cursor arriving from a
   screen edge, not already resting nearby).
 - [ ] **Zero console/page errors** in a real headless browser before commit.
+- [ ] **No duplicated shared script tags** (`nav-wheel.js`, `portal-transition.js`,
+  `dimension-nav.js`, `randanime_shield.js`) — found on 5 of 73 entries
+  (agora, alliance, domo, goliath, newman-being) as a stray early duplicate
+  pair sitting right after the footer, in addition to the correct complete
+  set at the real end of body. Running a shared script twice duplicates
+  everything it creates (bottom nav, search button, portal overlay, etc.).
+  Quick check: `grep -c 'src="/nav-wheel.js"'` on the file should return 1.
 
 ---
 
