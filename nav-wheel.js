@@ -313,12 +313,12 @@
         portalIcon.id = "nw-portal-icon";
         portalIcon.style.cssText = `
           width: 90px; height: 90px; min-width: 90px; min-height: 90px;
-          object-fit: contain; opacity: 0; position: absolute;
+          object-fit: contain; opacity: 0;
           filter: drop-shadow(0 0 16px var(--nw-accent)) drop-shadow(0 0 32px var(--nw-accent-dim));
         `;
 
         portalOverlay.appendChild(portalIcon);
-        document.body.appendChild(portalOverlay);
+        document.documentElement.appendChild(portalOverlay);
       }
     }
 
@@ -370,11 +370,11 @@
       portalIcon.id = "nw-portal-icon";
       portalIcon.style.cssText = `
         width: 90px; height: 90px; min-width: 90px; min-height: 90px;
-        object-fit: contain; opacity: 0; position: absolute;
+        object-fit: contain; opacity: 0;
         filter: drop-shadow(0 0 16px var(--nw-accent)) drop-shadow(0 0 32px var(--nw-accent-dim));
       `;
       portalOverlay.appendChild(portalIcon);
-      document.body.appendChild(portalOverlay);
+      document.documentElement.appendChild(portalOverlay);
     }
 
     portalIcon.style.animation = "none";
