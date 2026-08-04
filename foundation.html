@@ -227,7 +227,7 @@
       .title-eyebrow,
       .title-main,
       .title-sub,
-      .resources-bar {
+      .format-boxes {
         opacity: 0;
         transform: translateY(14px);
       }
@@ -240,15 +240,15 @@
       body.booted .title-sub {
         animation: titleRise 0.7s ease forwards 0.55s;
       }
+      body.booted .format-boxes {
+        animation: titleRise 0.7s ease forwards 0.75s;
+      }
       .title-thesis {
         opacity: 0;
         transform: translateY(14px);
         margin-top: 30px;
       }
       body.booted .title-thesis {
-        animation: titleRise 0.7s ease forwards 0.75s;
-      }
-      body.booted .resources-bar {
         animation: titleRise 0.7s ease forwards 0.95s;
       }
       @keyframes titleRise {
@@ -284,11 +284,52 @@
         color: var(--muted);
         margin-top: 22px;
       }
-      .resources-bar {
+      /* ---------- READ / WATCH / LISTEN format choice ---------- */
+      .format-boxes {
         display: flex;
-        gap: 14px;
+        gap: 16px;
         justify-content: center;
-        margin-top: 34px;
+        margin-top: 40px;
+        flex-wrap: wrap;
+      }
+      .format-box {
+        font-family: var(--mono);
+        background: var(--panel);
+        border: 1px solid var(--rule);
+        border-radius: 3px;
+        padding: 20px 28px;
+        min-width: 148px;
+        cursor: pointer;
+        text-align: center;
+        transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      }
+      .format-box:hover,
+      .format-box:focus-visible {
+        border-color: var(--gold);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(232, 146, 10, 0.1);
+      }
+      .format-box .format-icon {
+        font-size: 20px;
+        color: var(--muted);
+        transition: color 0.2s;
+      }
+      .format-box:hover .format-icon {
+        color: var(--glow);
+      }
+      .format-box .format-label {
+        font-size: 12px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--text);
+        margin-top: 10px;
+      }
+      .format-box .format-sub {
+        font-size: 10px;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        margin-top: 4px;
+        font-family: var(--body);
       }
       .resource-btn {
         font-family: var(--mono);
@@ -722,6 +763,23 @@
           <div class="title-sub">
             What we believe, and what we bind ourselves to protect.
           </div>
+          <div class="format-boxes">
+            <div class="format-box" id="format-read" tabindex="0" role="button">
+              <div class="format-icon">&#128214;</div>
+              <div class="format-label">Read</div>
+              <div class="format-sub">The full text</div>
+            </div>
+            <div class="format-box" id="format-watch" tabindex="0" role="button">
+              <div class="format-icon">&#9654;</div>
+              <div class="format-label">Watch</div>
+              <div class="format-sub">Overview video</div>
+            </div>
+            <div class="format-box" id="format-listen" tabindex="0" role="button">
+              <div class="format-icon">&#127911;</div>
+              <div class="format-label">Listen</div>
+              <div class="format-sub">Audio overview</div>
+            </div>
+          </div>
           <div class="pledge title-thesis" style="font-size: 17px;">
             We do not ask for trust where architecture can provide certainty.<br>
             We do not ask for faith where transparency can provide proof.<br>
@@ -734,10 +792,6 @@
             The goal is not to create perfect people.<br>
             The goal is to create conditions under which ordinary people
             can become better versions of themselves.
-          </div>
-          <div class="resources-bar">
-            <button class="resource-btn" id="watch-btn">&#9654; Watch Overview</button>
-            <button class="resource-btn" id="listen-btn">&#127911; Listen</button>
           </div>
         </div>
         <div class="scroll-cue">
@@ -1124,8 +1178,21 @@
         modalVideo.pause();
         modalAudio.pause();
       }
-      document.getElementById("watch-btn").addEventListener("click", () => openModal("video"));
-      document.getElementById("listen-btn").addEventListener("click", () => openModal("audio"));
+      document.getElementById("format-watch").addEventListener("click", () => openModal("video"));
+      document.getElementById("format-listen").addEventListener("click", () => openModal("audio"));
+      document.getElementById("format-read").addEventListener("click", () => {
+        document.querySelector(".title-thesis").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      // keyboard activation for the format boxes (role="button", tabindex="0")
+      [document.getElementById("format-read"), document.getElementById("format-watch"), document.getElementById("format-listen")]
+        .forEach((el) => {
+          el.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              el.click();
+            }
+          });
+        });
       modalCloseBtn.addEventListener("click", closeModal);
 
       document.getElementById("proceed-btn").addEventListener("click", () => {
