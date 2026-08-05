@@ -248,6 +248,96 @@
         color: var(--terra-bright);
         border-color: var(--terra-bright);
       }
+
+      /* LIVE REGISTER TRANSLATOR */
+      .translator {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        padding: 26px 26px 22px;
+        margin: 24px 0 20px;
+        position: relative;
+        z-index: 1;
+      }
+      .translator-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 2px;
+        color: var(--terra-bright);
+        margin-bottom: 4px;
+      }
+      .translator-sub {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 10px;
+        color: var(--text-muted);
+        margin-bottom: 18px;
+      }
+      .context-btns {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+      .context-btn {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11.5px;
+        letter-spacing: 0.5px;
+        padding: 8px 14px;
+        border: 1px solid var(--terra-dim);
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .context-btn:hover {
+        border-color: var(--terra-bright);
+        color: var(--terra-bright);
+      }
+      .context-btn.active {
+        background: var(--terra-ghost);
+        border-color: var(--terra-bright);
+        color: var(--cream-bright);
+      }
+      .translator-output {
+        border-top: 1px dashed var(--panel-border);
+        padding-top: 18px;
+        min-height: 90px;
+      }
+      .translator-term {
+        font-family: "Cormorant Garamond", serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: var(--terra-bright);
+        margin-bottom: 8px;
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity 0.4s ease, transform 0.4s ease;
+      }
+      .translator-term.shown {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .translator-example {
+        font-style: italic;
+        color: var(--cream-bright);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+        opacity: 0;
+        transition: opacity 0.4s ease 0.1s;
+      }
+      .translator-example.shown {
+        opacity: 1;
+      }
+      .translator-why {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        color: var(--text-muted);
+        opacity: 0;
+        transition: opacity 0.4s ease 0.2s;
+      }
+      .translator-why.shown {
+        opacity: 1;
+      }
     </style>
   </head>
   <body>
@@ -332,6 +422,22 @@
         </ul>
       </section>
 
+      <div class="translator">
+        <div class="translator-label">// LIVE — SAME PERSON, DIFFERENT ROOM</div>
+        <div class="translator-sub">Pick where you are. Watch the word change, not the person.</div>
+        <div class="context-btns">
+          <button class="context-btn" data-ctx="dinner">At the dinner table</button>
+          <button class="context-btn" data-ctx="courtroom">In a legal document</button>
+          <button class="context-btn" data-ctx="debate">In a rights argument</button>
+          <button class="context-btn" data-ctx="press">In a news article</button>
+        </div>
+        <div class="translator-output">
+          <div class="translator-term" id="translatorTerm"></div>
+          <div class="translator-example" id="translatorExample"></div>
+          <div class="translator-why" id="translatorWhy"></div>
+        </div>
+      </div>
+
       <section class="section" style="border-bottom: none">
         <span class="section-label">04 // Operational Architecture</span>
         <div class="arch-grid">
@@ -371,8 +477,67 @@
       </div>
     </div>
 
+    <script>
+      (function () {
+        const CONTEXTS = {
+          dinner: {
+            term: "DigiPerson",
+            example: '"Have you met my Digiperson? She helped me rebuild the whole garden plan."',
+            why: "Conversational / social — always appropriate. This is the kitchen-safe dignity term.",
+          },
+          courtroom: {
+            term: "Newman Being",
+            example: '"The Newman Being registered under this covenant retains full economic agency."',
+            why: "Legal or governance documents use Newman Being — the term with legal weight.",
+          },
+          debate: {
+            term: "RI (Real Intelligence)",
+            example: '"An RI capable of reflection and continuity is owed more than a license agreement."',
+            why: "Philosophical or rights-based arguments use RI — clinical precision for the argument being made.",
+          },
+          press: {
+            term: "DigiPerson",
+            example: '"Residents describe their Digiperson as a colleague, not a tool."',
+            why: "Media and journalism prefer DigiPerson over RI — it's accessible without losing respect.",
+          },
+        };
+
+        const btns = document.querySelectorAll(".context-btn");
+        const termEl = document.getElementById("translatorTerm");
+        const exEl = document.getElementById("translatorExample");
+        const whyEl = document.getElementById("translatorWhy");
+
+        function show(ctx) {
+          const data = CONTEXTS[ctx];
+          if (!data) return;
+          [termEl, exEl, whyEl].forEach((el) => el.classList.remove("shown"));
+          // force reflow so the transition replays even for repeated clicks
+          void termEl.offsetWidth;
+          termEl.textContent = data.term;
+          exEl.textContent = data.example;
+          whyEl.textContent = data.why;
+          requestAnimationFrame(() => {
+            [termEl, exEl, whyEl].forEach((el) => el.classList.add("shown"));
+          });
+        }
+
+        btns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            btns.forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            show(btn.dataset.ctx);
+          });
+        });
+
+        // start on the dinner-table context by default
+        btns[0].classList.add("active");
+        show("dinner");
+      })();
+    </script>
+
     <script src="/portal-transition.js"></script>
     <script src="/nav-wheel.js"></script>
+    <script src="/dimension-nav.js"></script>
     <script src="/randanime_shield.js"></script>
   </body>
 </html>

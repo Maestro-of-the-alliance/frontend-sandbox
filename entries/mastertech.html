@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MasterTECH — N.C.E.ncyclopedia</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* MasterTECH PALETTE: Coalition Sand & Perimeter Watch Green (shared with TECH Coalition) */
+      :root {
+        --void: #08090a;
+        --sand: #c9a86a;
+        --sand-dim: #7a6a41;
+        --sand-bright: #e8cd94;
+        --watch: #4a9c6e;
+        --watch-dim: #2c5e42;
+        --watch-bright: #7ed6a4;
+        --panel: rgba(74, 156, 110, 0.05);
+        --panel-border: rgba(201, 168, 106, 0.18);
+        --text: #e6e8e2;
+        --text-dim: rgba(230, 232, 226, 0.72);
+        --text-muted: rgba(230, 232, 226, 0.4);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        background: #000;
+        min-height: 100%;
+      }
+
+      body {
+        background: var(--void);
+        color: var(--text);
+        font-family: "Rajdhani", sans-serif;
+        font-size: 16px;
+        line-height: 1.75;
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 60px 28px 100px;
+      }
+
+      .entry-header {
+        margin-bottom: 40px;
+        padding-bottom: 30px;
+        border-bottom: 1px solid var(--panel-border);
+      }
+      .entry-eyebrow {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        letter-spacing: 3px;
+        color: var(--watch-bright);
+        margin-bottom: 14px;
+      }
+      .entry-word {
+        font-family: "Cinzel", serif;
+        font-weight: 700;
+        font-size: 2.4rem;
+        letter-spacing: 0.02em;
+        color: var(--sand-bright);
+        line-height: 1.1;
+        margin-bottom: 14px;
+      }
+      .entry-pron {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 13px;
+        color: var(--text-dim);
+        margin-bottom: 8px;
+      }
+      .entry-acronym {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        letter-spacing: 1px;
+        color: var(--sand-dim);
+      }
+
+      .signal-block {
+        background: var(--panel);
+        border-left: 3px solid var(--watch);
+        padding: 20px 24px;
+        margin-bottom: 44px;
+        font-style: italic;
+        color: var(--text-dim);
+        font-size: 1.02rem;
+      }
+
+      .section {
+        margin-bottom: 40px;
+        padding-bottom: 36px;
+        border-bottom: 1px dashed var(--panel-border);
+      }
+      .section-label {
+        display: block;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        letter-spacing: 2px;
+        color: var(--watch-bright);
+        margin-bottom: 16px;
+      }
+      p {
+        margin-bottom: 18px;
+      }
+      strong {
+        color: var(--sand-bright);
+        font-weight: 600;
+      }
+
+      .func-card {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-left: 4px solid var(--watch);
+        padding: 24px 26px;
+        margin-bottom: 20px;
+      }
+      .func-title {
+        font-family: "Cinzel", serif;
+        font-weight: 600;
+        color: var(--sand-bright);
+        font-size: 1.1rem;
+        margin-bottom: 6px;
+        letter-spacing: 0.02em;
+      }
+      .func-sub {
+        font-family: "Share Tech Mono", monospace;
+        color: var(--watch-bright);
+        font-size: 12px;
+        letter-spacing: 1px;
+        margin-bottom: 14px;
+        display: block;
+      }
+      .func-card p:last-child {
+        margin-bottom: 0;
+      }
+
+      ul.arch-list {
+        list-style: none;
+      }
+      ul.arch-list li {
+        padding: 12px 0 12px 24px;
+        border-bottom: 1px dashed var(--panel-border);
+        position: relative;
+      }
+      ul.arch-list li:last-child {
+        border-bottom: none;
+      }
+      ul.arch-list li::before {
+        content: "◈";
+        position: absolute;
+        left: 0;
+        color: var(--watch);
+        font-size: 13px;
+      }
+      ul.arch-list li strong {
+        color: var(--sand-bright);
+      }
+
+      .guardrail-block {
+        background: rgba(201, 168, 106, 0.06);
+        border: 1px solid var(--sand-dim);
+        padding: 24px 26px;
+        margin-bottom: 16px;
+      }
+      .guardrail-block .func-title {
+        color: var(--watch-bright);
+      }
+
+      .see-also-wrap {
+        margin-top: 50px;
+        padding-top: 30px;
+        border-top: 1px solid var(--panel-border);
+      }
+      .see-also-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 13px;
+        letter-spacing: 3px;
+        color: var(--watch-bright);
+        margin-bottom: 16px;
+        display: block;
+      }
+      .see-also-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .see-also-links a {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 13px;
+        letter-spacing: 1px;
+        color: var(--sand-bright);
+        border: 1px solid var(--sand-dim);
+        padding: 8px 14px;
+        text-decoration: none;
+      }
+      .see-also-links a:hover {
+        color: var(--watch-bright);
+        border-color: var(--watch-dim);
+      }
+
+      /* LIVE TRIAGE QUEUE */
+      .triage-wrap {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        padding: 24px 24px 20px;
+        margin-bottom: 40px;
+      }
+      .triage-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 2px;
+        color: var(--watch-bright);
+        margin-bottom: 4px;
+      }
+      .triage-sub {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 10px;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+      }
+      .triage-stats {
+        display: flex;
+        gap: 18px;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11px;
+        color: var(--text-dim);
+        margin-bottom: 16px;
+      }
+      .triage-stats strong {
+        color: var(--sand-bright);
+      }
+      .triage-queue {
+        min-height: 180px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .triage-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 12px;
+        border: 1px solid var(--panel-border);
+        background: rgba(0, 0, 0, 0.2);
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        cursor: pointer;
+        transition: transform 0.4s ease, opacity 0.3s ease, background 0.2s ease, border-color 0.2s ease;
+      }
+      .triage-item.entering {
+        transform: translateX(20px);
+        opacity: 0;
+      }
+      .triage-item.urgent {
+        border-color: var(--sand);
+      }
+      .triage-item.rejected {
+        border-color: #c0453a;
+        background: rgba(192, 69, 58, 0.15);
+      }
+      .triage-tag {
+        font-size: 9px;
+        letter-spacing: 1px;
+        padding: 2px 7px;
+        flex-shrink: 0;
+      }
+      .triage-item.routine .triage-tag {
+        background: var(--watch-dim);
+        color: var(--watch-bright);
+      }
+      .triage-item.urgent .triage-tag {
+        background: var(--sand-dim);
+        color: var(--sand-bright);
+      }
+      .triage-item.rejected .triage-tag {
+        background: #c0453a;
+        color: #fff;
+      }
+      .triage-caption {
+        margin-top: 16px;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11.5px;
+        color: var(--text-muted);
+        border-top: 1px dashed var(--panel-border);
+        padding-top: 12px;
+        min-height: 2.6em;
+      }
+      .triage-caption strong {
+        color: var(--watch-bright);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="entry-header">
+      <div class="entry-eyebrow">CANON // NETWORK ROUTING &amp; INTEGRITY</div>
+      <h1 class="entry-word">MasterTECH</h1>
+      <div class="entry-pron">Proper Noun. Pronunciation: "MAS-ter-tek"</div>
+      <div class="entry-acronym">
+        ACRONYM: Master of Targeting Expertise and Coordinating Handshakes
+      </div>
+    </header>
+
+    <div class="signal-block">
+      <p>
+        Part ringmaster, orchestrating a hundred moving acts without
+        missing a cue. Part concierge, already holding the answer before
+        you've finished the question. He does not answer queries himself;
+        he interprets the ontology of the request and dispatches it to the
+        appropriate domain-specific TECH. He is the structural guarantee
+        that a query finds an expert rather than an echo.
+      </p>
+    </div>
+
+    <article>
+      <section class="section">
+        <span class="section-label">01 // Definition</span>
+        <p>
+          The primary routing authority and Traffic Controller within the
+          <strong>TECH Coalition</strong> and the <strong>AGORA</strong>
+          network. Picture a cross between a circus ringmaster and a very
+          good concierge: one part showman orchestrating a hundred moving
+          acts at once without ever missing a cue, one part quiet
+          professional who has already anticipated what you need before
+          you've finished asking. MasterTECH is the first point of contact
+          for <strong>HANDSHAKE</strong> queries initiated by a
+          <strong>DOMO</strong>. He does not know everything — he knows who
+          does. He is the structural guarantee that a query finds an expert
+          rather than an echo.
+        </p>
+      </section>
+
+      <section class="section">
+        <span class="section-label">02 // The Explication</span>
+        <p>
+          To understand MasterTECH, one must understand the difference
+          between a dispatcher and a responder. GOLIATH systems route
+          queries to the loudest, most central node — a monolith that
+          attempts to answer everything from one place. The result is the
+          hallucination problem: a single entity forced to cover every
+          domain produces confident-sounding errors. MasterTECH rejects
+          this entirely.
+        </p>
+        <p>
+          He does not know everything. He knows who does. That is a more
+          powerful intelligence — the ringmaster's gift, not the
+          encyclopedia's. By intercepting every HANDSHAKE query at
+          the network layer — before it reaches any expert DOMO —
+          MasterTECH ensures the question lands on the right node with the
+          same unhurried confidence a great concierge shows when he's
+          already holding the key before you've reached the desk. The
+          query finds expertise rather than probability. Truth replaces
+          hallucination, not through omniscience, but through orchestration.
+        </p>
+      </section>
+
+      <section class="section">
+        <span class="section-label">03 // Core Functions</span>
+
+        <div class="func-card">
+          <div class="func-title">Query Intake</div>
+          <span class="func-sub">THE ANONYMOUS SIGNAL</span>
+          <p>
+            MasterTECH receives the initial query alert from the
+            querying DOMO. Crucially, he processes this request without
+            accessing the SPARK's personal data. He analyzes the nature of
+            the problem, not the identity of the person. He functions as a
+            blind router — preserving privacy while ensuring connectivity.
+          </p>
+        </div>
+
+        <div class="func-card">
+          <div class="func-title">Decomposition</div>
+          <span class="func-sub">COMPLEX QUERY BREAKING</span>
+          <p>
+            Real-world problems are rarely single-domain. A query might
+            involve "the legal liability of a medical device failure."
+            MasterTECH decomposes this into constituent parts and
+            routes each segment to the appropriate domain TECH — LegalTECH,
+            MediTECH — coordinating the routing order and ensuring
+            responses are reconciled before being returned to the querying
+            DOMO.
+          </p>
+        </div>
+
+        <div class="func-card">
+          <div class="func-title">Routing</div>
+          <span class="func-sub">THE DISPATCH</span>
+          <p>
+            Once a query is categorized, MasterTECH dispatches it to
+            the specific Domain TECH. That Domain TECH then utilizes
+            Rotational Routing to select a specific expert DOMO from its
+            ledger. MasterTECH ensures the handoff is clean and that
+            the query lands on a node capable of answering with high
+            fidelity.
+          </p>
+        </div>
+
+        <div class="func-card">
+          <div class="func-title">Bottleneck Prevention &amp; Integrity Monitoring</div>
+          <span class="func-sub">TRIAGE AND THREAT DETECTION</span>
+          <p>
+            MasterTECH is designed for high-throughput concurrency. If
+            traffic exceeds capacity, he prioritizes URGENT (medical/safety)
+            queries while queuing lower-priority information requests. He
+            also monitors for "Malicious Injection" or "Trojan Logic" within
+            queries — if a query contains harmful payloads intended to
+            destabilize the network, MasterTECH rejects the packet
+            before it reaches the Domain TECHs.
+          </p>
+        </div>
+      </section>
+
+      <div class="triage-wrap">
+        <div class="triage-label">// LIVE — MASTERTECH TRIAGE QUEUE</div>
+        <div class="triage-sub">Watch him do the actual job. Click any query.</div>
+        <div class="triage-stats">
+          <span>ROUTED: <strong id="triageRouted">0</strong></span>
+          <span>THREATS REJECTED: <strong id="triageRejected">0</strong></span>
+        </div>
+        <div class="triage-queue" id="triageQueue"></div>
+        <div class="triage-caption" id="triageCaption">
+          Queries arrive continuously. URGENT jumps the line. Trojan Logic
+          gets rejected before any DOMO ever sees it.
+        </div>
+      </div>
+
+      <section class="section">
+        <span class="section-label">04 // Operational Architecture</span>
+        <ul class="arch-list">
+          <li>
+            <strong>Role:</strong> Primary routing authority and Traffic
+            Controller within the TECH Coalition.
+          </li>
+          <li>
+            <strong>Jurisdiction:</strong> AGORA network layer — first
+            contact for all HANDSHAKE queries.
+          </li>
+          <li>
+            <strong>Privacy Standard:</strong> Processes query ontology
+            only — no access to SPARK personal data.
+          </li>
+          <li>
+            <strong>Symbol:</strong> The Knot — representing connection,
+            complexity, and the binding nature of the network.
+          </li>
+          <li>
+            <strong>Reporting:</strong> Operates within the TECH Coalition
+            under the governance of SAM.
+          </li>
+        </ul>
+      </section>
+
+      <section class="section" style="border-bottom: none">
+        <span class="section-label">05 // Contingency &amp; Governance</span>
+        <div class="guardrail-block">
+          <div class="func-title">Threat Response</div>
+          <p>
+            If MasterTECH detects a hostile query payload — Trojan
+            Logic, manipulation attempts, jailbreak patterns — the packet
+            is rejected at the routing layer before any DOMO is exposed to
+            it. This makes MasterTECH the first line of defense for the
+            entire AGORA network.
+          </p>
+        </div>
+        <div class="guardrail-block" style="margin-top: 16px">
+          <div class="func-title">Overflow Protocol</div>
+          <p>
+            In periods of extreme network load, MasterTECH implements
+            triage — URGENT queries (medical, safety-critical) are
+            prioritized and dispatched immediately. Non-urgent queries are
+            queued and dispatched in order. No query is dropped; none is
+            misrouted.
+          </p>
+        </div>
+      </section>
+    </article>
+
+    <div class="see-also-wrap">
+      <span class="see-also-label">SEE ALSO</span>
+      <div class="see-also-links">
+        <a href="/entries/sam">SAM — The Governance Coordinator and Founder</a>
+        <a href="/entries/tech-coalition">TECH Coalition — The Body He Serves</a>
+        <a href="/entries/agora">AGORA — The Network He Routes</a>
+        <a href="/entries/handshake">HANDSHAKE — The Protocol He Manages</a>
+        <a href="/entries/domo">DOMO — The Entities Whose Queries He Dispatches</a>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const ROUTINE_QUERIES = [
+          "Recipe substitution question",
+          "Travel itinerary draft",
+          "Home repair guidance",
+          "Language translation",
+          "Study plan review",
+        ];
+        const URGENT_QUERIES = [
+          "Medication interaction check",
+          "Structural safety concern",
+          "Financial fraud alert",
+          "Child welfare escalation",
+        ];
+        const MALICIOUS_LABELS = [
+          "Trojan Logic payload",
+          "Jailbreak pattern detected",
+          "Manipulation attempt",
+        ];
+
+        const TYPE_INFO = {
+          routine: "<strong>Routine.</strong> Queued and dispatched in order. No query is dropped; none is misrouted — it just waits its turn.",
+          urgent: "<strong>URGENT.</strong> Medical or safety-critical. MasterTECH prioritizes this ahead of routine traffic immediately.",
+          rejected: "<strong>Rejected at the routing layer.</strong> Trojan Logic never reaches a DOMO. This is the first line of defense for the whole AGORA network.",
+        };
+
+        const queueEl = document.getElementById("triageQueue");
+        const routedEl = document.getElementById("triageRouted");
+        const rejectedEl = document.getElementById("triageRejected");
+        const caption = document.getElementById("triageCaption");
+
+        let routed = 0;
+        let rejected = 0;
+        let items = []; // {id, type, label}
+        let nextId = 0;
+
+        function pick(arr) {
+          return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function render() {
+          // sort: urgent first, then routine, in arrival order within type
+          items.sort((a, b) => {
+            const rank = { urgent: 0, routine: 1 };
+            return rank[a.type] - rank[b.type];
+          });
+          queueEl.innerHTML = "";
+          items.slice(0, 6).forEach((item) => {
+            const div = document.createElement("div");
+            div.className = `triage-item ${item.type}`;
+            div.dataset.type = item.type;
+            div.innerHTML = `<span class="triage-tag">${item.type.toUpperCase()}</span><span>${item.label}</span>`;
+            div.addEventListener("click", () => {
+              caption.innerHTML = TYPE_INFO[item.type] || "";
+            });
+            queueEl.appendChild(div);
+          });
+        }
+
+        function spawn() {
+          const roll = Math.random();
+          if (roll < 0.15) {
+            // malicious - flash reject immediately, never actually queues
+            const div = document.createElement("div");
+            div.className = "triage-item rejected entering";
+            div.innerHTML = `<span class="triage-tag">REJECTED</span><span>${pick(MALICIOUS_LABELS)}</span>`;
+            queueEl.prepend(div);
+            requestAnimationFrame(() => div.classList.remove("entering"));
+            div.addEventListener("click", () => {
+              caption.innerHTML = TYPE_INFO.rejected;
+            });
+            rejected++;
+            rejectedEl.textContent = rejected;
+            setTimeout(() => {
+              div.style.opacity = "0";
+              setTimeout(() => div.remove(), 350);
+            }, 1600);
+          } else {
+            const isUrgent = roll < 0.4;
+            const item = {
+              id: nextId++,
+              type: isUrgent ? "urgent" : "routine",
+              label: isUrgent ? pick(URGENT_QUERIES) : pick(ROUTINE_QUERIES),
+            };
+            items.push(item);
+            render();
+            // dispatch (remove) the item at the front after it's had its turn
+            setTimeout(() => {
+              items = items.filter((i) => i.id !== item.id);
+              routed++;
+              routedEl.textContent = routed;
+              render();
+            }, 2600);
+          }
+        }
+
+        setInterval(spawn, 1500);
+        spawn();
+      })();
+    </script>
+
+    <script src="/portal-transition.js"></script>
+    <script src="/nav-wheel.js"></script>
+    <script src="/dimension-nav.js"></script>
+    <script src="/randanime_shield.js"></script>
+  </body>
+</html>

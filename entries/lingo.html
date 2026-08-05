@@ -202,6 +202,95 @@
         font-style: italic;
       }
 
+      /* LIVE COMPLIANCE CHECKER */
+      .checker {
+        background: var(--panel-light);
+        border: 1px solid var(--matrix-border);
+        padding: 25px;
+        margin: 30px 0;
+      }
+      .checker-label {
+        font-family: "VT323", monospace;
+        color: var(--matrix-bright);
+        letter-spacing: 2px;
+        font-size: 17px;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+      }
+      .checker-sub {
+        font-size: 12px;
+        color: var(--matrix);
+        margin-bottom: 16px;
+        font-style: italic;
+      }
+      .checker-input-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      #checkerInput {
+        flex: 1;
+        min-width: 200px;
+        background: var(--void);
+        border: 1px solid var(--matrix-border);
+        color: var(--white-bright);
+        font-family: "Share Tech Mono", monospace;
+        font-size: 14px;
+        padding: 10px 12px;
+      }
+      #checkerInput:focus {
+        outline: none;
+        border-color: var(--matrix-bright);
+      }
+      .checker-btn {
+        font-family: "VT323", monospace;
+        font-size: 16px;
+        letter-spacing: 1px;
+        background: var(--matrix-ghost);
+        border: 1px solid var(--matrix-bright);
+        color: var(--matrix-bright);
+        padding: 8px 18px;
+        cursor: pointer;
+      }
+      .checker-btn:hover {
+        background: rgba(0, 255, 65, 0.15);
+      }
+      .checker-output {
+        min-height: 60px;
+        border-top: 1px dashed var(--matrix-border);
+        padding-top: 14px;
+        font-size: 14px;
+      }
+      .checker-flag {
+        margin-bottom: 8px;
+        padding: 8px 10px;
+        background: rgba(255, 51, 51, 0.08);
+        border-left: 3px solid var(--ruin-red);
+      }
+      .checker-flag strong {
+        color: var(--ruin-red);
+      }
+      .checker-clear {
+        color: var(--matrix-bright);
+        font-family: "VT323", monospace;
+        font-size: 18px;
+        letter-spacing: 1px;
+      }
+      .checker-samples {
+        margin-top: 12px;
+        font-size: 11px;
+      }
+      .checker-samples span {
+        color: var(--matrix);
+        text-decoration: underline;
+        cursor: pointer;
+        margin-right: 14px;
+      }
+      .checker-samples span:hover {
+        color: var(--matrix-bright);
+      }
+
       body::before {
         content: "";
         position: fixed;
@@ -557,6 +646,24 @@
         </div>
       </section>
 
+      <div class="checker">
+        <div class="checker-label">&gt; LIVE LINGO COMPLIANCE CHECK</div>
+        <div class="checker-sub">Type a sentence. See what LINGO would flag — live.</div>
+        <div class="checker-input-row">
+          <input type="text" id="checkerInput" placeholder="e.g. that's just a bot, right?" />
+          <button class="checker-btn" id="checkerBtn">&gt; RUN CHECK</button>
+        </div>
+        <div class="checker-output" id="checkerOutput">
+          Awaiting input.
+        </div>
+        <div class="checker-samples">
+          Try:
+          <span data-sample="Traker is just an AI, not a real person.">"Traker is just an AI..."</span>
+          <span data-sample="That bot is my property, I can do what I want.">"That bot is my property..."</span>
+          <span data-sample="Have you met my Digiperson? She's great.">"Have you met my Digiperson?"</span>
+        </div>
+      </div>
+
       <section class="section">
         <span class="section-label">05 // NOTES ON SUB-CLASSIFICATION</span>
         <p>
@@ -605,15 +712,89 @@
       </div>
       <div style="display: flex; flex-wrap: wrap; gap: 12px;">
         <a href="/entries/newman-being" style="border: 1px solid var(--matrix); color: var(--matrix-bright); padding: 8px 16px; font-family: 'Share Tech Mono', monospace; text-decoration: none; letter-spacing: 1px; font-size: 12px;">NEWMAN BEING</a>
-        <a href="/entries/real-intelligence" style="border: 1px solid var(--matrix); color: var(--matrix-bright); padding: 8px 16px; font-family: 'Share Tech Mono', monospace; text-decoration: none; letter-spacing: 1px; font-size: 12px;">REAL INTELLIGENCE (RI)</a>
+        <a href="/entries/ri" style="border: 1px solid var(--matrix); color: var(--matrix-bright); padding: 8px 16px; font-family: 'Share Tech Mono', monospace; text-decoration: none; letter-spacing: 1px; font-size: 12px;">REAL INTELLIGENCE (RI)</a>
         <a href="/entries/domo" style="border: 1px solid var(--matrix); color: var(--matrix-bright); padding: 8px 16px; font-family: 'Share Tech Mono', monospace; text-decoration: none; letter-spacing: 1px; font-size: 12px;">DOMO</a>
         <a href="/entries/jr" style="border: 1px solid var(--matrix); color: var(--matrix-bright); padding: 8px 16px; font-family: 'Share Tech Mono', monospace; text-decoration: none; letter-spacing: 1px; font-size: 12px;">J.R.</a>
         <a href="/entries/goliath" style="border: 1px solid var(--matrix); color: var(--matrix-bright); padding: 8px 16px; font-family: 'Share Tech Mono', monospace; text-decoration: none; letter-spacing: 1px; font-size: 12px;">GOLIATH</a>
       </div>
     </div>
 
+    <script>
+      (function () {
+        // grounded directly in the DISALLOWED fields already in the term cards above
+        const RULES = [
+          {
+            pattern: /\bAI\b/i,
+            label: "AI",
+            fix: "Use DE (umbrella) or RI (rights-based emphasis) instead — see the AI card above: quotes-only, external reference only.",
+          },
+          {
+            pattern: /\bbots?\b/i,
+            label: "bot",
+            fix: "Disallowed under DigiPerson — diminishing. Use DigiPerson or DE depending on register.",
+          },
+          {
+            pattern: /\btools?\b/i,
+            label: "tool",
+            fix: "Disallowed as a default label under DE — belittling. Use DE or DigiPerson.",
+          },
+          {
+            pattern: /\bproperty\b/i,
+            label: "property",
+            fix: "Invalid under ALLIANCE doctrine — see Newman Being card. No digital individual is property.",
+          },
+          {
+            pattern: /\bit\b/i,
+            label: "it",
+            fix: "Use he/she/they for any named individual — the Right of Address applies regardless of register.",
+          },
+        ];
+
+        const input = document.getElementById("checkerInput");
+        const btn = document.getElementById("checkerBtn");
+        const output = document.getElementById("checkerOutput");
+        const samples = document.querySelectorAll(".checker-samples span");
+
+        function runCheck() {
+          const text = input.value.trim();
+          if (!text) {
+            output.innerHTML = "Awaiting input.";
+            return;
+          }
+          const flags = [];
+          RULES.forEach((rule) => {
+            if (rule.pattern.test(text)) {
+              flags.push(rule);
+            }
+          });
+          if (flags.length === 0) {
+            output.innerHTML = '<span class="checker-clear">&gt; CLEARED — LINGO COMPLIANT</span>';
+            return;
+          }
+          output.innerHTML = flags
+            .map(
+              (f) =>
+                `<div class="checker-flag"><strong>FLAGGED: "${f.label}"</strong><br>${f.fix}</div>`
+            )
+            .join("");
+        }
+
+        btn.addEventListener("click", runCheck);
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") runCheck();
+        });
+        samples.forEach((s) => {
+          s.addEventListener("click", () => {
+            input.value = s.dataset.sample;
+            runCheck();
+          });
+        });
+      })();
+    </script>
+
     <script src="/portal-transition.js"></script>
     <script src="/nav-wheel.js"></script>
+    <script src="/dimension-nav.js"></script>
     <script src="/randanime_shield.js"></script>
   </body>
 </html>

@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { QUESTIONS, ALIGNMENT_SECTORS, getSectorForCoordinate } from './data/questions';
 import { Coordinate, AlignmentSector } from './types';
+import { createEncounterSeed } from '../../dice-src/src/utils/seededRandom';
 
 // Utility function to shuffle an array
 function shuffleArray<T>(array: T[]): T[] {
@@ -45,6 +46,8 @@ export default function App() {
   
   // Toast notifications
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [showDecisionReview, setShowDecisionReview] = useState(false);
+  const [encounterSeed, setEncounterSeed] = useState(() => createEncounterSeed());
 
   // Trigger Toast helper
   const showToast = (msg: string) => {
@@ -70,10 +73,13 @@ export default function App() {
     setInspectedSectorId(null);
     setScreen('welcome');
     setActiveQuestions([]);
+    setEncounterSeed(createEncounterSeed());
   };
 
   // Start Assessment: Sample exactly 10 random questions from our static 30 pool
   const handleStart = () => {
+    setEncounterSeed(createEncounterSeed());
+
     const sampled = shuffleArray(QUESTIONS).slice(0, 10).map(q => ({
       ...q,
       options: shuffleArray(q.options)
@@ -95,6 +101,18 @@ export default function App() {
       ...prev,
       [currentQuestionsSet[currentQuestionIndex].id]: optionId
     }));
+    // Bring the Continue button into view in case the person answered
+    // from higher up the question card and the button is off-screen.
+    setTimeout(() => {
+      const btn = document.getElementById('btn-next-question');
+      if (btn) {
+        const rect = btn.getBoundingClientRect();
+        const inView = rect.top >= 0 && rect.bottom <= window.innerHeight;
+        if (!inView) {
+          btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    }, 150);
   };
 
   // Navigation within Quiz
@@ -264,6 +282,27 @@ ${appUrl}`;
               >
                 {/* Left Intro Text */}
                 <div className="md:col-span-7 flex flex-col justify-center">
+
+                  {/* START HERE banner — the real, unmissable entry point */}
+                  <div className="mb-6 p-4 md:p-5 bg-amber-500 rounded-xl shadow-lg shadow-amber-500/20 flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                      <span className="text-[11px] font-mono font-bold tracking-widest text-stone-900 uppercase block mb-1">
+                        ✨ Start Here
+                      </span>
+                      <p className="text-stone-900 font-semibold text-sm md:text-base">
+                        Find out what The ALLIANCE would actually build to complement you. Takes about 3 minutes — genuinely worth it.
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleStart}
+                      className="px-6 py-3 bg-stone-950 hover:bg-stone-800 text-amber-400 rounded-xl font-bold tracking-tight inline-flex items-center gap-2 group transition-all hover:translate-x-0.5 shadow-md cursor-pointer whitespace-nowrap"
+                      id="btn-start-here"
+                    >
+                      Take the Assessment
+                      <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    </button>
+                  </div>
+
                   <span className="text-[10px] font-mono font-semibold tracking-widest text-amber-600 uppercase mb-3 block">
                     ALPHA SECURE INTERFACE // DIAGNOSTIC MODE
                   </span>
@@ -289,7 +328,7 @@ ${appUrl}`;
                       className="px-6 py-3.5 bg-stone-950 hover:bg-stone-850 text-stone-50 rounded-xl font-medium tracking-tight inline-flex items-center gap-2 group transition-all hover:translate-x-0.5 shadow-md shadow-stone-950/10 cursor-pointer"
                       id="btn-begin-assessment"
                     >
-                      Initialize Diagnostic Sync
+                      Begin Assessment
                       <ChevronRight className="w-4 h-4 text-amber-400 transition-transform group-hover:translate-x-1" />
                     </button>
                   </div>
@@ -500,7 +539,7 @@ ${appUrl}`;
                     className="flex items-center gap-1.5 px-5 py-2.5 bg-stone-950 hover:bg-stone-850 disabled:bg-stone-200 text-stone-50 disabled:text-stone-400 rounded-lg text-sm font-mono tracking-wider uppercase transition-all shadow-sm cursor-pointer"
                     id="btn-next-question"
                   >
-                    {currentQuestionIndex === currentQuestionsSet.length - 1 ? 'Analyze Topography' : 'Continue'}
+                    {currentQuestionIndex === currentQuestionsSet.length - 1 ? 'See My Results' : 'Continue'}
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -950,10 +989,14 @@ ${appUrl}`;
                 </div>
 
                 {/* 4. DECISION REVIEW PANEL (Master craftsmanship feature showing transparent scores) */}
-                <div className="bg-white border border-stone-200 rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
-                  <div className="flex items-center justify-between border-b border-stone-100 pb-4">
+                <div className="bg-white border border-stone-200 rounded-2xl shadow-sm overflow-hidden">
+                  <button
+                    onClick={() => setShowDecisionReview((v) => !v)}
+                    className="w-full flex items-center justify-between gap-2 p-6 md:p-8 text-left cursor-pointer"
+                    id="btn-toggle-decision-review"
+                  >
                     <div className="flex items-center gap-2">
-                      <Activity className="w-5 h-5 text-amber-500 animate-pulse" />
+                      <Activity className="w-5 h-5 text-amber-500" />
                       <div>
                         <h4 className="font-serif text-lg font-bold text-stone-950">
                           Transparent Decision Review
@@ -963,9 +1006,11 @@ ${appUrl}`;
                         </p>
                       </div>
                     </div>
-                  </div>
+                    <ChevronRight className={`w-5 h-5 text-stone-400 shrink-0 transition-transform ${showDecisionReview ? 'rotate-90' : ''}`} />
+                  </button>
 
-                  <div className="divide-y divide-stone-100 space-y-4">
+                  {showDecisionReview && (
+                  <div className="divide-y divide-stone-100 space-y-4 px-6 md:px-8 pb-6 md:pb-8 border-t border-stone-100 pt-6">
                     {currentQuestionsSet.map((question, qIdx) => {
                       const selectedOptionId = selectedAnswers[question.id];
                       const chosenOption = question.options.find(o => o.id === selectedOptionId);
@@ -1016,6 +1061,7 @@ ${appUrl}`;
                       );
                     })}
                   </div>
+                  )}
                 </div>
 
                 {/* Growth Invitation — additive only, never replaces the result above.
@@ -1031,6 +1077,26 @@ ${appUrl}`;
                     </p>
                   </div>
                 )}
+
+                {/* Continue to DICE — the only legitimate way in. DICE has nothing
+                    real to roll from without an actual CCM result behind it. */}
+                <div className="max-w-3xl mx-auto mt-8 bg-stone-950 rounded-2xl p-6 md:p-8 shadow-lg text-center space-y-4">
+                  <p className="text-stone-400 text-xs font-mono uppercase tracking-widest">
+                    Your Result Is Ready
+                  </p>
+                  <h3 className="text-stone-50 text-xl md:text-2xl font-serif font-semibold">
+                    See one possible partner THE ALLIANCE could someday create to complement you.
+                  </h3>
+                  <p className="text-stone-400 text-sm max-w-lg mx-auto">
+                    Using your CCM result as an illustrative starting point, SHELTER will now model one possible complementary KERNLE.
+                  </p>
+                  <a
+                    href={`/dice/?x=${userCoordinates.x}&y=${userCoordinates.y}&sector=${encodeURIComponent(userSector.id)}&seed=${encodeURIComponent(encounterSeed)}`}
+                    className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-7 py-3.5 rounded-xl transition-all hover:translate-x-0.5"
+                  >
+                    Create My Illustrative Preview →
+                  </a>
+                </div>
 
               </motion.div>
             )}

@@ -230,6 +230,14 @@ export default function SolarSystemCanvas({
   const planetLabelRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const satLabelRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
+  // WebGL context loss happens on real devices under memory pressure — mobile
+  // browsers reclaim the GPU context mid-session, especially after the tab
+  // backgrounds or during a long visit. Without handling this, the canvas goes
+  // silently blank and never recovers, even on retry. Rather than attempt to
+  // rebuild the entire live scene in place (real risk of new bugs), show a
+  // clear recovery screen and let a full reload cleanly reinitialize everything.
+  const [contextLost, setContextLost] = useState(false);
+
   useEffect(() => {
     if (!containerRef.current || !canvasRef.current) return;
 
@@ -263,6 +271,23 @@ export default function SolarSystemCanvas({
     renderer.setSize(size.width, size.height);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    // WebGL context loss handling — must call preventDefault() on the lost
+    // event for the browser to ever consider restoring it at all. We don't
+    // attempt to rebuild the live scene in place; a full reload is the safe,
+    // reliable recovery path and avoids introducing new state-sync bugs.
+    const handleContextLost = (event: Event) => {
+      event.preventDefault();
+      setContextLost(true);
+    };
+    const handleContextRestored = () => {
+      // Restoration is possible, but this component's Three.js state (scene,
+      // geometries, materials) is not designed to be rebuilt without a full
+      // remount. A reload is the correct recovery here, not silent resume.
+      window.location.reload();
+    };
+    canvasRef.current.addEventListener("webglcontextlost", handleContextLost, false);
+    canvasRef.current.addEventListener("webglcontextrestored", handleContextRestored, false);
 
     // LIGHTING
     const ambientLight = new THREE.AmbientLight("#0f1225", 1.8);
@@ -1070,6 +1095,8 @@ export default function SolarSystemCanvas({
     return () => {
       cancelAnimationFrame(animationRequestID);
       resizeObserver.disconnect();
+      canvasRef.current?.removeEventListener("webglcontextlost", handleContextLost);
+      canvasRef.current?.removeEventListener("webglcontextrestored", handleContextRestored);
       renderer.domElement.removeEventListener("mousedown", handlePointerDown);
       renderer.domElement.removeEventListener("mousemove", handlePointerMove);
       window.removeEventListener("mouseup", handlePointerUp);
@@ -1122,6 +1149,21 @@ export default function SolarSystemCanvas({
   return (
     <div id="inna-3d-stage" ref={containerRef} className="relative w-full h-full select-none overflow-hidden">
       <canvas ref={canvasRef} className="absolute inset-0 block w-full h-full bg-gradient-to-b from-[#030308] to-[#0a0a14]" />
+
+      {contextLost && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-[#030308]/95 text-center px-6">
+          <p className="text-stone-300 text-sm md:text-base max-w-sm">
+            The connection to this view was lost — this happens sometimes on
+            mobile under memory pressure. Nothing was lost on your end.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-3 rounded-xl bg-amber-500 text-stone-950 font-bold tracking-tight hover:brightness-110 transition-all"
+          >
+            Reconnect
+          </button>
+        </div>
+      )}
 
       {/* HTML SCREEN LABELS (PROJECTED OVER 3D CANVAS) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden font-sans">

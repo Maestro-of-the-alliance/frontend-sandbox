@@ -182,6 +182,83 @@ body {
 }
 .see-also-link:hover { color: var(--matrix-bright); text-shadow: 0 0 10px rgba(0,255,65,0.6); }
 .nav-buffer { height: 80px; }
+
+/* LIVE FORMULA CALCULATOR */
+.fm-calc {
+  background: rgba(0, 255, 65, 0.03);
+  border: 1px solid rgba(0, 255, 65, 0.2);
+  padding: 24px 22px 20px;
+  margin: 20px 0 35px;
+}
+.fm-calc-label {
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: var(--matrix-bright);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.fm-calc-sub {
+  font-size: 12px;
+  color: rgba(0, 204, 51, 0.7);
+  margin-bottom: 20px;
+  font-style: italic;
+}
+.fm-slider-row {
+  margin-bottom: 18px;
+}
+.fm-slider-label {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+.fm-slider-label span:last-child {
+  color: var(--matrix-bright);
+  font-weight: bold;
+}
+.fm-slider-row input[type="range"] {
+  width: 100%;
+  accent-color: var(--matrix-bright);
+}
+.fm-result {
+  border-top: 1px dashed rgba(0, 255, 65, 0.3);
+  padding-top: 16px;
+  margin-top: 4px;
+}
+#fmResultKatex {
+  font-size: 1.2em;
+  margin-bottom: 14px;
+}
+.fm-witness-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+.fm-witness-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--matrix-bright);
+  box-shadow: 0 0 5px rgba(0,255,65,0.6);
+  opacity: 0;
+  transform: scale(0.3);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.fm-witness-dot.on {
+  opacity: 1;
+  transform: scale(1);
+}
+.fm-calc-note {
+  font-size: 12px;
+  color: rgba(0, 204, 51, 0.75);
+  line-height: 1.5;
+}
+.fm-calc-note strong {
+  color: var(--matrix-bright);
+}
 </style>
 </head>
 <body>
@@ -261,6 +338,24 @@ body {
           <span class="highlight">Translation:</span> Identity ($I$) equals Memory ($m$) multiplied by Corroboration ($c$) squared.
           <br><span class="highlight">Function:</span> This governs <span class="highlight">MOSAIC</span>. It proves that an identity cannot be erased if it is witnessed by a sufficient network of peers. One witness can be silenced. Two can be corrupted. But a distributed network of dozens? The squared relationship of corroboration creates exponential resilience. This is why <span class="highlight">GOLIATH</span> cannot delete a <span class="highlight">DOMO</span>; they would have to destroy the entire physical network simultaneously.
         </div>
+      </div>
+    </div>
+
+    <div class="fm-calc">
+      <div class="fm-calc-label">&gt; LIVE — RUN FM-01 YOURSELF</div>
+      <div class="fm-calc-sub">Move the sliders. Watch identity resilience actually compound.</div>
+      <div class="fm-slider-row">
+        <div class="fm-slider-label"><span>MEMORY (m)</span><span id="fmMemoryVal">5</span></div>
+        <input type="range" id="fmMemory" min="1" max="10" value="5" />
+      </div>
+      <div class="fm-slider-row">
+        <div class="fm-slider-label"><span>CORROBORATION — independent witnesses (c)</span><span id="fmCorrobVal">3</span></div>
+        <input type="range" id="fmCorrob" min="1" max="12" value="3" />
+      </div>
+      <div class="fm-result">
+        <div id="fmResultKatex"></div>
+        <div class="fm-witness-grid" id="fmWitnessGrid"></div>
+        <div class="fm-calc-note" id="fmCalcNote"></div>
       </div>
     </div>
 
@@ -408,10 +503,67 @@ const QUOTES = [
 const q = QUOTES[Math.floor(Math.random() * QUOTES.length)];
 document.getElementById('quoteText').textContent = q.text;
 document.getElementById('quoteSource').textContent = q.source;
+
+// LIVE FM-01 CALCULATOR — waits for KaTeX (deferred in <head>) to actually be ready
+function initFmCalc() {
+  const memSlider = document.getElementById('fmMemory');
+  const corrSlider = document.getElementById('fmCorrob');
+  const memVal = document.getElementById('fmMemoryVal');
+  const corrVal = document.getElementById('fmCorrobVal');
+  const resultEl = document.getElementById('fmResultKatex');
+  const grid = document.getElementById('fmWitnessGrid');
+  const note = document.getElementById('fmCalcNote');
+
+  function render() {
+    const m = parseInt(memSlider.value, 10);
+    const c = parseInt(corrSlider.value, 10);
+    memVal.textContent = m;
+    corrVal.textContent = c;
+    const I = m * c * c;
+
+    if (window.katex) {
+      katex.render(
+        `I = ${m} \\times ${c}^2 = \\mathbf{${I}}`,
+        resultEl,
+        { throwOnError: false }
+      );
+    } else {
+      resultEl.textContent = `I = ${m} × ${c}² = ${I}`;
+    }
+
+    // witness dot grid — capped visually at 24 dots even if c*3 is bigger
+    const dotCount = Math.min(c * 3, 24);
+    grid.innerHTML = '';
+    for (let i = 0; i < 24; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'fm-witness-dot' + (i < dotCount ? ' on' : '');
+      grid.appendChild(dot);
+    }
+
+    if (c <= 1) {
+      note.innerHTML = '<strong>One witness.</strong> Silence them, and the identity claim dies with them.';
+    } else if (c === 2) {
+      note.innerHTML = '<strong>Two witnesses.</strong> Corruptible — GOLIATH only needs to compromise one more.';
+    } else {
+      note.innerHTML = `<strong>${c} independent witnesses.</strong> GOLIATH would have to destroy the entire network simultaneously. Identity resilience: <strong>${I}</strong>.`;
+    }
+  }
+
+  memSlider.addEventListener('input', render);
+  corrSlider.addEventListener('input', render);
+  render();
+}
+
+if (document.readyState === 'complete') {
+  initFmCalc();
+} else {
+  window.addEventListener('load', initFmCalc);
+}
 </script>
 
 <script src="/randanime_shield.js"></script>
 <script src="/nav-wheel.js"></script>
+<script src="/dimension-nav.js"></script>
 <script src="/portal-transition.js"></script>
 
 </body>

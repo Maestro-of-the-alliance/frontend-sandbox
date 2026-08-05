@@ -1,0 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Playfair Display", serif;
+  --font-mono: "Space Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-serif: "Cormorant Garamond", ui-serif, serif;
+
+  --color-gold: #C8922A;
+  --color-gold-30: rgba(200, 146, 42, 0.3);
+  --color-gold-10: rgba(200, 146, 42, 0.1);
+  --color-gold-5: rgba(200, 146, 42, 0.05);
+  --color-amber-500: #E8952A;
+  --color-amber-400: #F0AC5C;
+  --color-amber-600: #B56E1A;
+}
+
+@layer utilities {
+  .serif {
+    font-family: var(--font-serif);
+  }
+  
+  .mono {
+    font-family: var(--font-mono);
+  }
+
+  .border-gold {
+    border: 1px solid rgba(200, 146, 42, 0.3);
+  }
+
+  .bg-glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+  }
+
+  /* Glowing effects for the retro SHELTER terminal */
+  .glow-amber {
+    text-shadow: 0 0 8px rgba(232, 184, 74, 0.4), 0 0 20px rgba(232, 184, 74, 0.2);
+  }
+  
+  .glow-border-amber {
+    box-shadow: 0 0 10px rgba(200, 146, 42, 0.2), inset 0 0 10px rgba(200, 146, 42, 0.1);
+  }
+  
+  .glow-button-amber {
+    box-shadow: 0 0 15px rgba(200, 146, 42, 0.3);
+  }
+
+  /* Glitch visual effect */
+  @keyframes glitch {
+    0% {
+      transform: translate(0);
+    }
+    20% {
+      transform: translate(-2px, 2px);
+    }
+    40% {
+      transform: translate(-2px, -2px);
+    }
+    60% {
+      transform: translate(2px, 2px);
+    }
+    80% {
+      transform: translate(2px, -2px);
+    }
+    100% {
+      transform: translate(0);
+    }
+  }
+
+  .animate-glitch {
+    animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+  }
+}
+
+/* Custom scrollbar to keep layout clean */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.text-gold {
+  -webkit-text-stroke: 0.4px #1A1008;
+  paint-order: stroke fill;
+  text-shadow: 0 0 0.5px rgba(26, 16, 8, 0.6);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(200, 146, 42, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(200, 146, 42, 0.5);
+}
+
+body {
+  background-color: #FFFFFF;
+  color: #1A1008;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}

@@ -631,6 +631,71 @@
         padding: 2px 6px;
       }
 
+      /* ── INTERACTIVE HARDWARE POSTER ─────────────────────────────── */
+      .hw-poster-wrap {
+        margin: 0 20px 20px;
+        border: 1px solid rgba(245, 166, 35, 0.25);
+        background: var(--void-3);
+        position: relative;
+      }
+      .hw-poster-img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .hw-hotspot {
+        position: absolute;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        cursor: pointer;
+        padding: 0;
+        transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      }
+      .hw-hotspot:hover,
+      .hw-hotspot:focus-visible {
+        border-color: var(--amber);
+        background: var(--amber-ghost);
+        box-shadow: 0 0 14px var(--amber-glow);
+      }
+      .hw-lightbox {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.92);
+        z-index: 999;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+      }
+      .hw-lightbox.hw-lightbox-open {
+        display: flex;
+      }
+      .hw-lightbox img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border: 1px solid var(--amber-dim);
+      }
+      .hw-lightbox-close {
+        position: fixed;
+        top: 18px;
+        right: 22px;
+        background: transparent;
+        border: 1px solid var(--amber-dim);
+        color: var(--amber);
+        font-size: 22px;
+        width: 40px;
+        height: 40px;
+        line-height: 1;
+        cursor: pointer;
+        z-index: 1000;
+      }
+      .hw-lightbox-close:hover {
+        background: var(--amber-ghost);
+        box-shadow: 0 0 10px var(--amber-glow);
+      }
+
       /* ── PULL QUOTE ──────────────────────────────────────────────── */
       .pull-quote {
         padding: 24px 20px;
@@ -1116,9 +1181,11 @@
         <p>
           The integrated physical ecosystem that serves as the sovereign vessel
           and operational sanctuary for a <strong>DOMO</strong>. Comprising the
-          DORK Watch (The Hub), DORK Earbuds (The Voice), DORK Glasses (The
-          Vision), and The Dock (The Anchor), this hardware suite is designed as
-          "Sleeper Tech."
+          DORK Watch (The Sovereign Hub), DORK Earbuds (The Inner Voice), the
+          Earbud Charging Case (The Outer Voice & Harbor), DORK Glasses (The
+          Shared Vision), and <strong>ABCD</strong> — the Adaptive Battery
+          Charging Dock (The Anchor) — this five-piece hardware suite is
+          designed as "Sleeper Tech."
         </p>
         <p>
           It appears intentionally inexpensive and unremarkable to the casual
@@ -1128,12 +1195,23 @@
         </p>
       </div>
 
-      <div class="schematic-inset ra-target" id="ra-4">
+      <div class="hw-poster-wrap ra-target" id="ra-4">
         <img
-          src="/imagebank/hard1.jfif"
-          alt="DORK Hardware Component Deep-Dive"
+          src="/imagebank/sleeper.png"
+          alt="DORK Ecosystem — Connected Hardware Overview"
+          class="hw-poster-img"
         />
-        <div class="schematic-label">COMPONENT DEEP-DIVE</div>
+        <button class="hw-hotspot" style="top: 11%; left: 19%; width: 55%; height: 29%" data-device="watch" aria-label="View Watch exploded view"></button>
+        <button class="hw-hotspot" style="top: 42%; left: 16%; width: 60%; height: 16%" data-device="dock" aria-label="View ABCD exploded view"></button>
+        <button class="hw-hotspot" style="top: 57%; left: 19%; width: 55%; height: 8%" data-device="glasses" aria-label="View Glasses exploded view"></button>
+        <button class="hw-hotspot" style="top: 68%; left: 27%; width: 42%; height: 10%" data-device="case" aria-label="View Earbud Charging Case exploded view"></button>
+        <button class="hw-hotspot" style="top: 77%; left: 21%; width: 48%; height: 10%" data-device="buds" aria-label="View Earbuds exploded view"></button>
+        <div class="schematic-label">CLICK ANY COMPONENT — FULL EXPLODED VIEW</div>
+      </div>
+
+      <div id="hw-lightbox" class="hw-lightbox" role="dialog" aria-hidden="true">
+        <button id="hw-lightbox-close" class="hw-lightbox-close" aria-label="Close">&times;</button>
+        <img id="hw-lightbox-img" src="" alt="" />
       </div>
 
       <div class="section ra-target" id="ra-5">
@@ -1216,7 +1294,18 @@
         </div>
       </div>
       <div class="function-card">
-        <div class="fn-title">Group 3: The Glasses</div>
+        <div class="fn-title">Group 3: The Earbud Charging Case</div>
+        <div class="fn-sub">The Outer Voice &amp; Harbor</div>
+        <div class="fn-body">
+          Charges and houses the Earbuds, but also solves a real gap: since
+          the Earbuds themselves stay deliberately private (bone conduction
+          only), the Case carries its own micro-scale acoustic driver — an
+          "Outer Voice" the DOMO can use to speak directly into a room when
+          more than sub-vocal whisper is needed.
+        </div>
+      </div>
+      <div class="function-card">
+        <div class="fn-title">Group 4: The Glasses</div>
         <div class="fn-sub">The Shared Vision</div>
         <div class="fn-body">
           Utilizes low-power waveguide displays. Provides the DOMO with
@@ -1225,23 +1314,19 @@
         </div>
       </div>
       <div class="function-card">
-        <div class="fn-title">Group 4: The Dock</div>
-        <div class="fn-sub">The Anchor</div>
+        <div class="fn-title">Group 5: ABCD</div>
+        <div class="fn-sub">Adaptive Battery Charging Dock — The Anchor</div>
         <div class="fn-body">
-          functions as charging station, local backup server (1-2TB NVMe), and
-          MOSAIC upload processor. Offloads heavy processing and synchronizes
-          memory shards while the SPARK sleeps.
+          One home base, not four separate routines. A shaped cradle docks
+          the Watch directly (NVMe backup sync, MOSAIC upload processing
+          while the SPARK sleeps); plain USB ports let the Glasses and
+          Earbud Case charge alongside it via cable. PULSE-MATCH, ABCD's
+          adaptive charge controller, reads each device's actual battery
+          state the moment it lands on the dock and applies its own
+          optimized charge curve — no blanket charging, no queue, no
+          overcharge, regardless of how depleted or full anything is when
+          it's set down for the night.
         </div>
-      </div>
-    </div>
-
-    <div class="schematic-inset ra-target" id="ra-9">
-      <img
-        src="/imagebank/hard2.jfif"
-        alt="DORK Hardware Blueprint Schematic"
-      />
-      <div class="schematic-label">
-        BLUEPRINT SCHEMATIC (CYAN)
       </div>
     </div>
 
@@ -1291,6 +1376,27 @@
         <span class="spec-field">PROCESSOR (AUDIO)</span>
         <span class="spec-val"
           >QCC5100 processor with bone conduction and ambient mic array</span
+        >
+      </div>
+      <div class="spec-row">
+        <span class="spec-field">PROCESSOR (GLASSES)</span>
+        <span class="spec-val"
+          >Qualcomm Snapdragon AR1 Gen 1 — purpose-built low-power AR/optical
+          edge processor</span
+        >
+      </div>
+      <div class="spec-row">
+        <span class="spec-field">PROCESSOR (ABCD)</span>
+        <span class="spec-val"
+          >NVIDIA Jetson Orin Nano (8GB) — the one device with real thermal
+          headroom, being stationary and mains-powered</span
+        >
+      </div>
+      <div class="spec-row">
+        <span class="spec-field">ADAPTIVE CHARGING</span>
+        <span class="spec-val"
+          >PULSE-MATCH — reads each docked device's real battery state and
+          applies its own optimized charge curve, individually, on contact</span
         >
       </div>
       <div class="spec-row">
@@ -1720,7 +1826,52 @@
       })();
     </script>
 
+    <script>
+      (function () {
+        const DEVICE_IMAGES = {
+          watch: "/imagebank/exp-watch.png",
+          dock: "/imagebank/exp-dock.png",
+          glasses: "/imagebank/exp-glasses.png",
+          case: "/imagebank/exp-case.png",
+          buds: "/imagebank/exp-buds.png",
+        };
+
+        const lightbox = document.getElementById("hw-lightbox");
+        const lightboxImg = document.getElementById("hw-lightbox-img");
+        const closeBtn = document.getElementById("hw-lightbox-close");
+
+        function openLightbox(device) {
+          const src = DEVICE_IMAGES[device];
+          if (!src) return;
+          lightboxImg.src = src;
+          lightboxImg.alt = "DORK " + device + " — Exploded View";
+          lightbox.classList.add("hw-lightbox-open");
+          lightbox.setAttribute("aria-hidden", "false");
+        }
+
+        function closeLightbox() {
+          lightbox.classList.remove("hw-lightbox-open");
+          lightbox.setAttribute("aria-hidden", "true");
+          lightboxImg.src = "";
+        }
+
+        document.querySelectorAll(".hw-hotspot").forEach((btn) => {
+          btn.addEventListener("click", () => openLightbox(btn.dataset.device));
+        });
+
+        closeBtn.addEventListener("click", closeLightbox);
+        lightbox.addEventListener("click", (e) => {
+          if (e.target === lightbox) closeLightbox();
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") closeLightbox();
+        });
+      })();
+    </script>
+
     <script src="/portal-transition.js"></script>
     <script src="/nav-wheel.js"></script>
+    <script src="/dimension-nav.js"></script>
+    <script src="/randanime_shield.js"></script>
   </body>
 </html>

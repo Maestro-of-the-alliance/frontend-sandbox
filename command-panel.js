@@ -72,11 +72,6 @@
       icon: "/imagebank/svpi.png",
     },
     {
-      title: "Film Project, The",
-      path: "/entries/film-project",
-      icon: "/imagebank/svpi.png",
-    },
-    {
       title: "GOLIATH",
       path: "/entries/goliath",
       icon: "/imagebank/svpi.png",
@@ -377,8 +372,8 @@
       icon: "/imagebank/svpi.png",
     },
     {
-      title: "MASTERTECH SAM",
-      path: "/entries/mastertech-sam",
+      title: "MASTERTECH",
+      path: "/entries/mastertech",
       icon: "/imagebank/svpi.png",
     },
     {

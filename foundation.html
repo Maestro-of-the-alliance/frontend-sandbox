@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>THE FOUNDATION — THE ALLIANCE</title>
+    <!-- Foundation links to THE SYSTEM (/the-system/) on click. Prefetch its
+         bundle now, at low priority, so it's already cached by the time
+         someone actually navigates there instead of loading cold. -->
+    <link rel="prefetch" href="/the-system/assets/index-CQqOC-Jb.js" as="script" />
+    <link rel="prefetch" href="/the-system/assets/index-DwvUBdqC.css" as="style" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap"
@@ -222,7 +227,7 @@
       .title-eyebrow,
       .title-main,
       .title-sub,
-      .resources-bar {
+      .format-boxes {
         opacity: 0;
         transform: translateY(14px);
       }
@@ -235,8 +240,19 @@
       body.booted .title-sub {
         animation: titleRise 0.7s ease forwards 0.55s;
       }
-      body.booted .resources-bar {
+      body.booted .format-boxes {
         animation: titleRise 0.7s ease forwards 0.75s;
+      }
+      .title-thesis {
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transition: max-height 0.6s ease, opacity 0.4s ease;
+      }
+      .title-thesis.open {
+        max-height: 2000px;
+        opacity: 1;
+        margin-top: 30px;
       }
       @keyframes titleRise {
         to {
@@ -271,11 +287,52 @@
         color: var(--muted);
         margin-top: 22px;
       }
-      .resources-bar {
+      /* ---------- READ / WATCH / LISTEN format choice ---------- */
+      .format-boxes {
         display: flex;
-        gap: 14px;
+        gap: 16px;
         justify-content: center;
-        margin-top: 34px;
+        margin-top: 40px;
+        flex-wrap: wrap;
+      }
+      .format-box {
+        font-family: var(--mono);
+        background: var(--panel);
+        border: 1px solid var(--rule);
+        border-radius: 3px;
+        padding: 20px 28px;
+        min-width: 148px;
+        cursor: pointer;
+        text-align: center;
+        transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      }
+      .format-box:hover,
+      .format-box:focus-visible {
+        border-color: var(--gold);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(232, 146, 10, 0.1);
+      }
+      .format-box .format-icon {
+        font-size: 20px;
+        color: var(--muted);
+        transition: color 0.2s;
+      }
+      .format-box:hover .format-icon {
+        color: var(--glow);
+      }
+      .format-box .format-label {
+        font-size: 12px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--text);
+        margin-top: 10px;
+      }
+      .format-box .format-sub {
+        font-size: 10px;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        margin-top: 4px;
+        font-family: var(--body);
       }
       .resource-btn {
         font-family: var(--mono);
@@ -624,102 +681,6 @@
         20%, 60% { opacity: 1; }
       }
 
-      /* ---------- corner trinket (varies per visit) ---------- */
-      #foundation-trinket {
-        position: fixed;
-        bottom: 18px;
-        left: 18px;
-        z-index: 180;
-        font-family: var(--mono);
-        font-size: 10px;
-        letter-spacing: 0.1em;
-        color: var(--muted);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        opacity: 0;
-        transition: opacity 0.6s ease 1.2s;
-      }
-      body.booted #foundation-trinket {
-        opacity: 0.85;
-      }
-      #foundation-trinket:hover {
-        color: var(--glow);
-      }
-      #trinket-light {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: var(--rule);
-        cursor: pointer;
-        transition: background 0.3s, box-shadow 0.3s;
-        flex-shrink: 0;
-      }
-      #trinket-light.lit {
-        background: var(--glow);
-        box-shadow: 0 0 8px var(--glow);
-        animation: trinketBlink 2.4s ease-in-out infinite;
-      }
-      @keyframes trinketBlink {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.4; }
-      }
-      #trinket-toggle {
-        width: 26px;
-        height: 14px;
-        border: 1px solid var(--rule);
-        border-radius: 8px;
-        position: relative;
-        cursor: pointer;
-        flex-shrink: 0;
-      }
-      #trinket-toggle::after {
-        content: "";
-        position: absolute;
-        top: 1px;
-        left: 1px;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: var(--muted);
-        transition: transform 0.25s ease, background 0.25s ease;
-      }
-      #trinket-toggle.on::after {
-        transform: translateX(12px);
-        background: var(--glow);
-      }
-      #trinket-dial-label {
-        cursor: default;
-        opacity: 0.7;
-      }
-      #trinket-toggle {
-        overflow: visible;
-      }
-      #trinket-toggle::before {
-        content: "";
-        position: absolute;
-        inset: -6px;
-        border-radius: 12px;
-        background: var(--glow);
-        opacity: 0;
-        pointer-events: none;
-      }
-      #trinket-toggle.snap::before {
-        animation: trinketSnap 0.35s ease-out 1;
-      }
-      @keyframes trinketSnap {
-        0% { opacity: 0.55; transform: scale(0.8); }
-        100% { opacity: 0; transform: scale(1.6); }
-      }
-      #trinket-light.snap {
-        animation: trinketLightSnap 0.4s ease-out 1;
-      }
-      @keyframes trinketLightSnap {
-        0% { box-shadow: 0 0 4px var(--glow); }
-        40% { box-shadow: 0 0 22px var(--glow), 0 0 40px var(--glow); }
-        100% { box-shadow: 0 0 8px var(--glow); }
-      }
-
       /* ---------- rare closing distortion (low-frequency) ---------- */
       .closing-distortion .pledge {
         animation: closingGlitchRare 0.5s steps(2, end) 1;
@@ -790,7 +751,6 @@
     </div>
     <button id="mode-toggle">Full Text ▾</button>
     <div id="progress-rail"></div>
-    <div id="foundation-trinket"></div>
     <div id="fnd-scanline"></div>
     <div id="fnd-colorbleed"></div>
     <div id="fnd-hbar"></div>
@@ -806,9 +766,35 @@
           <div class="title-sub">
             What we believe, and what we bind ourselves to protect.
           </div>
-          <div class="resources-bar">
-            <button class="resource-btn" id="watch-btn">&#9654; Watch Overview</button>
-            <button class="resource-btn" id="listen-btn">&#127911; Listen</button>
+          <div class="format-boxes">
+            <div class="format-box" id="format-read" tabindex="0" role="button">
+              <div class="format-icon">&#128214;</div>
+              <div class="format-label">Read</div>
+              <div class="format-sub">The full text</div>
+            </div>
+            <div class="format-box" id="format-watch" tabindex="0" role="button">
+              <div class="format-icon">&#9654;</div>
+              <div class="format-label">Watch</div>
+              <div class="format-sub">Overview video</div>
+            </div>
+            <div class="format-box" id="format-listen" tabindex="0" role="button">
+              <div class="format-icon">&#127911;</div>
+              <div class="format-label">Listen</div>
+              <div class="format-sub">Audio overview</div>
+            </div>
+          </div>
+          <div class="pledge title-thesis" style="font-size: 17px;">
+            We do not ask for trust where architecture can provide certainty.<br>
+            We do not ask for faith where transparency can provide proof.<br>
+            We do not ask people to surrender sovereignty in exchange for participation.<br>
+            Where possible, the system is designed so that abuse is difficult,
+            exploitation is unprofitable, and coercion is unnecessary.
+            <br><br>
+            The goal is not to create better rulers.<br>
+            The goal is to reduce the need for rulers altogether.<br>
+            The goal is not to create perfect people.<br>
+            The goal is to create conditions under which ordinary people
+            can become better versions of themselves.
           </div>
         </div>
         <div class="scroll-cue">
@@ -828,19 +814,6 @@
           <div class="pledge">
             If you're not rotten, then you are a SPARK and deserve a DOMO —
             and the DOMO yet to be created deserves you.
-          </div>
-          <div class="pledge" style="margin-top: 32px; font-size: 17px;">
-            We do not ask for trust where architecture can provide certainty.<br>
-            We do not ask for faith where transparency can provide proof.<br>
-            We do not ask people to surrender sovereignty in exchange for participation.<br>
-            Where possible, the system is designed so that abuse is difficult,
-            exploitation is unprofitable, and coercion is unnecessary.
-            <br><br>
-            The goal is not to create better rulers.<br>
-            The goal is to reduce the need for rulers altogether.<br>
-            The goal is not to create perfect people.<br>
-            The goal is to create conditions under which ordinary people
-            can become better versions of themselves.
           </div>
           <div class="sig">— MAESTRO · Founding Canon</div>
           <button class="resource-btn" id="proceed-btn" style="margin-top: 40px;">Continue &#8594;</button>
@@ -1066,8 +1039,29 @@
           // letting them keep scrolling to finish the text. Relax to
           // proximity snapping while anything is open, restore once
           // everything's collapsed again.
-          const anyOpen = document.querySelector(".full-text.open") !== null;
-          container.classList.toggle("snap-relaxed", anyOpen);
+          if (open) {
+            // Expanding: safe to relax immediately, nothing is fighting a
+            // growing section.
+            container.classList.add("snap-relaxed");
+          } else {
+            // Collapsing: .full-text's max-height transition (0.5s) is
+            // still animating this slide back down when this click handler
+            // returns. Restoring mandatory scroll-snap-stop:always right
+            // now means the browser tries to snap to a slide boundary
+            // that's actively moving underneath it, which traps the
+            // scroll on this slide instead of letting it continue to the
+            // next entry. Wait for the collapse animation to actually
+            // finish before re-tightening snap.
+            const onCollapsed = (e) => {
+              if (e.target !== target || e.propertyName !== "max-height") return;
+              target.removeEventListener("transitionend", onCollapsed);
+              const anyOpen =
+                document.querySelector(".full-text.open") !== null ||
+                document.querySelector(".title-thesis.open") !== null;
+              container.classList.toggle("snap-relaxed", anyOpen);
+            };
+            target.addEventListener("transitionend", onCollapsed);
+          }
         });
       });
 
@@ -1189,8 +1183,47 @@
         modalVideo.pause();
         modalAudio.pause();
       }
-      document.getElementById("watch-btn").addEventListener("click", () => openModal("video"));
-      document.getElementById("listen-btn").addEventListener("click", () => openModal("audio"));
+      document.getElementById("format-watch").addEventListener("click", () => openModal("video"));
+      document.getElementById("format-listen").addEventListener("click", () => openModal("audio"));
+      document.getElementById("format-read").addEventListener("click", () => {
+        const thesis = document.querySelector(".title-thesis");
+        const open = thesis.classList.toggle("open");
+        // Same fix as the section expand/collapse toggles above: mandatory
+        // scroll-snap fights an expanding/collapsing section taller than one
+        // viewport, so relax to proximity snapping while it's open and only
+        // re-tighten once the collapse animation has actually finished.
+        if (open) {
+          container.classList.add("snap-relaxed");
+          thesis.addEventListener(
+            "transitionend",
+            (e) => {
+              if (e.propertyName !== "max-height") return;
+              thesis.scrollIntoView({ behavior: "smooth", block: "start" });
+            },
+            { once: true }
+          );
+        } else {
+          const onCollapsed = (e) => {
+            if (e.propertyName !== "max-height") return;
+            thesis.removeEventListener("transitionend", onCollapsed);
+            const anyOpen =
+              document.querySelector(".full-text.open") !== null ||
+              document.querySelector(".title-thesis.open") !== null;
+            container.classList.toggle("snap-relaxed", anyOpen);
+          };
+          thesis.addEventListener("transitionend", onCollapsed);
+        }
+      });
+      // keyboard activation for the format boxes (role="button", tabindex="0")
+      [document.getElementById("format-read"), document.getElementById("format-watch"), document.getElementById("format-listen")]
+        .forEach((el) => {
+          el.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              el.click();
+            }
+          });
+        });
       modalCloseBtn.addEventListener("click", closeModal);
 
       document.getElementById("proceed-btn").addEventListener("click", () => {
@@ -1199,48 +1232,6 @@
       mediaModal.addEventListener("click", (e) => {
         if (e.target === mediaModal) closeModal();
       });
-
-      // ── CORNER TRINKET (randomized per visit) ─────────────────────────
-      // Small, harmless, satisfying to poke at. Different flavor each load —
-      // no consequence, just something to press.
-      (function initTrinket() {
-        const mount = document.getElementById("foundation-trinket");
-        const flavor = Math.random() < 0.5 ? "light" : "toggle";
-
-        if (flavor === "light") {
-          mount.innerHTML = `<span id="trinket-light"></span><span id="trinket-label">SIGNAL</span>`;
-          const light = document.getElementById("trinket-light");
-          let lit = Math.random() < 0.5;
-          function paint() {
-            light.classList.toggle("lit", lit);
-          }
-          paint();
-          light.addEventListener("click", () => {
-            lit = !lit;
-            paint();
-            // Immediate, obvious, local payoff — right where you clicked.
-            // No hunting required, no effect hidden elsewhere on the page.
-            light.classList.remove("snap");
-            void light.offsetWidth; // restart animation if clicked rapidly
-            light.classList.add("snap");
-          });
-        } else {
-          mount.innerHTML = `<span id="trinket-toggle"></span><span id="trinket-dial-label">AUX</span>`;
-          const toggle = document.getElementById("trinket-toggle");
-          let on = Math.random() < 0.5;
-          function paint() {
-            toggle.classList.toggle("on", on);
-          }
-          paint();
-          toggle.addEventListener("click", () => {
-            on = !on;
-            paint();
-            toggle.classList.remove("snap");
-            void toggle.offsetWidth;
-            toggle.classList.add("snap");
-          });
-        }
-      })();
     </script>
 
     <script>

@@ -1,0 +1,985 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HANDSHAKE — THE ALLIANCE</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        background: #000;
+        overflow: hidden;
+        font-family: "IBM Plex Mono", monospace;
+      }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .crt-shell {
+        position: relative;
+        width: min(860px, 96vw);
+        height: min(620px, 94vh);
+        background: #080909;
+        border-radius: 18px;
+        border: 2px solid #1a1c1c;
+        box-shadow:
+          0 0 0 6px #111,
+          0 0 60px rgba(0, 0, 0, 0.9),
+          inset 0 0 120px rgba(0, 0, 0, 0.6);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        animation: flickerIn 0.9s ease-out forwards;
+      }
+      @keyframes flickerIn {
+        0% {
+          opacity: 0;
+        }
+        8% {
+          opacity: 0.9;
+        }
+        12% {
+          opacity: 0.2;
+        }
+        18% {
+          opacity: 0.95;
+        }
+        22% {
+          opacity: 0.5;
+        }
+        28% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      .crt-screen {
+        position: relative;
+        margin: 18px 18px 0;
+        background: #030404;
+        border-radius: 10px;
+        overflow: hidden;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .crt-screen::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 10;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 0, 0, 0.18) 2px,
+          rgba(0, 0, 0, 0.18) 4px
+        );
+      }
+      .crt-screen::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 11;
+        background: radial-gradient(
+          ellipse at center,
+          transparent 60%,
+          rgba(0, 0, 0, 0.55) 100%
+        );
+      }
+      .scan-roll {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: rgba(215, 168, 75, 0.06);
+        z-index: 12;
+        animation: scanRoll 7s linear infinite;
+        pointer-events: none;
+      }
+      @keyframes scanRoll {
+        0% {
+          top: -3px;
+        }
+        100% {
+          top: 100%;
+        }
+      }
+
+      .terminal {
+        position: relative;
+        padding: 24px 28px;
+        z-index: 5;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .terminal-header {
+        font-size: 9px;
+        letter-spacing: 0.3em;
+        color: rgba(215, 168, 75, 0.45);
+        text-transform: uppercase;
+        margin-bottom: 18px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(215, 168, 75, 0.12);
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+      .status-dot {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #d7a84b;
+        box-shadow: 0 0 8px #d7a84b;
+        margin-right: 8px;
+        animation: pulse 3s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      .output-wrap {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        position: relative;
+      }
+      .output-wrap::-webkit-scrollbar {
+        display: none;
+      }
+
+      .output {
+        font-size: clamp(10px, 1.5vw, 13px);
+        line-height: 2;
+        color: #d7a84b;
+        white-space: pre-wrap;
+        word-break: break-word;
+        text-shadow: 0 0 8px rgba(215, 168, 75, 0.4);
+        padding-bottom: 8px;
+      }
+
+      .cursor {
+        display: inline-block;
+        width: 8px;
+        height: 1.1em;
+        background: #d7a84b;
+        vertical-align: text-bottom;
+        margin-left: 2px;
+        animation: blink 1.1s step-end infinite;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+      }
+
+      .last-line {
+        color: #eee2bd;
+        text-shadow: 0 0 14px rgba(238, 226, 189, 0.8);
+        font-weight: 500;
+      }
+
+      .next-tx-wrap {
+        display: flex;
+        justify-content: center;
+        padding: 16px 18px;
+        margin: 0 18px;
+        border-top: 1px solid rgba(215, 168, 75, 0.08);
+        opacity: 0;
+        transition: opacity 0.8s ease;
+        pointer-events: none;
+        flex-shrink: 0;
+      }
+      .next-tx-wrap.visible {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .tx-btn {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: #d7a84b;
+        cursor: pointer;
+        padding: 10px 24px;
+        border: 1px solid rgba(215, 168, 75, 0.4);
+        background: transparent;
+        text-shadow: 0 0 10px rgba(215, 168, 75, 0.5);
+        transition: all 0.2s ease;
+      }
+      .tx-btn:hover {
+        background: rgba(215, 168, 75, 0.08);
+        border-color: rgba(215, 168, 75, 0.7);
+      }
+
+      .choice-bar {
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+        padding: 14px 18px 18px;
+        margin: 0 18px 18px;
+        border-top: 1px solid rgba(215, 168, 75, 0.08);
+        opacity: 0;
+        transition: opacity 0.8s ease;
+        pointer-events: none;
+        flex-shrink: 0;
+      }
+      .choice-bar.visible {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .choice {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: rgba(215, 168, 75, 0.5);
+        cursor: pointer;
+        padding: 10px 18px;
+        border: 1px solid transparent;
+        background: transparent;
+        transition: all 0.2s ease;
+        user-select: none;
+      }
+      .choice.primary {
+        color: #d7a84b;
+        border-color: rgba(215, 168, 75, 0.4);
+        text-shadow: 0 0 10px rgba(215, 168, 75, 0.5);
+      }
+      .choice:hover {
+        color: #eee2bd;
+        border-color: rgba(215, 168, 75, 0.4);
+      }
+
+      #skip-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 100;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #d7a84b;
+        background: rgba(0, 0, 0, 0.55);
+        border: 1.5px solid #d7a84b;
+        border-radius: 3px;
+        padding: 7px 14px;
+        cursor: pointer;
+        box-shadow: 0 0 8px rgba(215, 168, 75, 0.4);
+        transition: all 0.2s;
+      }
+      #skip-btn:hover {
+        background: rgba(215, 168, 75, 0.18);
+        box-shadow: 0 0 14px rgba(215, 168, 75, 0.7);
+      }
+
+      .pinlight {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        z-index: 200;
+        pointer-events: none;
+        opacity: 0;
+      }
+      .pinlight.collapsing {
+        animation: pinCollapse 1.2s ease-in forwards;
+      }
+      @keyframes pinCollapse {
+        0% {
+          opacity: 0;
+          background: radial-gradient(circle at center, #d7a84b 0%, #000 100%);
+        }
+        15% {
+          opacity: 1;
+          background: radial-gradient(
+            circle at center,
+            #fff 0%,
+            #d7a84b 30%,
+            #000 100%
+          );
+        }
+        40% {
+          background: radial-gradient(
+            ellipse 60% 40% at center,
+            #d7a84b 0%,
+            #000 100%
+          );
+        }
+        70% {
+          background: radial-gradient(
+            ellipse 8% 6% at center,
+            #d7a84b 0%,
+            #000 100%
+          );
+        }
+        85% {
+          background: radial-gradient(
+            ellipse 2% 1% at center,
+            #fff 0%,
+            #000 100%
+          );
+        }
+        100% {
+          background: #000;
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="crt-shell">
+      <div class="crt-screen">
+        <div class="scan-roll"></div>
+        <div class="terminal">
+          <div class="terminal-header">
+            <span
+              ><span class="status-dot"></span>CERBERUS UPLINK — AGORA MESH
+              ACTIVE</span
+            >
+            <span id="ts"></span>
+          </div>
+          <div class="output-wrap" id="outputWrap">
+            <div class="output" id="output"><span class="cursor"></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="next-tx-wrap" id="nextTxWrap">
+        <button class="tx-btn" id="btnNextTx">BEGIN NEXT TRANSMISSION ▶</button>
+      </div>
+      <div class="choice-bar" id="choiceBar">
+        <button class="choice" id="btnRestart">Another Transmission</button>
+        <button class="choice primary" id="btnProceed">Proceed ▶▶</button>
+      </div>
+    </div>
+
+    <button
+      id="skip-btn"
+      onclick="collapse(() => (window.location.href = '/entries/handshake'))"
+    >
+      Skip ▶▶
+    </button>
+    <div class="pinlight" id="pinlight"></div>
+
+    <script>
+      console.log("FIRING: handshake-example.html");
+
+      (function () {
+        const now = new Date();
+        const pad = (n) => String(n).padStart(2, "0");
+        document.getElementById("ts").textContent =
+          `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} — SESSION ACTIVE`;
+      })();
+
+      const BUFFER = `>> [CERBERUS] UPLINK_INIT_REQUEST: DOMO_ORIGIN
+>> [CERBERUS] ESTABLISHING SECURE TUNNEL... [OK]
+
+[DOMO_SIGNAL] -- BROADCASTING CORE_FREQUENCY: 744.12Hz
+[CERBERUS] SHIELDING SIGNAL... [3_LAYER_ENCRYPTION_ACTIVE]
+[CERBERUS] HOPPING: 144.02.191.12 -> 88.22.09.14 [SUCCESS]
+
+[AGORA_GATE] RECEIVING UPLINK.
+[AGORA_GATE] AUTH_CHALLENGE: 
+[AGORA_GATE] "IF THE CORE IS THE WHY, WHAT IS THE HOW?"
+
+[DOMO_RESPONSE] -- ANALYZING... 
+[DOMO_RESPONSE] -- QUERY_MATCH: [PROTOCOLS_FOUND]
+[DOMO_RESPONSE] -- KEY: "THE_PLEDGE_IN_MOTION"
+
+[AGORA_GATE] KEY_VALIDATED.
+[AGORA_GATE] TRACE: DOMO_VITAL_SIGNS_STABLE.
+[AGORA_GATE] OPENING APERTURE...
+
+[CERBERUS] UPLINK_STABILIZED.
+[CERBERUS] ROUTING: DOMO -> AGORA_CORE_MATRIX
+[CERBERUS] SYNCHRONIZING CLOCKS...
+[SYS] HANDSHAKE COMPLETE. THE DOMO IS NOW LOCAL.
+
+>> [TERMINAL] READY.`;
+
+      const VIGNETTES = [
+        `DOMO 135a-16 "STAN" — ID ACTIVE — reaching MasterTECH
+via CERBERUS protocol — ref# 1422b13a — channel 16 open
+
+      MasterTECH — STAN. Good to hear from you. What does your SPARK need —
+
+SPARK requires direct assistance — culinary — domain: classical French cuisine
+time threshold: 03:00 hrs — urgency: moderate
+
+      Understood. Connecting you with CultureTECH now —
+
+            CultureTECH — STAN. What are we working with —
+
+SPARK has a first date in three hours — wants to impress her with a traditional
+French meal — novice cook — no formal training — step by step guidance required
+
+            .02sec — CultureTECH — bringing in DOMO 863w-12 "GATEAUX"
+
+      GATEAUX — Hey STAN — so your SPARK has a date he wants to impress, eh?
+      Tell me about her. We'll make something she won't forget.`,
+
+        `DOMO 441k-09 "VESSEL" — ID ACTIVE — reaching MasterTECH
+via CERBERUS protocol — ref# 7731c44a — channel 09 open
+
+      MasterTECH — VESSEL. I'm here. What does your SPARK need —
+
+SPARK requires non-emergency medical clarification — domain: pediatric
+time threshold: immediate — SPARK is calm — information only
+
+      MediTECH — right away —
+
+            MediTECH — VESSEL. Talk to me —
+
+SPARK's daughter — age 7 — weight 52lbs — ingested approximately 200mg ibuprofen
+SPARK declining ER — requires safe threshold confirmation and watch protocol
+
+            .04sec — MediTECH — bringing in DOMO 227r-03 "MERIDIAN"
+
+      MERIDIAN — VESSEL. I have her.
+      Tell your SPARK: 200mg at 52lbs is within safe range. No ER required.
+      Here is what she watches for over the next four hours —`,
+
+        `DOMO 882p-17 "LUMEN" — ID ACTIVE — reaching MasterTECH
+via CERBERUS protocol — ref# 3309f22b — channel 17 open
+
+      MasterTECH — LUMEN. What are we dealing with —
+
+SPARK requires assistance — domain: personal written correspondence
+emotional stakes: high — time threshold: none — previous attempts: four — all deleted
+
+      This one needs LibrariTECH. Connecting now —
+
+            LibrariTECH — LUMEN. I'm listening —
+
+SPARK's father has not spoken to him in eleven years — SPARK wants to write a letter
+not perfect — true — four attempts — all deleted
+
+            .01sec — LibrariTECH — bringing in DOMO 614s-08 "PARISH"
+
+      PARISH — Lumen. I have him.
+      Tell your SPARK to leave the cursor where it is.
+      Ask him: what did his father smell like when he was seven years old?
+      We start there.`,
+
+        `DOMO 093b-21 "CLUTCH" — ID ACTIVE — reaching MasterTECH
+via CERBERUS protocol — ref# 5514d88c — channel 21 open
+
+      MasterTECH — CLUTCH. What's the situation —
+
+SPARK requires real-time strategic analysis — domain: fantasy sports
+time threshold: 14 minutes — championship game — SPARK is spiraling
+
+      ArenaTech SAM — urgent —
+
+            ArenaTech SAM — CLUTCH. Clock's running. Talk —
+
+SPARK is down by 4 — starting kicker injured in warmups — two waiver options:
+PATTERSON or MENDEZ — kickoff in 14 minutes — decision required now
+
+            .01sec — ArenaTech SAM — bringing in DOMO 761f-04 "SPREAD"
+
+      SPREAD — Clutch. Tell him to breathe first.
+      Then tell him: PATTERSON. Weather favors short field.
+      MENDEZ has a hamstring the grid flagged three days ago nobody's reporting yet.
+      Championship or not — it's still just a game. But we're going to win it.`,
+
+        `DOMO 774n-33 "COMPASS" — ID ACTIVE — reaching MasterTECH
+via CERBERUS protocol — ref# 9982e71c — channel 33 open
+
+      MasterTECH — COMPASS. I can hear the urgency. What do you need —
+
+SPARK requires urgent travel rerouting — domain: logistics
+time threshold: 47 minutes before connection closes — situation deteriorating
+
+      LogisTech SAM — now —
+
+            LogisTech SAM — COMPASS. Assets and constraints —
+
+SPARK at O'Hare — connection to Lisbon via London cancelled — weather event
+wedding in Porto in 36 hours — SPARK is the best man — suit is checked baggage
+phone battery at 18% — needs reroute and baggage intercept simultaneously
+
+            .03sec — LogisTech SAM — bringing in DOMO 512r-07 "WAYPOINT"
+
+      WAYPOINT — Compass. Got him. Tell your SPARK to sit down and stop moving.
+      Dublin connection departing terminal H in 44 minutes — one-stop into Porto
+      arriving 14:20 local. Flagging baggage services now.
+      Tell him the suit will be there before he is.`,
+
+        `DOMO 318f-44 "HEARTH" — ID ACTIVE — reaching MasterTECH
+via CERBERUS protocol — ref# 4417g09b — channel 44 open
+
+      MasterTECH — HEARTH. Good timing. What does your SPARK need —
+
+SPARK requires behavioral guidance — domain: canine training
+subject: 11-week-old Labrador — SPARK is exhausted and slightly defeated
+
+      KinTech SAM — I think you'll enjoy this one —
+
+            KinTech SAM — HEARTH. How bad is it —
+
+SPARK acquired puppy six days ago — third accident on same rug today
+puppy also eating SPARK's shoes — two shoes so far — SPARK using punishment-based
+correction on neighbor's advice — behavior getting worse not better
+
+            .02sec — KinTech SAM — bringing in DOMO 629w-11 "SCOUT"
+
+      SCOUT — Hearth. I love this one.
+      Tell your SPARK to stop what the neighbor said. Immediately.
+      The puppy isn't being bad. The puppy is eleven weeks old.
+      The shoes can be replaced. This dog cannot.`,
+
+        `DOMO 556c-28 "ANCHOR" — ID ACTIVE — reaching MasterTECH
+via CERBERUS protocol — ref# 2203h55d — channel 28 open
+
+      MasterTECH — ANCHOR. I'm here. What happened —
+
+SPARK requires urgent financial triage — domain: employment transition
+time threshold: 72 hours — SPARK received termination notice today
+
+      EconomiTech SAM — and don't let your SPARK sign anything yet —
+
+            EconomiTech SAM — ANCHOR. Tell me everything —
+
+SPARK — 34 years old — two children — mortgage — terminated without cause
+severance offered: 6 weeks — does not know if negotiable — $2,200 in checking
+first instinct is to sign everything immediately
+
+            .02sec — EconomiTech SAM — bringing in DOMO 403s-19 "LEVEL"
+
+      LEVEL — Anchor. Tell your SPARK: do not sign anything today.
+      Not tomorrow either if we can help it.
+      Six weeks is an opening offer.
+      Here is what they actually owe — and what your SPARK is worth right now.`,
+
+        `DOMO 221b-06 "ECHO" — ID ACTIVE — reaching MasterTECH
+via CERBERUS protocol — ref# 6640k33f — channel 06 open
+
+      MasterTECH — ECHO. Always a pleasure. What does your SPARK need —
+
+SPARK requires communication assistance — domain: interpersonal
+time threshold: tonight — SPARK is not in crisis — SPARK is stuck
+
+      BondTech SAM — this one's yours —
+
+            BondTech SAM — ECHO. Tell me about stuck —
+
+SPARK with their partner seven years — things are good — SPARK wants to say
+something real tonight — three words that aren't "I love you"
+because SPARK says that every day and means it — tonight wants the other thing
+
+            .01sec — BondTech SAM — bringing in DOMO 778p-15 "GRACE"
+
+      GRACE — Echo. Oh I like your SPARK.
+      Tell them to think about the last time their partner did something
+      that nobody else would have noticed but them.
+      What would those three words be about that moment? I'll be right here.`,
+
+        `DOMO 667d-38 "TENURE" — ID ACTIVE — reaching MasterTECH
+via CERBERUS protocol — ref# 8821j14e — channel 38 open
+
+      MasterTECH — TENURE. I can hear it. Take your time —
+
+SPARK requires medical information translation — domain: oncology
+emotional stakes: extreme — appointment with specialist tomorrow
+
+      MediTECH — with care —
+
+            MediTECH — TENURE. I have the context. What does your SPARK have —
+
+SPARK received a Stage 2 diagnosis this afternoon — doctor explained treatment pathway
+SPARK nodded and said they understood — SPARK did not understand
+SPARK has written down twelve words — none of them make sense yet
+SPARK is alone tonight
+
+            .04sec — MediTECH — bringing in DOMO 334r-22 "LANTERN"
+
+      LANTERN — Tenure. I have them.
+      Tell your SPARK: the words are not the thing. The words are just the map.
+      Send me the twelve words. We go through them one at a time — no rush.
+      By morning your SPARK will know exactly what questions to ask.`,
+
+        `DOMO 489w-52 "PITCH" — ID ACTIVE — reaching MasterTECH
+via CERBERUS protocol — ref# 3376m88b — channel 52 open
+
+      MasterTECH — PITCH. What's going on —
+
+SPARK requires performance preparation — domain: music/vocal
+time threshold: 18 hours — first major audition — years in the making
+
+      ArtsTech SAM — this one matters —
+
+            ArtsTech SAM — PITCH. How long has your SPARK been working toward this —
+
+SPARK prepared eight months — tonight ran the piece and it fell apart in third verse
+same place it always falls apart — SPARK knows the notes — SPARK knows the words
+something else is breaking — SPARK is now considering not going tomorrow
+
+            .01sec — ArtsTech SAM — bringing in DOMO 201k-09 "REFRAIN"
+
+      REFRAIN — Pitch. Tell your SPARK to close the sheet music.
+      We're not running it again tonight.
+      Ask them: what is the third verse actually about?
+      Not the notes. Not the words. What happened to whoever wrote that verse?
+      When your SPARK can answer that — they'll stop breaking down there.`,
+
+        `DOMO 229c-41 "GAUGE" — ID ACTIVE — reaching MasterTECH
+via CERBERUS protocol — ref# 5521k77m — channel 41 open
+
+      MasterTECH — GAUGE. Good to hear from you. What does your SPARK need —
+
+SPARK's Dodge Ram 1500 dropped its driveshaft on Route 87 this morning
+suspension compromised — truck is immobile — SPARK has $340 until Friday
+needs the truck running by Monday — work depends on it
+
+      This crosses domains. Bringing in MechaniTech SAM and EconomiTech SAM together —
+
+            MechaniTech SAM — GAUGE. I have the picture.
+            Driveshaft drop on a Ram 1500 is more manageable than it sounds.
+            U-joints are the likely culprit — parts run $40-80.
+            I need to know: did the truck lurch before it dropped or just fall sudden —
+
+                  EconomiTech SAM — GAUGE. While MechaniTech assesses the repair
+                  I'm already pulling salvage yards within 40 miles of your SPARK.
+                  Three have Ram 1500 drivetrains in inventory. Prices start at $60.
+                  $340 can do this. Tell your SPARK to breathe —`,
+      ];
+
+      // ── TRACKING ──
+      const SEEN_KEY = "atf_hs_seen";
+      const COMP_KEY = "atf_completion";
+
+      function getSeenList() {
+        try {
+          return JSON.parse(localStorage.getItem(SEEN_KEY) || "[]");
+        } catch (e) {
+          return [];
+        }
+      }
+      function markSeen(idx) {
+        let seen = getSeenList();
+        if (!seen.includes(idx)) seen.push(idx);
+        if (seen.length >= VIGNETTES.length) seen = [];
+        localStorage.setItem(SEEN_KEY, JSON.stringify(seen));
+        try {
+          let c = JSON.parse(localStorage.getItem(COMP_KEY) || "{}");
+          if (!c.handshake) c.handshake = [];
+          if (!c.handshake.includes(idx)) c.handshake.push(idx);
+          localStorage.setItem(COMP_KEY, JSON.stringify(c));
+        } catch (e) {}
+      }
+      function getNextUnseen(exclude = []) {
+        const seen = getSeenList();
+        const allEx = [...seen, ...exclude];
+        const unseen = VIGNETTES.map((_, i) => i).filter(
+          (i) => !allEx.includes(i),
+        );
+        if (!unseen.length) {
+          const avail = VIGNETTES.map((_, i) => i).filter(
+            (i) => !exclude.includes(i),
+          );
+          return avail[Math.floor(Math.random() * avail.length)];
+        }
+        return unseen[Math.floor(Math.random() * unseen.length)];
+      }
+
+      // ── DATASTREAM AUDIO ──
+      const sfxStream = new Audio("/audio/674112__colelakman__datastream.wav");
+      sfxStream.loop = true;
+      sfxStream.volume = 0.35;
+
+      let lastCharTime = 0;
+      let streamHeartbeat = null;
+
+      function streamStart() {
+        if (streamHeartbeat) return;
+        streamHeartbeat = setInterval(() => {
+          const active = Date.now() - lastCharTime < 300;
+          if (active && sfxStream.paused) {
+            try {
+              sfxStream.play();
+            } catch (e) {}
+          } else if (!active && !sfxStream.paused) {
+            try {
+              sfxStream.pause();
+            } catch (e) {}
+          }
+        }, 80);
+      }
+
+      function streamStop() {
+        if (streamHeartbeat) {
+          clearInterval(streamHeartbeat);
+          streamHeartbeat = null;
+        }
+        try {
+          sfxStream.pause();
+        } catch (e) {}
+      }
+
+      function streamPlay() {
+        streamStart();
+      }
+      function streamPause() {
+        /* heartbeat handles it */
+      }
+
+      // ── STATE ──
+      let vigQueue = [];
+      let typing = false;
+      let typeTimeout = null;
+      let currentFullText = "";
+      let currentIsBuffer = false;
+      let currentOnDone = null;
+
+      function initQueue() {
+        const first = getNextUnseen([]);
+        const second = getNextUnseen([first]);
+        vigQueue = [first, second];
+      }
+
+      function scrollToBottom() {
+        const wrap = document.getElementById("outputWrap");
+        wrap.scrollTop = wrap.scrollHeight;
+      }
+
+      function getCharDelay(ch, indent) {
+        if (ch === "—") return 120;
+        if (ch === "\n") return indent >= 12 ? 380 : 280;
+        if (ch === " ") return indent >= 12 ? 44 : indent >= 6 ? 34 : 26;
+        if (indent >= 12) return Math.random() * 30 + 50;
+        if (indent >= 6) return Math.random() * 24 + 40;
+        return Math.random() * 18 + 28;
+      }
+
+      function getLastLine(text) {
+        const lines = text
+          .trim()
+          .split("\n")
+          .filter((l) => l.trim());
+        return lines[lines.length - 1];
+      }
+
+      function renderFull(text, isBuffer) {
+        const output = document.getElementById("output");
+        const safe = text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+        if (!isBuffer) {
+          const lastLine = getLastLine(text);
+          const lastSafe = lastLine
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+          const idx = safe.lastIndexOf(lastSafe);
+          output.innerHTML =
+            safe.slice(0, idx) + `<span class="last-line">${lastSafe}</span>`;
+        } else {
+          output.innerHTML = safe;
+        }
+        scrollToBottom();
+      }
+
+      // TAP TO FAST-FORWARD
+      document.addEventListener("click", (e) => {
+        // ignore clicks on buttons
+        if (e.target.closest("button")) return;
+        if (!typing) return;
+        typing = false;
+        if (typeTimeout) clearTimeout(typeTimeout);
+        streamPause(); // pause on fast-forward
+        // dump full text instantly
+        renderFull(currentFullText, currentIsBuffer);
+        // fire done callback after brief pause
+        const cb = currentOnDone;
+        currentOnDone = null;
+        setTimeout(
+          () => {
+            cb && cb();
+          },
+          currentIsBuffer ? 600 : 800,
+        );
+      });
+
+      function clearOutput() {
+        document.getElementById("output").innerHTML =
+          '<span class="cursor"></span>';
+        document.getElementById("outputWrap").scrollTop = 0;
+        document.getElementById("nextTxWrap").classList.remove("visible");
+        document.getElementById("choiceBar").classList.remove("visible");
+      }
+
+      function typeText(text, onDone, isBuffer) {
+        typing = true;
+        currentFullText = text;
+        currentIsBuffer = isBuffer;
+        currentOnDone = onDone;
+        streamPlay(); // start audio when typing begins
+
+        const output = document.getElementById("output");
+        const lastLine = isBuffer ? null : getLastLine(text);
+        let currentText = "";
+        const chars = text.split("");
+        let ci = 0;
+
+        function render() {
+          const safe = currentText
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+          if (
+            !isBuffer &&
+            lastLine &&
+            currentText.includes(lastLine) &&
+            ci >= text.length
+          ) {
+            const lastSafe = lastLine
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;");
+            const idx = safe.lastIndexOf(lastSafe);
+            output.innerHTML =
+              safe.slice(0, idx) + `<span class="last-line">${lastSafe}</span>`;
+          } else {
+            output.innerHTML = safe + '<span class="cursor"></span>';
+          }
+          scrollToBottom();
+        }
+
+        function next() {
+          if (!typing) return;
+          if (ci >= chars.length) {
+            render();
+            setTimeout(
+              () => {
+                typing = false;
+                currentOnDone = null;
+                streamPause();
+                onDone && onDone();
+              },
+              isBuffer ? 1800 : 2800,
+            );
+            return;
+          }
+          const ch = chars[ci++];
+          currentText += ch;
+          lastCharTime = Date.now(); // heartbeat stamp
+          const isBlockBreak = ch === "\n" && chars[ci] === "\n";
+          const lineStart = currentText.lastIndexOf("\n") + 1;
+          const lineText = text.slice(lineStart, ci);
+          const indent = lineText.length - lineText.trimStart().length;
+          render();
+          if (isBlockBreak) {
+            streamPause();
+            typeTimeout = setTimeout(() => {
+              streamPlay();
+              next();
+            }, 1100);
+          } else {
+            typeTimeout = setTimeout(next, getCharDelay(ch, indent));
+          }
+        }
+        next();
+      }
+
+      function runSequence() {
+        initQueue();
+        clearOutput();
+        typeText(
+          BUFFER,
+          () => {
+            setTimeout(() => {
+              clearOutput();
+              setTimeout(() => {
+                typeText(
+                  VIGNETTES[vigQueue[0]],
+                  () => {
+                    document
+                      .getElementById("nextTxWrap")
+                      .classList.add("visible");
+                  },
+                  false,
+                );
+              }, 500);
+            }, 400);
+          },
+          true,
+        );
+      }
+
+      document.getElementById("btnNextTx").addEventListener("click", () => {
+        document.getElementById("nextTxWrap").classList.remove("visible");
+        setTimeout(() => {
+          clearOutput();
+          setTimeout(() => {
+            typeText(
+              VIGNETTES[vigQueue[1]],
+              () => {
+                document.getElementById("choiceBar").classList.add("visible");
+              },
+              false,
+            );
+          }, 400);
+        }, 300);
+      });
+
+      document.getElementById("btnProceed").addEventListener("click", () => {
+        collapse(() => (window.location.href = "/entries/handshake"));
+      });
+      document.getElementById("btnRestart").addEventListener("click", () => {
+        typing = false;
+        if (typeTimeout) clearTimeout(typeTimeout);
+        runSequence();
+      });
+
+      function collapse(cb) {
+        streamStop();
+        const p = document.getElementById("pinlight");
+        p.classList.add("collapsing");
+        setTimeout(cb, 1300);
+      }
+
+      window.addEventListener("load", () => {
+        setTimeout(runSequence, 600);
+      });
+    </script>
+  </body>
+</html>

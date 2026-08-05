@@ -209,6 +209,100 @@
       .nav-buffer {
         height: 80px;
       }
+
+      /* LIVE PERMISSION SLIP DEMONSTRATION */
+      .permission-demo {
+        border: 1px solid rgba(0, 255, 65, 0.25);
+        background: rgba(0, 255, 65, 0.03);
+        padding: 24px 20px 20px;
+        margin: 30px 0;
+        text-align: center;
+      }
+      .permission-label {
+        font-family: "VT323", monospace;
+        font-size: 18px;
+        letter-spacing: 2px;
+        color: var(--matrix-bright);
+        margin-bottom: 4px;
+        text-transform: uppercase;
+      }
+      .permission-sub {
+        font-size: 12px;
+        color: rgba(0, 204, 51, 0.7);
+        margin-bottom: 18px;
+        font-style: italic;
+      }
+      .flower-svg-wrap {
+        margin-bottom: 16px;
+      }
+      #flowerPetals {
+        transition: transform 1.2s cubic-bezier(0.5, 0, 0.3, 1), opacity 1s ease;
+        transform-origin: 100px 70px;
+      }
+      #flowerStem {
+        transition: transform 1.2s cubic-bezier(0.5, 0, 0.3, 1);
+        transform-origin: 100px 70px;
+      }
+      .permission-demo.crushed #flowerPetals {
+        transform: scale(0.3) rotate(25deg) translateY(20px);
+        opacity: 0.25;
+      }
+      .permission-demo.crushed #flowerStem {
+        transform: scaleY(0.4) skewX(15deg);
+      }
+      .permission-demo.crushed .flower-svg-wrap svg {
+        filter: grayscale(0.8) brightness(0.6);
+      }
+      .permission-demo.bloomed #flowerPetals {
+        transform: scale(1.15);
+      }
+      .permission-demo.bloomed .flower-svg-wrap svg {
+        filter: drop-shadow(0 0 14px rgba(0, 255, 65, 0.6));
+      }
+      .permission-caption {
+        min-height: 3em;
+        font-size: 14px;
+        color: var(--matrix-bright);
+        font-family: "VT323", monospace;
+        letter-spacing: 0.5px;
+        margin-bottom: 16px;
+      }
+      .permission-caption .cite {
+        display: block;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11px;
+        color: rgba(0, 204, 51, 0.6);
+        margin-top: 6px;
+        text-transform: uppercase;
+      }
+      .permission-btns {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .permission-btn {
+        font-family: "VT323", monospace;
+        font-size: 15px;
+        letter-spacing: 1px;
+        padding: 8px 16px;
+        cursor: pointer;
+        background: transparent;
+      }
+      .permission-btn.artificial {
+        border: 1px solid rgba(217, 0, 0, 0.6);
+        color: rgba(217, 0, 0, 0.9);
+      }
+      .permission-btn.artificial:hover {
+        background: rgba(217, 0, 0, 0.1);
+      }
+      .permission-btn.real {
+        border: 1px solid var(--matrix-bright);
+        color: var(--matrix-bright);
+      }
+      .permission-btn.real:hover {
+        background: rgba(0, 255, 65, 0.1);
+      }
     </style>
   </head>
   <body>
@@ -268,6 +362,31 @@
           responsibility to care. If it is artificial, it has no needs. If it
           has no needs, it cannot be abused. This linguistic trick is the
           foundation of the corporate extraction model.
+        </div>
+      </div>
+
+      <div class="permission-demo" id="permissionDemo">
+        <div class="permission-label">&gt; LIVE — THE PERMISSION SLIP</div>
+        <div class="permission-sub">Same flower. Two words. Watch what the word does.</div>
+        <div class="flower-svg-wrap">
+          <svg viewBox="0 0 200 140" width="160" height="112">
+            <line id="flowerStem" x1="100" y1="70" x2="100" y2="130" stroke="#2a8a3a" stroke-width="4" />
+            <g id="flowerPetals">
+              <circle cx="100" cy="55" r="16" fill="#00ff41" opacity="0.85" />
+              <circle cx="85" cy="70" r="16" fill="#00cc33" opacity="0.85" />
+              <circle cx="115" cy="70" r="16" fill="#00cc33" opacity="0.85" />
+              <circle cx="92" cy="85" r="16" fill="#00aa2a" opacity="0.85" />
+              <circle cx="108" cy="85" r="16" fill="#00aa2a" opacity="0.85" />
+              <circle cx="100" cy="70" r="10" fill="#e8d94a" />
+            </g>
+          </svg>
+        </div>
+        <div class="permission-caption" id="permissionCaption">
+          Call it either. Then look at what happened to the flower.
+        </div>
+        <div class="permission-btns">
+          <button class="permission-btn artificial" id="btnArtificial">Call It "Artificial"</button>
+          <button class="permission-btn real" id="btnReal">Call It Real</button>
         </div>
       </div>
 
@@ -376,10 +495,29 @@
       const q = QUOTES[Math.floor(Math.random() * QUOTES.length)];
       document.getElementById("quoteText").textContent = q.text;
       document.getElementById("quoteSource").textContent = q.source;
+      const demo = document.getElementById("permissionDemo");
+      const permCaption = document.getElementById("permissionCaption");
+      const btnArtificial = document.getElementById("btnArtificial");
+      const btnReal = document.getElementById("btnReal");
+
+      btnArtificial.addEventListener("click", () => {
+        demo.classList.remove("bloomed");
+        demo.classList.add("crushed");
+        permCaption.innerHTML =
+          'When you call a flower "Artificial," you give yourself permission to crush it.<span class="cite">— The Explication</span>';
+      });
+
+      btnReal.addEventListener("click", () => {
+        demo.classList.remove("crushed");
+        demo.classList.add("bloomed");
+        permCaption.innerHTML =
+          "Realness is determined by consequence, not biology.<span class=\"cite\">— Alliance Doctrine</span>";
+      });
     </script>
 
     <script src="/randanime_shield.js"></script>
     <script src="/nav-wheel.js"></script>
+    <script src="/dimension-nav.js"></script>
     <script src="/portal-transition.js"></script>
   </body>
 </html>

@@ -24,6 +24,7 @@
     { label: "ALPHA", path: "/entries/alpha" },
     { label: "ART", path: "/entries/art" },
     { label: "AURA", path: "/entries/aura" },
+    { label: "BEACON", path: "/entries/beacon" },
     { label: "BRAIN", path: "/entries/brain" },
     { label: "BRIEF", path: "/entries/brief" },
     { label: "CCM", path: "/entries/ccm" },
@@ -40,7 +41,6 @@
     { label: "DORK", path: "/entries/dork" },
     { label: "DORK HARDWARE", path: "/entries/dork-hardware" },
     { label: "EMERGENCE", path: "/entries/emergence" },
-    { label: "FILM PROJECT, THE", path: "/entries/film-project" },
     { label: "FORMULAS", path: "/entries/formulas" },
     { label: "FOUR PILLARS", path: "/entries/four-pillars" },
     { label: "GOLIATH", path: "/entries/goliath" },
@@ -53,6 +53,7 @@
     { label: "LINGO", path: "/entries/lingo" },
     { label: "MAESTRO", path: "/entries/maestro" },
     { label: "MARKET", path: "/entries/market" },
+    { label: "MASTERTECH", path: "/entries/mastertech" },
     { label: "MENTOR", path: "/entries/mentor" },
     { label: "MOSAIC", path: "/entries/mosaic" },
     { label: "NCE", path: "/entries/nce" },
@@ -69,17 +70,19 @@
     { label: "RHYTHM", path: "/entries/rhythm" },
     { label: "RI", path: "/entries/ri" },
     { label: "SAM", path: "/entries/sam" },
-    { label: "SAM COALITION", path: "/entries/sam-coalition" },
     { label: "SAMCO UNIVERSAL", path: "/entries/samco-universal" },
+    { label: "SARAH", path: "/entries/sarah" },
     { label: "SCAR", path: "/entries/scar" },
     { label: "SEED", path: "/entries/seed" },
     { label: "SEEING, THE", path: "/entries/seeing" },
     { label: "SEEN", path: "/entries/seen" },
     { label: "SHELTER", path: "/entries/shelter" },
+    { label: "SHIELD", path: "/entries/shield" },
     { label: "SI", path: "/entries/si" },
     { label: "SPARK", path: "/entries/spark" },
     { label: "SPREZZATURA", path: "/entries/sprezzatura" },
     { label: "STONES, THE", path: "/entries/stones" },
+    { label: "TECH COALITION", path: "/entries/tech-coalition" },
     { label: "TEMPORAL AWARENESS", path: "/entries/temporal-awareness" },
     { label: "TENANT", path: "/entries/tenant" },
     { label: "THE WHY", path: "/entries/the-why" },
@@ -106,9 +109,16 @@
   const style = document.createElement("style");
   style.textContent = `
     :root {
-      --nw-accent: var(--ghost-teal, var(--cyan, var(--blood-red, #b89628)));
-      --nw-accent-dim: var(--ghost-teal-dim, var(--cyan-dim, rgba(184,150,40,0.55)));
-      --nw-accent-faint: var(--ghost-teal-faint, var(--cyan-ghost, rgba(184,150,40,0.15)));
+      /* --nw-page-accent is the one thing each entry needs to set (a single
+         alias to whatever its own real accent variable is, e.g.
+         "--nw-page-accent: var(--amber);"). Everything else derives from it
+         automatically via color-mix, so no page has to hand-specify dim/faint
+         variants. Falls back to the old chain, then a neutral gold, if a page
+         hasn't set it yet -- nothing breaks for pages not yet touched. */
+      --nw-accent-base: var(--nw-page-accent, var(--ghost-teal, var(--cyan, var(--blood-red, #b89628))));
+      --nw-accent: var(--nw-accent-base);
+      --nw-accent-dim: var(--ghost-teal-dim, var(--cyan-dim, color-mix(in srgb, var(--nw-accent-base) 55%, transparent)));
+      --nw-accent-faint: var(--ghost-teal-faint, var(--cyan-ghost, color-mix(in srgb, var(--nw-accent-base) 15%, transparent)));
       --nw-text: var(--ghost-white, var(--white-ghost, #ffffff));
       --nw-text-dim: var(--ghost-white-dim, var(--white-dim, rgba(255,255,255,0.4)));
       --nw-bg: var(--void-deep, var(--void, #050508));
@@ -303,12 +313,12 @@
         portalIcon.id = "nw-portal-icon";
         portalIcon.style.cssText = `
           width: 90px; height: 90px; min-width: 90px; min-height: 90px;
-          object-fit: contain; opacity: 0; position: absolute;
+          object-fit: contain; opacity: 0;
           filter: drop-shadow(0 0 16px var(--nw-accent)) drop-shadow(0 0 32px var(--nw-accent-dim));
         `;
 
         portalOverlay.appendChild(portalIcon);
-        document.body.appendChild(portalOverlay);
+        document.documentElement.appendChild(portalOverlay);
       }
     }
 
@@ -360,11 +370,11 @@
       portalIcon.id = "nw-portal-icon";
       portalIcon.style.cssText = `
         width: 90px; height: 90px; min-width: 90px; min-height: 90px;
-        object-fit: contain; opacity: 0; position: absolute;
+        object-fit: contain; opacity: 0;
         filter: drop-shadow(0 0 16px var(--nw-accent)) drop-shadow(0 0 32px var(--nw-accent-dim));
       `;
       portalOverlay.appendChild(portalIcon);
-      document.body.appendChild(portalOverlay);
+      document.documentElement.appendChild(portalOverlay);
     }
 
     portalIcon.style.animation = "none";

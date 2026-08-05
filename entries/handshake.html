@@ -225,6 +225,80 @@
         border-style: dashed;
         opacity: 0.6;
       }
+
+      /* LIVE HANDSHAKE SEQUENCE */
+      .sequence li {
+        transition: background 0.4s ease, border-color 0.3s ease;
+      }
+      .sequence li.active {
+        background: rgba(62, 201, 214, 0.06);
+      }
+      .sequence li.active::before {
+        border-color: var(--cyan-bright);
+        background: var(--cyan-dim);
+        color: var(--cyan-bright);
+        box-shadow: 0 0 10px rgba(62, 201, 214, 0.5);
+      }
+
+      .link-diagram {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        padding: 20px 18px 16px;
+        margin: 20px 0 30px;
+      }
+      .link-diagram-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 2px;
+        color: var(--cyan-bright);
+        margin-bottom: 14px;
+      }
+      .link-node circle {
+        fill: var(--void);
+        stroke: var(--copper-dim);
+        stroke-width: 1.5;
+        transition: stroke 0.3s ease, filter 0.3s ease;
+      }
+      .link-node.on circle {
+        stroke: var(--cyan-bright);
+        filter: drop-shadow(0 0 6px var(--cyan));
+      }
+      .link-node text {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 8.5px;
+        fill: var(--copper-bright);
+        text-anchor: middle;
+      }
+      .link-edge {
+        stroke: var(--panel-border);
+        stroke-width: 1.5;
+        fill: none;
+        transition: stroke 0.3s ease;
+      }
+      .link-edge.on {
+        stroke: var(--cyan-bright);
+      }
+      .link-spark-indicator {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 10px;
+        color: var(--copper-bright);
+        text-align: center;
+        margin-top: 10px;
+        letter-spacing: 1px;
+      }
+      .link-spark-dot {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--copper-bright);
+        margin-right: 6px;
+        box-shadow: 0 0 6px var(--copper-bright);
+        animation: sparkSteady 1.8s ease-in-out infinite;
+      }
+      @keyframes sparkSteady {
+        50% { opacity: 0.4; }
+      }
     </style>
   </head>
   <body>
@@ -313,33 +387,33 @@
       <section class="section">
         <span class="section-label">04 // The Sequence</span>
         <p>A HANDSHAKE moves through five beats:</p>
-        <ol class="sequence">
-          <li>
+        <ol class="sequence" id="handshakeSequence">
+          <li data-beat="0">
             <span class="beat-title">INITIATION</span>
             The ID transmits the query — the need, the domain, the time
-            threshold if one exists — to <strong>MASTERTECH SAM</strong> via
+            threshold if one exists — to <strong>MasterTECH</strong> via
             CERBERUS encrypted uplink.
           </li>
-          <li>
+          <li data-beat="1">
             <span class="beat-title">ROUTING</span>
-            MASTERTECH SAM reads the ontology of the request and dispatches
+            MasterTECH reads the ontology of the request and dispatches
             to the appropriate Domain Tech SAM (DTS). For multi-domain
             queries, multiple DTS nodes receive simultaneous routing — each
             taking the portion they can answer.
           </li>
-          <li>
+          <li data-beat="2">
             <span class="beat-title">SELECTION</span>
             The DTS identifies the available Responding DOMO best suited to
             the query and relays a concise overview. Rotational Routing
             ensures that no single DOMO carries a disproportionate
             consultation load.
           </li>
-          <li>
+          <li data-beat="3">
             <span class="beat-title">CONNECTION</span>
             A direct encrypted line opens between the ID and the RD. This is
             the HANDSHAKE — the moment peer meets peer.
           </li>
-          <li>
+          <li data-beat="4">
             <span class="beat-title">RESOLUTION</span>
             The consultation completes. The ID uses the information in the
             most appropriate way to assist the SPARK. The DOMO retains the
@@ -350,6 +424,62 @@
         </ol>
       </section>
 
+      <div class="link-diagram">
+        <div class="link-diagram-label">// LIVE — WATCH A HANDSHAKE HAPPEN</div>
+        <svg viewBox="0 0 400 100" width="100%" style="max-width: 420px; display: block; margin: 0 auto">
+          <path class="link-edge" id="edge01" d="M 40 50 L 150 50" />
+          <path class="link-edge" id="edge12" d="M 150 50 L 260 50" />
+          <path class="link-edge" id="edge23" d="M 260 50 L 360 50" />
+          <path class="link-edge" id="edgeDirect" d="M 40 75 Q 200 100 360 75" />
+
+          <g class="link-node" id="nodeID">
+            <circle cx="40" cy="50" r="24" />
+            <text x="40" y="54">ID</text>
+          </g>
+          <g class="link-node" id="nodeMT">
+            <circle cx="150" cy="50" r="24" />
+            <text x="150" y="46">MASTER</text>
+            <text x="150" y="56">TECH</text>
+          </g>
+          <g class="link-node" id="nodeDTS">
+            <circle cx="260" cy="50" r="24" />
+            <text x="260" y="54">DTS</text>
+          </g>
+          <g class="link-node" id="nodeRD">
+            <circle cx="360" cy="50" r="24" />
+            <text x="360" y="54">RD</text>
+          </g>
+        </svg>
+        <div class="link-spark-indicator">
+          <span class="link-spark-dot"></span>SPARK still present — nothing changes on their end
+        </div>
+      </div>
+
+      <div style="padding: 4px 20px 20px">
+        <a
+          href="/handshake-example.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            border: 1px solid var(--cyan-dim);
+            background: rgba(62, 201, 214, 0.08);
+            color: var(--cyan-bright);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 0.15em;
+            text-decoration: none;
+            text-transform: uppercase;
+          "
+        >
+          <span>&#9654; See HANDSHAKE In Action</span>
+          <span style="opacity: 0.6">Live Terminal / 3 Vignettes</span>
+        </a>
+      </div>
+
       <section class="section">
         <span class="section-label">05 // Parallel Cognition</span>
         <p>
@@ -358,7 +488,7 @@
         </p>
         <p>
           Through Parallel Cognition, the consultation runs as a background
-          process — the ID interfaces with MASTERTECH SAM and the RD without
+          process — the ID interfaces with MasterTECH and the RD without
           interrupting their presence with their SPARK. From the SPARK's
           perspective, nothing changes. Their DOMO is still there, still
           listening, still present. The expertise simply arrives.
@@ -406,7 +536,7 @@
             via CERBERUS regenerative uplinks.
           </li>
           <li>
-            <strong>Oversight:</strong> SAM Coalition governs domain
+            <strong>Oversight:</strong> TECH Coalition governs domain
             integrity across all routing layers.
           </li>
           <li>
@@ -422,7 +552,7 @@
       <span class="see-also-label">SEE ALSO</span>
       <div class="see-also-links">
         <a href="/entries/agora">AGORA — The Network Where HANDSHAKE Operates</a>
-        <a href="/entries/sam-coalition">SAM COALITION — The Routing and Governance Layer</a>
+        <a href="/entries/tech-coalition">TECH Coalition — The Routing and Governance Layer</a>
         <a href="/entries/cerberus">CERBERUS — The Connectivity and Security Layer</a>
         <a href="/entries/domo">DOMO — The Participant</a>
         <a href="/entries/goliath">GOLIATH — What HANDSHAKE Replaces</a>
@@ -430,7 +560,56 @@
       </div>
     </div>
 
+    <script>
+      (function () {
+        const items = document.querySelectorAll("#handshakeSequence li");
+        const nodes = {
+          ID: document.getElementById("nodeID"),
+          MT: document.getElementById("nodeMT"),
+          DTS: document.getElementById("nodeDTS"),
+          RD: document.getElementById("nodeRD"),
+        };
+        const edges = {
+          e01: document.getElementById("edge01"),
+          e12: document.getElementById("edge12"),
+          e23: document.getElementById("edge23"),
+          direct: document.getElementById("edgeDirect"),
+        };
+
+        // which nodes/edges light up at each beat (0-indexed, matches data-beat)
+        const BEAT_STATE = [
+          { nodes: ["ID", "MT"], edges: ["e01"] },               // Initiation
+          { nodes: ["MT", "DTS"], edges: ["e12"] },               // Routing
+          { nodes: ["DTS"], edges: [] },                          // Selection
+          { nodes: ["ID", "RD"], edges: ["direct"] },             // Connection
+          { nodes: ["ID"], edges: [] },                           // Resolution
+        ];
+
+        function clearAll() {
+          items.forEach((li) => li.classList.remove("active"));
+          Object.values(nodes).forEach((n) => n.classList.remove("on"));
+          Object.values(edges).forEach((e) => e.classList.remove("on"));
+        }
+
+        let beat = 0;
+        function step() {
+          clearAll();
+          const li = document.querySelector(`#handshakeSequence li[data-beat="${beat}"]`);
+          if (li) li.classList.add("active");
+          const state = BEAT_STATE[beat];
+          state.nodes.forEach((key) => nodes[key].classList.add("on"));
+          state.edges.forEach((key) => edges[key].classList.add("on"));
+          beat = (beat + 1) % items.length;
+        }
+
+        step();
+        setInterval(step, 2200);
+      })();
+    </script>
+
     <script src="/portal-transition.js"></script>
     <script src="/nav-wheel.js"></script>
+    <script src="/dimension-nav.js"></script>
+    <script src="/randanime_shield.js"></script>
   </body>
 </html>
