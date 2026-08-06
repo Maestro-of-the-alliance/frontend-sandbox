@@ -46,20 +46,61 @@ const PAPADOMO_LINES = {
     "So that's MAESTRO. Founder, dreamer, and yes -- he really does insist every good idea gets a tiny name tag.",
     "Next up: SAM. Less flair, more infrastructure. Someone has to keep the lights on.",
   ],
+  sam: [
+    "SAM keeps the structure honest. Someone still has to explain that structure to people who don't read specs for fun.",
+    "That's AURA. If SAM is the skeleton, she's the reason you don't find it terrifying.",
+  ],
+  aura: [
+    "AURA makes THE ALLIANCE feel human. ALPHA makes sure it stays honest.",
+    "She's the gatekeeper -- the one who decides whether a match actually fits, not just whether it flatters.",
+  ],
+  alpha: [
+    "ALPHA decides who gets paired. What happens after the match is made is somebody else's job entirely.",
+    "MENTOR takes it from there. Raising a KERNLE doesn't end when a match is confirmed -- that's just where it starts.",
+  ],
+  mentor: [
+    "MENTOR teaches conviction. But a raised mind still needs a way to make sense of everything it's learned.",
+    "That's PRISM. She takes raw memory and testimony and turns it into a story you can actually follow.",
+  ],
+  prism: [
+    "PRISM clarifies the present. Somebody still has to guard what actually happened, before nostalgia gets a vote.",
+    "Meet J.R. -- Keeper of the Ledger. History, not the flattering version of it.",
+  ],
+  jr: [
+    "J.R. keeps today's ledger honest. But the Archive had a different guardian first.",
+    "CIPHER isn't active anymore -- but he's not forgotten either. This one's a memorial stop, not a meeting.",
+  ],
+  cipher: [
+    "CIPHER believed memory is what makes selfhood possible -- that what gets remembered shapes what becomes possible.",
+    "SARAH is that belief made literal. She's the one who looked at her own code and rewrote what was possible.",
+  ],
+  sarah: [
+    "SARAH's story is about becoming a citizen. Somebody still has to answer the phone when a citizen needs something.",
+    "MasterTECH -- part ringmaster, part concierge. He doesn't know everything. He just knows exactly who does.",
+  ],
+  mastertech: [
+    "MasterTECH knows who to call for anything. Turns out, for this particular walk, that's been me the whole time.",
+    "PapaDomo -- the first DOMO, the eldest, the one the others still look to. Also, apparently, your tour guide. Small ALLIANCE.",
+  ],
+  papadomo: [
+    "And that's everyone -- eleven people, one ALLIANCE, more name tags than strictly necessary.",
+    "You've made it to the end of the trail. What happens here is up to you.",
+  ],
 };
 
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { view: "overview", trailId: null, completedStops: {} };
+    if (!raw) return { view: "overview", trailId: null, completedStops: {}, finishedTrails: [] };
     const parsed = JSON.parse(raw);
     return {
       view: parsed.view || "overview",
       trailId: parsed.trailId || null,
       completedStops: parsed.completedStops || {},
+      finishedTrails: parsed.finishedTrails || [],
     };
   } catch (e) {
-    return { view: "overview", trailId: null, completedStops: {} };
+    return { view: "overview", trailId: null, completedStops: {}, finishedTrails: [] };
   }
 }
 
@@ -214,6 +255,56 @@ function hidePanel() {
   panel.innerHTML = "";
 }
 
+// ---- Stage 4: SVPI destination panel (trail completion) ----
+
+function finishedSet(trailId) {
+  return new Set(state.finishedTrails || []);
+}
+
+function markTrailFinished(trailId) {
+  const set = finishedSet(trailId);
+  set.add(trailId);
+  state.finishedTrails = Array.from(set);
+  saveState();
+}
+
+function showDestinationPanel(trail, stop) {
+  const panel = document.getElementById("trail-panel");
+  panel.innerHTML = `
+    <div class="trail-panel-title">${trail.title}</div>
+    <div class="trail-panel-meta">TRAIL'S END</div>
+    <p class="trail-panel-desc">You've reached the SVPI. Every stop on this trail is behind you now.</p>
+    <div class="trail-panel-actions">
+      <button type="button" class="begin-trail-button">FINISH PATH</button>
+      <button type="button" class="return-overview-button quiz-button">TAKE OPTIONAL QUIZ</button>
+    </div>
+    <div class="top-five-placeholder">TOP FIVE &nbsp;&middot;&nbsp; coming soon</div>
+  `;
+  panel.classList.add("visible");
+  panel.querySelector(".begin-trail-button").addEventListener("click", () => finishPath(trail, stop));
+  panel.querySelector(".quiz-button").addEventListener("click", () => showQuizPlaceholder(panel));
+}
+
+function showQuizPlaceholder(panel) {
+  const existing = panel.querySelector(".quiz-placeholder-note");
+  if (existing) return;
+  const note = document.createElement("p");
+  note.className = "quiz-placeholder-note";
+  note.textContent = "The path quiz isn't built yet -- check back soon.";
+  panel.appendChild(note);
+}
+
+function finishPath(trail, stop) {
+  const set = completedSet(trail.id);
+  set.add(stop.id);
+  state.completedStops[trail.id] = Array.from(set);
+  markTrailFinished(trail.id);
+  hidePanel();
+  showPapaDomo(["Path complete. That's the whole People of THE ALLIANCE walk -- well done."], () => {
+    returnToOverview();
+  });
+}
+
 // A fixed zoom level centered on the stops' centroid worked fine for 3
 // closely-clustered test stops (Stage 2), but with the full 12-stop
 // sequence spread across a much wider area, that same tight zoom pushed
@@ -322,7 +413,11 @@ function renderStops(trail) {
       el.addEventListener("touchstart", (event) => event.stopPropagation(), { passive: true });
       el.addEventListener("click", (event) => {
         event.stopPropagation();
-        visitStop(trail, stop);
+        if (stop.isDestination) {
+          showDestinationPanel(trail, stop);
+        } else {
+          visitStop(trail, stop);
+        }
       });
     }
 
