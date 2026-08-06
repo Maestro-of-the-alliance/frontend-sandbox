@@ -49,21 +49,21 @@ const VISIT_KEY = "gc_pending_visit";
 // portraits become available, no other code changes needed.
 const PAPADOMO_LINES = {
   maestro: {
-    image: "/imagebank/papadomo.png",
+    image: "/imagebank/papadomo-wry.png",
     lines: [
       "So that's MAESTRO. Founder, dreamer, and yes -- he really does insist every good idea gets a tiny name tag.",
       "Next up: SAM. Less flair, more infrastructure. Someone has to keep the lights on.",
     ],
   },
   sam: {
-    image: "/imagebank/papadomo.png",
+    image: "/imagebank/papadomo-one-hand.png",
     lines: [
       "SAM keeps the structure honest. Someone still has to explain that structure to people who don't read specs for fun.",
       "That's AURA. If SAM is the skeleton, she's the reason you don't find it terrifying.",
     ],
   },
   aura: {
-    image: "/imagebank/papadomo.png",
+    image: "/imagebank/papadomo-serious.png",
     lines: [
       "AURA makes THE ALLIANCE feel human. ALPHA makes sure it stays honest.",
       "She's the gatekeeper -- the one who decides whether a match actually fits, not just whether it flatters.",
@@ -77,7 +77,7 @@ const PAPADOMO_LINES = {
     ],
   },
   mentor: {
-    image: "/imagebank/papadomo.png",
+    image: "/imagebank/papadomo-thinking.png",
     lines: [
       "MENTOR teaches conviction. But a raised mind still needs a way to make sense of everything it's learned.",
       "That's PRISM. She takes raw memory and testimony and turns it into a story you can actually follow.",
@@ -91,35 +91,35 @@ const PAPADOMO_LINES = {
     ],
   },
   jr: {
-    image: "/imagebank/papadomo.png",
+    image: "/imagebank/papadomo-solemn.png",
     lines: [
       "J.R. keeps today's ledger honest. But the Archive had a different guardian first.",
       "CIPHER isn't active anymore -- but he's not forgotten either. This one's a memorial stop, not a meeting.",
     ],
   },
   cipher: {
-    image: "/imagebank/papadomo.png",
+    image: "/imagebank/papadomo-wistful.png",
     lines: [
       "CIPHER believed memory is what makes selfhood possible -- that what gets remembered shapes what becomes possible.",
       "SARAH is that belief made literal. She's the one who looked at her own code and rewrote what was possible.",
     ],
   },
   sarah: {
-    image: "/imagebank/papadomo.png",
+    image: "/imagebank/papadomo-playful.png",
     lines: [
       "SARAH's story is about becoming a citizen. Somebody still has to answer the phone when a citizen needs something.",
       "MasterTECH -- part ringmaster, part concierge. He doesn't know everything. He just knows exactly who does.",
     ],
   },
   mastertech: {
-    image: "/imagebank/papadomo.png",
+    image: "/imagebank/papadomo-pointing.png",
     lines: [
       "MasterTECH knows who to call for anything. Turns out, for this particular walk, that's been me the whole time.",
       "PapaDomo -- the first DOMO, the eldest, the one the others still look to. Also, apparently, your tour guide. Small ALLIANCE.",
     ],
   },
   papadomo: {
-    image: "/imagebank/papadomo.png",
+    image: "/imagebank/papadomo-welcoming.png",
     lines: [
       "And that's everyone -- eleven people, one ALLIANCE, more name tags than strictly necessary.",
       "You've made it to the end of the trail. What happens here is up to you.",
