@@ -8,15 +8,27 @@ const trails = [
     x: 0.28,
     y: 0.34,
     zoomLevel: 4.2,
-    // Stage 2 fields -- only trail 1 carries these. Trails 2/3 stay
-    // Stage-1-only (plain zoom, no panel) until the real 15 routes are built.
     description:
       "Meet the named individuals and distinct personalities who inhabit, guide, preserve, or represent THE ALLIANCE.",
     trailZoomLevel: 6.5,
+    // Stage 3: full approved sequence. Coordinates are placeholder
+    // spacing (real cartography TBD) -- functional correctness is the
+    // point of this stage, not final layout. Only MAESTRO -> SAM is
+    // being proven end-to-end right now; stops past that stay locked
+    // until this mechanism is confirmed and then just repeated as data.
     stops: [
-      { id: "maestro", label: "MAESTRO", x: 0.255, y: 0.315 },
-      { id: "sam", label: "SAM", x: 0.3, y: 0.345 },
-      { id: "aura", label: "AURA", x: 0.29, y: 0.375 },
+      { id: "maestro", label: "MAESTRO", x: 0.255, y: 0.315, path: "/entries/maestro" },
+      { id: "sam", label: "SAM", x: 0.3, y: 0.345, path: "/entries/sam" },
+      { id: "aura", label: "AURA", x: 0.29, y: 0.375, path: "/entries/aura" },
+      { id: "alpha", label: "ALPHA", x: 0.335, y: 0.395, path: "/entries/alpha" },
+      { id: "mentor", label: "MENTOR", x: 0.32, y: 0.425, path: "/entries/mentor" },
+      { id: "prism", label: "PRISM", x: 0.36, y: 0.44, path: "/entries/prism" },
+      { id: "jr", label: "J.R.", x: 0.35, y: 0.47, path: "/entries/jr" },
+      { id: "cipher", label: "CIPHER", x: 0.39, y: 0.485, path: "/entries/cipher" },
+      { id: "sarah", label: "SARAH", x: 0.38, y: 0.515, path: "/entries/sarah" },
+      { id: "mastertech", label: "MasterTECH", x: 0.42, y: 0.53, path: "/entries/mastertech" },
+      { id: "papadomo", label: "PapaDOMO", x: 0.41, y: 0.56, path: "/entries/papadomo" },
+      { id: "svpi", label: "SVPI", x: 0.45, y: 0.575, path: null, isDestination: true },
     ],
   },
   { id: "making-of-a-domo", number: 2, title: "The Making of a DOMO", x: 0.64, y: 0.42, zoomLevel: 4.5 },
@@ -24,6 +36,17 @@ const trails = [
 ];
 
 const STORAGE_KEY = "gc_stage2_state";
+const VISIT_KEY = "gc_pending_visit";
+
+// PapaDomo's exchange after each real stop. Short, in his established
+// voice (translator/historian/comic-relief per the memo) -- keyed by
+// the stop id that was JUST completed.
+const PAPADOMO_LINES = {
+  maestro: [
+    "So that's MAESTRO. Founder, dreamer, and yes -- he really does insist every good idea gets a tiny name tag.",
+    "Next up: SAM. Less flair, more infrastructure. Someone has to keep the lights on.",
+  ],
+};
 
 function loadState() {
   try {
@@ -44,13 +67,28 @@ function saveState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch (e) {
-    // localStorage unavailable (private browsing, quota, etc.) -- the
-    // experience still works within the session, it just won't survive
-    // a refresh. Not worth surfacing to the visitor.
+    // localStorage unavailable -- experience still works within the
+    // session, just won't survive a refresh or a real-entry round trip.
   }
 }
 
+function loadPendingVisit() {
+  try {
+    const raw = localStorage.getItem(VISIT_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function clearPendingVisit() {
+  try {
+    localStorage.removeItem(VISIT_KEY);
+  } catch (e) {}
+}
+
 const state = loadState();
+const trailheadMarkers = {};
 
 const viewer = OpenSeadragon({
   id: "grand-canyon-viewer",
@@ -71,7 +109,7 @@ viewer.addHandler("open-failed", (event) => console.error("THE GRAND CANyON map 
 
 function onMapOpen() {
   addTrailMarkers();
-  restoreState();
+  handlePendingVisitOrRestore();
 }
 
 function addTrailMarkers() {
@@ -82,16 +120,6 @@ function addTrailMarkers() {
     marker.textContent = String(trail.number);
     marker.title = trail.title;
     marker.setAttribute("aria-label", `Open trail ${trail.number}: ${trail.title}`);
-    // OpenSeadragon's own MouseTracker captures the pointer on pointerdown
-    // for its pan gesture, even when the pointerdown originated on an
-    // overlay element sitting on top of the canvas -- once captured, the
-    // matching pointerup/click never reaches the overlay at all, only
-    // OSD's own container. Stopping propagation at pointerdown keeps OSD's
-    // tracker from ever seeing the gesture as its own, so the marker's
-    // click fires normally. mousedown/touchstart are defensive fallbacks
-    // for browser differences; click also stops propagation so the
-    // completed gesture can't trigger anything beneath it either.
-    // (Per Sam, confirming and completing the fix.)
     marker.addEventListener("pointerdown", (event) => {
       event.stopPropagation();
     });
@@ -110,7 +138,38 @@ function addTrailMarkers() {
       openTrail(trail);
     });
     viewer.addOverlay({ element: marker, location: new OpenSeadragon.Point(trail.x, trail.y), placement: OpenSeadragon.Placement.CENTER, checkResize: false });
+    trailheadMarkers[trail.id] = marker;
   });
+}
+
+const trailheadOverlayActive = {};
+
+function setTrailheadVisible(trailId, visible) {
+  const trail = trails.find((t) => t.id === trailId);
+  const marker = trailheadMarkers[trailId];
+  if (!trail || !marker) return;
+  // A direct style.display toggle looked correct when checked in
+  // isolation, but failed in the real flow: OpenSeadragon re-asserts its
+  // own overlay positioning/display state whenever any overlay is
+  // added or removed (confirmed -- the marker's display reverted to
+  // 'block' specifically once renderStops() added the 12 stop
+  // overlays right after this ran), overriding a plain style change.
+  // Using OSD's own removeOverlay/addOverlay -- the same mechanism
+  // already used to show/hide the trail stops themselves -- works with
+  // that lifecycle instead of fighting it. Tracking "is this overlay
+  // currently added" with a plain object rather than inspecting the DOM
+  // (e.g. marker.parentElement), because OSD does not actually detach
+  // the element on removeOverlay -- parentElement stayed non-null even
+  // after a confirmed removeOverlay call, which made that check
+  // unreliable.
+  const isActive = trailheadOverlayActive[trailId] !== false; // default true (added in addTrailMarkers)
+  if (!visible && isActive) {
+    viewer.removeOverlay(marker);
+    trailheadOverlayActive[trailId] = false;
+  } else if (visible && !isActive) {
+    viewer.addOverlay({ element: marker, location: new OpenSeadragon.Point(trail.x, trail.y), placement: OpenSeadragon.Placement.CENTER, checkResize: false });
+    trailheadOverlayActive[trailId] = true;
+  }
 }
 
 function zoomToPoint(x, y, zoomLevel) {
@@ -119,7 +178,7 @@ function zoomToPoint(x, y, zoomLevel) {
   viewer.viewport.zoomTo(zoomLevel, destination, false);
 }
 
-// ---- Stage 2: trail panel + trail view ----
+// ---- trail panel ----
 
 function openTrail(trail) {
   zoomToPoint(trail.x, trail.y, trail.zoomLevel);
@@ -132,6 +191,7 @@ function openTrail(trail) {
 
 function showPanel(trail) {
   hideTrailView();
+  setTrailheadVisible(trail.id, true);
   const readingMinutes = Math.max(1, trail.stops.length * 2);
   const panel = document.getElementById("trail-panel");
   panel.innerHTML = `
@@ -154,13 +214,44 @@ function hidePanel() {
   panel.innerHTML = "";
 }
 
+// A fixed zoom level centered on the stops' centroid worked fine for 3
+// closely-clustered test stops (Stage 2), but with the full 12-stop
+// sequence spread across a much wider area, that same tight zoom pushed
+// stops far from center completely outside the viewport -- confirmed
+// directly (a stop's bounding box landed at literal negative screen
+// coordinates, hundreds of pixels off-canvas). That also breaks "future
+// stops remain visible" outright, since an off-screen stop isn't visible
+// at all. Fit-to-bounds replaces the fixed zoom so every stop is always
+// within view, however many stops or however spread out they end up
+// being once the real 15 routes are built.
+function trailBounds(trail) {
+  const xs = trail.stops.map((s) => s.x);
+  const ys = trail.stops.map((s) => s.y);
+  const minX = Math.min(...xs);
+  const maxX = Math.max(...xs);
+  const minY = Math.min(...ys);
+  const maxY = Math.max(...ys);
+  const spanX = maxX - minX;
+  const spanY = maxY - minY;
+  const padX = spanX * 0.3 || 0.06;
+  const padY = spanY * 0.3 || 0.06;
+  return new OpenSeadragon.Rect(minX - padX, minY - padY, spanX + padX * 2, spanY + padY * 2);
+}
+
+function zoomToTrailBounds(trail) {
+  viewer.viewport.fitBounds(trailBounds(trail), true);
+}
+
 function beginTrail(trail) {
   hidePanel();
-  const cx = trail.stops.reduce((sum, s) => sum + s.x, 0) / trail.stops.length;
-  const cy = trail.stops.reduce((sum, s) => sum + s.y, 0) / trail.stops.length;
-  zoomToPoint(cx, cy, trail.trailZoomLevel);
+  zoomToTrailBounds(trail);
   state.view = "trail";
   saveState();
+  enterTrailView(trail);
+}
+
+function enterTrailView(trail) {
+  setTrailheadVisible(trail.id, false);
   showTrailView(trail);
 }
 
@@ -178,59 +269,82 @@ function hideTrailView() {
 function returnToOverview() {
   hidePanel();
   hideTrailView();
+  if (state.trailId) setTrailheadVisible(state.trailId, true);
   viewer.viewport.goHome(false);
   state.view = "overview";
   state.trailId = null;
   saveState();
 }
 
+// ---- stop state: completed / active / locked ----
+
+function completedList(trailId) {
+  return state.completedStops[trailId] || [];
+}
+
 function completedSet(trailId) {
-  return new Set(state.completedStops[trailId] || []);
+  return new Set(completedList(trailId));
+}
+
+// The active stop is the first one, in sequence, not yet completed.
+// Everything before it is completed; everything after it is locked.
+function activeStopId(trail) {
+  const completed = completedSet(trail.id);
+  const next = trail.stops.find((s) => !completed.has(s.id));
+  return next ? next.id : null; // null = every stop done
+}
+
+function stopStatus(trail, stop, activeId) {
+  if (completedSet(trail.id).has(stop.id)) return "completed";
+  if (stop.id === activeId) return "active";
+  return "locked";
 }
 
 function renderStops(trail) {
-  const completed = completedSet(trail.id);
+  const activeId = activeStopId(trail);
   trail.stops.forEach((stop) => {
+    const status = stopStatus(trail, stop, activeId);
     const el = document.createElement("button");
     el.type = "button";
-    el.className = "trail-stop" + (completed.has(stop.id) ? " completed" : "");
+    el.className = "trail-stop " + status;
     el.dataset.stopId = stop.id;
-    el.innerHTML = `<span class="trail-stop-mark">${completed.has(stop.id) ? "&#10003;" : ""}</span><span class="trail-stop-label">${stop.label}</span>`;
-    el.setAttribute("aria-label", `${stop.label}${completed.has(stop.id) ? " (visited)" : ""}`);
+    el.disabled = status === "locked";
+    const mark = status === "completed" ? "&#10003;" : "";
+    el.innerHTML = `<span class="trail-stop-mark">${mark}</span><span class="trail-stop-label">${stop.label}</span>`;
+    el.setAttribute(
+      "aria-label",
+      `${stop.label}${status === "completed" ? " (visited)" : status === "locked" ? " (locked)" : " (visit next)"}`,
+    );
 
-    el.addEventListener("pointerdown", (event) => event.stopPropagation());
-    el.addEventListener("mousedown", (event) => event.stopPropagation());
-    el.addEventListener("touchstart", (event) => event.stopPropagation(), { passive: true });
-    el.addEventListener("click", (event) => {
-      event.stopPropagation();
-      toggleStop(trail, stop, el);
-    });
+    if (status === "active") {
+      el.addEventListener("pointerdown", (event) => event.stopPropagation());
+      el.addEventListener("mousedown", (event) => event.stopPropagation());
+      el.addEventListener("touchstart", (event) => event.stopPropagation(), { passive: true });
+      el.addEventListener("click", (event) => {
+        event.stopPropagation();
+        visitStop(trail, stop);
+      });
+    }
 
     viewer.addOverlay({ element: el, location: new OpenSeadragon.Point(stop.x, stop.y), placement: OpenSeadragon.Placement.CENTER, checkResize: false });
   });
 }
 
-function toggleStop(trail, stop, el) {
-  const set = completedSet(trail.id);
-  if (set.has(stop.id)) {
-    set.delete(stop.id);
-    el.classList.remove("completed");
-    el.querySelector(".trail-stop-mark").innerHTML = "";
-  } else {
-    set.add(stop.id);
-    el.classList.add("completed");
-    el.querySelector(".trail-stop-mark").innerHTML = "&#10003;";
-  }
-  state.completedStops[trail.id] = Array.from(set);
-  saveState();
+// Clicking an active stop now navigates to the real encyclopedia entry
+// instead of toggling completion locally. State is saved first so the
+// canyon page knows, on return, which stop to complete and which trail/
+// view to restore -- this reuses the exact same localStorage-restore
+// path already proven for plain refreshes in Stage 2, since a real-entry
+// round trip is mechanically the same as a reload from the browser's
+// perspective (full navigation away and back).
+function visitStop(trail, stop) {
+  if (!stop.path) return; // destination marker (SVPI) -- not wired yet
+  try {
+    localStorage.setItem(VISIT_KEY, JSON.stringify({ trailId: trail.id, stopId: stop.id }));
+  } catch (e) {}
+  window.location.href = stop.path;
 }
 
-// Trail-connector line, redrawn on every viewport change. trail.stops'
-// x/y are OpenSeadragon *viewport* coordinates -- the same coordinate
-// space already used directly by panTo/addOverlay throughout this file
-// -- so the conversion here uses viewportToViewerElementCoordinates,
-// matching that convention exactly rather than treating them as raw
-// image-pixel coordinates.
 function renderTrailLine(trail) {
   const layer = document.getElementById("trail-line-layer");
   layer.innerHTML = "";
@@ -253,6 +367,83 @@ function renderTrailLine(trail) {
   viewer.addHandler("resize", updateLine);
 }
 
+// ---- PapaDomo dialogue ----
+
+function showPapaDomo(lines, onDone) {
+  const box = document.getElementById("papadomo-box");
+  let i = 0;
+
+  function renderLine() {
+    box.innerHTML = `
+      <div class="papadomo-nameplate">PAPADOMO</div>
+      <div class="papadomo-text">${lines[i]}</div>
+      <div class="papadomo-continue">&#9660;</div>
+    `;
+  }
+
+  function advance() {
+    i++;
+    if (i >= lines.length) {
+      box.classList.remove("visible");
+      box.innerHTML = "";
+      box.removeEventListener("click", advance);
+      document.removeEventListener("keydown", onKey);
+      if (onDone) onDone();
+      return;
+    }
+    renderLine();
+  }
+
+  function onKey(e) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      advance();
+    }
+  }
+
+  renderLine();
+  box.classList.add("visible");
+  box.addEventListener("click", advance);
+  document.addEventListener("keydown", onKey);
+}
+
+// ---- resolving a return-from-entry visit, or a plain refresh ----
+
+function handlePendingVisitOrRestore() {
+  const pending = loadPendingVisit();
+  if (pending && pending.trailId === state.trailId) {
+    clearPendingVisit();
+    completeStopAndContinue(pending.trailId, pending.stopId);
+    return;
+  }
+  // stale/mismatched pending visit (e.g. different trail) -- discard it
+  // rather than let it silently apply to the wrong trail later.
+  if (pending) clearPendingVisit();
+  restoreState();
+}
+
+function completeStopAndContinue(trailId, stopId) {
+  const trail = trails.find((t) => t.id === trailId);
+  if (!trail || !trail.stops) {
+    restoreState();
+    return;
+  }
+  const set = completedSet(trailId);
+  set.add(stopId);
+  state.completedStops[trailId] = Array.from(set);
+  state.view = "trail";
+  state.trailId = trailId;
+  saveState();
+
+  zoomToTrailBounds(trail);
+  enterTrailView(trail);
+
+  const lines = PAPADOMO_LINES[stopId];
+  if (lines) {
+    showPapaDomo(lines, () => {});
+  }
+}
+
 function restoreState() {
   if (state.view === "overview" || !state.trailId) return;
   const trail = trails.find((t) => t.id === state.trailId);
@@ -266,10 +457,8 @@ function restoreState() {
     zoomToPoint(trail.x, trail.y, trail.zoomLevel);
     showPanel(trail);
   } else if (state.view === "trail") {
-    const cx = trail.stops.reduce((sum, s) => sum + s.x, 0) / trail.stops.length;
-    const cy = trail.stops.reduce((sum, s) => sum + s.y, 0) / trail.stops.length;
-    zoomToPoint(cx, cy, trail.trailZoomLevel);
-    showTrailView(trail);
+    zoomToTrailBounds(trail);
+    enterTrailView(trail);
   }
 }
 
