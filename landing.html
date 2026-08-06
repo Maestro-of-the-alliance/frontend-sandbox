@@ -15,6 +15,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/landing.css" />
+    <link rel="stylesheet" href="/papadomo-choice.css" />
   </head>
   <body>
     <button
@@ -252,21 +253,6 @@
         </div>
         <div class="hero-hint">hover the medallion · explore the canon</div>
       </main>
-    </div>
-
-    <div id="tours-modal" class="tours-modal">
-      <div class="tours-modal-panel">
-        <button type="button" class="tours-modal-close" id="tours-modal-close" aria-label="Close">&times;</button>
-        <div class="tours-modal-title">Guided tours of<br />THE GRAND CANyON</div>
-        <p class="tours-modal-desc">PapaDomo will walk you through it, one trail at a time.</p>
-        <a
-          class="tours-modal-arrow"
-          href="/grand-canyon/"
-          onclick="portalTransition(event, '/grand-canyon/', '/imagebank/svpi.png')"
-          aria-label="Enter THE GRAND CANyON"
-          >&#8595;</a
-        >
-      </div>
     </div>
 
     <div id="tocOverlay">
@@ -727,6 +713,7 @@
     <script src="/nav-wheel.js"></script>
     <script src="/command-panel.js"></script>
     <script src="/ambient-glitch.js"></script>
+    <script src="/papadomo-choice.js"></script>
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
@@ -738,17 +725,16 @@
     </script>
     <script>
       (function () {
-        const modal = document.getElementById("tours-modal");
         const openBtn = document.getElementById("tours-btn");
-        const closeBtn = document.getElementById("tours-modal-close");
-
-        openBtn.addEventListener("click", () => modal.classList.add("active"));
-        closeBtn.addEventListener("click", () => modal.classList.remove("active"));
-        modal.addEventListener("click", (e) => {
-          if (e.target === modal) modal.classList.remove("active");
-        });
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape") modal.classList.remove("active");
+        openBtn.addEventListener("click", () => {
+          window.PapaDomoChoice.open({
+            onEnterTour: () => {
+              window.location.href = "/grand-canyon/";
+            },
+            onExitHome: () => {
+              // Already home -- just close the overlay.
+            },
+          });
         });
       })();
     </script>
