@@ -735,9 +735,23 @@ export default function SolarSystemCanvas({
       if (intersects && intersects.length > 0) {
         const hit = intersects[0].object;
         if (hit.name === "sun") {
-          // Shortcut back to the main site — same destination as symbol -> home,
-          // just directly from the top level instead of drilling into an entry first.
-          window.location.href = "https://allianceftf.org/landing.html";
+          // Fork moved here from papadomo.html's post-orientation moment
+          // (Session: onboarding advice pass) -- the doorway sequence now
+          // continues automatically to Foundation/THE SYSTEM for every
+          // first-time visitor, so nobody skips the thesis argument by
+          // picking blind between two options they have no context for
+          // yet. By the time someone reaches the sun here, they've seen
+          // Foundation's argument and this solar map -- an actual basis
+          // to choose "walk it with PapaDomo" vs "go home," rather than
+          // a coin flip at the doorway.
+          (window as any).PapaDomoChoice.open({
+            onEnterTour: () => {
+              window.location.href = "https://allianceftf.org/grand-canyon/";
+            },
+            onExitHome: () => {
+              window.location.href = "https://allianceftf.org/landing.html";
+            },
+          });
         } else if (hit.name.startsWith("planet-")) {
           const pid = hit.name.replace("planet-", "");
           propsRef.current.onPlanetSelect(pid);
