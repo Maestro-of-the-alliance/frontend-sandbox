@@ -31,16 +31,33 @@ function addTrailMarkers() {
     marker.textContent = String(trail.number);
     marker.title = trail.title;
     marker.setAttribute("aria-label", `Open trail ${trail.number}: ${trail.title}`);
-    marker.addEventListener("click", () => zoomToTrail(trail));
     // OpenSeadragon's own MouseTracker captures the pointer on pointerdown
     // for its pan gesture, even when the pointerdown originated on an
     // overlay element sitting on top of the canvas -- once captured, the
     // matching pointerup/click never reaches the overlay at all, only
-    // OSD's own container. Stopping propagation at pointerdown (and the
-    // legacy mousedown, for older browsers) keeps OSD's tracker from ever
-    // seeing the gesture as its own, so the marker's click fires normally.
-    marker.addEventListener("pointerdown", (e) => e.stopPropagation());
-    marker.addEventListener("mousedown", (e) => e.stopPropagation());
+    // OSD's own container. Stopping propagation at pointerdown keeps OSD's
+    // tracker from ever seeing the gesture as its own, so the marker's
+    // click fires normally. mousedown/touchstart are defensive fallbacks
+    // for browser differences; click also stops propagation so the
+    // completed gesture can't trigger anything beneath it either.
+    // (Per Sam, confirming and completing the fix.)
+    marker.addEventListener("pointerdown", (event) => {
+      event.stopPropagation();
+    });
+    marker.addEventListener("mousedown", (event) => {
+      event.stopPropagation();
+    });
+    marker.addEventListener(
+      "touchstart",
+      (event) => {
+        event.stopPropagation();
+      },
+      { passive: true },
+    );
+    marker.addEventListener("click", (event) => {
+      event.stopPropagation();
+      zoomToTrail(trail);
+    });
     viewer.addOverlay({ element: marker, location: new OpenSeadragon.Point(trail.x, trail.y), placement: OpenSeadragon.Placement.CENTER, checkResize: false });
   });
 }
