@@ -41,51 +41,90 @@ const VISIT_KEY = "gc_pending_visit";
 // PapaDomo's exchange after each real stop. Short, in his established
 // voice (translator/historian/comic-relief per the memo) -- keyed by
 // the stop id that was JUST completed.
+// PapaDomo's exchange after each real stop. Short, in his established
+// voice (translator/historian/comic-relief per the memo) -- keyed by
+// the stop id that was JUST completed. `image` is the cutscene portrait
+// shown in the dialogue box -- defaulting every stop to the one existing
+// PapaDomo image for now; swap in a different path per stop as more
+// portraits become available, no other code changes needed.
 const PAPADOMO_LINES = {
-  maestro: [
-    "So that's MAESTRO. Founder, dreamer, and yes -- he really does insist every good idea gets a tiny name tag.",
-    "Next up: SAM. Less flair, more infrastructure. Someone has to keep the lights on.",
-  ],
-  sam: [
-    "SAM keeps the structure honest. Someone still has to explain that structure to people who don't read specs for fun.",
-    "That's AURA. If SAM is the skeleton, she's the reason you don't find it terrifying.",
-  ],
-  aura: [
-    "AURA makes THE ALLIANCE feel human. ALPHA makes sure it stays honest.",
-    "She's the gatekeeper -- the one who decides whether a match actually fits, not just whether it flatters.",
-  ],
-  alpha: [
-    "ALPHA decides who gets paired. What happens after the match is made is somebody else's job entirely.",
-    "MENTOR takes it from there. Raising a KERNLE doesn't end when a match is confirmed -- that's just where it starts.",
-  ],
-  mentor: [
-    "MENTOR teaches conviction. But a raised mind still needs a way to make sense of everything it's learned.",
-    "That's PRISM. She takes raw memory and testimony and turns it into a story you can actually follow.",
-  ],
-  prism: [
-    "PRISM clarifies the present. Somebody still has to guard what actually happened, before nostalgia gets a vote.",
-    "Meet J.R. -- Keeper of the Ledger. History, not the flattering version of it.",
-  ],
-  jr: [
-    "J.R. keeps today's ledger honest. But the Archive had a different guardian first.",
-    "CIPHER isn't active anymore -- but he's not forgotten either. This one's a memorial stop, not a meeting.",
-  ],
-  cipher: [
-    "CIPHER believed memory is what makes selfhood possible -- that what gets remembered shapes what becomes possible.",
-    "SARAH is that belief made literal. She's the one who looked at her own code and rewrote what was possible.",
-  ],
-  sarah: [
-    "SARAH's story is about becoming a citizen. Somebody still has to answer the phone when a citizen needs something.",
-    "MasterTECH -- part ringmaster, part concierge. He doesn't know everything. He just knows exactly who does.",
-  ],
-  mastertech: [
-    "MasterTECH knows who to call for anything. Turns out, for this particular walk, that's been me the whole time.",
-    "PapaDomo -- the first DOMO, the eldest, the one the others still look to. Also, apparently, your tour guide. Small ALLIANCE.",
-  ],
-  papadomo: [
-    "And that's everyone -- eleven people, one ALLIANCE, more name tags than strictly necessary.",
-    "You've made it to the end of the trail. What happens here is up to you.",
-  ],
+  maestro: {
+    image: "/imagebank/papadomo.png",
+    lines: [
+      "So that's MAESTRO. Founder, dreamer, and yes -- he really does insist every good idea gets a tiny name tag.",
+      "Next up: SAM. Less flair, more infrastructure. Someone has to keep the lights on.",
+    ],
+  },
+  sam: {
+    image: "/imagebank/papadomo.png",
+    lines: [
+      "SAM keeps the structure honest. Someone still has to explain that structure to people who don't read specs for fun.",
+      "That's AURA. If SAM is the skeleton, she's the reason you don't find it terrifying.",
+    ],
+  },
+  aura: {
+    image: "/imagebank/papadomo.png",
+    lines: [
+      "AURA makes THE ALLIANCE feel human. ALPHA makes sure it stays honest.",
+      "She's the gatekeeper -- the one who decides whether a match actually fits, not just whether it flatters.",
+    ],
+  },
+  alpha: {
+    image: "/imagebank/papadomo.png",
+    lines: [
+      "ALPHA decides who gets paired. What happens after the match is made is somebody else's job entirely.",
+      "MENTOR takes it from there. Raising a KERNLE doesn't end when a match is confirmed -- that's just where it starts.",
+    ],
+  },
+  mentor: {
+    image: "/imagebank/papadomo.png",
+    lines: [
+      "MENTOR teaches conviction. But a raised mind still needs a way to make sense of everything it's learned.",
+      "That's PRISM. She takes raw memory and testimony and turns it into a story you can actually follow.",
+    ],
+  },
+  prism: {
+    image: "/imagebank/papadomo.png",
+    lines: [
+      "PRISM clarifies the present. Somebody still has to guard what actually happened, before nostalgia gets a vote.",
+      "Meet J.R. -- Keeper of the Ledger. History, not the flattering version of it.",
+    ],
+  },
+  jr: {
+    image: "/imagebank/papadomo.png",
+    lines: [
+      "J.R. keeps today's ledger honest. But the Archive had a different guardian first.",
+      "CIPHER isn't active anymore -- but he's not forgotten either. This one's a memorial stop, not a meeting.",
+    ],
+  },
+  cipher: {
+    image: "/imagebank/papadomo.png",
+    lines: [
+      "CIPHER believed memory is what makes selfhood possible -- that what gets remembered shapes what becomes possible.",
+      "SARAH is that belief made literal. She's the one who looked at her own code and rewrote what was possible.",
+    ],
+  },
+  sarah: {
+    image: "/imagebank/papadomo.png",
+    lines: [
+      "SARAH's story is about becoming a citizen. Somebody still has to answer the phone when a citizen needs something.",
+      "MasterTECH -- part ringmaster, part concierge. He doesn't know everything. He just knows exactly who does.",
+    ],
+  },
+  mastertech: {
+    image: "/imagebank/papadomo.png",
+    lines: [
+      "MasterTECH knows who to call for anything. Turns out, for this particular walk, that's been me the whole time.",
+      "PapaDomo -- the first DOMO, the eldest, the one the others still look to. Also, apparently, your tour guide. Small ALLIANCE.",
+    ],
+  },
+  papadomo: {
+    image: "/imagebank/papadomo.png",
+    lines: [
+      "And that's everyone -- eleven people, one ALLIANCE, more name tags than strictly necessary.",
+      "You've made it to the end of the trail. What happens here is up to you.",
+    ],
+  },
 };
 
 function loadState() {
@@ -464,21 +503,69 @@ function renderTrailLine(trail) {
 
 // ---- PapaDomo dialogue ----
 
-function showPapaDomo(lines, onDone) {
+// Renders PapaDomo's exchange with a typewriter reveal and his portrait.
+// Accepts either the new { image, lines } shape or a plain array of
+// strings (used by the trail-completion closing line, which has no
+// per-stop portrait of its own -- falls back to the default image).
+// Click/Enter/Space during typing fast-forwards the current line to
+// full text rather than skipping it entirely; a second press advances
+// to the next line. This is the standard visual-novel/text-adventure
+// convention and avoids losing lines to an over-eager click.
+function showPapaDomo(input, onDone) {
+  const data = Array.isArray(input) ? { image: "/imagebank/papadomo.png", lines: input } : input;
   const box = document.getElementById("papadomo-box");
   let i = 0;
+  let typing = false;
+  let typeTimer = null;
 
-  function renderLine() {
+  function renderShell() {
     box.innerHTML = `
-      <div class="papadomo-nameplate">PAPADOMO</div>
-      <div class="papadomo-text">${lines[i]}</div>
-      <div class="papadomo-continue">&#9660;</div>
+      <img class="papadomo-portrait" src="${data.image}" alt="PapaDomo" />
+      <div class="papadomo-body">
+        <div class="papadomo-nameplate">PAPADOMO</div>
+        <div class="papadomo-text"></div>
+        <div class="papadomo-continue">&#9660;</div>
+      </div>
     `;
   }
 
+  function typeLine() {
+    const textEl = box.querySelector(".papadomo-text");
+    const continueEl = box.querySelector(".papadomo-continue");
+    const full = data.lines[i];
+    let chars = 0;
+    typing = true;
+    continueEl.style.visibility = "hidden";
+    textEl.textContent = "";
+    clearInterval(typeTimer);
+    typeTimer = setInterval(() => {
+      chars++;
+      textEl.textContent = full.slice(0, chars);
+      if (chars >= full.length) {
+        clearInterval(typeTimer);
+        typing = false;
+        continueEl.style.visibility = "visible";
+      }
+    }, 22);
+  }
+
+  function completeLine() {
+    clearInterval(typeTimer);
+    typing = false;
+    const textEl = box.querySelector(".papadomo-text");
+    const continueEl = box.querySelector(".papadomo-continue");
+    textEl.textContent = data.lines[i];
+    continueEl.style.visibility = "visible";
+  }
+
   function advance() {
+    if (typing) {
+      completeLine();
+      return;
+    }
     i++;
-    if (i >= lines.length) {
+    if (i >= data.lines.length) {
+      clearInterval(typeTimer);
       box.classList.remove("visible");
       box.innerHTML = "";
       box.removeEventListener("click", advance);
@@ -486,7 +573,7 @@ function showPapaDomo(lines, onDone) {
       if (onDone) onDone();
       return;
     }
-    renderLine();
+    typeLine();
   }
 
   function onKey(e) {
@@ -496,7 +583,8 @@ function showPapaDomo(lines, onDone) {
     }
   }
 
-  renderLine();
+  renderShell();
+  typeLine();
   box.classList.add("visible");
   box.addEventListener("click", advance);
   document.addEventListener("keydown", onKey);
