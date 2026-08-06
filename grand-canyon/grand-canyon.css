@@ -12,3 +12,27 @@ button, input, textarea, select { font: inherit; }
 .overview-button { position: absolute; right: 18px; bottom: 18px; z-index: 20; padding: 10px 14px; border: 1px solid rgba(255,226,163,.7); border-radius: 5px; background: rgba(20,12,8,.82); color: #fff0cc; font-size: 14px; cursor: pointer; backdrop-filter: blur(5px); }
 .overview-button:hover, .overview-button:focus-visible { background: rgba(72,31,14,.92); outline: 2px solid rgba(255,226,163,.85); outline-offset: 2px; }
 @media (max-width: 600px) { .map-header { top: 12px; width: calc(100% - 28px); } .trail-marker { width: 38px; height: 38px; font-size: 15px; } .overview-button { right: 12px; bottom: 12px; } }
+
+/* ---- Stage 2: trail panel + trail view ---- */
+
+#trail-line-layer { position: absolute; inset: 0; z-index: 15; width: 100%; height: 100%; pointer-events: none; }
+.trail-line-path { fill: none; stroke: #ffb746; stroke-width: 3; stroke-dasharray: 2 10; stroke-linecap: round; opacity: .85; filter: drop-shadow(0 0 6px rgba(255,183,70,.6)); }
+
+#trail-panel { display: none; position: absolute; left: 50%; bottom: 84px; z-index: 25; transform: translateX(-50%); width: min(92vw, 420px); padding: 22px 24px; border: 1px solid rgba(255,226,163,.55); border-radius: 8px; background: rgba(18,11,7,.94); backdrop-filter: blur(6px); box-shadow: 0 12px 40px rgba(0,0,0,.55); }
+#trail-panel.visible { display: block; }
+.trail-panel-title { font-size: clamp(19px, 3vw, 24px); letter-spacing: .04em; color: #fff4ce; }
+.trail-panel-meta { margin-top: 6px; font-family: Arial, sans-serif; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #d8b98a; }
+.trail-panel-desc { margin: 14px 0 0; font-size: 15px; line-height: 1.5; color: #e8d9bd; }
+.trail-panel-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+.begin-trail-button, .return-overview-button { padding: 11px 16px; border-radius: 5px; font-family: Arial, sans-serif; font-size: 13px; letter-spacing: .08em; cursor: pointer; }
+.begin-trail-button { border: 1px solid rgba(255,183,70,.85); background: rgba(122,50,17,.9); color: #fff4ce; }
+.begin-trail-button:hover, .begin-trail-button:focus-visible { background: rgba(158,68,22,.96); outline: none; }
+.return-overview-button { border: 1px solid rgba(255,226,163,.4); background: transparent; color: #d8b98a; }
+.return-overview-button:hover, .return-overview-button:focus-visible { border-color: rgba(255,226,163,.8); color: #fff4ce; outline: none; }
+
+.trail-stop { display: flex; align-items: center; gap: 6px; padding: 6px 12px 6px 8px; border: 2px solid #f8df9a; border-radius: 999px; background: rgba(61,25,10,.9); color: #fff4ce; font-family: Arial, sans-serif; font-size: 13px; font-weight: 600; letter-spacing: .03em; cursor: pointer; box-shadow: 0 0 0 4px rgba(0,0,0,.3), 0 0 16px rgba(255,183,70,.6); transition: transform 160ms ease, background 160ms ease, border-color 160ms ease; }
+.trail-stop:hover, .trail-stop:focus-visible { transform: scale(1.08); outline: none; }
+.trail-stop-mark { display: inline-flex; width: 14px; justify-content: center; color: #7bffa0; font-weight: 900; }
+.trail-stop.completed { border-color: #7bffa0; background: rgba(20,55,30,.92); box-shadow: 0 0 0 4px rgba(0,0,0,.3), 0 0 16px rgba(123,255,160,.55); }
+
+@media (max-width: 600px) { #trail-panel { bottom: 76px; padding: 18px 18px; } .trail-stop { font-size: 12px; padding: 5px 10px 5px 7px; } }
