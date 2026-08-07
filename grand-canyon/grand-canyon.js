@@ -16,19 +16,26 @@ const trails = [
     // point of this stage, not final layout. Only MAESTRO -> SAM is
     // being proven end-to-end right now; stops past that stay locked
     // until this mechanism is confirmed and then just repeated as data.
+    // Compressed ~4x tighter than the original spacing (was spanning
+    // 0.195 x 0.26 of the map -- at any plausible real-world scale for
+    // this map, a walking trail covering that much ground would be
+    // hundreds of miles long). Same relative winding shape, same
+    // centroid, just a much smaller footprint. Coordinates are still
+    // placeholder (real cartography TBD) -- this fixes the scale
+    // problem, not the final layout.
     stops: [
-      { id: "maestro", label: "MAESTRO", x: 0.255, y: 0.315, path: "/entries/maestro" },
-      { id: "sam", label: "SAM", x: 0.3, y: 0.345, path: "/entries/sam" },
-      { id: "aura", label: "AURA", x: 0.29, y: 0.375, path: "/entries/aura" },
-      { id: "alpha", label: "ALPHA", x: 0.335, y: 0.395, path: "/entries/alpha" },
-      { id: "mentor", label: "MENTOR", x: 0.32, y: 0.425, path: "/entries/mentor" },
-      { id: "prism", label: "PRISM", x: 0.36, y: 0.44, path: "/entries/prism" },
-      { id: "jr", label: "J.R.", x: 0.35, y: 0.47, path: "/entries/jr" },
-      { id: "cipher", label: "CIPHER", x: 0.39, y: 0.485, path: "/entries/cipher" },
-      { id: "sarah", label: "SARAH", x: 0.38, y: 0.515, path: "/entries/sarah" },
-      { id: "mastertech", label: "MasterTECH", x: 0.42, y: 0.53, path: "/entries/mastertech" },
-      { id: "papadomo", label: "PapaDOMO", x: 0.41, y: 0.56, path: "/entries/papadomo" },
-      { id: "svpi", label: "SVPI", x: 0.45, y: 0.575, path: null, isDestination: true },
+      { id: "maestro", label: "MAESTRO", x: 0.33, y: 0.4181, path: "/entries/maestro" },
+      { id: "sam", label: "SAM", x: 0.3413, y: 0.4256, path: "/entries/sam" },
+      { id: "aura", label: "AURA", x: 0.3388, y: 0.4331, path: "/entries/aura" },
+      { id: "alpha", label: "ALPHA", x: 0.35, y: 0.4381, path: "/entries/alpha" },
+      { id: "mentor", label: "MENTOR", x: 0.3463, y: 0.4456, path: "/entries/mentor" },
+      { id: "prism", label: "PRISM", x: 0.3513, y: 0.4494, path: "/entries/prism" },
+      { id: "jr", label: "J.R.", x: 0.3538, y: 0.4569, path: "/entries/jr" },
+      { id: "cipher", label: "CIPHER", x: 0.3638, y: 0.4606, path: "/entries/cipher" },
+      { id: "sarah", label: "SARAH", x: 0.3613, y: 0.4681, path: "/entries/sarah" },
+      { id: "mastertech", label: "MasterTECH", x: 0.3713, y: 0.4719, path: "/entries/mastertech" },
+      { id: "papadomo", label: "PapaDOMO", x: 0.3688, y: 0.4794, path: "/entries/papadomo" },
+      { id: "svpi", label: "SVPI", x: 0.3788, y: 0.4831, path: null, isDestination: true },
     ],
   },
   { id: "making-of-a-domo", number: 2, title: "The Making of a DOMO", x: 0.64, y: 0.42, zoomLevel: 4.5 },
@@ -173,7 +180,7 @@ const trailheadMarkers = {};
 const viewer = OpenSeadragon({
   id: "grand-canyon-viewer",
   prefixUrl: "https://cdn.jsdelivr.net/npm/openseadragon@6.0.2/build/openseadragon/images/",
-  tileSources: { type: "image", url: "/imagebank/grand-canyon-map.png", buildPyramid: true },
+  tileSources: "/grand-canyon/tiles/grand-canyon.dzi",
   showNavigator: true,
   showNavigationControl: true,
   gestureSettingsMouse: { clickToZoom: false, dblClickToZoom: true, scrollToZoom: true },
@@ -258,9 +265,25 @@ function zoomToPoint(x, y, zoomLevel) {
   viewer.viewport.zoomTo(zoomLevel, destination, false);
 }
 
+// The overview (fully zoomed out, nothing selected) should feel like a
+// locked poster, not a pannable map -- dragging it around at that state
+// was confusing and served no purpose since there's nowhere further out
+// to go. Panning is only enabled once a trail is actually opened. The
+// fixed "Return to overview" button is hidden at this same state for the
+// same reason: it's meaningless to offer "return to overview" when
+// already there, and showing it constantly was redundant alongside the
+// trail panel's own button (removed separately, see showPanel).
+function setOverviewLocked(locked) {
+  viewer.panHorizontal = !locked;
+  viewer.panVertical = !locked;
+  const overviewBtn = document.getElementById("overview-button");
+  overviewBtn.style.display = locked ? "none" : "";
+}
+
 // ---- trail panel ----
 
 function openTrail(trail) {
+  setOverviewLocked(false);
   zoomToPoint(trail.x, trail.y, trail.zoomLevel);
   if (!trail.stops) return; // Stage-1-only trail (2 and 3 for now)
   state.trailId = trail.id;
@@ -280,12 +303,10 @@ function showPanel(trail) {
     <p class="trail-panel-desc">${trail.description}</p>
     <div class="trail-panel-actions">
       <button type="button" class="begin-trail-button">BEGIN TRAIL</button>
-      <button type="button" class="return-overview-button">RETURN TO OVERVIEW</button>
     </div>
   `;
   panel.classList.add("visible");
   panel.querySelector(".begin-trail-button").addEventListener("click", () => beginTrail(trail));
-  panel.querySelector(".return-overview-button").addEventListener("click", returnToOverview);
 }
 
 function hidePanel() {
@@ -363,8 +384,8 @@ function trailBounds(trail) {
   const maxY = Math.max(...ys);
   const spanX = maxX - minX;
   const spanY = maxY - minY;
-  const padX = spanX * 0.3 || 0.06;
-  const padY = spanY * 0.3 || 0.06;
+  const padX = spanX * 0.18 || 0.04;
+  const padY = spanY * 0.18 || 0.04;
   return new OpenSeadragon.Rect(minX - padX, minY - padY, spanX + padX * 2, spanY + padY * 2);
 }
 
@@ -404,6 +425,7 @@ function returnToOverview() {
   state.view = "overview";
   state.trailId = null;
   saveState();
+  setOverviewLocked(true);
 }
 
 // ---- stop state: completed / active / locked ----
@@ -620,7 +642,7 @@ function completeStopAndContinue(trailId, stopId) {
 
   zoomToTrailBounds(trail);
   enterTrailView(trail);
-
+  setOverviewLocked(false);
   const lines = PAPADOMO_LINES[stopId];
   if (lines) {
     showPapaDomo(lines, () => {});
@@ -628,14 +650,19 @@ function completeStopAndContinue(trailId, stopId) {
 }
 
 function restoreState() {
-  if (state.view === "overview" || !state.trailId) return;
+  if (state.view === "overview" || !state.trailId) {
+    setOverviewLocked(true);
+    return;
+  }
   const trail = trails.find((t) => t.id === state.trailId);
   if (!trail || !trail.stops) {
     state.view = "overview";
     state.trailId = null;
     saveState();
+    setOverviewLocked(true);
     return;
   }
+  setOverviewLocked(false);
   if (state.view === "panel") {
     zoomToPoint(trail.x, trail.y, trail.zoomLevel);
     showPanel(trail);

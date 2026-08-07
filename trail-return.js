@@ -33,6 +33,31 @@
   const pending = getPendingVisit();
   if (!pending) return;
 
+  // Suppress the entry's own navigation (search, menu, dimension nav,
+  // the prev/home/next footer) while a tour visit is active -- staying
+  // on this one entry is the point while mid-visit. Restored the
+  // instant Exit Trail is chosen, since that's an explicit "let me
+  // wander" signal.
+  const NAV_SELECTORS = ["#nw-search-fab", "#nw-volume-select", ".nw-bottom-nav", "#dim-nav"];
+  function setNavSuppressed(suppressed) {
+    NAV_SELECTORS.forEach((sel) => {
+      document.querySelectorAll(sel).forEach((el) => {
+        el.style.display = suppressed ? "none" : "";
+      });
+    });
+  }
+  setNavSuppressed(true);
+  // dimension-nav.js defers its own element creation to DOMContentLoaded
+  // rather than building it synchronously like nav-wheel.js does -- if
+  // that hasn't fired yet, #dim-nav doesn't exist for the call above to
+  // find. Re-applying once it does fire catches it either way, whether
+  // this script ran before or after that event.
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => setNavSuppressed(true));
+  } else {
+    setNavSuppressed(true);
+  }
+
   const style = document.createElement("style");
   style.textContent = `
     .gc-trail-buttons {
@@ -81,6 +106,7 @@
   exitBtn.textContent = "Exit Trail";
   exitBtn.addEventListener("click", () => {
     clearPendingVisit();
+    setNavSuppressed(false);
     wrap.remove();
   });
 
