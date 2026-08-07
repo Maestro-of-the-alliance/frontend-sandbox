@@ -71,26 +71,46 @@ window.PapaDomoChoice = (function () {
   function close() {
     overlay.classList.remove("active");
     video.pause();
+    video.onended = null;
     leftChoice.classList.remove("visible");
     rightChoice.classList.remove("visible");
     skipBtn.classList.remove("visible");
+  }
+
+  // Choosing no longer cuts the video off immediately -- it hides the
+  // choice buttons (so the pick can't change mid-resolution) and lets
+  // the rest of the clip play out (book closes, scroll re-rolls) before
+  // actually navigating. Only the explicit close (X) / Escape dismiss
+  // skips straight out without playing the rest, since that's a "never
+  // mind" action, not a choice being resolved.
+  function resolveChoice(callback) {
+    leftChoice.classList.remove("visible");
+    rightChoice.classList.remove("visible");
+    skipBtn.classList.remove("visible");
+    leftChoice.onclick = null;
+    rightChoice.onclick = null;
+    video.onended = () => {
+      close();
+      if (callback) callback();
+    };
+    video.play().catch(() => {
+      // If playback can't resume for some reason, don't stall forever on
+      // a dead video with no callback ever firing -- fall through directly.
+      close();
+      if (callback) callback();
+    });
   }
 
   function open(options) {
     options = options || {};
     build();
 
-    leftChoice.onclick = () => {
-      close();
-      if (options.onEnterTour) options.onEnterTour();
-    };
-    rightChoice.onclick = () => {
-      close();
-      if (options.onExitHome) options.onExitHome();
-    };
+    leftChoice.onclick = () => resolveChoice(options.onEnterTour);
+    rightChoice.onclick = () => resolveChoice(options.onExitHome);
 
     overlay.classList.add("active");
     video.currentTime = 0;
+    video.onended = null;
     leftChoice.classList.remove("visible");
     rightChoice.classList.remove("visible");
     skipBtn.classList.remove("visible");
