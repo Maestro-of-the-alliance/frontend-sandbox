@@ -237,7 +237,7 @@ export default function SystemControls({
           </p>
         ) : (
           <p>
-            ★ Double-click or tap any planet to launch sub-orbital transit vector. Drag background to orbit.
+            ★ Tap a planet to reveal it, tap again to transit in. Drag background to orbit.
           </p>
         )}
       </div>

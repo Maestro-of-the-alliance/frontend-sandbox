@@ -734,6 +734,9 @@ export default function SolarSystemCanvas({
           if (hit.name.startsWith("planet-")) {
             const pid = hit.name.replace("planet-", "");
             propsRef.current.onPlanetHover(pid);
+            revealedPlanets.add(pid); // desktop preview -- touch has no hover, relies on the first tap instead
+          } else if (hit.name.startsWith("entry-")) {
+            revealedSatellites.add(hit.name.replace("entry-", ""));
           }
           // sun hover just gets the pointer cursor, set above — no hover state to track
         }
@@ -771,16 +774,37 @@ export default function SolarSystemCanvas({
           });
         } else if (hit.name.startsWith("planet-")) {
           const pid = hit.name.replace("planet-", "");
-          propsRef.current.onPlanetSelect(pid);
+          if (!revealedPlanets.has(pid)) {
+            // First tap: reveal the label only, don't transit yet.
+            revealedPlanets.add(pid);
+          } else {
+            propsRef.current.onPlanetSelect(pid);
+          }
         } else if (hit.name.startsWith("entry-")) {
           const slug = hit.name.replace("entry-", "");
-          propsRef.current.onEntrySelect(slug);
+          if (!revealedSatellites.has(slug)) {
+            // First tap: reveal the label only, don't navigate yet.
+            revealedSatellites.add(slug);
+          } else {
+            propsRef.current.onEntrySelect(slug);
+          }
         } else if (hit.name === "ghost-light") {
           // Never explained, never announced — it's just gone.
           ghostDismissed = true;
         }
       }
     };
+
+    // Planet/satellite labels are hidden until interacted with, then need a
+    // second tap to actually commit to selecting/navigating -- per request,
+    // rather than showing every label at once (previous default) or
+    // navigating away on the very first tap with no preview. Plain closure
+    // variables, not React state, matching every other piece of interaction
+    // state in this effect (isDragging, zoomFactor, etc.) -- these get read
+    // every animation frame in the label-projection loop below, so avoiding
+    // a re-render on every reveal matters here the same way it did there.
+    const revealedPlanets = new Set<string>();
+    const revealedSatellites = new Set<string>();
 
     // DRAG-TO-ORBIT + WHEEL-TO-ZOOM
     // The UI copy has always claimed "Drag background to orbit" — this wires that
@@ -1059,8 +1083,14 @@ export default function SolarSystemCanvas({
         const sx = (vecProj.x * .5 + .5) * size.width;
         const sy = (-(vecProj.y * .5) + .5) * size.height;
 
-        // Don't show planet labels if other planet is zoomed
-        const showLabel = state.selectedPlanetId ? state.selectedPlanetId === p.id : true;
+        // Labels are hidden until the visitor has actually interacted with
+        // that specific planet (hover preview on desktop, first tap on
+        // touch) -- previously every planet's label showed at once by
+        // default, which is what this replaces. Still shown while that
+        // planet is the actively selected/zoomed one even if something
+        // reset revealedPlanets, so a selected planet never loses its own
+        // label out from under the visitor.
+        const showLabel = state.selectedPlanetId === p.id || revealedPlanets.has(p.id);
         const visible = isVisible && showLabel && state.simulationConfig.showLabels;
 
         el.style.display = visible ? "" : "none";
@@ -1085,7 +1115,7 @@ export default function SolarSystemCanvas({
 
           const sx = (vecProj.x * .5 + .5) * size.width;
           const sy = (-(vecProj.y * .5) + .5) * size.height;
-          const visible = isVisible && state.simulationConfig.showLabels;
+          const visible = isVisible && revealedSatellites.has(sat.slug) && state.simulationConfig.showLabels;
 
           el.style.display = visible ? "" : "none";
           if (visible) {
