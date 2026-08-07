@@ -568,7 +568,7 @@ function showPapaDomo(input, onDone) {
         typing = false;
         continueEl.style.visibility = "visible";
       }
-    }, 22);
+    }, 38);
   }
 
   function completeLine() {

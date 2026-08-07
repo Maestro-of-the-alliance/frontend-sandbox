@@ -38,7 +38,15 @@
   // on this one entry is the point while mid-visit. Restored the
   // instant Exit Trail is chosen, since that's an explicit "let me
   // wander" signal.
-  const NAV_SELECTORS = ["#nw-search-fab", "#nw-volume-select", ".nw-bottom-nav", "#dim-nav"];
+  const NAV_SELECTORS = [
+    "#nw-search-fab",
+    "#nw-volume-select",
+    ".nw-bottom-nav",
+    "#dim-nav",
+    "#nw-burger-fallback",
+    ".nav-wheel-trigger",
+    ".nw-burger-btn",
+  ];
   function setNavSuppressed(suppressed) {
     NAV_SELECTORS.forEach((sel) => {
       document.querySelectorAll(sel).forEach((el) => {
