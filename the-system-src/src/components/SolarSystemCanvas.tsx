@@ -261,12 +261,29 @@ export default function SolarSystemCanvas({
     camera.position.set(0, 45, 95);
 
     // RENDERER
-    const renderer = new THREE.WebGLRenderer({
-      canvas: canvasRef.current,
-      antialias: true,
-      alpha: true,
-      powerPreference: "high-performance",
-    });
+    // Creating a WebGLRenderer can throw outright (not just fail silently)
+    // if the browser can't hand back a GPU context yet -- plausible right
+    // after a reload that was itself triggered by a context-loss event, if
+    // the OS/browser hasn't actually finished freeing the previous context.
+    // Previously this had no guard: a throw here unwound the whole effect
+    // with no UI feedback at all, leaving just the page's own static CSS
+    // background (the dot-grid pattern in index.css) visible with nothing
+    // on top of it and no way to tell what happened. Catching it and
+    // reusing the existing contextLost recovery screen turns that silent
+    // dead-end into the same actionable "Reconnect" state instead.
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas: canvasRef.current,
+        antialias: true,
+        alpha: true,
+        powerPreference: "high-performance",
+      });
+    } catch (err) {
+      console.error("WebGLRenderer creation failed:", err);
+      setContextLost(true);
+      return;
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(size.width, size.height);
     renderer.shadowMap.enabled = true;
