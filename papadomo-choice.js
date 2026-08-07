@@ -6,14 +6,17 @@
 //
 // Plays /video/papadomo-scroll-intro.mp4 (scroll unrolls -> PapaDomo
 // materializes -> opens a blank book toward camera), pauses right at
-// the blank-book moment (~16.3s, confirmed by frame inspection --
-// the open-page window runs roughly 16.3s-19s before the book closes
-// again), and overlays two clickable choices directly onto the two
-// page halves: ENTER THE TOUR (left page) and EXIT TO HOME (right
-// page). Coordinates are percentage-based against the video frame so
-// they track correctly regardless of display size.
+// the blank-book moment (~16.7s -- confirmed via frame-by-frame
+// inspection at 0.2s granularity that the page-turn is still visibly
+// mid-flip, with a crease down the right page, as late as 16.2s; it's
+// fully flat and settled by 16.6s. The open-page window runs to
+// roughly 19s before the book closes again), and overlays two
+// clickable choices directly onto the two page halves: ENTER THE TOUR
+// (left page) and EXIT TO HOME (right page). Coordinates are
+// percentage-based against the video frame so they track correctly
+// regardless of display size.
 window.PapaDomoChoice = (function () {
-  const BOOK_OPEN_TIME = 16.3;
+  const BOOK_OPEN_TIME = 16.7;
   const VIDEO_SRC = "/video/papadomo-scroll-intro-compressed.mp4";
 
   let built = false;
