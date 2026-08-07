@@ -46,6 +46,7 @@
     "#nw-burger-fallback",
     ".nav-wheel-trigger",
     ".nw-burger-btn",
+    ".see-also-section",
   ];
   function setNavSuppressed(suppressed) {
     NAV_SELECTORS.forEach((sel) => {
