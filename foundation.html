@@ -403,6 +403,80 @@
         text-align: center;
       }
 
+      #watch-choice {
+        position: fixed;
+        inset: 0;
+        z-index: 310;
+        background: rgba(5, 4, 3, 0.92);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      #watch-choice.active {
+        display: flex;
+      }
+      #watch-choice .wc-panel {
+        max-width: 360px;
+        width: 100%;
+        background: var(--panel);
+        border: 1px solid var(--rule);
+        border-radius: 3px;
+        padding: 28px;
+        text-align: center;
+      }
+      #watch-choice .wc-title {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 20px;
+      }
+      #watch-choice .wc-option {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        color: var(--text);
+        background: none;
+        border: 1px solid var(--rule);
+        border-radius: 3px;
+        padding: 14px 18px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: border-color 0.2s, color 0.2s;
+      }
+      #watch-choice .wc-option:last-of-type {
+        margin-bottom: 0;
+      }
+      #watch-choice .wc-option:hover,
+      #watch-choice .wc-option:focus-visible {
+        border-color: var(--gold);
+        color: var(--glow);
+      }
+      #watch-choice .wc-runtime {
+        color: var(--muted);
+        font-size: 11px;
+      }
+      #watch-choice .wc-cancel {
+        margin-top: 18px;
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--muted);
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+      #watch-choice .wc-cancel:hover {
+        color: var(--glow);
+      }
+
       .scroll-cue {
         position: absolute;
         bottom: 40px;
@@ -821,6 +895,21 @@
       </section>
     </div>
 
+    <div id="watch-choice">
+      <div class="wc-panel">
+        <div class="wc-title">Choose an overview</div>
+        <button type="button" class="wc-option" id="wc-original">
+          <span>Original Overview</span>
+          <span class="wc-runtime">5:13</span>
+        </button>
+        <button type="button" class="wc-option" id="wc-new">
+          <span>New Overview</span>
+          <span class="wc-runtime">7:06</span>
+        </button>
+        <button type="button" class="wc-cancel" id="wc-cancel">Cancel</button>
+      </div>
+    </div>
+
     <div id="media-modal">
       <button class="modal-close" id="modal-close-btn">&#10005; Close</button>
       <div class="modal-inner">
@@ -1164,11 +1253,27 @@
       const modalLabel = document.getElementById("modal-label");
       const modalCloseBtn = document.getElementById("modal-close-btn");
 
-      function openModal(kind) {
+      const VIDEO_SOURCES = {
+        original: {
+          url: "https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/foundation-overview.mp4",
+          label: "Foundation Overview — Video (Original, 5:13)",
+        },
+        new: {
+          url: "https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/foundation-vid.mp4",
+          label: "Foundation Overview — Video (New, 7:06)",
+        },
+      };
+
+      function openModal(kind, videoChoice) {
         modalVideo.style.display = kind === "video" ? "block" : "none";
         modalAudio.style.display = kind === "audio" ? "block" : "none";
-        modalLabel.textContent =
-          kind === "video" ? "Foundation Overview — Video" : "Foundation Overview — Audio";
+        if (kind === "video") {
+          const source = VIDEO_SOURCES[videoChoice || "original"];
+          modalVideo.src = source.url;
+          modalLabel.textContent = source.label;
+        } else {
+          modalLabel.textContent = "Foundation Overview — Audio";
+        }
         mediaModal.classList.add("active");
         if (kind === "video") {
           modalAudio.pause();
@@ -1183,7 +1288,25 @@
         modalVideo.pause();
         modalAudio.pause();
       }
-      document.getElementById("format-watch").addEventListener("click", () => openModal("video"));
+
+      // Watch now offers a choice between the two overview videos (runtimes
+      // shown so the visitor can pick based on how long they've got) rather
+      // than jumping straight into a single fixed video.
+      const watchChoice = document.getElementById("watch-choice");
+      document.getElementById("format-watch").addEventListener("click", () => {
+        watchChoice.classList.add("active");
+      });
+      document.getElementById("wc-original").addEventListener("click", () => {
+        watchChoice.classList.remove("active");
+        openModal("video", "original");
+      });
+      document.getElementById("wc-new").addEventListener("click", () => {
+        watchChoice.classList.remove("active");
+        openModal("video", "new");
+      });
+      document.getElementById("wc-cancel").addEventListener("click", () => {
+        watchChoice.classList.remove("active");
+      });
       document.getElementById("format-listen").addEventListener("click", () => openModal("audio"));
       document.getElementById("format-read").addEventListener("click", () => {
         const thesis = document.querySelector(".title-thesis");
