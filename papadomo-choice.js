@@ -17,6 +17,7 @@ window.PapaDomoChoice = (function () {
   const VIDEO_SRC = "/video/papadomo-scroll-intro-compressed.mp4";
 
   let built = false;
+  let choiceResolved = false;
   let overlay, video, leftChoice, rightChoice, closeBtn, skipBtn;
 
   function build() {
@@ -46,8 +47,18 @@ window.PapaDomoChoice = (function () {
     closeBtn = overlay.querySelector(".pdc-close");
     skipBtn = overlay.querySelector(".pdc-skip");
 
+    // This listener lives for the video element's entire lifetime, not
+    // just the initial approach to the book-open moment. Real bug this
+    // caused: once a choice was made and resolveChoice() resumed
+    // playback past BOOK_OPEN_TIME, the very next timeupdate tick still
+    // matched this same condition and immediately paused it right back
+    // and re-showed the choice buttons -- fighting the resume every
+    // single frame, so the video never visibly moved forward past the
+    // book-choice screen no matter what was clicked. The choiceResolved
+    // guard makes this fire once, before a choice is made, and never
+    // again afterward.
     video.addEventListener("timeupdate", () => {
-      if (video.currentTime >= BOOK_OPEN_TIME && !video.paused) {
+      if (!choiceResolved && video.currentTime >= BOOK_OPEN_TIME && !video.paused) {
         video.pause();
         leftChoice.classList.add("visible");
         rightChoice.classList.add("visible");
@@ -84,26 +95,41 @@ window.PapaDomoChoice = (function () {
   // skips straight out without playing the rest, since that's a "never
   // mind" action, not a choice being resolved.
   function resolveChoice(callback) {
+    choiceResolved = true;
     leftChoice.classList.remove("visible");
     rightChoice.classList.remove("visible");
     skipBtn.classList.remove("visible");
     leftChoice.onclick = null;
     rightChoice.onclick = null;
-    video.onended = () => {
+
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
       close();
       if (callback) callback();
     };
-    video.play().catch(() => {
-      // If playback can't resume for some reason, don't stall forever on
-      // a dead video with no callback ever firing -- fall through directly.
-      close();
-      if (callback) callback();
-    });
+
+    // Primary path: let the rest of the clip play out, advance once it
+    // genuinely finishes.
+    video.onended = finish;
+
+    // Safety net: getting stuck on this screen with no way forward is far
+    // worse than cutting the tail of the video slightly short, so this
+    // guarantees forward progress no matter what -- a stalled network
+    // fetch, a backgrounded tab throttling playback, or any other real-
+    // device quirk 'ended' failing to fire that isn't reproducible here.
+    // Comfortably longer than the ~16-19s remaining after the earliest
+    // possible choice point, so it shouldn't fire in normal conditions.
+    setTimeout(finish, 22000);
+
+    video.play().catch(finish);
   }
 
   function open(options) {
     options = options || {};
     build();
+    choiceResolved = false;
 
     leftChoice.onclick = () => resolveChoice(options.onEnterTour);
     rightChoice.onclick = () => resolveChoice(options.onExitHome);
