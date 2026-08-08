@@ -190,3 +190,15 @@ function handleReturn() {
 }
 
 handleReturn();
+
+// Belt-and-suspenders for bfcache: a browser can restore this page from
+// cache (e.g. after pressing back) without re-running the script the
+// normal way. pageshow fires in both cases, with event.persisted true
+// only for the cached-restore path -- re-running the check there costs
+// nothing on a normal load and closes off a category of "came back and
+// nothing updated" bugs this environment can't fully reproduce headlessly.
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted) {
+    handleReturn();
+  }
+});
