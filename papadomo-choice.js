@@ -20,15 +20,9 @@ window.PapaDomoChoice = (function () {
     overlay.innerHTML = `
       <button type="button" class="pdc-close" aria-label="Close">&times;</button>
       <div class="pdc-card">
-        <div class="pdc-title">
-          <span class="pdc-title-main">GUIDED TOURS</span>
-          <span class="pdc-title-sub">WITH</span>
-          <span class="pdc-title-name">PapaDOMO</span>
-        </div>
-        <img class="pdc-portrait" src="/imagebank/papadomo-welcoming.png" alt="PapaDomo" />
         <div class="pdc-choices">
-          <button type="button" class="pdc-choice pdc-choice-no">No Tour</button>
-          <button type="button" class="pdc-choice pdc-choice-yes">Tour</button>
+          <button type="button" class="pdc-choice pdc-choice-no" aria-label="No tour"></button>
+          <button type="button" class="pdc-choice pdc-choice-yes" aria-label="Tour"></button>
         </div>
       </div>
     `;

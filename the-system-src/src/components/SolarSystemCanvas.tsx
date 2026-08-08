@@ -766,7 +766,7 @@ export default function SolarSystemCanvas({
           // a coin flip at the doorway.
           (window as any).PapaDomoChoice.open({
             onEnterTour: () => {
-              window.location.href = "https://allianceftf.org/grand-canyon/";
+              window.location.href = "https://allianceftf.org/tours/";
             },
             onExitHome: () => {
               window.location.href = "https://allianceftf.org/landing.html";
