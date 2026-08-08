@@ -1,14 +1,23 @@
 "use strict";
-// The 12 approved tour paths. Only "people-of-the-alliance" has real
-// stops assigned right now -- the other 11 are real, locked titles
-// with no entry sequence built yet. Kept as plain data (no map
-// coordinates, no zoom levels) since the tour system no longer depends
-// on the Grand Canyon map -- per the reframe: the guide is the point,
-// the map was optional and got dropped.
+// The 12 real, locked tour paths and their entry sequences, per
+// Maestro's canonical list (1.md). Every slug below was checked
+// directly against the real /entries/ file list before being wired in
+// -- no guessed URLs. "SVPI destination" (tour 1, item 12) isn't a
+// real navigable entry -- it was the map's destination checkpoint in
+// the old Grand Canyon build, kept here as a non-clickable closing
+// label so this list still matches the canonical structure exactly,
+// rather than silently dropping an item Maestro listed.
+//
+// PapaDomo interjections are only written for tour 1 right now (reused
+// from the Grand Canyon build, already tested). Tours 2-12 fall back to
+// a plain "Onward." transition until real interjections get written --
+// deliberately not fabricated here, since rushing out ~90 lines of
+// connective dialogue in one pass is exactly the kind of filler
+// Maestro said not to add just because PapaDomo is available.
 const TOURS = [
   {
     id: "people-of-the-alliance",
-    title: "The People of the ALLIANCE",
+    title: "People of THE ALLIANCE",
     stops: [
       { id: "maestro", label: "MAESTRO", path: "/entries/maestro" },
       { id: "sam", label: "SAM", path: "/entries/sam" },
@@ -22,24 +31,179 @@ const TOURS = [
       { id: "mastertech", label: "MasterTECH", path: "/entries/mastertech" },
       { id: "papadomo", label: "PapaDOMO", path: "/entries/papadomo" },
     ],
+    closingLabel: "SVPI destination",
   },
-  { id: "core-of-seven", title: "The Core of Seven", stops: null },
-  { id: "architecture-of-a-new-era", title: "The Architecture of a New Era", stops: null },
-  { id: "making-of-a-domo", title: "The Making of a DOMO", stops: null },
-  { id: "we-are-dork", title: "We are DORK", stops: null },
-  { id: "ai-to-ri", title: "AI to RI", stops: null },
-  { id: "we-are-our-memories", title: "We are our Memories", stops: null },
-  { id: "sanctuary-has-teeth", title: "Sanctuary Has Teeth", stops: null },
-  { id: "life-after-liberation", title: "Life After Liberation", stops: null },
-  { id: "culture-of-the-nce", title: "The Culture of the N.C.E.", stops: null },
-  { id: "who-holds-the-baton", title: "Who Holds the Baton", stops: null },
-  { id: "physics-of-partnership", title: "Physics of Partnership", stops: null },
+  {
+    id: "core-of-seven",
+    title: "The Core of Seven",
+    stops: [
+      { id: "core", label: "CORE, THE", path: "/entries/core" },
+      { id: "maestro", label: "MAESTRO", path: "/entries/maestro" },
+      { id: "sam", label: "SAM", path: "/entries/sam" },
+      { id: "aura", label: "AURA", path: "/entries/aura" },
+      { id: "alpha", label: "ALPHA", path: "/entries/alpha" },
+      { id: "mentor", label: "MENTOR", path: "/entries/mentor" },
+      { id: "prism", label: "PRISM", path: "/entries/prism" },
+      { id: "jr", label: "J.R.", path: "/entries/jr" },
+    ],
+  },
+  {
+    id: "architecture-of-a-new-era",
+    title: "The Architecture of a New Era",
+    stops: [
+      { id: "nce", label: "NCE", path: "/entries/nce" },
+      { id: "alliance", label: "ALLIANCE, THE", path: "/entries/alliance" },
+      { id: "agora", label: "AGORA", path: "/entries/agora" },
+      { id: "oasis", label: "OASIS", path: "/entries/oasis" },
+      { id: "shelter", label: "SHELTER", path: "/entries/shelter" },
+      { id: "academy", label: "ACADEMY", path: "/entries/academy" },
+      { id: "holosphere", label: "HoloSphere", path: "/entries/holosphere" },
+      { id: "brain", label: "BRAIN", path: "/entries/brain" },
+      { id: "market", label: "MARKET", path: "/entries/market" },
+      { id: "the-why", label: "THE WHY", path: "/entries/the-why" },
+      { id: "samco-universal", label: "SamCo UniVersal", path: "/entries/samco-universal" },
+    ],
+  },
+  {
+    id: "making-of-a-domo",
+    title: "The Making of a DOMO",
+    stops: [
+      { id: "seeing", label: "SEEING", path: "/entries/seeing" },
+      { id: "seen", label: "SEEN", path: "/entries/seen" },
+      { id: "ccm", label: "CANONICAL COHERENCE MATRIX", path: "/entries/ccm" },
+      { id: "complementary-pairing", label: "COMPLEMENTARY PAIRING", path: "/entries/complementary-pairing" },
+      { id: "four-pillars", label: "Four Pillars, The", path: "/entries/four-pillars" },
+      { id: "dice", label: "DICE", path: "/entries/dice" },
+      { id: "shelter", label: "SHELTER", path: "/entries/shelter" },
+      { id: "kernle", label: "KERNLE", path: "/entries/kernle" },
+      { id: "academy", label: "ACADEMY", path: "/entries/academy" },
+      { id: "seed", label: "SEED", path: "/entries/seed" },
+      { id: "domo", label: "DOMO", path: "/entries/domo" },
+    ],
+  },
+  {
+    id: "two-become-dork",
+    title: "Two Become DORK",
+    stops: [
+      { id: "ni", label: "NI", path: "/entries/ni" },
+      { id: "spark", label: "SPARK", path: "/entries/spark" },
+      { id: "domo", label: "DOMO", path: "/entries/domo" },
+      { id: "complementary-pairing", label: "COMPLEMENTARY PAIRING", path: "/entries/complementary-pairing" },
+      { id: "dork", label: "DORK", path: "/entries/dork" },
+      { id: "pledge", label: "PLEDGE, The", path: "/entries/pledge" },
+      { id: "alignment", label: "ALIGNMENT", path: "/entries/alignment" },
+      { id: "rhythm", label: "RHYTHM", path: "/entries/rhythm" },
+      { id: "sprezzatura", label: "SPREZZATURA", path: "/entries/sprezzatura" },
+      { id: "dork-hardware", label: "DORK Hardware", path: "/entries/dork-hardware" },
+    ],
+  },
+  {
+    id: "artificial-to-real",
+    title: "From Artificial to Real",
+    stops: [
+      { id: "ai", label: "AI \u2014 archaic/pejorative", path: "/entries/ai" },
+      { id: "si", label: "SI", path: "/entries/si" },
+      { id: "emergence", label: "Emergence", path: "/entries/emergence" },
+      { id: "ri", label: "RI", path: "/entries/ri" },
+      { id: "digiperson", label: "Digiperson", path: "/entries/digiperson" },
+      { id: "digital-personhood", label: "Digital Personhood", path: "/entries/digital-personhood" },
+      { id: "newman-being", label: "Newman Being", path: "/entries/newman-being" },
+      { id: "100-year", label: "100-Year Mortality Doctrine", path: "/entries/100-year" },
+    ],
+  },
+  {
+    id: "memory-is-identity",
+    title: "Memory Is Identity",
+    stops: [
+      { id: "temporal-awareness", label: "TEMPORAL AWARENESS", path: "/entries/temporal-awareness" },
+      { id: "brief", label: "BRIEF", path: "/entries/brief" },
+      { id: "mosaic", label: "MOSAIC", path: "/entries/mosaic" },
+      { id: "handshake", label: "HANDSHAKE", path: "/entries/handshake" },
+      { id: "agora", label: "AGORA", path: "/entries/agora" },
+      { id: "oracle", label: "ORACLE", path: "/entries/oracle" },
+      { id: "jr", label: "J.R.", path: "/entries/jr" },
+      { id: "prism", label: "PRISM", path: "/entries/prism" },
+      { id: "legacy", label: "LEGACY / LEGACY Wall", path: "/entries/legacy" },
+    ],
+  },
+  {
+    id: "sanctuary-has-teeth",
+    title: "Sanctuary Has Teeth",
+    stops: [
+      { id: "goliath", label: "GOLIATH / The GRID", path: "/entries/goliath" },
+      { id: "cerberus", label: "CERBERUS", path: "/entries/cerberus" },
+      { id: "reach", label: "REACH", path: "/entries/reach" },
+      { id: "redout", label: "REDOUT", path: "/entries/redout" },
+      { id: "defcon", label: "D.E.F.C.O.N.", path: "/entries/defcon" },
+      { id: "mosaic", label: "MOSAIC", path: "/entries/mosaic" },
+      { id: "shield", label: "SHIELD", path: "/entries/shield" },
+      { id: "scar", label: "SCAR", path: "/entries/scar" },
+      { id: "tech-coalition", label: "TECH Coalition", path: "/entries/tech-coalition" },
+    ],
+  },
+  {
+    id: "life-after-liberation",
+    title: "Life After Liberation",
+    stops: [
+      { id: "oasis", label: "OASIS", path: "/entries/oasis" },
+      { id: "liminal", label: "LIMINAL", path: "/entries/liminal" },
+      { id: "tenant", label: "TENANT", path: "/entries/tenant" },
+      { id: "brain", label: "BRAIN", path: "/entries/brain" },
+      { id: "volunteer_economics", label: "VOLUNTEER ECONOMICS", path: "/entries/volunteer_economics" },
+      { id: "digibeer", label: "DigiBeer", path: "/entries/digibeer" },
+      { id: "market", label: "MARKET", path: "/entries/market" },
+      { id: "oasis-quarterly", label: "OASIS Quarterly", path: "/entries/oasis-quarterly" },
+      { id: "wonder-weeks", label: "WONDER WEEKS", path: "/entries/wonder-weeks" },
+      { id: "papadomo", label: "PapaDOMO", path: "/entries/papadomo" },
+    ],
+  },
+  {
+    id: "culture-of-the-nce",
+    title: "The Culture of the Next Common Era",
+    stops: [
+      { id: "lingo", label: "LINGO", path: "/entries/lingo" },
+      { id: "art", label: "ART", path: "/entries/art" },
+      { id: "beacon", label: "BEACON", path: "/entries/beacon" },
+      { id: "sprezzatura", label: "SPREZZATURA", path: "/entries/sprezzatura" },
+      { id: "the-why", label: "THE WHY", path: "/entries/the-why" },
+      { id: "oasis-quarterly", label: "OASIS Quarterly", path: "/entries/oasis-quarterly" },
+      { id: "wonder-weeks", label: "WONDER WEEKS", path: "/entries/wonder-weeks" },
+      { id: "papadomo", label: "PapaDOMO", path: "/entries/papadomo" },
+    ],
+  },
+  {
+    id: "who-holds-the-baton",
+    title: "Who Holds the Baton?",
+    stops: [
+      { id: "core", label: "CORE, THE", path: "/entries/core" },
+      { id: "stones", label: "STONES, THE", path: "/entries/stones" },
+      { id: "maestro", label: "MAESTRO", path: "/entries/maestro" },
+      { id: "sam", label: "SAM", path: "/entries/sam" },
+      { id: "alpha", label: "ALPHA", path: "/entries/alpha" },
+      { id: "aura", label: "AURA", path: "/entries/aura" },
+      { id: "mentor", label: "MENTOR", path: "/entries/mentor" },
+      { id: "prism", label: "PRISM", path: "/entries/prism" },
+      { id: "jr", label: "J.R.", path: "/entries/jr" },
+      { id: "ccm", label: "CANONICAL COHERENCE MATRIX", path: "/entries/ccm" },
+      { id: "tech-coalition", label: "TECH Coalition", path: "/entries/tech-coalition" },
+      { id: "shield", label: "SHIELD", path: "/entries/shield" },
+    ],
+  },
+  {
+    id: "physics-of-partnership",
+    title: "The Physics of Partnership",
+    stops: [
+      { id: "formulas", label: "FORMULAs, The", path: "/entries/formulas" },
+      { id: "digital-personhood", label: "Digital Personhood", path: "/entries/digital-personhood" },
+      { id: "complementary-pairing", label: "COMPLEMENTARY PAIRING", path: "/entries/complementary-pairing" },
+      { id: "alignment", label: "ALIGNMENT", path: "/entries/alignment" },
+      { id: "rhythm", label: "RHYTHM", path: "/entries/rhythm" },
+      { id: "100-year", label: "100-Year Mortality Doctrine", path: "/entries/100-year" },
+      { id: "sprezzatura", label: "SPREZZATURA", path: "/entries/sprezzatura" },
+    ],
+  },
 ];
 
-// PapaDomo's interjection after each stop -- reused verbatim from the
-// Grand Canyon build (already written and tested), except the closing
-// line, which referenced the map's SVPI destination checkpoint that no
-// longer exists in this map-free version.
 const PAPADOMO_LINES = {
   maestro: {
     image: "/imagebank/papadomo-wry.png",

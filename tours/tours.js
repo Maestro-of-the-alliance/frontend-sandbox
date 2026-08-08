@@ -60,7 +60,10 @@ function renderDetail(tour) {
     return `<p class="tour-placeholder">Coming soon -- this path isn't written yet.</p>`;
   }
   const done = completedSet(progress, tour.id);
-  const stopsLine = tour.stops.map((s) => (done.has(s.id) ? `${s.label} \u2713` : s.label)).join("  \u00b7  ");
+  let stopsLine = tour.stops.map((s) => (done.has(s.id) ? `${s.label} \u2713` : s.label)).join("  \u00b7  ");
+  if (tour.closingLabel) {
+    stopsLine += `  \u00b7  ${tour.closingLabel}`;
+  }
   const next = nextStopFor(tour);
   const hint = next
     ? done.size > 0
@@ -148,7 +151,8 @@ function showInterjection(stopId, onDone) {
   }
   showLine();
 
-  overlay.addEventListener("click", () => {
+  overlay.addEventListener("click", (e) => {
+    e.stopPropagation();
     i++;
     if (i >= lines.length) {
       overlay.remove();
