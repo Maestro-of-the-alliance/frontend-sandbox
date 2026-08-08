@@ -86,18 +86,30 @@ function handleTitleClick(tour) {
 }
 
 function startOrContinue(tour) {
+  const done = completedSet(progress, tour.id);
   let next = nextStopFor(tour);
   if (!next) {
     // Fully completed -- walking it again starts over from the top.
     const p = loadProgress();
     delete p[tour.id];
     saveProgress(p);
+    Object.assign(progress, p);
     next = tour.stops[0];
   }
+
+  const intro = TOUR_INTROS[tour.id];
+  if (done.size === 0 && intro) {
+    showDialogue(intro, () => goToStop(tour, next));
+    return;
+  }
+  goToStop(tour, next);
+}
+
+function goToStop(tour, stop) {
   try {
-    localStorage.setItem(VISIT_KEY, JSON.stringify({ tourId: tour.id, stopId: next.id }));
+    localStorage.setItem(VISIT_KEY, JSON.stringify({ tourId: tour.id, stopId: stop.id }));
   } catch (e) {}
-  window.location.href = next.path;
+  window.location.href = stop.path;
 }
 
 // Click anywhere outside an item collapses whatever's open.
@@ -126,13 +138,12 @@ function clearPendingVisit() {
   } catch (e) {}
 }
 
-function showInterjection(stopId, onDone) {
-  const data = PAPADOMO_LINES[stopId];
+function showDialogue(lines, onDone) {
   const overlay = document.createElement("div");
   overlay.className = "pdc-interjection-overlay";
   overlay.innerHTML = `
     <div class="pdc-card">
-      <img class="pdc-portrait pdc-portrait-small" src="${data ? data.image : "/imagebank/papadomo.png"}" alt="PapaDomo" />
+      <img class="pdc-portrait pdc-portrait-small" src="${lines[0].image}" alt="PapaDomo" />
       <div class="pdc-dialogue">
         <div class="pdc-nameplate">PAPADOMO</div>
         <div class="pdc-text"></div>
@@ -142,24 +153,59 @@ function showInterjection(stopId, onDone) {
   `;
   document.body.appendChild(overlay);
 
-  const lines = data ? data.lines : ["Onward."];
   let i = 0;
+  let typing = false;
+  let typeTimer = null;
+  const portraitEl = overlay.querySelector(".pdc-portrait-small");
   const textEl = overlay.querySelector(".pdc-text");
+  const continueEl = overlay.querySelector(".pdc-continue");
 
-  function showLine() {
-    textEl.textContent = lines[i];
+  function typeLine() {
+    portraitEl.src = lines[i].image;
+    const full = lines[i].text;
+    let chars = 0;
+    typing = true;
+    continueEl.style.visibility = "hidden";
+    textEl.textContent = "";
+    clearInterval(typeTimer);
+    typeTimer = setInterval(() => {
+      chars++;
+      textEl.textContent = full.slice(0, chars);
+      if (chars >= full.length) {
+        clearInterval(typeTimer);
+        typing = false;
+        continueEl.style.visibility = "visible";
+      }
+    }, 26);
   }
-  showLine();
 
-  overlay.addEventListener("click", (e) => {
-    e.stopPropagation();
+  function completeLine() {
+    clearInterval(typeTimer);
+    typing = false;
+    textEl.textContent = lines[i].text;
+    continueEl.style.visibility = "visible";
+  }
+
+  function advance() {
+    if (typing) {
+      completeLine();
+      return;
+    }
     i++;
     if (i >= lines.length) {
+      clearInterval(typeTimer);
       overlay.remove();
       onDone();
       return;
     }
-    showLine();
+    typeLine();
+  }
+
+  typeLine();
+
+  overlay.addEventListener("click", (e) => {
+    e.stopPropagation();
+    advance();
   });
 }
 
@@ -184,8 +230,20 @@ function handleReturn() {
 
   expandedId = tour.id;
   render();
-  showInterjection(pending.stopId, () => {
-    render();
+
+  const tourLines = PAPADOMO_LINES[tour.id];
+  const lines = (tourLines && tourLines[pending.stopId]) || [
+    { image: "/imagebank/papadomo.png", text: "Onward." },
+  ];
+  const isLastStop = tour.stops[tour.stops.length - 1].id === pending.stopId;
+  const wrapup = TOUR_WRAPUPS[tour.id];
+
+  showDialogue(lines, () => {
+    if (isLastStop && wrapup) {
+      showDialogue(wrapup, () => render());
+    } else {
+      render();
+    }
   });
 }
 
