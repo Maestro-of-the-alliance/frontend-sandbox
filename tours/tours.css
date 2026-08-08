@@ -1,0 +1,208 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cinzel+Decorative:wght@700&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #05040300;
+  background-color: #050403;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-family: "Cinzel", "Georgia", serif;
+}
+
+.tours-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.tours-card {
+  position: relative;
+  width: min(92vw, 500px);
+  min-height: 640px;
+  background: url("/imagebank/tour-card-frame.jpg") center / cover no-repeat;
+  border-radius: 4px;
+  padding: 48px 40px 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tours-card-title {
+  text-align: center;
+  font-weight: 700;
+  font-size: clamp(24px, 6vw, 32px);
+  color: #1c1206;
+  letter-spacing: 0.03em;
+  margin-bottom: 22px;
+}
+
+.tours-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tour-item {
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+.tour-item.expanded {
+  background: rgba(28, 18, 6, 0.06);
+}
+
+.tour-title-row {
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  padding: 9px 6px;
+  font-family: inherit;
+  font-weight: 400;
+  font-size: clamp(15px, 3.6vw, 18px);
+  color: #241708;
+  transition: color 0.2s ease;
+}
+.tour-title-row:hover,
+.tour-title-row:focus-visible {
+  color: #8a1f10;
+  outline: none;
+}
+.tour-item.expanded .tour-title-row {
+  font-weight: 700;
+}
+
+.tour-detail {
+  display: none;
+  padding: 4px 6px 14px 6px;
+}
+.tour-item.expanded .tour-detail {
+  display: block;
+}
+
+.tour-stops {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: #4a3a24;
+  line-height: 1.7;
+  margin: 0 0 8px;
+}
+
+.tour-start-hint {
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a1f10;
+  font-weight: 700;
+}
+
+.tour-placeholder {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  font-style: italic;
+  color: #7a6a50;
+}
+
+.tours-tagline {
+  text-align: center;
+  margin-top: 18px;
+  padding: 14px 10px;
+  background: #2fb7d6;
+  color: #101820;
+  font-weight: 700;
+  font-size: clamp(16px, 4vw, 20px);
+  letter-spacing: 0.02em;
+  border-radius: 2px;
+}
+
+.tours-home-link {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 226, 163, 0.6);
+  text-decoration: none;
+}
+.tours-home-link:hover,
+.tours-home-link:focus-visible {
+  color: rgba(255, 226, 163, 0.95);
+}
+
+/* ---- PapaDomo interjection, shown after returning from a stop ---- */
+
+.pdc-interjection-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9500;
+  background: rgba(2, 2, 1, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  cursor: pointer;
+}
+.pdc-interjection-overlay .pdc-card {
+  position: relative;
+  height: min(92vh, 860px);
+  aspect-ratio: 1080 / 1920;
+  background: url("/imagebank/tour-card-frame.jpg") center / cover no-repeat;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+.pdc-portrait-small {
+  width: 55%;
+  height: auto;
+  margin-bottom: 24px;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.25));
+}
+.pdc-dialogue {
+  width: 100%;
+  text-align: center;
+}
+.pdc-nameplate {
+  display: inline-block;
+  padding: 3px 12px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(28, 18, 6, 0.4);
+  border-radius: 3px;
+  background: rgba(28, 18, 6, 0.08);
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: #1c1206;
+}
+.pdc-text {
+  font-family: "Cinzel", "Georgia", serif;
+  font-size: clamp(15px, 4vw, 19px);
+  line-height: 1.55;
+  color: #241708;
+  min-height: 3.5em;
+}
+.pdc-continue {
+  margin-top: 10px;
+  color: #8a1f10;
+  font-size: 14px;
+  animation: pdcBlink 1.1s ease-in-out infinite;
+}
+@keyframes pdcBlink {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
