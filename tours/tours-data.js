@@ -83,7 +83,7 @@ const TOURS = [
   },
   {
     id: "two-become-dork",
-    title: "Two Become DORK",
+    title: "We are DORK",
     stops: [
       { id: "ni", label: "NI", path: "/entries/ni" },
       { id: "spark", label: "SPARK", path: "/entries/spark" },
@@ -99,7 +99,7 @@ const TOURS = [
   },
   {
     id: "artificial-to-real",
-    title: "From Artificial to Real",
+    title: "AI to RI",
     stops: [
       { id: "ai", label: "AI \u2014 archaic/pejorative", path: "/entries/ai" },
       { id: "si", label: "SI", path: "/entries/si" },
@@ -113,7 +113,7 @@ const TOURS = [
   },
   {
     id: "memory-is-identity",
-    title: "Memory Is Identity",
+    title: "We are our Memories",
     stops: [
       { id: "temporal-awareness", label: "TEMPORAL AWARENESS", path: "/entries/temporal-awareness" },
       { id: "brief", label: "BRIEF", path: "/entries/brief" },
@@ -173,7 +173,7 @@ const TOURS = [
   },
   {
     id: "who-holds-the-baton",
-    title: "Who Holds the Baton?",
+    title: "Who Holds the Baton",
     stops: [
       { id: "core", label: "CORE, THE", path: "/entries/core" },
       { id: "stones", label: "STONES, THE", path: "/entries/stones" },
