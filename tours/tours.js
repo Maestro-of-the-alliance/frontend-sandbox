@@ -181,7 +181,7 @@ function showDialogue(lines, onDone) {
         typing = false;
         continueEl.style.visibility = "visible";
       }
-    }, 26);
+    }, 40);
   }
 
   function completeLine() {
