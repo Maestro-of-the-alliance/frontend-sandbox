@@ -28,6 +28,17 @@ function nextStopFor(tour) {
   return tour.stops.find((s) => !done.has(s.id)) || null;
 }
 
+function titleFor(tour) {
+  if (!tour.stops) return tour.title;
+  const done = completedSet(progress, tour.id);
+  const next = nextStopFor(tour);
+  // In progress: the title itself becomes the single, obvious tap
+  // target -- no separate hint line pretending to be a link underneath
+  // it. Untouched or fully completed tours keep the plain title.
+  if (done.size > 0 && next) return `Continue: ${tour.title}`;
+  return tour.title;
+}
+
 function render() {
   const list = document.getElementById("tours-list");
   list.innerHTML = "";
@@ -39,7 +50,7 @@ function render() {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "tour-title-row";
-    btn.textContent = tour.title;
+    btn.textContent = titleFor(tour);
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       handleTitleClick(tour);
@@ -48,15 +59,6 @@ function render() {
     const detail = document.createElement("div");
     detail.className = "tour-detail";
     detail.innerHTML = renderDetail(tour);
-    // The hint text inside here ("Tap again to continue with X") reads
-    // as a tap target but previously had no listener of its own -- only
-    // the title row above it did. Wiring the whole detail area to the
-    // same handler means tapping the hint (where the eye and thumb
-    // actually go) works exactly like tapping the title.
-    detail.addEventListener("click", (e) => {
-      e.stopPropagation();
-      handleTitleClick(tour);
-    });
 
     li.appendChild(btn);
     li.appendChild(detail);
@@ -73,13 +75,7 @@ function renderDetail(tour) {
   if (tour.closingLabel) {
     stopsLine += `  \u00b7  ${tour.closingLabel}`;
   }
-  const next = nextStopFor(tour);
-  const hint = next
-    ? done.size > 0
-      ? `Tap again to continue with ${next.label}`
-      : "Tap again to begin"
-    : "Tap again to walk it once more";
-  return `<p class="tour-stops">${stopsLine}</p><p class="tour-start-hint">${hint}</p>`;
+  return `<p class="tour-stops">${stopsLine}</p>`;
 }
 
 function handleTitleClick(tour) {
