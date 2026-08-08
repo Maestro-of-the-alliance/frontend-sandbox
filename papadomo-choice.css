@@ -1,8 +1,11 @@
-/* PapaDomo book-choice overlay -- shared between landing.html's "Tours
-   Available" button and papadomo.html's post-orientation moment. Plays
-   the scroll-unroll/PapaDomo video, pauses it right at the blank open
-   book, and overlays two clickable choices directly onto the two page
-   halves: ENTER THE TOUR (left) and EXIT TO HOME (right). */
+/* PapaDomo choice card -- shared between landing.html's "Tours
+   Available" button and THE SYSTEM's sun-click. Static illustrated
+   card (Maestro's parchment-frame artwork), not video -- replaces the
+   earlier video-reveal version, which cost real time to keep stable
+   (pause timing drift, a stuck-choice regression, a still-unresolved
+   Chrome-only sizing issue) for a payoff no bigger than what a static
+   card gives instantly with none of that fragility. Same public API
+   (window.PapaDomoChoice.open), so nothing calling it needed to change. */
 
 #papadomo-choice-overlay {
   display: none;
@@ -12,64 +15,95 @@
   background: rgba(2, 2, 1, 0.94);
   align-items: center;
   justify-content: center;
+  padding: 20px;
 }
 #papadomo-choice-overlay.active {
   display: flex;
 }
 
-.pdc-frame {
+.pdc-card {
   position: relative;
-  height: 92vh;
-  max-height: 960px;
+  height: min(92vh, 860px);
   aspect-ratio: 1080 / 1920;
+  background: url("/imagebank/tour-card-frame.jpg") center / cover no-repeat;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
-.pdc-video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.pdc-choice {
+.pdc-title {
   position: absolute;
-  top: 32%;
-  bottom: 33%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  top: 6%;
+  left: 8%;
+  right: 8%;
   text-align: center;
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-  padding: 0 4%;
-}
-.pdc-choice.visible {
-  opacity: 1;
-  pointer-events: auto;
-}
-.pdc-choice-left {
-  left: 4%;
-  width: 42%;
-}
-.pdc-choice-right {
-  left: 52%;
-  width: 42%;
-}
-.pdc-choice-label {
   font-family: "Cinzel", "Georgia", serif;
   font-weight: 700;
-  font-size: clamp(11px, 2.4vw, 16px);
-  letter-spacing: 0.05em;
-  color: #5a3d1c;
+  color: #1c1206;
+  line-height: 1.15;
+}
+.pdc-title .pdc-title-main {
+  display: block;
+  font-size: clamp(22px, 6.5vw, 40px);
+  letter-spacing: 0.03em;
+}
+.pdc-title .pdc-title-sub {
+  display: block;
+  margin-top: 4px;
+  font-size: clamp(13px, 3.2vw, 19px);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+.pdc-title .pdc-title-name {
+  display: block;
+  margin-top: 4px;
+  font-family: "Cinzel Decorative", "Cinzel", serif;
+  font-size: clamp(24px, 7vw, 44px);
+  font-style: italic;
+}
+
+.pdc-portrait {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 62%;
+  height: auto;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.25));
+}
+
+.pdc-choices {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.pdc-choice {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  font-size: clamp(13px, 3.6vw, 19px);
+  letter-spacing: 0.04em;
+  color: #1c1206;
   text-transform: uppercase;
-  line-height: 1.35;
+  padding: 6px 4px;
   transition: color 0.2s ease, transform 0.2s ease;
 }
-.pdc-choice:hover .pdc-choice-label,
-.pdc-choice:focus-visible .pdc-choice-label {
+.pdc-choice:hover,
+.pdc-choice:focus-visible {
   color: #8a1f10;
   transform: scale(1.06);
+  outline: none;
+}
+.pdc-choice-no {
+  text-align: left;
+}
+.pdc-choice-yes {
+  text-align: right;
 }
 
 .pdc-close {
@@ -94,39 +128,7 @@
   outline: none;
 }
 
-.pdc-skip {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 9600;
-  font-family: Arial, sans-serif;
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(255, 226, 163, 0.55);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 6px 10px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-}
-.pdc-skip.visible {
-  opacity: 1;
-  pointer-events: auto;
-}
-.pdc-skip:hover,
-.pdc-skip:focus-visible {
-  color: rgba(255, 226, 163, 0.9);
-  outline: none;
-}
-
 @media (max-width: 600px) {
-  .pdc-frame {
-    height: 88vh;
-  }
   .pdc-close {
     top: 12px;
     right: 12px;
