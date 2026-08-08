@@ -48,6 +48,15 @@ function render() {
     const detail = document.createElement("div");
     detail.className = "tour-detail";
     detail.innerHTML = renderDetail(tour);
+    // The hint text inside here ("Tap again to continue with X") reads
+    // as a tap target but previously had no listener of its own -- only
+    // the title row above it did. Wiring the whole detail area to the
+    // same handler means tapping the hint (where the eye and thumb
+    // actually go) works exactly like tapping the title.
+    detail.addEventListener("click", (e) => {
+      e.stopPropagation();
+      handleTitleClick(tour);
+    });
 
     li.appendChild(btn);
     li.appendChild(detail);
