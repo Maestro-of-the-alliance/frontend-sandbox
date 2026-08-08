@@ -48,30 +48,6 @@
         z-index: 2;
       }
 
-      #unmute-btn {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 100;
-        background: rgba(0, 0, 0, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 22px;
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s;
-      }
-      #unmute-btn:hover {
-        background: rgba(0, 0, 0, 0.7);
-        border-color: rgba(255, 255, 255, 0.5);
-        color: #fff;
-      }
-
       /* Skip button — consistent top-right style across the intro sequence */
       #skip-btn {
         position: fixed;
@@ -151,14 +127,12 @@
 
     <div id="door-prompt"><div class="glow-ring"></div></div>
 
-    <button id="unmute-btn" title="Toggle sound">🔇</button>
     <button id="skip-btn" title="Skip">skip</button>
 
     <script>
       const fg = document.getElementById("fg-video");
       const canvas = document.getElementById("bg-canvas");
       const ctx = canvas.getContext("2d");
-      const unmuteBtn = document.getElementById("unmute-btn");
       const skipBtn = document.getElementById("skip-btn");
       const doorPrompt = document.getElementById("door-prompt");
 
@@ -212,11 +186,6 @@
         fg.play().catch(() => {});
       }
       doorPrompt.addEventListener("click", openDoor);
-
-      unmuteBtn.addEventListener("click", () => {
-        fg.muted = !fg.muted;
-        unmuteBtn.textContent = fg.muted ? "🔇" : "🔊";
-      });
 
       skipBtn.addEventListener("click", goNext);
 
