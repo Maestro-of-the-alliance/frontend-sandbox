@@ -89,7 +89,8 @@
       #door-prompt.active {
         display: flex;
       }
-      #door-prompt .glow-ring {
+      #door-prompt .glow-ring,
+      #start-gate .glow-ring {
         width: 110px;
         height: 110px;
         border-radius: 50%;
@@ -110,6 +111,25 @@
           opacity: 0.9;
         }
       }
+
+      /* Start gate — same glow-ring language as the door prompt below,
+         shown before anything plays. Browsers won't allow audio to
+         autoplay without a real user gesture, so this tap both starts
+         the video AND unmutes it in one motion, replacing the old
+         floating mute button with a single clean beginning. */
+      #start-gate {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background: #000;
+      }
+      #start-gate.hidden {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -118,13 +138,12 @@
       <video
         id="fg-video"
         src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/office.mp4"
-        autoplay
-        muted
         playsinline
         preload="auto"
       ></video>
     </div>
 
+    <div id="start-gate"><div class="glow-ring"></div></div>
     <div id="door-prompt"><div class="glow-ring"></div></div>
 
     <button id="skip-btn" title="Skip">skip</button>
@@ -135,6 +154,7 @@
       const ctx = canvas.getContext("2d");
       const skipBtn = document.getElementById("skip-btn");
       const doorPrompt = document.getElementById("door-prompt");
+      const startGate = document.getElementById("start-gate");
 
       // Timestamp (seconds) where the door reaches full frame.
       // Estimated from the source cut — nudge this after watching it live.
@@ -186,6 +206,18 @@
         fg.play().catch(() => {});
       }
       doorPrompt.addEventListener("click", openDoor);
+
+      function beginPlayback() {
+        startGate.classList.add("hidden");
+        fg.muted = false;
+        fg.play().catch(() => {
+          // Some browsers still refuse sound on this exact gesture --
+          // fall back to a muted start rather than a stuck black screen.
+          fg.muted = true;
+          fg.play().catch(() => {});
+        });
+      }
+      startGate.addEventListener("click", beginPlayback);
 
       skipBtn.addEventListener("click", goNext);
 
