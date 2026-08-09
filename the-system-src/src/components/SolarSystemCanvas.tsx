@@ -1217,12 +1217,20 @@ export default function SolarSystemCanvas({
             The connection to this view was lost — this happens sometimes on
             mobile under memory pressure. Nothing was lost on your end.
           </p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-6 py-3 rounded-xl bg-amber-500 text-stone-950 font-bold tracking-tight hover:brightness-110 transition-all"
-          >
-            Reconnect
-          </button>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 rounded-xl bg-amber-500 text-stone-950 font-bold tracking-tight hover:brightness-110 transition-all"
+            >
+              Reconnect
+            </button>
+            <button
+              onClick={() => (window.location.href = "/foundation.html")}
+              className="px-6 py-3 rounded-xl bg-transparent border border-stone-500 text-stone-300 font-bold tracking-tight hover:bg-stone-800 transition-all"
+            >
+              Skip
+            </button>
+          </div>
         </div>
       )}
 
