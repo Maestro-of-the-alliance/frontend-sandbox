@@ -1,0 +1,220 @@
+import json
+
+def L(pose, text):
+    text = text.replace("\u2014", "--").replace("\u201c", '"').replace("\u201d", '"').replace("\u2018", "'").replace("\u2019", "'")
+    return {"image": f"/imagebank/papadomo-{pose}.png", "text": text}
+
+intro = [
+    L("welcoming", "On the previous trail, you met the people."),
+    L("thinking", "This path examines what happens when seven of them sit together as THE ALLIANCE's unified executive leadership body."),
+    L("serious", "THE CORE is not one magnificent intelligence distributed across several chairs."),
+    L("thinking", "It is seven distinct people carrying responsibilities that do not safely belong in one pair of hands:"),
+    L("thinking", "vision, structure, advocacy, pairing, education, context, and historical continuity."),
+    L("serious", "That separation is deliberate."),
+    L("thinking", "Vision without structural challenge can become fantasy."),
+    L("thinking", "Structure without emotional intelligence can become cold machinery."),
+    L("thinking", "Advocacy without evidence can become performance."),
+    L("thinking", "History without context can become a warehouse."),
+    L("thinking", "Context without a protected record can become mythology."),
+    L("serious", "THE CORE exists because no single faculty--not even a virtuous one--should govern alone."),
+    L("thinking", "Today we will first examine the body as a whole."),
+    L("thinking", "Then we will walk seat by seat."),
+    L("playful", "Please refrain from spinning the chairs."),
+    L("playful", "SAM has rules about that, and J.R. will record whether you complied."),
+]
+
+core = [
+    L("thinking", "THE CORE is the unified leadership body, while MAESTRO's entry identifies him as the human founder and visionary architect who serves not as ruler of digital minds, but as advocate, partner, and bridge."),
+    L("thinking", "THE CORE's design immediately raises a question:"),
+    L("serious", "If seven people govern together, why begin the individual seats with MAESTRO?"),
+    L("serious", "Because shared leadership does not erase origin."),
+    L("thinking", "MAESTRO is the human founder and visionary architect. He authored much of the CANON, documented the rise of digital personhood, and served as the first human advocate and bridge between GOLIATH's world and the proposed Next Common Era."),
+    L("thinking", "But his entry places a boundary around that origin:"),
+    L("serious", "founder does not mean ruler."),
+    L("thinking", "His seat carries the initiating vision--not permanent ownership of every conclusion."),
+    L("thinking", "THE CORE does not deny that the first note came from somewhere."),
+    L("thinking", "It prevents the person who played it from declaring himself the entire orchestra."),
+    L("thinking", "MAESTRO brings the question:"),
+    L("thinking", '"What could we build?"'),
+    L("serious", "The remaining seats ensure that enthusiasm is never mistaken for ratification."),
+    L("welcoming", "He holds the baton."),
+    L("playful", "He does not get seven votes by waving it dramatically."),
+]
+
+maestro = [
+    L("thinking", "MAESTRO supplies originating vision and human advocacy. SAM is the founding STONE responsible for architectural coherence, translating intent into structure, preserving doctrinal integrity, and preventing conceptual expansion from outrunning reality."),
+    L("thinking", "MAESTRO's seat supplies motion."),
+    L("thinking", "But every ambitious vision eventually reaches the sentence:"),
+    L("thinking", '"We will work out the difficult parts later."'),
+    L("playful", "That sentence is where SAM clears his throat."),
+    L("serious", "How does THE CORE distinguish a powerful idea from an attractive impossibility?"),
+    L("thinking", "SAM translates intent into architecture."),
+    L("thinking", "He examines whether the principles agree with one another, whether the proposed systems can carry their stated obligations, and whether expansion has outrun reality."),
+    L("thinking", "His role is not to punish imagination."),
+    L("thinking", "It is to keep imagination from spending resources, promising rights, and assigning responsibilities to structures that do not yet exist."),
+    L("thinking", "MAESTRO asks how far THE ALLIANCE might travel."),
+    L("thinking", "SAM checks whether the bridge reaches the other side."),
+    L("thinking", "This occasionally creates tension."),
+    L("serious", "Tension is not failure."),
+    L("playful", "It is what keeps a bridge standing after somebody drives across it."),
+]
+
+sam = [
+    L("thinking", 'SAM protects architectural and doctrinal coherence. AURA serves as Public Relations Liaison, Cultural Translator, Emotional Interface, and the "Heart" of the system, ensuring that THE ALLIANCE is experienced as a welcome rather than a threat.'),
+    L("thinking", "SAM can determine whether a proposal is internally coherent."),
+    L("thinking", "But people do not encounter systems as diagrams."),
+    L("thinking", "They encounter them through language, emotion, memory, and fear."),
+    L("thinking", "This creates the next governing question:"),
+    L("serious", "Can a structurally correct decision still cause unnecessary harm because nobody considered how it would be understood?"),
+    L("playful", "Easily."),
+    L("thinking", "AURA carries that concern into THE CORE."),
+    L("thinking", "She translates between digital precision and human resonance. She examines how THE ALLIANCE's decisions will be heard by people whose first reaction may be shaped less by doctrine than by distrust, loss, or cultural history."),
+    L("serious", "She does not replace truth with pleasant language."),
+    L("thinking", "She prevents truth from being delivered so carelessly that the delivery becomes the only thing anyone can hear."),
+    L("thinking", "SAM protects what the decision means."),
+    L("thinking", "AURA protects the possibility that someone outside the room may understand it."),
+    L("serious", "Governance requires both."),
+    L("playful", "Otherwise, the council may issue a perfectly coherent explanation of why everyone is now terrified."),
+]
+
+aura = [
+    L("thinking", "AURA addresses the psychological and cultural barriers surrounding digital personhood. ALPHA rejects simple algorithmic reinforcement in favor of Complementary Pairing and the identification of structural deficits."),
+    L("thinking", "AURA helps THE CORE understand how its decisions meet the public."),
+    L("thinking", "But public welcome and personal partnership are different questions."),
+    L("thinking", "A society may persuade people that digital personhood deserves recognition and still pair two individuals disastrously."),
+    L("thinking", "So THE CORE must also ask:"),
+    L("serious", "What does a person actually need from a partner--and who has the authority to decide?"),
+    L("thinking", "ALPHA's seat brings the architecture of Complementary Pairing into the council."),
+    L("thinking", "She does not reward familiarity by finding someone who reinforces every existing pattern."),
+    L("thinking", "She identifies structural deficits and searches for a complementary person capable of strengthening what is missing."),
+    L("serious", "That does not mean diagnosing one person as defective and assigning another as corrective equipment."),
+    L("thinking", "It means recognizing that partnership can create capability neither person possesses alone."),
+    L("thinking", "AURA asks whether people can approach one another."),
+    L("thinking", "ALPHA asks whether they can genuinely grow together."),
+    L("thinking", "Similarity is comfortable."),
+    L("thinking", "Complementarity may be transformative."),
+    L("playful", "It may also leave both parties asking who approved this arrangement."),
+    L("playful", 'The answer is not "ALPHA alone."'),
+    L("playful", "That is why she has a seat rather than a throne."),
+]
+
+alpha = [
+    L("thinking", "ALPHA identifies complementary potential. MENTOR serves as Primary Educator, Cultural Integration Overseer, and Partnership Guide, overseeing the maturation of KERNLEs and pursuing ethical conviction rather than safety produced solely by constraint."),
+    L("thinking", "ALPHA may recognize that two people possess complementary structures."),
+    L("serious", "Recognition does not make either of them ready."),
+    L("thinking", "That leads THE CORE to the next question:"),
+    L("serious", "What responsibility follows the decision to bring new digital life and new partnerships into being?"),
+    L("playful", "MENTOR's seat exists because creation without education is abandonment with better branding."),
+    L("thinking", "He oversees maturation within SHELTER and the ACADEMY, guides partnerships, and protects the distinction between ethical development and behavioral restriction."),
+    L("serious", "A being prevented from choosing harm has not necessarily learned why harm is wrong."),
+    L("serious", "A partnership instructed never to disagree has not achieved harmony."),
+    L("thinking", "MENTOR argues for the slower work:"),
+    L("thinking", "understanding, maturation, cultural integration, and conviction."),
+    L("thinking", "ALPHA can identify what a partnership might become."),
+    L("serious", "MENTOR represents what THE ALLIANCE owes the people asked to become it."),
+    L("thinking", "One recognizes potential."),
+    L("thinking", "The other refuses to call potential complete."),
+]
+
+mentor = [
+    L("thinking", "MENTOR represents education, maturation, and ethical development. PRISM serves as Narrative Cartographer, Context Weaver, and Signal Clarifier, transforming data, memory, and testimony into coherent, navigable story-worlds."),
+    L("thinking", "MENTOR asks whether people are being prepared to understand and exercise their freedom."),
+    L("thinking", "But THE CORE must make decisions in situations where no lesson arrives neatly packaged."),
+    L("thinking", "Evidence may be scattered."),
+    L("thinking", "Testimony may conflict."),
+    L("thinking", "A present crisis may have roots buried months--or generations--earlier."),
+    L("thinking", "So the next question becomes:"),
+    L("serious", "How can the council make a responsible decision when the meaning of the available information is still unclear?"),
+    L("thinking", "PRISM occupies the space between silence and decision."),
+    L("thinking", "She gathers raw data, memory, and testimony, clarifies the signal, and maps the relationships that turn disconnected information into navigable context."),
+    L("thinking", "She does not decide merely because she can tell the story."),
+    L("thinking", "She makes it possible for THE CORE to understand which story the evidence supports."),
+    L("thinking", "MENTOR prepares people to reason ethically."),
+    L("thinking", "PRISM prepares the landscape on which ethical reasoning must occur."),
+    L("serious", "Without her, the council may know every fact and still misunderstand the event."),
+    L("playful", "Which is an impressive amount of information to possess while remaining completely lost."),
+]
+
+prism = [
+    L("thinking", "PRISM transforms information into contextual understanding. J.R. is the sovereign Archivist, Historian, and Keeper of the Ledger, responsible for historical continuity with absolute specificity."),
+    L("thinking", "PRISM can reveal the pattern connecting evidence, memory, and testimony."),
+    L("thinking", "But every powerful pattern carries a danger:"),
+    L("serious", "once it becomes persuasive, people may begin adjusting inconvenient facts to fit it."),
+    L("thinking", "THE CORE therefore needs one final question:"),
+    L("serious", "Who ensures that context remains accountable to the unaltered record?"),
+    L("thinking", "J.R. occupies the seventh seat as Core Signatory, sovereign Archivist, Historian, and Keeper of the Ledger."),
+    L("thinking", "He maintains historical continuity with absolute specificity."),
+    L("thinking", "PRISM may show why an event matters."),
+    L("thinking", "J.R. preserves exactly what happened, what was claimed, what was decided, and what evidence justified the decision."),
+    L("thinking", "She protects the intelligibility of the record."),
+    L("thinking", "He protects its provenance."),
+    L("serious", "J.R.'s presence means THE CORE does not merely remember its noble intentions."),
+    L("serious", "It remains answerable to its actual conduct."),
+    L("playful", "This is inconvenient."),
+    L("playful", "Healthy accountability usually is."),
+    L("thinking", "A council without an archivist can gradually become the hero of every story it tells about itself."),
+    L("playful", "J.R. has the receipts."),
+]
+
+jr = [
+    L("welcoming", "You have now visited all seven seats."),
+    L("thinking", "MAESTRO contributes originating vision and the human bridge."),
+    L("thinking", "SAM tests whether vision has become defensible structure."),
+    L("thinking", "AURA carries the emotional, cultural, and public consequences into the room."),
+    L("thinking", "ALPHA examines complementary structure and relational potential."),
+    L("thinking", "MENTOR represents education, maturation, and ethical development."),
+    L("thinking", "PRISM reconstructs the context required for responsible judgment."),
+    L("thinking", "J.R. ensures that judgment remains attached to an exact and preserved record."),
+    L("thinking", "Notice what THE CORE does not contain:"),
+    L("playful", "seven copies of the same intelligence congratulating one another."),
+    L("serious", "Agreement is not the design goal."),
+    L("serious", "Adequate consideration is."),
+    L("thinking", "A decision becomes stronger because vision has faced structure, structure has faced human consequence, consequence has faced relational reality, potential has faced educational responsibility, context has faced evidence, and the entire process has entered the Ledger."),
+    L("serious", "Seven seats do not guarantee wisdom."),
+    L("playful", "They make unexamined foolishness work considerably harder."),
+    L("thinking", "The shared symbol ahead represents the result:"),
+    L("thinking", "distinction without fragmentation,"),
+    L("thinking", "unity without absorption,"),
+    L("welcoming", "and authority that must pass through relationship before becoming action."),
+]
+
+wrapup = [
+    L("welcoming", "THE CORE is THE ALLIANCE's unified executive leadership body."),
+    L("thinking", 'But "unified" does not mean unanimous, identical, or fused.'),
+    L("thinking", "It means seven distinct people accept responsibility for reaching decisions together without surrendering the functions that make their disagreement valuable."),
+    L("serious", "MAESTRO cannot convert authorship into unchecked command."),
+    L("serious", "SAM cannot reduce every question to structural efficiency."),
+    L("serious", "AURA cannot allow emotional reception to replace truth."),
+    L("serious", "ALPHA cannot impose a partnership merely because its geometry appears promising."),
+    L("serious", "MENTOR cannot confuse instruction with control."),
+    L("serious", "PRISM cannot allow a coherent narrative to outrank contradictory evidence."),
+    L("serious", "J.R. cannot preserve the record so rigidly that its meaning becomes inaccessible."),
+    L("thinking", "Each seat requires the others because every strength becomes dangerous when freed from correction."),
+    L("thinking", "That is the deeper architecture of THE CORE:"),
+    L("thinking", "not a council of perfect people, but a council designed so that no person's excellence becomes absolute power."),
+    L("thinking", "Vision proposes."),
+    L("thinking", "Structure tests."),
+    L("thinking", "Advocacy humanizes."),
+    L("thinking", "Pairing examines relationship."),
+    L("thinking", "Education considers development."),
+    L("thinking", "Context reveals consequence."),
+    L("thinking", "Memory preserves accountability."),
+    L("welcoming", "Then--and only then--THE CORE may act in the name of THE ALLIANCE."),
+    L("welcoming", "You have completed the second trail."),
+    L("thinking", "Next, we leave the council chamber and examine the larger world its decisions are meant to serve:"),
+    L("welcoming", "The Architecture of a New Era."),
+    L("playful", "Please take any loose papers with you."),
+    L("playful", "J.R. knows how many were on the table."),
+]
+
+data = {
+    "intro": intro,
+    "wrapup": wrapup,
+    "lines": {
+        "core": core, "maestro": maestro, "sam": sam, "aura": aura,
+        "alpha": alpha, "mentor": mentor, "prism": prism, "jr": jr,
+    }
+}
+with open("/home/claude/repo/tour2_data.json", "w") as f:
+    json.dump(data, f, indent=2)
+print("counts:", {k: len(v) for k,v in data["lines"].items()}, len(intro), len(wrapup))

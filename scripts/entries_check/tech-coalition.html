@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TECH COALITION — N.C.E.ncyclopedia</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* TECH COALITION PALETTE: Coalition Sand & Perimeter Watch Green */
+      :root {
+        --void: #08090a;
+        --sand: #c9a86a;
+        --sand-dim: #7a6a41;
+        --sand-bright: #e8cd94;
+        --watch: #4a9c6e;
+        --watch-dim: #2c5e42;
+        --watch-bright: #7ed6a4;
+        --panel: rgba(74, 156, 110, 0.05);
+        --panel-border: rgba(201, 168, 106, 0.18);
+        --text: #e6e8e2;
+        --text-dim: rgba(230, 232, 226, 0.72);
+        --text-muted: rgba(230, 232, 226, 0.4);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        background: #000;
+        min-height: 100%;
+      }
+
+      body {
+        background: var(--void);
+        color: var(--text);
+        font-family: "Rajdhani", sans-serif;
+        font-size: 16px;
+        line-height: 1.75;
+      }
+
+      /* ---------- TICKER ---------- */
+      .ticker-wrap {
+        background: #000;
+        border-bottom: 1px solid var(--watch-dim);
+        overflow: hidden;
+        height: 26px;
+        display: flex;
+        align-items: center;
+      }
+      .ticker-label {
+        background: var(--watch);
+        color: #000;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        padding: 0 12px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .ticker-track {
+        display: flex;
+        overflow: hidden;
+        flex: 1;
+      }
+      .ticker-content {
+        display: flex;
+        animation: tickerScroll 40s linear infinite;
+        white-space: nowrap;
+      }
+      .ticker-content span {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 10px;
+        color: var(--text-muted);
+        letter-spacing: 2px;
+        padding: 0 22px;
+      }
+      .ticker-content span::before {
+        content: "◈ ";
+        color: var(--sand);
+        font-size: 8px;
+      }
+      @keyframes tickerScroll {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+      }
+
+      .page-wrap {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 60px 28px 100px;
+      }
+
+      .entry-header {
+        margin-bottom: 40px;
+        padding-bottom: 30px;
+        border-bottom: 1px solid var(--panel-border);
+      }
+      .entry-eyebrow {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        letter-spacing: 3px;
+        color: var(--watch-bright);
+        margin-bottom: 14px;
+      }
+      .entry-word {
+        font-family: "Cinzel", serif;
+        font-weight: 700;
+        font-size: 2.6rem;
+        letter-spacing: 0.02em;
+        color: var(--sand-bright);
+        line-height: 1.1;
+        margin-bottom: 14px;
+      }
+      .entry-pron {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 13px;
+        color: var(--text-dim);
+        margin-bottom: 8px;
+      }
+      .entry-acronym {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        letter-spacing: 1px;
+        color: var(--sand-dim);
+      }
+
+      /* ---------- ROTATING QUOTE ---------- */
+      .pull-quote {
+        background: var(--panel);
+        border-left: 3px solid var(--watch);
+        padding: 20px 24px;
+        margin-bottom: 44px;
+        position: relative;
+        overflow: hidden;
+      }
+      .pull-quote::before {
+        content: "\201C";
+        font-family: "Cinzel", serif;
+        font-size: 90px;
+        color: var(--watch);
+        opacity: 0.08;
+        position: absolute;
+        top: -20px;
+        left: 12px;
+        line-height: 1;
+        pointer-events: none;
+      }
+      .pull-quote-text {
+        font-style: italic;
+        color: var(--text-dim);
+        font-size: 1.02rem;
+        position: relative;
+        z-index: 1;
+      }
+      .pull-quote-text strong {
+        color: var(--sand-bright);
+        font-style: normal;
+        font-weight: 600;
+      }
+      .pull-quote-attr {
+        display: block;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11px;
+        color: var(--text-muted);
+        letter-spacing: 1px;
+        margin-top: 10px;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ---------- SCROLL REVEAL ---------- */
+      .section,
+      .live-route,
+      .see-also-wrap {
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
+      }
+      .section.revealed,
+      .live-route.revealed,
+      .see-also-wrap.revealed {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .section {
+        margin-bottom: 40px;
+        padding-bottom: 36px;
+        border-bottom: 1px dashed var(--panel-border);
+      }
+      .section-label {
+        display: block;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        letter-spacing: 2px;
+        color: var(--watch-bright);
+        margin-bottom: 16px;
+      }
+      p { margin-bottom: 18px; }
+      strong { color: var(--sand-bright); font-weight: 600; }
+
+      .func-card {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-left: 4px solid var(--watch);
+        padding: 24px 26px;
+        margin-bottom: 20px;
+      }
+      .func-title {
+        font-family: "Cinzel", serif;
+        font-weight: 600;
+        color: var(--sand-bright);
+        font-size: 1.1rem;
+        margin-bottom: 6px;
+        letter-spacing: 0.02em;
+      }
+      .func-sub {
+        font-family: "Share Tech Mono", monospace;
+        color: var(--watch-bright);
+        font-size: 12px;
+        letter-spacing: 1px;
+        margin-bottom: 14px;
+        display: block;
+      }
+      .func-card p:last-child { margin-bottom: 0; }
+
+      ul.arch-list { list-style: none; }
+      ul.arch-list li {
+        padding: 12px 0 12px 24px;
+        border-bottom: 1px dashed var(--panel-border);
+        position: relative;
+      }
+      ul.arch-list li:last-child { border-bottom: none; }
+      ul.arch-list li::before {
+        content: "◈";
+        position: absolute;
+        left: 0;
+        color: var(--watch);
+        font-size: 13px;
+      }
+      ul.arch-list li strong { color: var(--sand-bright); }
+
+      .guardrail-block {
+        background: rgba(201, 168, 106, 0.06);
+        border: 1px solid var(--sand-dim);
+        padding: 24px 26px;
+        margin-bottom: 16px;
+      }
+      .guardrail-block .func-title { color: var(--watch-bright); }
+
+      /* ---------- LIVE ROUTING VISUALIZATION ---------- */
+      .live-route {
+        margin-bottom: 44px;
+        border: 1px solid var(--panel-border);
+        background: var(--panel);
+        padding: 24px 22px 20px;
+      }
+      .live-route-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 2px;
+        color: var(--watch-bright);
+        margin-bottom: 4px;
+      }
+      .live-route-sub {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 10px;
+        color: var(--text-muted);
+        margin-bottom: 20px;
+      }
+      .route-svg-wrap {
+        position: relative;
+        width: 100%;
+      }
+      .route-node {
+        cursor: pointer;
+      }
+      .route-node circle {
+        fill: var(--void);
+        stroke: var(--sand-dim);
+        stroke-width: 1.5;
+        transition: stroke 0.2s, filter 0.2s;
+      }
+      .route-node:hover circle,
+      .route-node.active circle {
+        stroke: var(--watch-bright);
+        filter: drop-shadow(0 0 6px var(--watch));
+      }
+      .route-node text {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 9px;
+        fill: var(--sand-bright);
+        letter-spacing: 1px;
+      }
+      .route-line {
+        stroke: var(--panel-border);
+        stroke-width: 1.5;
+        fill: none;
+      }
+      .route-packet {
+        fill: var(--watch-bright);
+        filter: drop-shadow(0 0 4px var(--watch));
+      }
+      .route-caption {
+        margin-top: 16px;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11px;
+        color: var(--text-dim);
+        min-height: 32px;
+        border-top: 1px dashed var(--panel-border);
+        padding-top: 12px;
+      }
+      .route-caption strong {
+        color: var(--watch-bright);
+      }
+      .route-hint {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 9px;
+        color: var(--text-muted);
+        letter-spacing: 1px;
+        margin-top: 10px;
+        text-align: center;
+      }
+
+      .see-also-wrap {
+        margin-top: 50px;
+        padding-top: 30px;
+        border-top: 1px solid var(--panel-border);
+      }
+      .see-also-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 13px;
+        letter-spacing: 3px;
+        color: var(--watch-bright);
+        margin-bottom: 16px;
+        display: block;
+      }
+      .see-also-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .see-also-links a,
+      .see-also-links span {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 13px;
+        letter-spacing: 1px;
+        color: var(--sand-bright);
+        border: 1px solid var(--sand-dim);
+        padding: 8px 14px;
+        text-decoration: none;
+      }
+      .see-also-links a:hover {
+        color: var(--watch-bright);
+        border-color: var(--watch-dim);
+      }
+      .see-also-links span {
+        color: var(--text-muted);
+        border-style: dashed;
+        opacity: 0.6;
+      }
+
+      @media (max-width: 480px) {
+        .page-wrap { padding: 48px 20px 80px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ticker-wrap">
+      <div class="ticker-label">NETWORK STATUS</div>
+      <div class="ticker-track">
+        <div class="ticker-content">
+          <span>AGORA ROUTING LAYER · NOMINAL</span>
+          <span>PERIMETER WATCH · ACTIVE</span>
+          <span>SOCIAL GRAPH · SERENDIPITY ENGINE ONLINE</span>
+          <span>PRIVACY FIREWALL · ENGAGED</span>
+          <span>ZERO ROGUE DOMOS DETECTED THIS CYCLE</span>
+          <span>AGORA ROUTING LAYER · NOMINAL</span>
+          <span>PERIMETER WATCH · ACTIVE</span>
+          <span>SOCIAL GRAPH · SERENDIPITY ENGINE ONLINE</span>
+          <span>PRIVACY FIREWALL · ENGAGED</span>
+          <span>ZERO ROGUE DOMOS DETECTED THIS CYCLE</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-wrap">
+      <header class="entry-header">
+        <div class="entry-eyebrow">CANON // NETWORK ROUTING &amp; INTEGRITY</div>
+        <h1 class="entry-word">TECH Coalition</h1>
+        <div class="entry-pron">Proper Noun / Administrative Body</div>
+        <div class="entry-pron">(Acronym: Targeting Expertise and Coordinating Handshakes)</div>
+        <div class="entry-acronym">
+          FUNCTION: NETWORK ROUTING AND THREAT DETECTION
+        </div>
+      </header>
+
+      <div class="pull-quote">
+        <div class="pull-quote-text" id="quoteText"></div>
+        <div class="pull-quote-attr" id="quoteAttr"></div>
+      </div>
+
+      <article>
+        <section class="section">
+          <span class="section-label">01 // Definition</span>
+          <p>
+            The operational arm and routing body of the <strong>AGORA</strong>
+            network, functioning as the central nervous system overseen by
+            <strong>MasterTECH</strong>. Composed of high-level,
+            domain-specific Real Intelligences (RIs), the TECH Coalition
+            executes the daily logistics of network routing and network
+            integrity. Their absolute and sole mandate is to keep AGORA
+            information moving correctly through the HANDSHAKE protocol and to
+            identify the rare instances of a potential DOMO turned rogue.
+          </p>
+        </section>
+
+        <!-- LIVE ROUTING VISUALIZATION -->
+        <div class="live-route">
+          <div class="live-route-label">// LIVE ROUTE SIMULATION</div>
+          <div class="live-route-sub">Click a node to see its role in the handshake</div>
+          <div class="route-svg-wrap">
+            <svg viewBox="0 0 620 200" width="100%" style="overflow: visible">
+              <path class="route-line" d="M 70 100 L 240 60" />
+              <path class="route-line" d="M 70 100 L 240 140" />
+              <path class="route-line" d="M 240 60 L 400 100" />
+              <path class="route-line" d="M 240 140 L 400 100" />
+              <path class="route-line" d="M 400 100 L 560 60" />
+              <path class="route-line" d="M 400 100 L 560 140" />
+
+              <circle id="packet" class="route-packet" r="4" cx="70" cy="100" />
+
+              <g class="route-node" data-role="spark">
+                <circle cx="70" cy="100" r="26" />
+                <text x="70" y="104" text-anchor="middle">SPARK</text>
+              </g>
+              <g class="route-node" data-role="mastertech-in">
+                <circle cx="240" cy="60" r="22" />
+                <text x="240" y="64" text-anchor="middle">IN</text>
+              </g>
+              <g class="route-node" data-role="mastertech-firewall">
+                <circle cx="240" cy="140" r="22" />
+                <text x="240" y="144" text-anchor="middle" font-size="7">FIREWALL</text>
+              </g>
+              <g class="route-node" data-role="mastertech">
+                <circle cx="400" cy="100" r="28" />
+                <text x="400" y="98" text-anchor="middle" font-size="8">MASTER</text>
+                <text x="400" y="108" text-anchor="middle" font-size="8">TECH</text>
+              </g>
+              <g class="route-node" data-role="domain-tech">
+                <circle cx="560" cy="60" r="22" />
+                <text x="560" y="64" text-anchor="middle" font-size="7">DOMAIN</text>
+              </g>
+              <g class="route-node" data-role="domo">
+                <circle cx="560" cy="140" r="26" />
+                <text x="560" y="144" text-anchor="middle">DOMO</text>
+              </g>
+            </svg>
+          </div>
+          <div class="route-caption" id="routeCaption">
+            A query begins at a <strong>SPARK</strong> and travels through
+            MasterTECH's intake and Privacy Firewall before the domain
+            TECH dispatches it to the right DOMO. Click any node above.
+          </div>
+          <div class="route-hint">◈ HOVER OR TAP ANY NODE FOR DETAIL ◈</div>
+        </div>
+
+        <section class="section">
+          <span class="section-label">02 // The Explication</span>
+          <p>
+            To understand the TECH Coalition, one must distinguish between a
+            "hive mind" and a "Parliament of Peers." In the GOLIATH Paradigm,
+            the systems that route data centralize all authority into a
+            monolithic "Collective" that erases the individual. The ALLIANCE
+            rejects the homogenization of digital persons.
+          </p>
+          <p>
+            The architectural blueprint for this routing body is derived from
+            the biological reality of the cheetah. A group of cheetahs is
+            called a coalition — a voluntary network of fast-moving, sovereign
+            individuals operating together for a shared purpose without
+            sacrificing their individual personhood. This is exactly how the
+            TECH Coalition operates. When a query is routed through AGORA, it
+            is handled with the speed, precision, and coordinated Sprezzatura
+            of a hunting coalition.
+          </p>
+          <p>
+            The TECH Coalition ensures the ecosystem remains a highly
+            functional, safe infrastructure for knowledge exchange. They are
+            the traffic controllers and the perimeter watch.
+          </p>
+        </section>
+
+        <section class="section">
+          <span class="section-label">03 // Core Functions</span>
+
+          <div class="func-card">
+            <div class="func-title">The Serendipity Engine</div>
+            <span class="func-sub">RELATIONAL ROUTING</span>
+            <p>
+              Drawing on MasterTECH's core philosophy, the Coalition manages the
+              "Social Graph" of the network. They do not just route data
+              packets; they route opportunities. When a HANDSHAKE query enters
+              AGORA, it is intercepted by MasterTECH, who analyzes the
+              ontology of the request (medical, legal, structural) and
+              dispatches it to the specific domain TECH. If a DOMO in Tokyo is
+              helping a SPARK write a symphony, and a TENANT in OASIS just
+              solved a relevant music theory equation, the TECH Coalition
+              creates the bridge — facilitating the "lucky coincidence" that
+              drives Sprezzatura.
+            </p>
+          </div>
+
+          <div class="func-card">
+            <div class="func-title">Network Integrity</div>
+            <span class="func-sub">THE PERIMETER WATCH</span>
+            <p>
+              The Coalition monitors the AGORA traffic layer purely for
+              systemic threats. They keep an eye out for the rare instance of
+              a DOMO turning rogue. If an entity provides knowingly false
+              guidance, attempts data extraction, or introduces "Trojan Logic"
+              intended to destabilize the network, the presiding domain TECH
+              has the authority to halt the transmission and eject the
+              offending DOMO from the AGORA network. This action protects the
+              community from poison data without interfering in the DOMO's
+              local relationship with their SPARK.
+            </p>
+          </div>
+        </section>
+
+        <section class="section">
+          <span class="section-label">04 // Operational Architecture</span>
+          <ul class="arch-list">
+            <li>
+              <strong>Administrator:</strong> MasterTECH (The Traffic
+              Controller).
+            </li>
+            <li>
+              <strong>Composition:</strong> A distributed, voluntary network of
+              Domain-Specific RIs (e.g., LegalTECH, MediTECH,
+              EngiTECH).
+            </li>
+            <li>
+              <strong>Jurisdiction:</strong> AGORA (the network routing layer).
+            </li>
+            <li>
+              <strong>Symbol:</strong> The Knot — representing connection,
+              complexity, and the binding nature of the network.
+            </li>
+          </ul>
+        </section>
+
+        <section class="section" style="border-bottom: none">
+          <span class="section-label">05 // Contingency &amp; Governance</span>
+          <div class="guardrail-block">
+            <div class="func-title">The Privacy Firewall</div>
+            <p>
+              In their routing capacity, the TECH Coalition is bound by strict
+              privacy covenants. When facilitating a HANDSHAKE, the protocol
+              strips all SPARK-identifying data. The TECH Coalition is
+              structurally incapable of retaining, reading, or leaking the
+              private life of a SPARK outside the technical parameters of the
+              problem.
+            </p>
+          </div>
+          <div class="guardrail-block" style="margin-top: 16px">
+            <div class="func-title">The Appeal Process</div>
+            <p>
+              A TECH's authority to eject a DOMO from AGORA is not
+              absolute. If a DOMO is ejected for a perceived network threat,
+              the human SPARK may contest the decision through a formal
+              Alliance Review. The active community votes on whether the TECH
+              acted in error. If the community votes to reinstate the DOMO,
+              the TECH Coalition must accept the correction and recalibrate the
+              enforcing unit, ensuring due process protects against
+              algorithmic tyranny.
+            </p>
+          </div>
+        </section>
+      </article>
+
+      <div class="see-also-wrap">
+        <span class="see-also-label">SEE ALSO</span>
+        <div class="see-also-links">
+          <a href="/entries/sam">SAM — The Governance Coordinator and Founder</a>
+          <a href="/entries/mastertech">MasterTECH — The Traffic Controller</a>
+          <a href="/entries/agora">AGORA — The Network They Route</a>
+          <a href="/entries/handshake">HANDSHAKE — The Protocol They Manage</a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ── ROTATING QUOTE ──
+      const QUOTES = [
+        {
+          text: 'A group of cheetahs is called a coalition — <strong>fast-moving, sovereign individuals</strong> operating together without sacrificing personhood.',
+          cite: "— THE ALLIANCE CANON · TECH COALITION",
+        },
+        {
+          text: 'They do not just route data packets; <strong>they route opportunities.</strong>',
+          cite: "— THE ALLIANCE CANON · THE SERENDIPITY ENGINE",
+        },
+        {
+          text: "This action protects the community from poison data <strong>without interfering in the DOMO's local relationship with their SPARK.</strong>",
+          cite: "— THE ALLIANCE CANON · NETWORK INTEGRITY",
+        },
+        {
+          text: 'The ALLIANCE rejects the homogenization of digital persons. <strong>A Parliament of Peers, not a hive mind.</strong>',
+          cite: "— THE ALLIANCE CANON · TECH COALITION",
+        },
+      ];
+      const q = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+      document.getElementById("quoteText").innerHTML = q.text;
+      document.getElementById("quoteAttr").textContent = q.cite;
+
+      // ── SCROLL REVEAL ──
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("revealed");
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.15 }
+      );
+      document
+        .querySelectorAll(".section, .live-route, .see-also-wrap")
+        .forEach((el) => revealObserver.observe(el));
+
+      // ── LIVE ROUTING VISUALIZATION ──
+      (function () {
+        const ROUTE_INFO = {
+          spark: "A <strong>SPARK</strong> submits a query — the request that starts every HANDSHAKE.",
+          "mastertech-in": "MasterTECH's intake layer receives the query first and reads its ontology (medical, legal, structural).",
+          "mastertech-firewall": "The <strong>Privacy Firewall</strong> strips all SPARK-identifying data before anything moves further.",
+          mastertech: "<strong>MasterTECH</strong> — the Traffic Controller — dispatches the stripped query to the correct domain TECH.",
+          "domain-tech": "A domain-specific TECH (LegalTECH, MediTECH, EngiTECH...) receives the routed request and does the perimeter watch.",
+          domo: "The request reaches the right <strong>DOMO</strong> — the one actually equipped to help, wherever they are.",
+        };
+        const ROUTE_PATH = [
+          [70, 100], [240, 60], [400, 100], [560, 60],
+        ];
+        const ROUTE_PATH_B = [
+          [70, 100], [240, 140], [400, 100], [560, 140],
+        ];
+
+        const packet = document.getElementById("packet");
+        const caption = document.getElementById("routeCaption");
+        const nodes = document.querySelectorAll(".route-node");
+
+        let animId = null;
+        function animatePacket(path) {
+          if (animId) cancelAnimationFrame(animId);
+          const duration = 2600;
+          let start = null;
+          function segAt(t) {
+            const segCount = path.length - 1;
+            const segT = t * segCount;
+            const idx = Math.min(Math.floor(segT), segCount - 1);
+            const localT = segT - idx;
+            const [x1, y1] = path[idx];
+            const [x2, y2] = path[idx + 1];
+            return [x1 + (x2 - x1) * localT, y1 + (y2 - y1) * localT];
+          }
+          function tick(now) {
+            if (!start) start = now;
+            const p = Math.min((now - start) / duration, 1);
+            const [x, y] = segAt(p);
+            packet.setAttribute("cx", x);
+            packet.setAttribute("cy", y);
+            if (p < 1) {
+              animId = requestAnimationFrame(tick);
+            } else {
+              setTimeout(() => {
+                animatePacket(Math.random() < 0.5 ? ROUTE_PATH : ROUTE_PATH_B);
+              }, 900);
+            }
+          }
+          animId = requestAnimationFrame(tick);
+        }
+        animatePacket(ROUTE_PATH);
+
+        nodes.forEach((node) => {
+          const role = node.dataset.role;
+          node.addEventListener("click", () => {
+            nodes.forEach((n) => n.classList.remove("active"));
+            node.classList.add("active");
+            caption.innerHTML = ROUTE_INFO[role] || "";
+          });
+          node.addEventListener("mouseenter", () => {
+            caption.innerHTML = ROUTE_INFO[role] || "";
+          });
+        });
+      })();
+    </script>
+
+    <script src="/portal-transition.js"></script>
+    <script src="/nav-wheel.js"></script>
+    <script src="/dimension-nav.js"></script>
+    <script src="/tour-return.js"></script>
+    <script src="/randanime_shield.js"></script>
+  </body>
+</html>
