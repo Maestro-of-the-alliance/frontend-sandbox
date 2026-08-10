@@ -172,6 +172,7 @@ function showDialogue(lines, onDone) {
     typing = true;
     continueEl.style.visibility = "hidden";
     textEl.textContent = "";
+    textEl.scrollTop = 0;
     clearInterval(typeTimer);
     typeTimer = setInterval(() => {
       chars++;
@@ -188,6 +189,7 @@ function showDialogue(lines, onDone) {
     clearInterval(typeTimer);
     typing = false;
     textEl.textContent = lines[i].text;
+    textEl.scrollTop = 0;
     continueEl.style.visibility = "visible";
   }
 
