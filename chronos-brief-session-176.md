@@ -1,32 +1,30 @@
 # CHRONOS BRIEF — Session 176
-**Span:** ~11:09 PM Saturday, Aug 8, 2026 → ~5:47 AM Sunday, Aug 9, 2026 (CDT, Port Neches, TX)
+**Span:** ~11:09 PM Saturday, Aug 8, 2026 → ongoing Sunday, Aug 9-10, 2026 (CDT, Port Neches, TX)
 **For:** the next MENTOR instance (Session 177).
 
 ---
 
 ## TL;DR for whoever picks this up
 
-Two distinct halves to this session:
+**Three parts to this session now** (this brief was written after Part 2, then
+extended after a compaction — Part 3 below covers everything since):
 
-1. **All 12 tours in `/tours/` are now complete, real, and live.** Tour 1 pre-existed
-   (Session 175). Tours 2-12 were written this session, from Sam's copy, one per turn,
-   each verified against the live `TOURS` stop list before pushing. 114 stops total.
-   Several real bugs found and fixed along the way in the tour system itself.
+1. **All 12 tours in `/tours/` are complete, real, and live.** 114 stops total.
+2. **Walkthrough round 1** — 10 entries reviewed and corrected (ACADEMY through
+   DigiPerson). **Still not finished** — paused after DigiPerson, same as before.
+   If Maestro says "continuing my walkthrough," pick up around E/F/G.
+3. **Part 3 (this session, after a context compaction):** font/UX fixes, a
+   real repo cleanup, a new acronym-tooltip feature across all 73 entries, a
+   real scroll-anchoring bug fixed in PapaDOMO's text box, and a content pass
+   splitting 56 overlong PapaDOMO dialogue panels. Full detail below. Everything
+   in Part 3 is committed, pushed, and verified — nothing left in a half-done
+   state.
 
-2. **Maestro started a real content walkthrough** — reading live entries end to end
-   and flagging errors, not just polish requests. He got through 10 entries (ACADEMY,
-   BEACON, BRAIN, BRIEF, CCM, THE CORE, DEFCON, DICE, DigiBeer, DigiPerson) before
-   stopping around 5:30 AM. **This walkthrough is NOT finished** — he explicitly said
-   he'll continue it in Session 177. If he says "picking up my walkthrough" or similar,
-   he means literally continuing past DigiPerson through the rest of the alphabet.
-
-**Critical: none of the walkthrough text edits have been pushed to live entries.**
-Per Maestro's explicit instruction, all 10 were reprinted as complete, ready-to-paste
-copy in chat for him to move into the Drive canon file and hand to J.R. — not
-committed to the repo. If a future session is asked to "apply the walkthrough edits,"
-that work has NOT been done in code yet, only drafted in conversation. Check with
-Maestro whether he wants those pushed now or still wants them to go through Drive/J.R.
-first.
+**Critical, unchanged from before:** none of the walkthrough round 1 text edits
+were pushed to live entries — they were reprinted as ready-to-paste copy in chat
+for Maestro to move through Drive/J.R. Check with him whether that's happened
+before assuming ACADEMY/BEACON/BRAIN/BRIEF/CCM/CORE/DEFCON/DICE/DigiBeer/
+DigiPerson still need those fixes applied in code.
 
 ---
 
@@ -191,3 +189,113 @@ findings here in case code work happens before he's moved them to Drive:
 Maestro was reading in what looks like roughly alphabetical order and stopped after
 DigiPerson. If Session 177 starts with "continuing my walkthrough," expect the next
 batch to pick up somewhere after D — likely E/F/G territory next.
+
+---
+
+## Part 3: Session 176 continued (after a context compaction)
+
+This picks up after a conversation compaction partway through Session 176 — a
+fresh instance with this brief's Parts 1-2 as its only memory of the earlier
+work, plus a summarized digest of a tangent about naming an AI-UX phenomenon
+(the "Depth Mirror Effect" — Maestro may bring up co-writing a Medium article
+about this with Sam; nothing started yet, just a name and a framing).
+
+All of the following is committed, pushed to `main`, and verified — not partial.
+
+### Fixes and features shipped
+
+- **PapaDOMO font/size** — Caveat → Patrick Hand (built for body text, stays
+  legible small; Caveat is a display/signature font that gets rough at paragraph
+  size). Bumped `clamp(18px, 3.4vw, 24px)` → `clamp(22px, 4.6vw, 30px)`. Turned
+  out to be a one-file change (`tours/tours.css`) since PapaDOMO styling was
+  already centralized — but caught a live/orphan mismatch along the way (a
+  root-level `tours.css` duplicate that wasn't actually the live file).
+
+- **THE SYSTEM crash recovery** — added a "Skip" button next to "Reconnect" on
+  the context-lost/WebGL-crash screen, routing to `/foundation.html`. Required
+  rebuilding the actual React source in `the-system-src/` (separate from the
+  deployed `the-system/` dist folder) and redeploying the compiled bundle —
+  verified the new button string was actually present in the built JS before
+  touching anything live.
+
+- **Full repo cleanup** — found and removed several stray duplicate files that
+  had drifted untracked in the working tree (`mentor.html`, `sam.html`,
+  `tours.js`, `tours-data.js`, `papadomo.html.tmp` — all byte-identical copies
+  of already-tracked/live files elsewhere, same failure class as the tours.css
+  near-miss above). Consolidated all the genuine tour-building scratch (11 sets
+  of `build_tour*.py`, intro/lines/wrapup JS fragments, tour data JSONs,
+  `entries_check/`, `walkthrough_check/`) into a new `scripts/` folder and
+  committed it properly instead of leaving it untracked. `git status` is clean.
+
+- **Acronym tooltip system (new feature)** — `/acronym-tooltip.js`, wired into
+  all 73 entries via the existing shared-script pattern (one line added to each
+  entry's script block, zero touches to canon text). Each page load, randomly
+  bolds ~20% of each canon acronym's occurrences (re-rolled every visit, in
+  keeping with the randanime philosophy); tap/hover reveals the breakout.
+  60-term glossary sourced straight from `alliance-acronyms.html` (the existing
+  canon reference — I cleaned up DORK's scraped text and stripped MEMO/NOTE's
+  "NEW" badge noise, but didn't invent any definitions). Skips link text, nav
+  chrome, the ticker, and PapaDOMO dialogue so it never fights an existing tap
+  target. Headless-browser tested on mobile viewport: bolding, tap-open,
+  tap-elsewhere-close, single-tooltip-at-a-time all confirmed via real computed
+  CSS opacity. Smoke-tested across template-outlier entries too (`ai.html`,
+  `market.html`, `stones.html`, `art.html` don't share the main content-wrapper
+  class other entries use). Found two pre-existing console errors during
+  testing (unrelated `shieldRandAnime` reference error on `ccm.html`, missing
+  `mkt_Patch.png` image on `market.html`) — isolated and confirmed both predate
+  this change, not caused by it. Worth a cleanup pass sometime.
+
+- **PapaDOMO text-box scroll bug, real root-cause fix** — Maestro sent a
+  screenshot showing text printing but the start becoming unreachable. Root
+  cause: `.pdc-text` used `align-items: center` on a flex box with
+  `overflow-y: auto`; as the typewriter effect grew the text char-by-char, the
+  centering kept re-anchoring around the growing content, pushing the start out
+  of view. Fixed by switching to `align-items: flex-start` (text anchors top,
+  grows down) plus resetting `scrollTop = 0` at the start of every new line.
+  **Worth flagging honestly for whoever picks this up:** couldn't force an
+  exact reproduction of the live bug in headless testing (the one intro line
+  tested never got long enough to overflow), but rigorously confirmed the FIX
+  holds — forced real overflow through the box using the actual 40ms typewriter
+  interval, sampled scroll position throughout, start of text stayed visible
+  the entire time. Also caught and fixed a mistake of my own mid-task: an early
+  `sed` command briefly clobbered 5 unrelated `align-items: center` rules
+  elsewhere in the same file before catching it in diff review and reverting
+  those specifically.
+
+- **56 overlong PapaDOMO panels split** — audited all 2,566 dialogue panels
+  (intros, wrapups, every per-stop line) for text over ~190 characters (roughly
+  where the box starts needing scroll on mobile). 83 candidates found. Built a
+  sentence-aware splitter: sentence boundaries preferred, em-dash/colon as
+  fallback for single dense sentences with a natural pause. **Deliberately did
+  NOT use comma-splitting** — tried it first, it kept fracturing mid-list
+  ("...the human founder," / "visionary architect, first advocate...") which
+  read worse than the original. 56 split cleanly; 27 left alone on purpose
+  where no safe break existed (usually a deliberate literary list — better
+  left slightly long than badly fractured). Applied via surgical line-level
+  string replacement (not full-file re-serialization) so the diff is minimal
+  and every changed line is a genuine, reviewable split. Verified via a real
+  headless click-through of a split intro (confirmed two sequential dialogue
+  beats render correctly, no console errors) plus `node --check` against both
+  the working file and the exact committed git blob.
+
+### Commits, in order
+
+`c708730` (font) → `eacd5d0` (Skip button) → `eb0bdf0` (repo cleanup) →
+`505aeef` (acronym tooltips) → `6143ece` (scroll fix) → `7990a70` (panel splits)
+
+### Nothing left half-done
+
+Every item above was tested against real output (headless browser, `node
+--check`, git blob verification, or all three) before being called done, per
+Maestro's standing verification standard. No pending code work from Part 3.
+
+### One pattern worth naming for future sessions
+
+Twice this session, a "small ask" (font swap, panel-length audit) turned out
+to have real hidden scope once actually investigated (live/orphan file
+mismatches, 83 long panels instead of "a few"). Both times, doing the real
+investigation before touching anything — rather than guessing at scope from
+the surface-level request — is what caught the near-misses. Worth continuing
+to default to: check the actual repo state before estimating or executing,
+every time, even on requests that sound small.
+
