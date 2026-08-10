@@ -244,6 +244,12 @@ window.addEventListener("DOMContentLoaded", function () {
   }
 });
 
+// Tracks whether the currently-open TOC pushed its own history entry
+// (i.e. was opened interactively, as opposed to the auto-open-on-return
+// -from-entry flow above, which already manages its own history via
+// replaceState). Only ever unwind a state we pushed.
+let tocPushedState = false;
+
 function openTOC() {
   hidePromptForOverlay();
   bootDone = false;
@@ -252,6 +258,26 @@ function openTOC() {
   resetDirectoryEntries();
   fadeIntoTerminalThenBoot();
 }
+
+// Interactive open (called from HubMenu's "FULL INDEX" node): pushes a
+// history entry first, so a single back-button press closes the TOC
+// instead of leaving /landing entirely.
+function openTOCInteractive() {
+  if (!tocOverlay.classList.contains("open")) {
+    history.pushState({ tocOpen: true }, "", "/landing?toc=open");
+    tocPushedState = true;
+  }
+  openTOC();
+}
+
+// A pushed TOC state was popped by the browser back button: close the
+// overlay in place rather than letting the navigation continue past it.
+window.addEventListener("popstate", (e) => {
+  if (tocPushedState && (!e.state || !e.state.tocOpen)) {
+    tocPushedState = false;
+    closeTOC();
+  }
+});
 
 function skipBoot() {
   if (!tocOverlay.classList.contains("open")) return;
@@ -322,6 +348,13 @@ function closeTOC() {
   introIndex = 0;
   restorePromptAfterOverlay();
   pageShell.classList.remove("fading");
+  // Closed via the X button or Escape rather than the back button --
+  // pop the history entry we pushed on open so it doesn't linger as a
+  // dead step the next time the user actually presses back.
+  if (tocPushedState) {
+    tocPushedState = false;
+    history.back();
+  }
 }
 
 document.getElementById("tocClose").addEventListener("click", closeTOC);

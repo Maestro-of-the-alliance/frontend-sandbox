@@ -682,6 +682,11 @@
     });
   }
 
+  // Exposed so hub-menu.js's "FULL INDEX" node can hand off to the
+  // existing wheel picker on entry pages (landing has its own
+  // openTOCInteractive instead, defined in toc.js).
+  window.hubOpenNativeNav = openNav;
+
   menuOverlay.addEventListener("click", (e) => {
     if (e.target === menuOverlay) closeNav();
   });
