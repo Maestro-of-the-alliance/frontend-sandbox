@@ -734,9 +734,11 @@ export default function SolarSystemCanvas({
           if (hit.name.startsWith("planet-")) {
             const pid = hit.name.replace("planet-", "");
             propsRef.current.onPlanetHover(pid);
-            revealedPlanets.add(pid); // desktop preview -- touch has no hover, relies on the first tap instead
+            hoveredPlanetId = pid; // desktop preview -- touch has no hover, relies on the first tap instead
+            hoveredSatelliteSlug = null;
           } else if (hit.name.startsWith("entry-")) {
-            revealedSatellites.add(hit.name.replace("entry-", ""));
+            hoveredSatelliteSlug = hit.name.replace("entry-", "");
+            hoveredPlanetId = null;
           }
           // sun hover just gets the pointer cursor, set above — no hover state to track
         }
@@ -745,6 +747,8 @@ export default function SolarSystemCanvas({
           currentHoveredMesh = null;
           document.body.style.cursor = "default";
           propsRef.current.onPlanetHover(null);
+          hoveredPlanetId = null;
+          hoveredSatelliteSlug = null;
         }
       }
     };
@@ -774,17 +778,21 @@ export default function SolarSystemCanvas({
           });
         } else if (hit.name.startsWith("planet-")) {
           const pid = hit.name.replace("planet-", "");
-          if (!revealedPlanets.has(pid)) {
-            // First tap: reveal the label only, don't transit yet.
-            revealedPlanets.add(pid);
+          if (tappedPlanetId !== pid) {
+            // First tap: reveal the label only, don't transit yet. Replaces
+            // whatever was previously tapped-but-not-confirmed, rather than
+            // adding to a growing pile of revealed labels.
+            tappedPlanetId = pid;
+            tappedSatelliteSlug = null;
           } else {
             propsRef.current.onPlanetSelect(pid);
           }
         } else if (hit.name.startsWith("entry-")) {
           const slug = hit.name.replace("entry-", "");
-          if (!revealedSatellites.has(slug)) {
+          if (tappedSatelliteSlug !== slug) {
             // First tap: reveal the label only, don't navigate yet.
-            revealedSatellites.add(slug);
+            tappedSatelliteSlug = slug;
+            tappedPlanetId = null;
           } else {
             propsRef.current.onEntrySelect(slug);
           }
@@ -798,13 +806,24 @@ export default function SolarSystemCanvas({
     // Planet/satellite labels are hidden until interacted with, then need a
     // second tap to actually commit to selecting/navigating -- per request,
     // rather than showing every label at once (previous default) or
-    // navigating away on the very first tap with no preview. Plain closure
-    // variables, not React state, matching every other piece of interaction
-    // state in this effect (isDragging, zoomFactor, etc.) -- these get read
-    // every animation frame in the label-projection loop below, so avoiding
-    // a re-render on every reveal matters here the same way it did there.
-    const revealedPlanets = new Set<string>();
-    const revealedSatellites = new Set<string>();
+    // navigating away on the very first tap with no preview.
+    //
+    // These track only the SINGLE currently-relevant id for each kind, not
+    // a history of everything ever touched -- an earlier version used
+    // Sets that only ever grew (.add(), never .delete() or .clear()), so
+    // every satellite the cursor happened to cross while panning around a
+    // crowded planet (Jupiter/Saturn/Uranus all have 15-20) stayed
+    // permanently revealed with no collision avoidance between them,
+    // which is exactly what piled up into unreadable overlapping text
+    // the longer someone explored. A hovered id here always replaces
+    // whatever was previously hovered, and clears on hover-out; a tapped
+    // id (the no-hover mobile equivalent) replaces the previous tapped id
+    // the moment a different target is tapped. At most one extra label
+    // beyond the actively selected planet's own is ever showing.
+    let hoveredPlanetId: string | null = null;
+    let hoveredSatelliteSlug: string | null = null;
+    let tappedPlanetId: string | null = null;
+    let tappedSatelliteSlug: string | null = null;
 
     // DRAG-TO-ORBIT + WHEEL-TO-ZOOM
     // The UI copy has always claimed "Drag background to orbit" — this wires that
@@ -1087,10 +1106,16 @@ export default function SolarSystemCanvas({
         // that specific planet (hover preview on desktop, first tap on
         // touch) -- previously every planet's label showed at once by
         // default, which is what this replaces. Still shown while that
-        // planet is the actively selected/zoomed one even if something
-        // reset revealedPlanets, so a selected planet never loses its own
-        // label out from under the visitor.
-        const showLabel = state.selectedPlanetId === p.id || revealedPlanets.has(p.id);
+        // planet is the actively selected/zoomed one even if hover/tap
+        // state has since moved elsewhere, so a selected planet never
+        // loses its own label out from under the visitor. hoveredPlanetId
+        // and tappedPlanetId each track only the single most-recent id
+        // (see their declaration above), so at most one extra label is
+        // ever showing beyond the selected planet's own.
+        const showLabel =
+          state.selectedPlanetId === p.id ||
+          hoveredPlanetId === p.id ||
+          tappedPlanetId === p.id;
         const visible = isVisible && showLabel && state.simulationConfig.showLabels;
 
         el.style.display = visible ? "" : "none";
@@ -1115,7 +1140,10 @@ export default function SolarSystemCanvas({
 
           const sx = (vecProj.x * .5 + .5) * size.width;
           const sy = (-(vecProj.y * .5) + .5) * size.height;
-          const visible = isVisible && revealedSatellites.has(sat.slug) && state.simulationConfig.showLabels;
+          const visible =
+            isVisible &&
+            (hoveredSatelliteSlug === sat.slug || tappedSatelliteSlug === sat.slug) &&
+            state.simulationConfig.showLabels;
 
           el.style.display = visible ? "" : "none";
           if (visible) {
