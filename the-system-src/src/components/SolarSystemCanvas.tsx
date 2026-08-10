@@ -1304,7 +1304,7 @@ export default function SolarSystemCanvas({
               Reconnect
             </button>
             <button
-              onClick={() => (window.location.href = "/foundation.html")}
+              onClick={() => (window.location.href = "/tours/")}
               className="px-6 py-3 rounded-xl bg-transparent border border-stone-500 text-stone-300 font-bold tracking-tight hover:bg-stone-800 transition-all"
             >
               Skip
