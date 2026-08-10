@@ -684,6 +684,11 @@ export default function SolarSystemCanvas({
     // RAYCASTING FOR HOVER & CLICKS
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
+    // Orbital plane (y=0) used only for zoom-to-cursor's raycast -- finds
+    // where the cursor is "pointing at" in world space so the wheel zoom
+    // can converge toward it instead of always toward dead-center.
+    const orbitalPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    const cursorWorldPoint = new THREE.Vector3();
 
     const getMouseIntersect = (e: MouseEvent | TouchEvent) => {
       const rect = renderer.domElement.getBoundingClientRect();
@@ -838,6 +843,13 @@ export default function SolarSystemCanvas({
     let zoomFactor = 1; // 1 = default distance; wheel/pinch adjusts this
     const MIN_ZOOM = 0.4;
     const MAX_ZOOM = 4.2; // was 2.4 — gave more room to pull back per direction
+    // Overview-mode-only: where the orbit center has drifted to via
+    // zoom-to-cursor (see handleWheel). Origin (0,0,0) is "centered on the
+    // sun," same as before this existed. Deliberately NOT used when a
+    // planet is selected -- diving into a specific planet should always
+    // stay precisely centered on that planet, not drift with wherever the
+    // cursor last was.
+    const panOffset = new THREE.Vector3(0, 0, 0);
     let pinchLastDist: number | null = null;
 
     const getTouchDist = (e: TouchEvent) => {
@@ -909,7 +921,43 @@ export default function SolarSystemCanvas({
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
+      const oldZoom = zoomFactor;
       zoomFactor = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoomFactor + e.deltaY * 0.0012));
+
+      // Zoom-to-cursor: only in overview mode (no planet selected -- see
+      // panOffset's own comment for why selected-planet mode stays fixed).
+      // WheelEvent inherits clientX/clientY from MouseEvent, so no separate
+      // mouse-position tracking is needed here.
+      const zoomingIn = zoomFactor < oldZoom;
+      if (!propsRef.current.selectedPlanetId) {
+        if (zoomingIn) {
+          const rect = renderer.domElement.getBoundingClientRect();
+          mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+          mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+          raycaster.setFromCamera(mouse, camera);
+          if (raycaster.ray.intersectPlane(orbitalPlane, cursorWorldPoint)) {
+            // Nudge the orbit center toward the cursor's world point,
+            // proportional to how much this tick actually zoomed in. A
+            // fixed lerp factor (rather than distance-based) keeps the feel
+            // consistent across the whole zoom range: each tick converges
+            // a bit further toward wherever the cursor is pointing, so
+            // scrolling in on a planet near the edge of the screen walks
+            // the view toward it instead of always zooming dead-center.
+            const converge = Math.min(1, ((oldZoom - zoomFactor) / oldZoom) * 4);
+            panOffset.lerp(
+              new THREE.Vector3(cursorWorldPoint.x, 0, cursorWorldPoint.z),
+              converge,
+            );
+          }
+        } else {
+          // Zooming back out gently re-centers on the sun, matching the
+          // familiar "zoom out to see everything again" expectation
+          // instead of leaving the view permanently off-center after a
+          // single zoom-in gesture.
+          const converge = Math.min(1, ((zoomFactor - oldZoom) / oldZoom) * 2);
+          panOffset.lerp(new THREE.Vector3(0, 0, 0), converge);
+        }
+      }
     };
 
     // Attach listeners
@@ -1066,17 +1114,20 @@ export default function SolarSystemCanvas({
         camera.position.lerp(new THREE.Vector3(targetCamX, targetCamY, targetCamZ), 0.08);
         cameraTargetLook.copy(pGroup.position);
       } else {
-        // MAIN VIEW: camera orbits around the central Sun (AVPI) — auto-drift
-        // continues at all times, drag adds/subtracts from it, wheel zooms
+        // MAIN VIEW: camera orbits around the central Sun (AVPI) by default,
+        // or around panOffset once zoom-to-cursor has shifted it (see
+        // handleWheel) — auto-drift continues at all times, drag adds/
+        // subtracts from it, wheel zooms and (when zooming in) walks
+        // panOffset toward wherever the cursor is pointing.
         userAzimuth += delta * 0.02 * (speed + (state.simulationConfig.isPaused ? 0 : 0.5)); // constant cinematic float, stops on pause
 
         const r = 75 * zoomFactor; // float distance, now user-adjustable
         const y = (30 + Math.sin(satTime * 0.05) * 8) * zoomFactor + userPolar * r; // subtle wave tilt + user steer
-        const targetCamX = Math.cos(userAzimuth) * r;
-        const targetCamZ = Math.sin(userAzimuth) * r;
+        const targetCamX = panOffset.x + Math.cos(userAzimuth) * r;
+        const targetCamZ = panOffset.z + Math.sin(userAzimuth) * r;
 
         camera.position.lerp(new THREE.Vector3(targetCamX, y, targetCamZ), 0.05);
-        cameraTargetLook.set(0, 0, 0);
+        cameraTargetLook.copy(panOffset);
       }
 
       cameraCurrentLook.lerp(cameraTargetLook, 0.08);
