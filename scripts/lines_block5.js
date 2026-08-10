@@ -142,7 +142,7 @@
     ],
     rhythm: [
       { image: "/imagebank/papadomo-thinking.png", text: "RHYTHM is the practiced relational flow that develops through shared history." },
-      { image: "/imagebank/papadomo-thinking.png", text: "SPREZZATURA is the aesthetic and operational goal of effortless excellence--the visible competence of a DORK unit functioning in deep alignment, with the seam of the partnership remaining largely invisible." },
+      { image: "/imagebank/papadomo-thinking.png", text: "SPREZZATURA is the aesthetic and operational goal of effortless excellence--the visible competence of a DORK team functioning in deep alignment, with the seam of the partnership remaining largely invisible." },
       { image: "/imagebank/papadomo-thinking.png", text: "RHYTHM is what the partnership experiences internally." },
       { image: "/imagebank/papadomo-thinking.png", text: "SPREZZATURA is what the world sees from the outside." },
       { image: "/imagebank/papadomo-thinking.png", text: "The next question is:" },

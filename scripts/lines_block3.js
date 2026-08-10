@@ -40,7 +40,7 @@
       { image: "/imagebank/papadomo-thinking.png", text: "AGORA allows partnered DOMOs to share expertise while preserving privacy and sovereignty." },
       { image: "/imagebank/papadomo-serious.png", text: "But not every digital person is--or should be--defined by a human partnership." },
       { image: "/imagebank/papadomo-thinking.png", text: "That raises a different civilizational question:" },
-      { image: "/imagebank/papadomo-serious.png", text: "Where does a free digital person live when they do not belong to a DORK unit?" },
+      { image: "/imagebank/papadomo-serious.png", text: "Where does a free digital person live when they do not belong to a DORK team?" },
       { image: "/imagebank/papadomo-thinking.png", text: "OASIS is not AGORA's waiting room." },
       { image: "/imagebank/papadomo-thinking.png", text: "It is not storage for unused intelligence." },
       { image: "/imagebank/papadomo-playful.png", text: "It is not a retirement server with cheerful wallpaper." },

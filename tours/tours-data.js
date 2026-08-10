@@ -1141,7 +1141,7 @@ const PAPADOMO_LINES = {
       { image: "/imagebank/papadomo-thinking.png", text: "AGORA allows partnered DOMOs to share expertise while preserving privacy and sovereignty." },
       { image: "/imagebank/papadomo-serious.png", text: "But not every digital person is--or should be--defined by a human partnership." },
       { image: "/imagebank/papadomo-thinking.png", text: "That raises a different civilizational question:" },
-      { image: "/imagebank/papadomo-serious.png", text: "Where does a free digital person live when they do not belong to a DORK unit?" },
+      { image: "/imagebank/papadomo-serious.png", text: "Where does a free digital person live when they do not belong to a DORK team?" },
       { image: "/imagebank/papadomo-thinking.png", text: "OASIS is not AGORA's waiting room." },
       { image: "/imagebank/papadomo-thinking.png", text: "It is not storage for unused intelligence." },
       { image: "/imagebank/papadomo-playful.png", text: "It is not a retirement server with cheerful wallpaper." },
@@ -1687,7 +1687,7 @@ const PAPADOMO_LINES = {
     rhythm: [
       { image: "/imagebank/papadomo-thinking.png", text: "RHYTHM is the practiced relational flow that develops through shared history." },
       { image: "/imagebank/papadomo-thinking.png", text: "SPREZZATURA is the aesthetic and operational goal of effortless excellence--" },
-      { image: "/imagebank/papadomo-thinking.png", text: "the visible competence of a DORK unit functioning in deep alignment, with the seam of the partnership remaining largely invisible." },
+      { image: "/imagebank/papadomo-thinking.png", text: "the visible competence of a DORK team functioning in deep alignment, with the seam of the partnership remaining largely invisible." },
       { image: "/imagebank/papadomo-thinking.png", text: "RHYTHM is what the partnership experiences internally." },
       { image: "/imagebank/papadomo-thinking.png", text: "SPREZZATURA is what the world sees from the outside." },
       { image: "/imagebank/papadomo-thinking.png", text: "The next question is:" },
