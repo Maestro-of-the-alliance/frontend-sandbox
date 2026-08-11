@@ -70,30 +70,36 @@
   const style = document.createElement("style");
   style.textContent = `
     .gc-trail-buttons {
-      position: fixed; top: 16px; left: 16px; z-index: 9000;
-      display: flex; flex-direction: column; gap: 8px;
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 999000;
+      display: flex; justify-content: center; gap: 10px;
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+      background: linear-gradient(to top, rgba(20,12,8,.92) 60%, rgba(20,12,8,0));
+      pointer-events: none;
     }
     .gc-trail-buttons button {
-      padding: 9px 16px; border-radius: 5px;
-      font: 13px/1 Arial, sans-serif; letter-spacing: .04em; cursor: pointer;
-      backdrop-filter: blur(5px); box-shadow: 0 4px 18px rgba(0,0,0,.4);
+      pointer-events: auto;
+      padding: 12px 22px; border-radius: 999px;
+      font: 14px/1 Arial, sans-serif; letter-spacing: .04em; cursor: pointer;
+      backdrop-filter: blur(8px); box-shadow: 0 4px 18px rgba(0,0,0,.5);
       transition: background 160ms ease, border-color 160ms ease;
+      flex: 0 1 auto; max-width: 62%;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
     .gc-return-button {
-      border: 1px solid rgba(255,183,70,.8); background: rgba(20,12,8,.9); color: #ffdca3;
+      border: 1px solid rgba(255,183,70,.8); background: rgba(28,17,10,.92); color: #ffdca3;
+      font-weight: 600;
     }
     .gc-return-button:hover, .gc-return-button:focus-visible {
-      background: rgba(72,31,14,.95); border-color: rgba(255,226,163,1); outline: none;
+      background: rgba(72,31,14,.97); border-color: rgba(255,226,163,1); outline: none;
     }
     .gc-exit-button {
-      border: 1px solid rgba(255,226,163,.35); background: rgba(20,12,8,.7); color: #d8b98a;
+      border: 1px solid rgba(255,226,163,.35); background: rgba(20,12,8,.75); color: #d8b98a;
     }
     .gc-exit-button:hover, .gc-exit-button:focus-visible {
       border-color: rgba(255,226,163,.7); color: #fff4ce; outline: none;
     }
-    @media (max-width: 600px) {
-      .gc-trail-buttons { top: 10px; left: 10px; gap: 6px; }
-      .gc-trail-buttons button { padding: 7px 12px; font-size: 12px; }
+    @media (max-width: 420px) {
+      .gc-trail-buttons button { padding: 11px 16px; font-size: 13px; }
     }
   `;
   document.head.appendChild(style);

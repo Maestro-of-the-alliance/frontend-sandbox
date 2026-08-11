@@ -63,29 +63,35 @@
   const style = document.createElement("style");
   style.textContent = `
     .tr-buttons {
-      position: fixed; top: 16px; left: 16px; z-index: 9000;
-      display: flex; flex-direction: column; gap: 8px;
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 999000;
+      display: flex; justify-content: center; gap: 10px;
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+      background: linear-gradient(to top, rgba(6,5,9,.92) 60%, rgba(6,5,9,0));
+      pointer-events: none; /* only the buttons themselves are clickable, not the gradient strip */
     }
     .tr-buttons button {
-      padding: 9px 16px; border-radius: 5px;
-      font: 13px/1 Arial, sans-serif; letter-spacing: .04em; cursor: pointer;
-      backdrop-filter: blur(5px); box-shadow: 0 4px 18px rgba(0,0,0,.4);
+      pointer-events: auto;
+      padding: 12px 22px; border-radius: 999px;
+      font: 14px/1 Arial, sans-serif; letter-spacing: .04em; cursor: pointer;
+      backdrop-filter: blur(8px); box-shadow: 0 4px 18px rgba(0,0,0,.5);
+      flex: 0 1 auto; max-width: 62%;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
     .tr-continue-button {
-      border: 1px solid rgba(91,42,140,.8); background: rgba(10,8,14,.9); color: #c9b8dc;
+      border: 1px solid rgba(91,42,140,.8); background: rgba(20,14,28,.92); color: #c9b8dc;
+      font-weight: 600;
     }
     .tr-continue-button:hover, .tr-continue-button:focus-visible {
-      background: rgba(45,21,70,.95); border-color: rgba(200,170,230,1); outline: none;
+      background: rgba(45,21,70,.97); border-color: rgba(200,170,230,1); outline: none;
     }
     .tr-exit-button {
-      border: 1px solid rgba(136,145,160,.4); background: rgba(10,8,14,.7); color: #8891a0;
+      border: 1px solid rgba(136,145,160,.4); background: rgba(10,8,14,.75); color: #8891a0;
     }
     .tr-exit-button:hover, .tr-exit-button:focus-visible {
       border-color: rgba(136,145,160,.75); color: #c8cdd6; outline: none;
     }
-    @media (max-width: 600px) {
-      .tr-buttons { top: 10px; left: 10px; gap: 6px; }
-      .tr-buttons button { padding: 7px 12px; font-size: 12px; }
+    @media (max-width: 420px) {
+      .tr-buttons button { padding: 11px 16px; font-size: 13px; }
     }
   `;
   document.head.appendChild(style);
