@@ -688,7 +688,7 @@
 
   // ── NAVIGATION ──────────────────────────────────────────────
   function navigateTo(path, icon) {
-    closeCommand();
+    hideCommandPanel();
     setTimeout(() => {
       if (typeof portalTransition === "function") {
         portalTransition(
@@ -971,8 +971,22 @@
   });
 
   // ── OPEN / CLOSE ────────────────────────────────────────────
+  // Tracks whether this panel pushed its own history entry when it
+  // opened. Without this, the browser back button had nothing to
+  // "undo" for the command panel -- it skipped straight past closing
+  // it to whatever page preceded landing in history (reported: back
+  // from inside the command prompt was landing on THE SYSTEM instead
+  // of closing back to landing). Same fix pattern already applied to
+  // the hub menu (hub-menu.js) and the TOC boot sequence (toc.js's
+  // own openTOCInteractive) earlier this session.
+  let cmdPushedState = false;
+
   function openCommand() {
     panel.style.display = "flex";
+    if (!cmdPushedState) {
+      history.pushState({ cmdOpen: true }, "", "/landing?cmd=open");
+      cmdPushedState = true;
+    }
     // Double rAF ensures the panel is painted before we try to write to cmdBody
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -987,11 +1001,38 @@
   }
 
   function closeCommand() {
+    hideCommandPanel();
+    // Closed via the X button or Escape rather than the back button --
+    // pop the history entry we pushed on open so it doesn't linger as
+    // a dead step the next time the visitor actually presses back.
+    if (cmdPushedState) {
+      cmdPushedState = false;
+      history.back();
+    }
+  }
+
+  // Visual-only close, no history.back(). Used when the panel is
+  // closing because the visitor is navigating to a new page (see
+  // navigateTo below) -- calling history.back() there would race
+  // against the upcoming navigation, briefly sending the browser
+  // backward before jumping forward to the actual destination.
+  function hideCommandPanel() {
     panel.classList.remove("open");
     setTimeout(() => {
       panel.style.display = "none";
     }, 260);
+    cmdPushedState = false;
   }
+
+  // A pushed command-panel state was popped by the browser back
+  // button: close the panel in place rather than letting the
+  // navigation continue past it to whatever page preceded landing.
+  window.addEventListener("popstate", (e) => {
+    if (cmdPushedState && (!e.state || !e.state.cmdOpen)) {
+      cmdPushedState = false;
+      closeCommand();
+    }
+  });
 
   document.getElementById("cmdClose").addEventListener("click", closeCommand);
   document.addEventListener("keydown", (e) => {
