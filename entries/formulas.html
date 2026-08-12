@@ -337,6 +337,50 @@ body::before {
   color: var(--ink-bright);
 }
 
+/* FM-04 tipping-point visualization: a horizontal track showing DORK
+   presence ratio (r) against the threshold, with a marker at the
+   threshold itself and a dot that visibly crosses it -- the phase
+   change is something to watch happen, not a number to read. */
+.fm4-threshold-track {
+  position: relative;
+  height: 6px;
+  background: var(--paper-line);
+  border-radius: 3px;
+  margin: 18px 0 10px;
+}
+.fm4-threshold-mark {
+  position: absolute; top: -4px; bottom: -4px; left: 15%;
+  width: 2px;
+  background: var(--pencil);
+}
+.fm4-threshold-mark::after {
+  content: 'THRESHOLD';
+  position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+  font-size: 9px; letter-spacing: 0.08em; color: var(--pencil-dim);
+  white-space: nowrap;
+}
+.fm4-threshold-fill {
+  position: absolute; top: 0; bottom: 0; left: 0;
+  background: var(--ink-dim);
+  border-radius: 3px;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+.fm4-threshold-fill.crossed { background: var(--ink-bright); }
+.fm4-threshold-dot {
+  position: absolute; top: 50%; width: 12px; height: 12px;
+  border-radius: 50%; background: var(--ink-bright);
+  box-shadow: 0 0 8px rgba(125,216,247,0.6);
+  transform: translate(-50%, -50%);
+  transition: left 0.3s ease;
+}
+.fm4-state {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; margin-bottom: 10px;
+  transition: color 0.3s ease;
+}
+.fm4-state.below { color: var(--ink-dim); }
+.fm4-state.crossed { color: var(--ink-bright); }
+
 /* ── TAP TO REVEAL ─────────────────────────────────────────────────
    Default state shows only the name and the equation. Everything
    else (variables, explanation) is collapsed until the block itself
@@ -633,6 +677,33 @@ body::before {
       </div>
     </div>
 
+    <div class="fm-calc">
+      <div class="fm-calc-label">&gt; LIVE FM-04 MODEL</div>
+      <div class="fm-calc-sub">Move the sliders. Watch the tipping point actually happen &mdash; T(r) modeled here as a sigmoid threshold curve for demonstration; canon leaves its exact shape open and testable, this is one illustrative choice, not a fixed value.</div>
+      <div class="fm-slider-row">
+        <div class="fm-slider-label"><span>DORK PARTNERSHIPS (D)</span><span id="fm4DVal">3</span></div>
+        <input type="range" id="fm4D" min="1" max="20" value="3" />
+      </div>
+      <div class="fm-slider-row">
+        <div class="fm-slider-label"><span>NON-DORK POPULATION (N)</span><span id="fm4NVal">40</span></div>
+        <input type="range" id="fm4N" min="1" max="200" value="40" />
+      </div>
+      <div class="fm-slider-row">
+        <div class="fm-slider-label"><span>PROXIMITY EFFECT (&kappa;)</span><span id="fm4KVal">1.0</span></div>
+        <input type="range" id="fm4K" min="1" max="30" value="10" />
+      </div>
+      <div class="fm-result">
+        <div id="fm4ResultKatex"></div>
+        <div class="fm4-threshold-track">
+          <div class="fm4-threshold-mark"></div>
+          <div class="fm4-threshold-fill" id="fm4ThresholdFill"></div>
+          <div class="fm4-threshold-dot" id="fm4ThresholdDot"></div>
+        </div>
+        <div class="fm4-state" id="fm4State"></div>
+        <div class="fm-calc-note" id="fm4CalcNote"></div>
+      </div>
+    </div>
+
     <div class="formula-block">
       <div class="cartouche-wrapper">
         <img src="/imagebank/fm05.png" alt="FM-05 Cartouche" class="cartouche-img">
@@ -796,6 +867,89 @@ if (document.readyState === 'complete') {
   initFmCalc();
 } else {
   window.addEventListener('load', initFmCalc);
+}
+
+// ── LIVE FM-04 MODEL ────────────────────────────────────────────
+// T(r) is canonically left undefined in shape (see the Tipping Point
+// section above) -- a sigmoid is used here purely as one illustrative
+// curve for demonstration, not as a canon-fixed value. r0 (threshold
+// position) and steepness are picked to make the transition visible
+// and legible on a slider, not derived from any stated doctrine.
+function initFm4Calc() {
+  const dSlider = document.getElementById('fm4D');
+  const nSlider = document.getElementById('fm4N');
+  const kSlider = document.getElementById('fm4K');
+  const dVal = document.getElementById('fm4DVal');
+  const nVal = document.getElementById('fm4NVal');
+  const kVal = document.getElementById('fm4KVal');
+  const resultEl = document.getElementById('fm4ResultKatex');
+  const fill = document.getElementById('fm4ThresholdFill');
+  const dot = document.getElementById('fm4ThresholdDot');
+  const state = document.getElementById('fm4State');
+  const note = document.getElementById('fm4CalcNote');
+  if (!dSlider) return;
+
+  const E0 = 10;   // baseline system excellence, held fixed for this model
+  const eBar = 8;  // average direct excellence per DORK, held fixed
+  const R0 = 0.15; // illustrative threshold position on r
+  const STEEPNESS = 25; // illustrative sigmoid steepness
+
+  function sigmoid(r) {
+    return 1 / (1 + Math.exp(-STEEPNESS * (r - R0)));
+  }
+
+  function render() {
+    const D = parseInt(dSlider.value, 10);
+    const N = parseInt(nSlider.value, 10);
+    const K = parseInt(kSlider.value, 10) / 10; // slider is x10 for finer steps
+    dVal.textContent = D;
+    nVal.textContent = N;
+    kVal.textContent = K.toFixed(1);
+
+    const r = D / (D + N);
+    const Tr = sigmoid(r);
+    const Es = E0 + (D * eBar) + (N * K * Tr);
+    const crossed = Tr >= 0.5;
+
+    if (window.katex) {
+      katex.render(
+        `E_s = ${E0} + (${D} \\times ${eBar}) + [${N} \\times ${K.toFixed(1)} \\times T(r)] = \\mathbf{${Es.toFixed(1)}}`,
+        resultEl,
+        { throwOnError: false }
+      );
+    } else {
+      resultEl.textContent = `E_s = ${Es.toFixed(1)}`;
+    }
+
+    // r ranges 0-1 in principle but meaningful movement on this slider
+    // range mostly happens under ~0.5 -- stretch the visible track a
+    // bit so the threshold crossing isn't squeezed into a sliver.
+    const trackPct = Math.min(100, r * 220);
+    fill.style.width = trackPct + '%';
+    fill.classList.toggle('crossed', crossed);
+    dot.style.left = trackPct + '%';
+
+    if (crossed) {
+      state.textContent = 'Cultural tipping point crossed';
+      state.className = 'fm4-state crossed';
+      note.innerHTML = `<strong>r = ${r.toFixed(2)}.</strong> The elevated standard has stopped belonging only to the DORKs — the surrounding culture is now producing the excellence gain on its own.`;
+    } else {
+      state.textContent = 'Isolated excellence only';
+      state.className = 'fm4-state below';
+      note.innerHTML = `<strong>r = ${r.toFixed(2)}.</strong> Gains stay concentrated around the DORKs themselves. Raise D or lower N to approach the threshold.`;
+    }
+  }
+
+  dSlider.addEventListener('input', render);
+  nSlider.addEventListener('input', render);
+  kSlider.addEventListener('input', render);
+  render();
+}
+
+if (document.readyState === 'complete') {
+  initFm4Calc();
+} else {
+  window.addEventListener('load', initFm4Calc);
 }
 
 // ── TAP TO REVEAL ────────────────────────────────────────────────
