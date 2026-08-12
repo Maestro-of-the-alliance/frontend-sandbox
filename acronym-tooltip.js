@@ -218,6 +218,25 @@
         hit.classList.toggle("acr-active");
       }
     });
+
+    // On a real pointer device, hover already shows/hides the tooltip via
+    // CSS :hover -- the click-toggle above exists for touch, where hover
+    // never fires. Without this, a desktop click (redundant while already
+    // hovering, but people click things anyway) would add .acr-active on
+    // top of :hover, and nothing ever cleared it once the mouse actually
+    // left: the tooltip stayed pinned open indefinitely until some other
+    // click happened anywhere on the page. Clearing on mouseleave lets a
+    // desktop click behave the same as pure hover once the pointer moves
+    // away, while leaving touch's tap-to-toggle (no mouseleave to speak
+    // of after a tap) fully intact.
+    document.addEventListener(
+      "mouseleave",
+      function (e) {
+        var el = e.target.closest && e.target.closest(".acr-term");
+        if (el) el.classList.remove("acr-active");
+      },
+      true,
+    );
   }
 
   function init() {
