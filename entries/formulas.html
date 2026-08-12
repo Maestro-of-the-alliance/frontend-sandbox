@@ -337,13 +337,123 @@ body::before {
   color: var(--ink-bright);
 }
 
+/* ── TAP TO REVEAL ─────────────────────────────────────────────────
+   Default state shows only the name and the equation. Everything
+   else (variables, explanation) is collapsed until the block itself
+   is tapped -- the equation is the hook, the reading is the payoff. */
+.formula-block { cursor: pointer; }
+.formula-id { color: var(--pencil); transition: color 0.25s ease; }
+.formula-block.expanded .formula-id { color: var(--ink-bright); }
+
+.formula-reveal-cue {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-top: 2px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.formula-reveal-cue::before {
+  content: '▸';
+  color: var(--pencil-dim);
+  transition: transform 0.25s ease;
+  display: inline-block;
+}
+.formula-block.expanded .formula-reveal-cue::before { transform: rotate(90deg); }
+.formula-block.expanded .formula-reveal-cue { display: none; }
+
+.formula-body {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.5s cubic-bezier(.4,0,.2,1), opacity 0.4s ease;
+}
+.formula-block.expanded .formula-body {
+  max-height: 3000px;
+  opacity: 1;
+}
+
+/* ── CARTOUCHE: NATIVE COLOR, LARGER, SCRATCH TO REVEAL ────────────
+   No more color filter -- shown as the actual art. Sized up from
+   160px. Hidden under a scratch-off canvas layer until the visitor
+   drags across it, matching the site's existing decode/reveal habit
+   (hub menu's scramble text, REDOUT's whole visibility doctrine)
+   rather than showing everything immediately. */
+@media (min-width: 768px) {
+  .formula-block { grid-template-columns: 220px 1fr; }
+}
+.cartouche-wrapper {
+  width: 220px;
+  min-width: 220px;
+  position: relative;
+}
+.cartouche-img {
+  filter: none;
+  mix-blend-mode: normal;
+  border-radius: 2px;
+}
+.scratch-canvas {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+  touch-action: none;
+  border-radius: 2px;
+}
+.scratch-canvas.revealed {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+.scratch-hint {
+  position: absolute;
+  bottom: 8px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--void);
+  background: rgba(125,216,247,0.85);
+  padding: 3px 8px;
+  border-radius: 3px;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  white-space: nowrap;
+}
+.scratch-canvas.revealed + .scratch-hint,
+.scratch-hint.hidden { opacity: 0; }
+
+/* ── AMBIENT MOTION ───────────────────────────────────────────────
+   A slow cyan scanline sweeps down the page continuously -- a
+   surveying-instrument pass across the drawing, not a one-off. Kept
+   deliberately visible (unlike a near-invisible ambient tint) since
+   "monotonous" was the actual complaint being fixed. */
+.blueprint-scan {
+  position: fixed; left: 0; right: 0; height: 140px;
+  top: -140px;
+  background: linear-gradient(to bottom, transparent, rgba(125,216,247,0.05) 45%, rgba(125,216,247,0.09) 50%, rgba(125,216,247,0.05) 55%, transparent);
+  pointer-events: none;
+  z-index: 5;
+  animation: blueprintScan 13s linear infinite;
+}
+@keyframes blueprintScan {
+  0% { top: -140px; }
+  100% { top: 100vh; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .reg-mark, .header::after { animation: none !important; }
+  .reg-mark, .header::after, .blueprint-scan { animation: none !important; }
   .header::after { width: 100%; }
+  .blueprint-scan { display: none; }
+  .formula-body { transition: none; }
 }
 </style>
 </head>
 <body>
+
+<div class="blueprint-scan"></div>
 
 <div class="reg-mark tl"></div>
 <div class="reg-mark tr"></div>
@@ -687,6 +797,153 @@ if (document.readyState === 'complete') {
 } else {
   window.addEventListener('load', initFmCalc);
 }
+
+// ── TAP TO REVEAL ────────────────────────────────────────────────
+// Wraps everything after the equation into a collapsible body so the
+// default state is just the name and the math; a reveal cue and a
+// click on the block itself expand it.
+(function () {
+  document.querySelectorAll('.formula-block').forEach(function (block) {
+    var mathBox = block.querySelector('.math-container');
+    if (!mathBox) return;
+    var toReveal = [];
+    var node = mathBox.nextElementSibling;
+    while (node) {
+      var next = node.nextElementSibling;
+      toReveal.push(node);
+      node = next;
+    }
+    if (!toReveal.length) return;
+
+    var cue = document.createElement('div');
+    cue.className = 'formula-reveal-cue';
+    cue.textContent = 'Tap to reveal';
+    mathBox.insertAdjacentElement('afterend', cue);
+
+    var body = document.createElement('div');
+    body.className = 'formula-body';
+    toReveal.forEach(function (el) { body.appendChild(el); });
+    cue.insertAdjacentElement('afterend', body);
+
+    block.addEventListener('click', function (e) {
+      // Don't toggle collapse when the click landed on the scratch
+      // canvas -- that's its own drag interaction, not a reveal tap.
+      if (e.target.closest('.scratch-canvas')) return;
+      // Once expanded, only clicks in the header zone (name, equation,
+      // cue) toggle it back closed -- clicking inside the revealed
+      // text itself (to read, select, or click a highlighted term)
+      // shouldn't accidentally re-collapse the card out from under you.
+      if (block.classList.contains('expanded') && e.target.closest('.formula-body')) {
+        return;
+      }
+      block.classList.toggle('expanded');
+    });
+  });
+})();
+
+// ── SCRATCH TO REVEAL ────────────────────────────────────────────
+// Each cartouche is hidden under a canvas "scratch" layer until the
+// visitor drags across it, matching the site's existing decode/
+// reveal habit rather than showing every image immediately.
+(function () {
+  var REVEAL_THRESHOLD = 0.55; // fraction cleared before auto-finishing the rest
+
+  document.querySelectorAll('.cartouche-wrapper').forEach(function (wrapper) {
+    var img = wrapper.querySelector('.cartouche-img');
+    if (!img) return;
+
+    function setup() {
+      var w = wrapper.clientWidth, h = wrapper.clientHeight;
+      if (!w || !h) return;
+
+      var canvas = document.createElement('canvas');
+      canvas.className = 'scratch-canvas';
+      canvas.width = w;
+      canvas.height = h;
+      wrapper.appendChild(canvas);
+
+      var hint = document.createElement('div');
+      hint.className = 'scratch-hint';
+      hint.textContent = 'Scratch to reveal';
+      wrapper.appendChild(hint);
+
+      var ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#16324A';
+      ctx.fillRect(0, 0, w, h);
+      // A few pencil-tone diagonal hatch lines on the scratch layer
+      // itself, so it reads as a masked technical sheet, not a blank
+      // rectangle sitting over the art.
+      ctx.strokeStyle = 'rgba(125,216,247,0.12)';
+      ctx.lineWidth = 1;
+      for (var x = -h; x < w; x += 10) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x + h, h);
+        ctx.stroke();
+      }
+
+      var drawing = false;
+      var revealed = false;
+
+      function scratchAt(clientX, clientY) {
+        var rect = canvas.getBoundingClientRect();
+        var x = clientX - rect.left;
+        var y = clientY - rect.top;
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(x, y, 22, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function checkRevealed() {
+        if (revealed) return;
+        var data = ctx.getImageData(0, 0, w, h).data;
+        var cleared = 0;
+        var total = data.length / 4;
+        for (var i = 3; i < data.length; i += 4 * 17) { // sample, not every pixel
+          if (data[i] === 0) cleared++;
+        }
+        var sampled = Math.ceil(total / 17);
+        if (cleared / sampled >= REVEAL_THRESHOLD) {
+          revealed = true;
+          canvas.classList.add('revealed');
+          hint.classList.add('hidden');
+        }
+      }
+
+      function pointerDown(e) {
+        drawing = true;
+        hint.classList.add('hidden');
+        var p = e.touches ? e.touches[0] : e;
+        scratchAt(p.clientX, p.clientY);
+      }
+      function pointerMove(e) {
+        if (!drawing) return;
+        var p = e.touches ? e.touches[0] : e;
+        scratchAt(p.clientX, p.clientY);
+        checkRevealed();
+        e.preventDefault();
+      }
+      function pointerUp() {
+        drawing = false;
+        checkRevealed();
+      }
+
+      canvas.addEventListener('mousedown', pointerDown);
+      canvas.addEventListener('mousemove', pointerMove);
+      window.addEventListener('mouseup', pointerUp);
+      canvas.addEventListener('touchstart', pointerDown, { passive: true });
+      canvas.addEventListener('touchmove', pointerMove, { passive: false });
+      canvas.addEventListener('touchend', pointerUp);
+    }
+
+    if (img.complete) {
+      setup();
+    } else {
+      img.addEventListener('load', setup);
+    }
+  });
+})();
 </script>
 
 <script src="/randanime_shield.js"></script>

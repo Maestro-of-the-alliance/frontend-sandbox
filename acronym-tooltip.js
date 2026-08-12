@@ -95,7 +95,7 @@
       ".acr-term{font-weight:700;border-bottom:1px dotted currentColor;cursor:help;position:relative;}",
       ".acr-term .acr-tooltip{position:absolute;left:50%;bottom:100%;transform:translate(-50%,4px);",
       "margin-bottom:8px;background:#1a1208;color:#f4e9d8;padding:8px 12px;border-radius:8px;",
-      "font-size:13px;font-weight:400;line-height:1.4;width:max-content;max-width:240px;",
+      "font-size:13px;font-weight:400;line-height:1.4;width:max-content;max-width:min(240px,85vw);",
       "text-align:left;opacity:0;pointer-events:none;transition:opacity .15s ease, transform .15s ease;",
       "box-shadow:0 4px 14px rgba(0,0,0,.35);z-index:9999;border:1px solid rgba(212,175,55,.4);}",
       ".acr-term .acr-tooltip::after{content:'';position:absolute;top:100%;left:50%;",
