@@ -908,7 +908,28 @@
 
           const nameTd = document.createElement("td");
           nameTd.className = "entry-name-cell";
-          nameTd.textContent = entry.name;
+          const nameLink = document.createElement("a");
+          nameLink.href = entry.path;
+          nameLink.textContent = entry.name;
+          nameLink.style.color = "inherit";
+          nameLink.style.font = "inherit";
+          nameLink.style.textDecoration = "none";
+          nameLink.style.display = "block";
+          nameLink.addEventListener("click", (e) => {
+            // Stop this from also bubbling up to the row's own onclick --
+            // otherwise a ctrl/cmd-click meant to open a new tab would
+            // *also* fire the row's same-tab navigate, redirecting the
+            // current tab at the same time a new one opens.
+            e.stopPropagation();
+            // A real href means ctrl/cmd-click, middle-click, and the
+            // browser's own "open in new tab" context-menu item all work
+            // natively -- only intercept a plain left-click to keep the
+            // portal-transition animation for same-tab navigation.
+            if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+            e.preventDefault();
+            navigateTo(entry.path);
+          });
+          nameTd.appendChild(nameLink);
           tr.appendChild(nameTd);
 
           order.forEach((dim) => {
