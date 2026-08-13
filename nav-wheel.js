@@ -119,15 +119,17 @@
       --nw-accent: var(--nw-accent-base);
       --nw-accent-dim: var(--ghost-teal-dim, var(--cyan-dim, color-mix(in srgb, var(--nw-accent-base) 55%, transparent)));
       --nw-accent-faint: var(--ghost-teal-faint, var(--cyan-ghost, color-mix(in srgb, var(--nw-accent-base) 15%, transparent)));
-      /* --nw-page-nav-accent is each entry's own second-most-used color
-         (computed from actual color-frequency analysis of that entry's
-         real palette, not guessed) -- used only for the bottom nav,
-         hamburger, and search FAB, so navigation chrome reads as a
-         genuine second note in that page's specific palette rather than
-         a flat repeat of the same single accent used for everything.
-         Falls back to the primary accent for any page that hasn't set
-         it, so nothing breaks for untouched pages. */
-      --nw-nav-accent-base: var(--nw-page-nav-accent, var(--nw-accent-base));
+      /* Nav accent is derived automatically from the primary via CSS
+         relative color syntax (hsl(from ...)), not stored per-entry --
+         a hue rotation off whatever --nw-accent-base actually resolves
+         to, so it recomputes on its own if a page's primary color ever
+         changes later. Used only for the bottom nav, hamburger, and
+         search FAB, so navigation chrome reads as a genuine second
+         note in that page's palette rather than a flat repeat of the
+         same accent used everywhere. --nw-page-nav-accent remains
+         available as a manual override for the rare case a page wants
+         something specific instead of the automatic derivation. */
+      --nw-nav-accent-base: var(--nw-page-nav-accent, hsl(from var(--nw-accent-base) calc(h + 45) s l));
       --nw-nav-accent: var(--nw-nav-accent-base);
       --nw-nav-accent-dim: color-mix(in srgb, var(--nw-nav-accent-base) 55%, transparent);
       --nw-nav-accent-faint: color-mix(in srgb, var(--nw-nav-accent-base) 15%, transparent);
