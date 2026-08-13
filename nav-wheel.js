@@ -119,6 +119,18 @@
       --nw-accent: var(--nw-accent-base);
       --nw-accent-dim: var(--ghost-teal-dim, var(--cyan-dim, color-mix(in srgb, var(--nw-accent-base) 55%, transparent)));
       --nw-accent-faint: var(--ghost-teal-faint, var(--cyan-ghost, color-mix(in srgb, var(--nw-accent-base) 15%, transparent)));
+      /* --nw-page-nav-accent is each entry's own second-most-used color
+         (computed from actual color-frequency analysis of that entry's
+         real palette, not guessed) -- used only for the bottom nav,
+         hamburger, and search FAB, so navigation chrome reads as a
+         genuine second note in that page's specific palette rather than
+         a flat repeat of the same single accent used for everything.
+         Falls back to the primary accent for any page that hasn't set
+         it, so nothing breaks for untouched pages. */
+      --nw-nav-accent-base: var(--nw-page-nav-accent, var(--nw-accent-base));
+      --nw-nav-accent: var(--nw-nav-accent-base);
+      --nw-nav-accent-dim: color-mix(in srgb, var(--nw-nav-accent-base) 55%, transparent);
+      --nw-nav-accent-faint: color-mix(in srgb, var(--nw-nav-accent-base) 15%, transparent);
       --nw-text: var(--ghost-white, var(--white-ghost, #ffffff));
       --nw-text-dim: var(--ghost-white-dim, var(--white-dim, rgba(255,255,255,0.4)));
       --nw-bg: var(--void-deep, var(--void, #050508));
@@ -139,17 +151,17 @@
     #nw-burger-fallback {
       position: fixed; top: 16px; right: 28px; z-index: 9000;
       background: var(--nw-panel);
-      border: 1px solid var(--nw-accent-dim);
+      border: 1px solid var(--nw-nav-accent-dim);
       border-radius: 50%;
       width: 44px; height: 44px;
       display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px;
       cursor: pointer; padding: 5px;
-      box-shadow: 0 0 10px var(--nw-accent-faint);
+      box-shadow: 0 0 10px var(--nw-nav-accent-faint);
       transition: all 0.2s;
     }
-    #nw-burger-fallback:hover { box-shadow: 0 0 20px var(--nw-accent-dim); }
+    #nw-burger-fallback:hover { box-shadow: 0 0 20px var(--nw-nav-accent-dim); }
     #nw-burger-fallback span {
-      display: block; width: 18px; height: 2px; background: var(--nw-accent);
+      display: block; width: 18px; height: 2px; background: var(--nw-nav-accent);
       transition: all 0.3s ease; transform-origin: center;
     }
     #nw-burger-fallback.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
@@ -159,19 +171,19 @@
     #nw-search-fab {
       position: fixed; top: 16px; right: 84px; z-index: 9000;
       background: var(--nw-panel);
-      border: 1px solid var(--nw-accent-dim);
+      border: 1px solid var(--nw-nav-accent-dim);
       border-radius: 999px;
       display: flex; align-items: center; gap: 8px;
       padding: 11px 16px 11px 12px;
       cursor: pointer;
-      box-shadow: 0 0 14px var(--nw-accent-faint);
+      box-shadow: 0 0 14px var(--nw-nav-accent-faint);
       transition: all 0.2s;
       font-family: inherit;
-      color: var(--nw-accent);
+      color: var(--nw-nav-accent);
       text-decoration: none;
     }
-    #nw-search-fab:hover { box-shadow: 0 0 24px var(--nw-accent-dim); transform: translateY(-1px); }
-    #nw-search-fab svg { width: 18px; height: 18px; flex-shrink: 0; stroke: var(--nw-accent); }
+    #nw-search-fab:hover { box-shadow: 0 0 24px var(--nw-nav-accent-dim); transform: translateY(-1px); }
+    #nw-search-fab svg { width: 18px; height: 18px; flex-shrink: 0; stroke: var(--nw-nav-accent); }
     #nw-search-fab span {
       font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
       white-space: nowrap;
@@ -241,14 +253,14 @@
     .nw-bottom-nav {
       display: flex; justify-content: space-between; align-items: center;
       padding: 28px 24px 40px; margin-top: 40px;
-      border-top: 1px solid var(--nw-accent-faint); background: transparent;
+      border-top: 1px solid var(--nw-nav-accent-faint); background: transparent;
     }
     .nw-bottom-nav a {
       font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--nw-accent-dim); text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 6px;
+      color: var(--nw-nav-accent-dim); text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 6px;
       transition: color 0.2s, transform 0.2s; cursor: pointer;
     }
-    .nw-bottom-nav a:hover, .nw-bottom-nav a:active { color: var(--nw-accent); transform: scale(1.05); }
+    .nw-bottom-nav a:hover, .nw-bottom-nav a:active { color: var(--nw-nav-accent); transform: scale(1.05); }
     .nw-arrow-sym { font-size: 24px; line-height: 1; }
     .nw-arrow-label { font-size: 9px; opacity: 0.9; max-width: 90px; text-align: center; line-height: 1.3; }
     .nw-center-home { display: flex; flex-direction: column; align-items: center; gap: 4px; }
