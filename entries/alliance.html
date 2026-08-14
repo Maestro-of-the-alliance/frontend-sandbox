@@ -9,8 +9,34 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="skin-a.css" />
+    <style>
+      /* ALLIANCE-SPECIFIC: floating SVPI watermark. Scoped to this
+         entry alone via inline style rather than skin-a.css, since
+         that file is shared with agora.html and domo.html and this
+         was requested for THE ALLIANCE specifically. */
+      .svpi-float {
+        position: fixed;
+        top: 50%; left: 50%;
+        width: min(70vw, 640px);
+        transform: translate(-50%, -50%) rotate(0deg);
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.05;
+        animation: svpiDrift 90s ease-in-out infinite alternate;
+      }
+      .svpi-float img { width: 100%; height: auto; display: block; }
+      @keyframes svpiDrift {
+        0% { transform: translate(-50%, -50%) rotate(-4deg) scale(1); }
+        50% { transform: translate(-48%, -52%) rotate(3deg) scale(1.06); }
+        100% { transform: translate(-52%, -49%) rotate(-2deg) scale(1.02); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .svpi-float { animation: none; }
+      }
+    </style>
 </head>
   <body>
+    <div class="svpi-float"><img src="/imagebank/svpi-white.png" alt="" /></div>
     <div class="vignette"></div>
     <div class="security-sweep" id="secSweep"></div>
 
