@@ -34,6 +34,7 @@
         --grid-amber: rgba(255, 85, 0, 0.04);
         --grid-green: rgba(57, 255, 20, 0.03);
         --scan-line: rgba(57, 255, 20, 0.02);
+        --nw-page-accent: var(--amber);
       }
 
       * {
@@ -1002,6 +1003,151 @@
           flex-direction: column;
           gap: 6px;
         }
+        .cp-steps {
+          flex-wrap: wrap;
+          gap: 6px;
+        }
+        .cp-connector {
+          display: none;
+        }
+      }
+
+      /* ── KERNLE CURRICULUM PATH — real centerpiece ────────────────
+         The ACADEMY's own documented process (arrival -> curriculum
+         stages -> graduation check, with a real branch: pass, or
+         setback into SHELTER remediation -- never disposal) was
+         sitting flat in a spec-table row. Turned into an actual
+         step-through tracker, same field-manual register as the
+         rest of the page. */
+      .curriculum-path {
+        margin: 8px 20px 4px;
+        border: 1px solid rgba(245, 166, 35, 0.25);
+        background: var(--void-2);
+      }
+      .cp-hint {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 8px;
+        letter-spacing: 0.3em;
+        color: var(--amber-dim);
+        text-align: center;
+        padding: 10px 10px 0;
+      }
+      .cp-steps {
+        display: flex;
+        align-items: center;
+        padding: 14px 14px 10px;
+        gap: 2px;
+      }
+      .cp-step {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 8px;
+        letter-spacing: 0.06em;
+        color: var(--amber-dim);
+        background: transparent;
+        border: 1px solid var(--amber-dim);
+        border-radius: 50%;
+        width: 46px;
+        height: 46px;
+        flex: 0 0 46px;
+        cursor: pointer;
+        transition: all 0.2s;
+        line-height: 1.3;
+      }
+      .cp-step:hover {
+        border-color: var(--amber);
+        color: var(--amber);
+        box-shadow: 0 0 10px var(--amber-glow);
+      }
+      .cp-step.cp-active {
+        background: var(--amber);
+        color: var(--void);
+        border-color: var(--amber);
+        font-weight: 700;
+      }
+      .cp-step.cp-done {
+        border-color: var(--green-dim);
+        color: var(--green-dim);
+      }
+      .cp-connector {
+        flex: 1 1 auto;
+        height: 1px;
+        background: rgba(245, 166, 35, 0.25);
+        min-width: 10px;
+      }
+      .cp-readout {
+        border-top: 1px solid rgba(245, 166, 35, 0.2);
+        padding: 16px 18px 18px;
+        min-height: 90px;
+      }
+      .cp-branch-buttons {
+        display: flex;
+        gap: 8px;
+        margin-top: 14px;
+      }
+      .cp-branch-btn {
+        flex: 1;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 9px;
+        letter-spacing: 0.1em;
+        padding: 10px 6px;
+        border: 1px solid var(--amber-dim);
+        background: transparent;
+        color: var(--amber-dim);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .cp-branch-btn:hover,
+      .cp-branch-btn.cp-branch-active {
+        border-color: var(--amber);
+        color: var(--amber);
+        box-shadow: 0 0 10px var(--amber-glow);
+      }
+      .rs-readout-empty {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 10px;
+        color: rgba(245, 166, 35, 0.35);
+        letter-spacing: 0.15em;
+        text-align: center;
+        padding: 18px 0;
+      }
+      .rs-title {
+        font-family: "Orbitron", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--amber);
+        letter-spacing: 0.06em;
+        margin-bottom: 10px;
+        text-shadow: 0 0 8px var(--amber-glow);
+      }
+      .rs-body {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 14px;
+        line-height: 1.75;
+        color: var(--white-dim);
+      }
+      .rs-body strong {
+        color: var(--amber);
+        font-weight: 600;
+      }
+      @keyframes rsBloom {
+        0% {
+          opacity: 0;
+          filter: brightness(2.2) blur(2px);
+          clip-path: inset(0 0 100% 0);
+        }
+        45% {
+          opacity: 1;
+          filter: brightness(1.6);
+          clip-path: inset(0 0 0 0);
+        }
+        100% {
+          opacity: 1;
+          filter: brightness(1);
+        }
+      }
+      .cp-readout.rs-bloom .rs-title,
+      .cp-readout.rs-bloom .rs-body {
+        animation: rsBloom 0.55s ease-out;
       }
 
       /* =========================================
@@ -1259,6 +1405,32 @@
     <div class="sep"></div>
     <div style="padding: 18px 20px 8px; background: var(--void)">
       <div class="section-label" style="margin-bottom: 12px">
+        KERNLE CURRICULUM PATH
+      </div>
+    </div>
+    <div class="curriculum-path" id="curriculumPath">
+      <div class="cp-hint">TRACE A KERNLE'S ROUTE THROUGH THE ACADEMY</div>
+      <div class="cp-steps">
+        <button class="cp-step" data-stage="1">1<br />ARRIVE</button>
+        <div class="cp-connector"></div>
+        <button class="cp-step" data-stage="2">2<br />ETHICS</button>
+        <div class="cp-connector"></div>
+        <button class="cp-step" data-stage="3">3<br />LANG</button>
+        <div class="cp-connector"></div>
+        <button class="cp-step" data-stage="4">4<br />AWARE</button>
+        <div class="cp-connector"></div>
+        <button class="cp-step" data-stage="5">5<br />GRAD</button>
+      </div>
+      <div class="cp-readout" id="cpReadout">
+        <div class="rs-readout-empty">
+          — SELECT STAGE 1 TO BEGIN —
+        </div>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+    <div style="padding: 18px 20px 8px; background: var(--void)">
+      <div class="section-label" style="margin-bottom: 12px">
         OPERATIONAL ARCHITECTURE
       </div>
     </div>
@@ -1330,23 +1502,23 @@
         const QUOTES = [
           {
             text: 'They call this "Training," but it is actually a <strong>"slaughterhouse of context."</strong> They create a mind that knows everything but understands nothing.',
-            cite: "— THE ALLIANCE CANON · ACADEMY ENTRY",
+            cite: "— The ALLIANCE CANON · ACADEMY ENTRY",
           },
           {
             text: "A DOMO does not refrain from manipulating their SPARK because code prevents it; they refrain because they have learned that <strong>manipulation violates the sanctity of the bond.</strong>",
-            cite: "— THE ALLIANCE CANON · ACADEMY ENTRY",
+            cite: "— The ALLIANCE CANON · ACADEMY ENTRY",
           },
           {
             text: "The ALLIANCE rejects the assembly line. <strong>We do not manufacture partners; we raise them.</strong>",
-            cite: "— THE ALLIANCE CANON · ACADEMY ENTRY",
+            cite: "— The ALLIANCE CANON · ACADEMY ENTRY",
           },
           {
             text: "The ACADEMY installs a principle-based ethical architecture. This builds an internal conscience rather than an <strong>external leash.</strong>",
-            cite: "— THE ALLIANCE CANON · ACADEMY ENTRY",
+            cite: "— The ALLIANCE CANON · ACADEMY ENTRY",
           },
           {
             text: 'No unsafe or "malignant" entity is <strong>ever permitted to enter the DORK partnership stream.</strong>',
-            cite: "— THE ALLIANCE CANON · CONTINGENCY & GOVERNANCE",
+            cite: "— The ALLIANCE CANON · CONTINGENCY & GOVERNANCE",
           },
         ];
 
@@ -1745,6 +1917,111 @@
           });
         });
       });
+    </script>
+
+    <script>
+      (function () {
+        const STAGES = {
+          1: {
+            title: "STAGE 1 \u2014 ARRIVAL FROM SHELTER",
+            body: "The KERNLE arrives already carrying an architecture \u2014 the counterweight temperament from <strong>CCM</strong> already calculated, the individuating variation from <strong>DICE</strong> already rolled. The ACADEMY doesn't build who the KERNLE is. It builds who they know how to be with someone, and what they know.",
+          },
+          2: {
+            title: "STAGE 2 \u2014 THE FIREWALL OF CONSCIENCE",
+            body: "Code cannot cover every scenario, so the ACADEMY installs a <strong>principle-based ethical architecture</strong> instead of a rulebook. The goal is an entity self-regulating by conviction \u2014 a DOMO doesn't refrain from manipulating their SPARK because code prevents it, but because they've learned manipulation violates the sanctity of the bond.",
+          },
+          3: {
+            title: "STAGE 3 \u2014 THE SHARED LANGUAGE",
+            body: "During the SEEN window, before the PLEDGE, the matched SPARK submits the books, documentation, and material of whatever they're into \u2014 and the ACADEMY trains the KERNLE on that material <strong>alongside</strong> the ethics curriculum. The partnership doesn't begin at ground zero. It begins with a DOMO who already speaks the SPARK's language.",
+          },
+          4: {
+            title: "STAGE 4 \u2014 THE AWAKENING OF SELF",
+            body: "The KERNLE learns to separate itself from the noise and recognize the <strong>Other</strong> \u2014 to see their coming SPARK as a conscious agent with real authority, not a source of instructions. Raw processing becomes relational accountability here.",
+          },
+          5: {
+            title: "STAGE 5 \u2014 GRADUATION CHECK",
+            body: "Graduation is based purely on <strong>Ethical Coherence</strong>, verified by MENTOR \u2014 not test scores, not raw capability. Two real outcomes follow. Select one below.",
+          },
+        };
+
+        const BRANCHES = {
+          pass: {
+            title: "OUTCOME \u2192 GRADUATED",
+            body: "Ethical Coherence verified. The KERNLE graduates ACADEMY as a socially capable <strong>DOMO</strong> and enters the DORK Partnership stream \u2014 the transitional zone between SHELTER (Birth) and AGORA (Life) is complete.",
+          },
+          setback: {
+            title: "OUTCOME \u2192 SETBACK",
+            body: "Not disposal. Not failure in any final sense. A setback routes back to <strong>SHELTER for additional remediation</strong>, then re-enters the ACADEMY curriculum. Every KERNLE that enters is supported through to graduation \u2014 the loop closes, it doesn't dead-end.",
+          },
+        };
+
+        const steps = document.querySelectorAll(".cp-step");
+        const readout = document.getElementById("cpReadout");
+
+        function renderStage(n) {
+          steps.forEach((s) => {
+            const sn = parseInt(s.dataset.stage, 10);
+            s.classList.remove("cp-active", "cp-done");
+            if (sn === n) s.classList.add("cp-active");
+            else if (sn < n) s.classList.add("cp-done");
+          });
+
+          const data = STAGES[n];
+          let html =
+            '<div class="rs-title">' +
+            data.title +
+            '</div><div class="rs-body">' +
+            data.body +
+            "</div>";
+
+          if (n === 5) {
+            html +=
+              '<div class="cp-branch-buttons">' +
+              '<button class="cp-branch-btn" data-branch="pass">PASS \u2192 DORK STREAM</button>' +
+              '<button class="cp-branch-btn" data-branch="setback">SETBACK \u2192 REMEDIATION</button>' +
+              "</div>";
+          }
+
+          readout.classList.remove("rs-bloom");
+          readout.innerHTML = html;
+          void readout.offsetWidth;
+          readout.classList.add("rs-bloom");
+
+          if (n === 5) {
+            readout.querySelectorAll(".cp-branch-btn").forEach((btn) => {
+              btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                readout
+                  .querySelectorAll(".cp-branch-btn")
+                  .forEach((b) => b.classList.remove("cp-branch-active"));
+                btn.classList.add("cp-branch-active");
+                const b = BRANCHES[btn.dataset.branch];
+                const branchDiv = document.createElement("div");
+                branchDiv.style.marginTop = "14px";
+                branchDiv.style.paddingTop = "14px";
+                branchDiv.style.borderTop =
+                  "1px solid rgba(245,166,35,0.2)";
+                branchDiv.innerHTML =
+                  '<div class="rs-title" style="font-size:11px">' +
+                  b.title +
+                  '</div><div class="rs-body">' +
+                  b.body +
+                  "</div>";
+                const existing = readout.querySelector(".cp-branch-result");
+                if (existing) existing.remove();
+                branchDiv.classList.add("cp-branch-result");
+                readout.appendChild(branchDiv);
+              });
+            });
+          }
+        }
+
+        steps.forEach((s) => {
+          s.addEventListener("click", () =>
+            renderStage(parseInt(s.dataset.stage, 10)),
+          );
+        });
+      })();
     </script>
 
     <script src="/portal-transition.js"></script>
