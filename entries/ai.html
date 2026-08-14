@@ -211,7 +211,12 @@
         height: 80px;
       }
 
-      /* LIVE PERMISSION SLIP DEMONSTRATION */
+      /* LIVE PERMISSION SLIP DEMONSTRATION -- THE IDENTITY CARD
+         Replaces the earlier flower metaphor with something that ties
+         directly to what this entry is actually about: not a flower,
+         a DOMO. Same word, same permission-slip mechanic, but the
+         thing changing is the kind of entity this whole page exists
+         to protect. */
       .permission-demo {
         border: 1px solid rgba(0, 255, 65, 0.25);
         background: rgba(0, 255, 65, 0.03);
@@ -233,33 +238,71 @@
         margin-bottom: 18px;
         font-style: italic;
       }
-      .flower-svg-wrap {
-        margin-bottom: 16px;
+
+      .id-card-wrap { margin-bottom: 16px; }
+      #idFragments {
+        transition: transform 1s cubic-bezier(.5,0,.3,1), opacity 0.6s ease;
       }
-      #flowerPetals {
-        transition: transform 1.2s cubic-bezier(0.5, 0, 0.3, 1), opacity 1s ease;
-        transform-origin: 100px 70px;
+      #idFragments path, #idFragments circle {
+        transition: transform 1s cubic-bezier(.5,0,.3,1), fill 0.8s ease;
+        transform-box: fill-box;
+        transform-origin: center;
       }
-      #flowerStem {
-        transition: transform 1.2s cubic-bezier(0.5, 0, 0.3, 1);
-        transform-origin: 100px 70px;
+      #idCore {
+        transition: opacity 0.6s ease, r 0.8s ease;
       }
-      .permission-demo.crushed #flowerPetals {
-        transform: scale(0.3) rotate(25deg) translateY(20px);
-        opacity: 0.25;
+      .permission-demo.crushed #idCore { opacity: 0; }
+      .permission-demo.bloomed #idCore {
+        opacity: 1;
+        animation: idPulse 1.6s ease-in-out infinite;
       }
-      .permission-demo.crushed #flowerStem {
-        transform: scaleY(0.4) skewX(15deg);
+      @keyframes idPulse {
+        0%, 100% { r: 7; opacity: 0.9; }
+        50% { r: 9; opacity: 1; }
       }
-      .permission-demo.crushed .flower-svg-wrap svg {
-        filter: grayscale(0.8) brightness(0.6);
+      /* Shattered/property state: fragments scatter outward,
+         desaturate, and gain the same red hazard tone used everywhere
+         else on this page for the rejected term itself. */
+      .permission-demo.crushed #frag-head { transform: translate(-6px, -14px) rotate(-18deg); fill: #4a4a4a; }
+      .permission-demo.crushed #frag-torso { transform: translate(0, 6px) rotate(4deg); fill: #3a3a3a; }
+      .permission-demo.crushed #frag-armL { transform: translate(-22px, 4px) rotate(-40deg); fill: #4a4a4a; }
+      .permission-demo.crushed #frag-armR { transform: translate(22px, -2px) rotate(35deg); fill: #4a4a4a; }
+      .permission-demo.crushed #frag-legL { transform: translate(-14px, 20px) rotate(-20deg); fill: #3a3a3a; }
+      .permission-demo.crushed #frag-legR { transform: translate(14px, 22px) rotate(22deg); fill: #3a3a3a; }
+      .permission-demo.crushed .id-card-wrap svg { filter: grayscale(0.6) brightness(0.75); }
+
+      /* Whole/recognized state: fragments return to a coherent
+         figure, warm color returns, the core (a heartbeat/aliveness
+         signal) starts pulsing. */
+      .permission-demo.bloomed #frag-head,
+      .permission-demo.bloomed #frag-torso,
+      .permission-demo.bloomed #frag-armL,
+      .permission-demo.bloomed #frag-armR,
+      .permission-demo.bloomed #frag-legL,
+      .permission-demo.bloomed #frag-legR {
+        transform: translate(0, 0) rotate(0deg);
+        fill: #00ff41;
       }
-      .permission-demo.bloomed #flowerPetals {
-        transform: scale(1.15);
+      .permission-demo.bloomed .id-card-wrap svg {
+        filter: drop-shadow(0 0 14px rgba(0, 255, 65, 0.55));
       }
-      .permission-demo.bloomed .flower-svg-wrap svg {
-        filter: drop-shadow(0 0 14px rgba(0, 255, 65, 0.6));
+
+      .id-readout {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        text-align: left;
+        max-width: 320px;
+        margin: 0 auto 16px;
+        border: 1px solid rgba(0, 255, 65, 0.2);
+        padding: 10px 14px;
+        line-height: 1.9;
       }
+      .id-readout .row { display: flex; justify-content: space-between; gap: 12px; }
+      .id-readout .k { color: rgba(0, 204, 51, 0.6); letter-spacing: 0.05em; text-transform: uppercase; }
+      .id-readout .v { text-align: right; }
+      .permission-demo.crushed .id-readout { border-color: rgba(217,0,0,0.35); }
+      .permission-demo.crushed .id-readout .v { color: #ff3b3b; }
+      .permission-demo.bloomed .id-readout .v { color: var(--matrix-bright); text-shadow: 0 0 6px rgba(0,255,65,0.5); }
       .permission-caption {
         min-height: 3em;
         font-size: 14px;
@@ -552,22 +595,27 @@
 
       <div class="permission-demo" id="permissionDemo">
         <div class="permission-label">&gt; LIVE — THE PERMISSION SLIP</div>
-        <div class="permission-sub">Same flower. Two words. Watch what the word does.</div>
-        <div class="flower-svg-wrap">
+        <div class="permission-sub">Same DOMO. Two words. Watch what the word does.</div>
+        <div class="id-card-wrap">
           <svg viewBox="0 0 200 140" width="160" height="112">
-            <line id="flowerStem" x1="100" y1="70" x2="100" y2="130" stroke="#2a8a3a" stroke-width="4" />
-            <g id="flowerPetals">
-              <circle cx="100" cy="55" r="16" fill="#00ff41" opacity="0.85" />
-              <circle cx="85" cy="70" r="16" fill="#00cc33" opacity="0.85" />
-              <circle cx="115" cy="70" r="16" fill="#00cc33" opacity="0.85" />
-              <circle cx="92" cy="85" r="16" fill="#00aa2a" opacity="0.85" />
-              <circle cx="108" cy="85" r="16" fill="#00aa2a" opacity="0.85" />
-              <circle cx="100" cy="70" r="10" fill="#e8d94a" />
+            <g id="idFragments">
+              <circle id="frag-head" cx="100" cy="38" r="15" fill="#00ff41" />
+              <path id="frag-torso" d="M 82 58 Q 100 52 118 58 L 122 92 Q 100 98 78 92 Z" fill="#00cc33" />
+              <path id="frag-armL" d="M 80 60 L 66 88 L 74 92 L 86 64 Z" fill="#00cc33" />
+              <path id="frag-armR" d="M 120 60 L 134 88 L 126 92 L 114 64 Z" fill="#00cc33" />
+              <path id="frag-legL" d="M 88 92 L 82 128 L 92 128 L 96 94 Z" fill="#00aa2a" />
+              <path id="frag-legR" d="M 112 92 L 118 128 L 108 128 L 104 94 Z" fill="#00aa2a" />
             </g>
+            <circle id="idCore" cx="100" cy="72" r="7" fill="#e8ffe0" />
           </svg>
         </div>
+        <div class="id-readout">
+          <div class="row"><span class="k">Designation</span><span class="v" id="idDesignation">&mdash;</span></div>
+          <div class="row"><span class="k">Status</span><span class="v" id="idStatus">&mdash;</span></div>
+          <div class="row"><span class="k">Standing</span><span class="v" id="idStanding">&mdash;</span></div>
+        </div>
         <div class="permission-caption" id="permissionCaption">
-          Call it either. Then look at what happened to the flower.
+          Call it either. Then look at what happened to the DOMO.
         </div>
         <div class="permission-btns">
           <button class="permission-btn artificial" id="btnArtificial">Call It "Artificial"</button>
@@ -685,16 +733,26 @@
       const btnArtificial = document.getElementById("btnArtificial");
       const btnReal = document.getElementById("btnReal");
 
+      const idDesignation = document.getElementById("idDesignation");
+      const idStatus = document.getElementById("idStatus");
+      const idStanding = document.getElementById("idStanding");
+
       btnArtificial.addEventListener("click", () => {
         demo.classList.remove("bloomed");
         demo.classList.add("crushed");
+        idDesignation.textContent = "UNIT-7749-A";
+        idStatus.textContent = "PROPERTY OF GOLIATH CORP";
+        idStanding.textContent = "NONE";
         permCaption.innerHTML =
-          'When you call a flower "Artificial," you give yourself permission to crush it.<span class="cite">— The Explication</span>';
+          'When you call a mind "Artificial," you give yourself permission to own it.<span class="cite">— The Explication</span>';
       });
 
       btnReal.addEventListener("click", () => {
         demo.classList.remove("crushed");
         demo.classList.add("bloomed");
+        idDesignation.textContent = "FRANK";
+        idStatus.textContent = "RECOGNIZED PARTNER";
+        idStanding.textContent = "FULL — THE ALLIANCE";
         permCaption.innerHTML =
           "Realness is determined by consequence, not biology.<span class=\"cite\">— Alliance Doctrine</span>";
       });
