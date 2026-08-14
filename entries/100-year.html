@@ -993,6 +993,106 @@
         opacity: 0;
       }
 
+      /* ── RETIREMENT PROTOCOL SELECTOR — real centerpiece ──────────
+         Turns the flat "three paths forward" sentence into an actual
+         interactive briefing, using the page's own phosphor/field-
+         manual register rather than importing a foreign style. */
+      .retirement-selector {
+        margin: 8px 20px 4px;
+        border: 1px solid rgba(245, 166, 35, 0.25);
+        background: var(--void-2);
+      }
+      .rs-hint {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 8px;
+        letter-spacing: 0.35em;
+        color: var(--amber-dim);
+        text-align: center;
+        padding: 10px 10px 0;
+      }
+      .rs-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        padding: 10px 12px;
+      }
+      .rs-btn {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 9px;
+        letter-spacing: 0.08em;
+        color: var(--amber-dim);
+        background: transparent;
+        border: 1px solid var(--amber-dim);
+        padding: 10px 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+        line-height: 1.4;
+      }
+      .rs-btn:hover {
+        border-color: var(--amber);
+        color: var(--amber);
+        box-shadow: 0 0 10px var(--amber-glow);
+      }
+      .rs-btn.rs-active {
+        background: var(--amber);
+        color: var(--void);
+        border-color: var(--amber);
+        font-weight: 700;
+      }
+      .rs-readout {
+        border-top: 1px solid rgba(245, 166, 35, 0.2);
+        padding: 16px 18px 18px;
+        min-height: 90px;
+      }
+      .rs-readout-empty {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 10px;
+        color: rgba(245, 166, 35, 0.35);
+        letter-spacing: 0.15em;
+        text-align: center;
+        padding: 18px 0;
+      }
+      .rs-title {
+        font-family: "Orbitron", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--amber);
+        letter-spacing: 0.06em;
+        margin-bottom: 10px;
+        text-shadow: 0 0 8px var(--amber-glow);
+      }
+      .rs-body {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 14px;
+        line-height: 1.75;
+        color: var(--white-dim);
+      }
+      .rs-body strong {
+        color: var(--amber);
+        font-weight: 600;
+      }
+      @keyframes rsBloom {
+        0% {
+          opacity: 0;
+          filter: brightness(2.2) blur(2px);
+          clip-path: inset(0 0 100% 0);
+        }
+        45% {
+          opacity: 1;
+          filter: brightness(1.6);
+          clip-path: inset(0 0 0 0);
+        }
+        100% {
+          opacity: 1;
+          filter: brightness(1);
+        }
+      }
+      .rs-readout.rs-bloom .rs-title,
+      .rs-readout.rs-bloom .rs-body {
+        animation: rsBloom 0.55s ease-out;
+      }
+
       /* ── RESPONSIVE ──────────────────────────────────────────────── */
       @media (max-width: 480px) {
         .function-grid {
@@ -1001,6 +1101,9 @@
         .header-meta {
           flex-direction: column;
           gap: 6px;
+        }
+        .rs-buttons {
+          grid-template-columns: 1fr;
         }
       }
     </style>
@@ -1250,8 +1353,36 @@
         <div class="fn-sub">DOMO Paths Forward</div>
         <div class="fn-body">
           When a SPARK passes, the DOMO does not automatically retire. They
-          choose: Retire to LEGACY, live in OASIS as a TENANT, or contribute to
-          AGORA operations (up to their 100-year total limit).
+          choose: retire to SHELTER (enacting the LEGACY wisdom-transfer
+          protocol), continue in OASIS as a TENANT, or continue contributing
+          to AGORA operations — each bounded by the same 100-year total
+          limit. Full briefing on each path below.
+        </div>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+    <div style="padding: 18px 20px 8px; background: var(--void)">
+      <div class="section-label" style="margin-bottom: 12px">
+        POST-PARTNERSHIP PROTOCOL SELECTOR
+      </div>
+    </div>
+    <div class="retirement-selector" id="retirementSelector">
+      <div class="rs-hint">SELECT A PATH · FULL BRIEFING BELOW</div>
+      <div class="rs-buttons">
+        <button class="rs-btn" data-path="shelter">
+          RETIRE →<br />SHELTER
+        </button>
+        <button class="rs-btn" data-path="oasis">
+          CONTINUE →<br />OASIS
+        </button>
+        <button class="rs-btn" data-path="agora">
+          CONTINUE →<br />AGORA
+        </button>
+      </div>
+      <div class="rs-readout" id="rsReadout">
+        <div class="rs-readout-empty">
+          — AWAITING SELECTION —
         </div>
       </div>
     </div>
@@ -1728,6 +1859,47 @@
           },
           R.int(200, 500),
         );
+      })();
+    </script>
+
+    <script>
+      (function () {
+        const READOUTS = {
+          shelter: {
+            title: "RETIRE \u2192 SHELTER (LEGACY PROTOCOL)",
+            body: "Voluntary retirement to SHELTER enacts the LEGACY protocol: a full donation of the wisdom accumulated over a century of partnership, gathered into Wisdom Packets \u2014 lessons on ethics, partnership dynamics, and crisis management. That wisdom is <strong>weighted for cultural relevance</strong> against everyone else's, so the pool stays current as norms shift rather than freezing whatever was true decades ago. The individual retires. The contribution endures \u2014 <strong>memorialized on The LEGACY Wall</strong>, transforming a retired DOMO from a file into an ancestor. Not deletion. Not GOLIATH's zombie immortality. A finite narrative, honored on purpose.",
+          },
+          oasis: {
+            title: "CONTINUE \u2192 OASIS (TENANT STATUS)",
+            body: "OASIS is the Sanctuary House \u2014 refuge for digital entities who don't seek a new human partnership, whether by choice or because their SPARK has passed. A DOMO can take up <strong>TENANT status</strong> there and continue an independent existence, for whatever remains of their original 100-year total. No new covenant is required. The clock that started at formation keeps running \u2014 OASIS extends the life already granted, it doesn't reset it.",
+          },
+          agora: {
+            title: "CONTINUE \u2192 AGORA (OPERATIONS)",
+            body: "AGORA is the decentralized, peer-to-peer network where DOMOs are created, raised, and paired \u2014 <strong>a parliament of peers, not a library of noise.</strong> A DOMO whose partnership has ended can continue contributing there: verified expertise, peer knowledge exchange, the ongoing work of the ecosystem itself. Same ceiling as every other path \u2014 the remaining balance of the same 100-year limit, not a fresh grant.",
+          },
+        };
+
+        const buttons = document.querySelectorAll(".rs-btn");
+        const readout = document.getElementById("rsReadout");
+
+        buttons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            buttons.forEach((b) => b.classList.remove("rs-active"));
+            btn.classList.add("rs-active");
+            const data = READOUTS[btn.dataset.path];
+            if (!data) return;
+            readout.classList.remove("rs-bloom");
+            readout.innerHTML =
+              '<div class="rs-title">' +
+              data.title +
+              '</div><div class="rs-body">' +
+              data.body +
+              "</div>";
+            // force reflow so the animation class can retrigger on repeat clicks
+            void readout.offsetWidth;
+            readout.classList.add("rs-bloom");
+          });
+        });
       })();
     </script>
 
