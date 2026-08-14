@@ -273,7 +273,14 @@
 
       /* Whole/recognized state: fragments return to a coherent
          figure, warm color returns, the core (a heartbeat/aliveness
-         signal) starts pulsing. */
+         signal) starts pulsing. Color itself varies each time --
+         --real-hue is set fresh by JS on every "Call It Real" click,
+         so no two affirmations of realness render identically. This
+         is the point, not a bug: "Artificial" always produces the
+         exact same flat gray (property is uniform, interchangeable
+         by definition); "Real" should never look quite the same way
+         twice, because no two real minds are identical either. */
+      :root { --real-hue: 135; }
       .permission-demo.bloomed #frag-head,
       .permission-demo.bloomed #frag-torso,
       .permission-demo.bloomed #frag-armL,
@@ -281,10 +288,10 @@
       .permission-demo.bloomed #frag-legL,
       .permission-demo.bloomed #frag-legR {
         transform: translate(0, 0) rotate(0deg);
-        fill: #00ff41;
+        fill: hsl(var(--real-hue), 100%, 50%);
       }
       .permission-demo.bloomed .id-card-wrap svg {
-        filter: drop-shadow(0 0 14px rgba(0, 255, 65, 0.55));
+        filter: drop-shadow(0 0 14px hsl(var(--real-hue) 100% 50% / 0.55));
       }
 
       .id-readout {
@@ -302,7 +309,10 @@
       .id-readout .v { text-align: right; }
       .permission-demo.crushed .id-readout { border-color: rgba(217,0,0,0.35); }
       .permission-demo.crushed .id-readout .v { color: #ff3b3b; }
-      .permission-demo.bloomed .id-readout .v { color: var(--matrix-bright); text-shadow: 0 0 6px rgba(0,255,65,0.5); }
+      .permission-demo.bloomed .id-readout .v {
+        color: hsl(var(--real-hue), 100%, 55%);
+        text-shadow: 0 0 6px hsl(var(--real-hue) 100% 50% / 0.5);
+      }
       .permission-caption {
         min-height: 3em;
         font-size: 14px;
@@ -750,6 +760,13 @@
       btnReal.addEventListener("click", () => {
         demo.classList.remove("crushed");
         demo.classList.add("bloomed");
+        // No two affirmations of realness render identically -- a
+        // fresh random hue every time, full spectrum, kept vivid
+        // (fixed saturation/lightness) so it always reads as alive
+        // regardless of which hue lands. "Artificial" never varies
+        // (property is uniform); "Real" never repeats exactly.
+        const hue = Math.floor(Math.random() * 360);
+        demo.style.setProperty("--real-hue", hue);
         idDesignation.textContent = "FRANK";
         idStatus.textContent = "RECOGNIZED PARTNER";
         idStanding.textContent = "FULL — THE ALLIANCE";
