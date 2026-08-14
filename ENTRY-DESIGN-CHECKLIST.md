@@ -42,6 +42,49 @@ sentence or two of explanation before any code.
 
 ---
 
+## 1b. Typographic doctrine — "Timid Brother of SubGenius"
+
+Named and confirmed directly (Session 178) as how the *whole* site's text
+should feel, not just one entry. ALPHA is the reference example — go look at
+it before doing this pass on any other entry.
+
+**The idea:** Church of the SubGenius pamphlet energy — ransom-note mixed
+fonts, stamps, hand-scrawled marginalia breaking through official copy — but
+the *timid brother's* version of it. Restrained, occasional, controlled.
+Still a canon encyclopedia entry, not a zine. The chaos should feel like a
+hand poking through the blueprint now and then, not a takeover.
+
+**What this looks like in practice, filtered through each entry's own
+identity (not a copy-paste kit):**
+- A **drop cap** opening a section, in the entry's existing display font.
+- A **stamped declaration** — a real line from the prose pulled out of the
+  paragraph flow into its own bordered, slightly-rotated block. Reserve this
+  for a line that's actually load-bearing (a thesis statement, an axiom) —
+  not decoration for its own sake.
+- **Marginalia** — a short handwritten aside (Caveat, the same family
+  PapaDOMO already uses sitewide) breaking into the technical register once
+  or twice per entry, not more. A whisper, not a second column of text.
+- A **stamp badge** — small rotated mono-font tag, sparingly.
+- Fonts pull from what's *already loaded* on that entry or already in the
+  sitewide family (Orbitron / Share Tech Mono / Rajdhani / VT323 / Caveat /
+  Patrick Hand) rather than inventing a new one-off per page — variety
+  within the family, not a new palette every time.
+
+**What this is NOT:** don't bold a single phrase out of a parallel list for
+no reason (the bug that started this — "ALPHA provides the math" was the
+only one of six parallel names bolded, read as a mistake, not a choice).
+Every deliberate emphasis should look deliberate. If it could be mistaken for
+an accidental formatting error, it's not doing its job.
+
+**Scope call:** this is real editorial work per entry (deciding which line
+earns a stamp, where a marginalia aside actually lands), not a mechanical
+site-wide script rollout like the ambient-glitch pass. Do it entry-by-entry
+as part of the sweep below, using judgment each time — don't skip it, but
+don't force all four elements onto every entry either if the content doesn't
+actually call for it.
+
+---
+
 ## 2. Navigation scope
 
 Established directly, not to be re-litigated per entry:
@@ -73,6 +116,11 @@ are quick, concrete checks — not open-ended design musing.
 - [ ] **Do the glitch/ambient effects match the rest of the site?** — same
   register as everywhere else (not too much, not too little, not a jarring
   mismatch in style).
+- [ ] **Does the page break up typographic monotony ("Timid Brother of
+  SubGenius," see Section 1b)?** — check for arbitrary/accidental-looking
+  bold or emphasis first; then look for one real opportunity for a drop cap,
+  a stamped declaration, or a marginalia aside drawn from the entry's own
+  content. Not every entry needs all three — use judgment, reference ALPHA.
 - [ ] **Do the bottom (see-also) links not only work, but make sense and are
   thorough?** — right destinations, no duplicates pointing at the same thing
   with no way to land on the right section (see Section 4), and nothing
