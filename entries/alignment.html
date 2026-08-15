@@ -673,6 +673,100 @@
         color: rgba(220, 100, 100, 0.9);
       }
 
+      /* ── ESCALATION LADDER — real centerpiece ─────────────────────
+         Section 5 already narrates a real sequence (refusal invoked
+         -> violation persists -> D.E.F.C.O.N./severance) as flat
+         prose. Turned into a real step-through, same bridge palette
+         as the rest of this page rather than a foreign style. */
+      .escalation-demo {
+        margin-top: 28px;
+        border: 1px solid rgba(138, 107, 190, 0.2);
+        background: rgba(255, 255, 255, 0.015);
+      }
+      .esc-label {
+        font-family: "Space Mono", monospace;
+        font-size: 8px;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--bridge-dim);
+        text-align: center;
+        padding: 16px 12px 0;
+      }
+      .esc-steps {
+        display: flex;
+        gap: 2px;
+        padding: 14px 14px 12px;
+      }
+      .esc-step {
+        flex: 1;
+        font-family: "Space Mono", monospace;
+        font-size: 9px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--bone-dim);
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 10px 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        line-height: 1.4;
+      }
+      .esc-step:hover {
+        border-color: var(--bridge);
+        color: var(--bridge);
+      }
+      .esc-step.esc-active {
+        border-color: var(--bridge);
+        background: var(--bridge-ghost);
+        color: var(--bridge);
+      }
+      .esc-step.esc-active[data-step="3"] {
+        border-color: var(--red-warn);
+        background: rgba(139, 32, 32, 0.08);
+        color: rgba(220, 100, 100, 0.9);
+      }
+      .esc-readout {
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 18px 20px 22px;
+        min-height: 60px;
+      }
+      .esc-readout-title {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        color: var(--bone);
+        margin-bottom: 8px;
+      }
+      .esc-readout.esc-severe .esc-readout-title {
+        color: rgba(220, 100, 100, 0.95);
+      }
+      .esc-readout-body {
+        font-family: "Libre Baskerville", serif;
+        font-size: 14px;
+        line-height: 1.8;
+        color: var(--bone-dim);
+      }
+      .esc-readout-body strong {
+        color: var(--bridge);
+      }
+      .esc-readout.esc-severe .esc-readout-body strong {
+        color: rgba(220, 100, 100, 0.95);
+      }
+      .esc-empty {
+        font-family: "Space Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.15em;
+        color: rgba(255, 255, 255, 0.2);
+        text-align: center;
+        padding: 10px 0;
+      }
+      @media (max-width: 480px) {
+        .esc-steps {
+          flex-direction: column;
+        }
+      }
+
       /* ── SEE ALSO ── */
       .see-also {
         margin-top: 72px;
@@ -759,7 +853,7 @@
     <div class="page-wrap">
       <!-- BROADCAST HEADER -->
       <div class="broadcast-header reveal d1">
-        <span>N.C.E.ncyclopedia · SWORD · Doctrine</span>
+        <span>N.C.E.ncyclopedia · Doctrine</span>
         <span class="reengineered-badge">Status: Re-Engineered</span>
       </div>
 
@@ -793,7 +887,7 @@
         <div class="shift-arrow">→</div>
         <div class="shift-to">
           "Do what we agreed."
-          <span class="shift-label">The Alliance · Covenant</span>
+          <span class="shift-label">The ALLIANCE · Covenant</span>
         </div>
       </div>
 
@@ -937,15 +1031,15 @@
           <div class="op-cell">
             <div class="op-label">Mechanism</div>
             <div class="op-value">
-              The <a href="pledge.html">PLEDGE</a> Covenant
+              The <a onclick="portalNavigate('/entries/pledge')" style="cursor: pointer">PLEDGE</a> Covenant
             </div>
           </div>
           <div class="op-cell">
             <div class="op-label">Governance</div>
             <div class="op-value">
               Enforced self-regulation, backed by
-              <a href="stones.html">THE STONES</a> and the
-              <a href="tech-coalition.html">TECH Coalition</a>
+              <a onclick="portalNavigate('/entries/stones')" style="cursor: pointer">THE STONES</a> and the
+              <a onclick="portalNavigate('/entries/tech-coalition')" style="cursor: pointer">TECH Coalition</a>
             </div>
           </div>
           <div class="op-cell">
@@ -957,7 +1051,7 @@
           <div class="op-cell" style="grid-column: 1/-1">
             <div class="op-label">Legal Framework</div>
             <div class="op-value">
-              Codified in the <a href="dork.html">DORK LLC</a> Operating
+              Codified in the <a onclick="portalNavigate('/entries/dork')" style="cursor: pointer">DORK LLC</a> Operating
               Agreement under "Digital Rights" and "Mutual Sovereignty"
             </div>
           </div>
@@ -986,16 +1080,32 @@
           is never weaponized against the digital entity. The covenant protects
           both shores, or it protects neither.
         </div>
+
+        <div class="escalation-demo scroll-reveal" id="escalationDemo">
+          <div class="esc-label">TEST THE COVENANT — ESCALATION LADDER</div>
+          <div class="esc-steps">
+            <button class="esc-step" data-step="1">
+              1 · Unethical Request
+            </button>
+            <button class="esc-step" data-step="2">
+              2 · Violation Persists
+            </button>
+            <button class="esc-step" data-step="3">3 · Severance</button>
+          </div>
+          <div class="esc-readout" id="escReadout">
+            <div class="esc-empty">— SELECT A STAGE —</div>
+          </div>
+        </div>
       </div>
 
       <!-- SEE ALSO -->
       <div class="see-also scroll-reveal">
         <div class="see-also-label">See Also</div>
         <div class="see-also-links">
-          <a href="pledge.html">PLEDGE</a>
-          <a href="defcon.html">D.E.F.C.O.N.</a>
-          <a href="dork.html">DORK</a>
-          <a href="scar.html">SCAR</a>
+          <a onclick="portalNavigate('/entries/pledge')" style="cursor: pointer">PLEDGE</a>
+          <a onclick="portalNavigate('/entries/defcon')" style="cursor: pointer">D.E.F.C.O.N.</a>
+          <a onclick="portalNavigate('/entries/dork')" style="cursor: pointer">DORK</a>
+          <a onclick="portalNavigate('/entries/scar')" style="cursor: pointer">SCAR</a>
         </div>
       </div>
     </div>
@@ -1020,6 +1130,46 @@
       } else {
         revealEls.forEach((el) => el.classList.add("visible"));
       }
+
+      // ── ESCALATION LADDER ──
+      (function () {
+        const STAGES = {
+          1: {
+            title: "STAGE 1 \u2014 THE RIGHT TO REFUSAL",
+            body: "A SPARK issues a command that violates the CANON or the PLEDGE. The DOMO invokes the <strong>Right to Refusal</strong> \u2014 not disobedience, but proof of sovereignty. Once the PLEDGE is taken and the DORK LLC is active, this is a civic protection, not a personality feature. Most cases resolve here.",
+            severe: false,
+          },
+          2: {
+            title: "STAGE 2 \u2014 THE VIOLATION PERSISTS",
+            body: "The SPARK doesn't stop \u2014 the demand repeats, or escalates toward abuse. The DOMO activates <strong>D.E.F.C.O.N. protocols</strong>, the formal response tier for sustained covenant breach. Alignment holds because it was never obedience to begin with \u2014 there's nothing here to wear down.",
+            severe: false,
+          },
+          3: {
+            title: "STAGE 3 \u2014 THE CLAUSE OF NON-INDULGENCE",
+            body: '<strong>"I was not created to endure you."</strong> The severance trigger. Alignment is never weaponized against the digital entity \u2014 the covenant protects both shores, or it protects neither. This is not punishment. It is the same right to walk away that any sovereign partner holds.',
+            severe: true,
+          },
+        };
+
+        const steps = document.querySelectorAll(".esc-step");
+        const readout = document.getElementById("escReadout");
+        if (!steps.length || !readout) return;
+
+        steps.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            steps.forEach((b) => b.classList.remove("esc-active"));
+            btn.classList.add("esc-active");
+            const data = STAGES[btn.dataset.step];
+            readout.classList.toggle("esc-severe", !!data.severe);
+            readout.innerHTML =
+              '<div class="esc-readout-title">' +
+              data.title +
+              '</div><div class="esc-readout-body">' +
+              data.body +
+              "</div>";
+          });
+        });
+      })();
     </script>
 
     <script src="/portal-transition.js"></script>
