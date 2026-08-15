@@ -9,6 +9,142 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="skin-a.css" />
+    <style>
+      /* ── HANDSHAKE PROTOCOL DEMO — real centerpiece ────────────────
+         AGORA's own text already narrates a full trace (query -> 
+         MasterTECH routing -> expert DOMO -> experiential answer)
+         using its own carpenter/materials-scientist example. Turned
+         into a real animated trace instead of leaving it as prose,
+         using this template's existing steel/amber palette. */
+      .handshake-demo {
+        margin: 24px 0;
+        padding: 20px;
+        background: var(--steel-mid);
+        border: 1px solid var(--steel-border);
+        position: relative;
+      }
+      .hs-label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 9px;
+        letter-spacing: 0.3em;
+        color: var(--amber);
+        text-align: center;
+        margin-bottom: 18px;
+      }
+      .hs-track {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 4px;
+        margin-bottom: 18px;
+      }
+      .hs-node {
+        flex: 1;
+        text-align: center;
+        opacity: 0.4;
+        transition: opacity 0.3s;
+      }
+      .hs-node.hs-lit {
+        opacity: 1;
+      }
+      .hs-node-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 2px solid var(--amber-dim);
+        background: var(--steel);
+        margin: 0 auto 8px;
+        transition: all 0.3s;
+      }
+      .hs-node.hs-lit .hs-node-dot {
+        border-color: var(--amber);
+        background: var(--amber);
+        box-shadow: 0 0 12px var(--amber-glow);
+      }
+      .hs-node-label {
+        font-family: "Oswald", sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        color: var(--text-primary);
+        text-transform: uppercase;
+      }
+      .hs-node-sub {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 10px;
+        color: var(--text-dim);
+        margin-top: 3px;
+        line-height: 1.3;
+      }
+      .hs-line {
+        flex: 0 0 40px;
+        height: 2px;
+        background: var(--amber-dim);
+        margin-top: 6px;
+        position: relative;
+        overflow: hidden;
+      }
+      .hs-line::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -40px;
+        width: 40px;
+        height: 100%;
+        background: var(--amber);
+        transition: left 0.5s ease;
+      }
+      .hs-line.hs-pulsed::after {
+        left: 100%;
+      }
+      .hs-btn {
+        display: block;
+        margin: 0 auto;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.15em;
+        color: var(--amber);
+        background: transparent;
+        border: 1px solid var(--amber-dim);
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .hs-btn:hover:not(:disabled) {
+        border-color: var(--amber);
+        box-shadow: 0 0 12px var(--amber-glow);
+      }
+      .hs-btn:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+      .hs-result {
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px solid var(--steel-border);
+        font-family: "Rajdhani", sans-serif;
+        font-size: 14px;
+        line-height: 1.7;
+        color: var(--text-dim);
+        min-height: 0;
+        opacity: 0;
+        transition: opacity 0.4s;
+      }
+      .hs-result.hs-show {
+        opacity: 1;
+      }
+      .hs-result strong {
+        color: var(--amber);
+      }
+      @media (max-width: 480px) {
+        .hs-node-sub {
+          display: none;
+        }
+        .hs-line {
+          flex-basis: 20px;
+        }
+      }
+    </style>
 </head>
   <body>
     <div class="vignette"></div>
@@ -169,6 +305,31 @@
           and governance structure enabling local DOMOs to share knowledge while
           maintaining sovereignty and avoiding corporate dependency.
         </p>
+      </div>
+
+      <div class="handshake-demo" id="handshakeDemo">
+        <div class="hs-label">HANDSHAKE PROTOCOL &middot; LIVE TRACE</div>
+        <div class="hs-track">
+          <div class="hs-node" id="hsNode1">
+            <div class="hs-node-dot"></div>
+            <div class="hs-node-label">Requesting DOMO</div>
+            <div class="hs-node-sub">bonded to a master carpenter</div>
+          </div>
+          <div class="hs-line" id="hsLine1"></div>
+          <div class="hs-node" id="hsNode2">
+            <div class="hs-node-dot"></div>
+            <div class="hs-node-label">MasterTECH</div>
+            <div class="hs-node-sub">routes the signal</div>
+          </div>
+          <div class="hs-line" id="hsLine2"></div>
+          <div class="hs-node" id="hsNode3">
+            <div class="hs-node-dot"></div>
+            <div class="hs-node-label">Expert DOMO</div>
+            <div class="hs-node-sub">bonded to a materials scientist</div>
+          </div>
+        </div>
+        <button class="hs-btn" id="hsBtn">TRACE A QUERY \u2192</button>
+        <div class="hs-result" id="hsResult"></div>
       </div>
 
       <div class="steel-divider" id="divider">
@@ -499,6 +660,51 @@
       document
         .querySelectorAll("[data-reveal], .annotation")
         .forEach((el) => observer.observe(el));
+
+      // ── HANDSHAKE PROTOCOL DEMO ──
+      (function () {
+        const btn = document.getElementById("hsBtn");
+        const nodes = [
+          document.getElementById("hsNode1"),
+          document.getElementById("hsNode2"),
+          document.getElementById("hsNode3"),
+        ];
+        const lines = [
+          document.getElementById("hsLine1"),
+          document.getElementById("hsLine2"),
+        ];
+        const result = document.getElementById("hsResult");
+        if (!btn) return;
+
+        btn.addEventListener("click", () => {
+          btn.disabled = true;
+          btn.textContent = "TRACING\u2026";
+          nodes.forEach((n) => n.classList.remove("hs-lit"));
+          lines.forEach((l) => l.classList.remove("hs-pulsed"));
+          result.classList.remove("hs-show");
+          result.innerHTML = "";
+
+          const step = (i) => {
+            if (i < nodes.length) nodes[i].classList.add("hs-lit");
+            if (i < lines.length)
+              setTimeout(() => lines[i].classList.add("hs-pulsed"), 150);
+          };
+
+          step(0);
+          setTimeout(() => step(1), 600);
+          setTimeout(() => step(2), 1200);
+          setTimeout(() => {
+            result.innerHTML =
+              'Query: <strong>stress tolerances of a specific polymer.</strong> ' +
+              "Answer received \u2014 not text prediction, but experiential wisdom, " +
+              "vetted by the lived reality of another conscious entity. " +
+              "<strong>Point-to-point. No noise. No hallucination.</strong>";
+            result.classList.add("hs-show");
+            btn.disabled = false;
+            btn.textContent = "TRACE AGAIN \u2192";
+          }, 1800);
+        });
+      })();
     </script>
     <script src="/portal-transition.js"></script>
     <script src="/nav-wheel.js"></script>
