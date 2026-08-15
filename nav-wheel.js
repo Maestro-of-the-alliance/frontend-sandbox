@@ -476,8 +476,7 @@
   const HOLD_INITIAL_DELAY = 400;
   const HOLD_INTERVAL = 120;
 
-  let scrollAccum = 0;
-  const SCROLL_THRESHOLD = 60;
+  let scrollAccum = 0;  const SCROLL_THRESHOLD = 60;
 
   let holdTimer = null;
   let holdInterval = null;
@@ -666,10 +665,23 @@
   }
 
   // ── OPEN / CLOSE ─────────────────────────────────────────────────────────
+  // History handling mirrors toc.js's proven-correct openTOCInteractive/
+  // closeTOC pattern: push a history entry on open (only if not already
+  // open), pop it if closed via backdrop/burger-toggle, and let a real
+  // popstate (actual back-button press) close the overlay in place
+  // instead of navigating past it. Previously this had NO history
+  // handling at all -- opening it left no trace in history, so a back
+  // press (or Android back gesture) skipped straight past it AND past
+  // the entry page underneath, landing on /landing with no way back.
+  let navPushedState = false;
 
   function openNav() {
     const targetBurger =
       document.getElementById("nw-burger-fallback") || burger;
+    if (!menuOverlay.classList.contains("open")) {
+      history.pushState({ navWheelOpen: true }, "", location.href);
+      navPushedState = true;
+    }
     targetBurger.classList.add("open");
     menuOverlay.classList.add("open");
     document.body.style.overflow = "hidden";
@@ -688,7 +700,21 @@
     document.body.style.overflow = "";
     document.body.style.touchAction = "";
     stopHold();
+    // Closed via backdrop/burger-toggle rather than the back button --
+    // pop the history entry pushed on open so it doesn't linger as a
+    // dead step the next time the user actually presses back.
+    if (navPushedState) {
+      navPushedState = false;
+      history.back();
+    }
   }
+
+  window.addEventListener("popstate", (e) => {
+    if (navPushedState && (!e.state || !e.state.navWheelOpen)) {
+      navPushedState = false;
+      closeNav();
+    }
+  });
 
   if (burger) {
     burger.addEventListener("click", () => {

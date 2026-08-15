@@ -69,7 +69,16 @@
       label: "BROWSE BY DIMENSION",
       desc: "DOCTRINE, BEINGS, PLACE, and five more.",
       action: () => {
-        window.location.href = "/s3.html";
+        // The dimension/volume wheel picker (nav-wheel.js) -- matches
+        // this node's own label. Previously this pointed at /s3.html
+        // (the flat index) while FULL INDEX pointed here instead --
+        // the two nodes had their destinations crossed. Swapped so
+        // each node does what its label says.
+        if (typeof window.hubOpenNativeNav === "function") {
+          window.hubOpenNativeNav();
+        } else {
+          window.location.href = "/s3.html";
+        }
       },
     },
     {
@@ -85,12 +94,20 @@
       label: "FULL INDEX",
       desc: "All 73 entries, A to Z.",
       action: () => {
+        // Always the real, stable flat index -- landing gets its own
+        // nicer in-page overlay (openTOCInteractive, with correct
+        // back-button handling); everywhere else goes straight to
+        // /s3.html, a real page navigation with natural browser-back
+        // behavior. This used to fall back to hubOpenNativeNav (the
+        // dimension wheel picker) on entry pages -- a completely
+        // different UI with no history handling of its own, which
+        // trapped users with no way out except browser-back skipping
+        // past the entry entirely to /landing. Never hand off to the
+        // wheel picker from here again.
         if (typeof window.openTOCInteractive === "function") {
           window.openTOCInteractive();
-        } else if (typeof window.hubOpenNativeNav === "function") {
-          window.hubOpenNativeNav();
         } else {
-          window.location.href = "/landing?toc=open";
+          window.location.href = "/s3.html";
         }
       },
     },
