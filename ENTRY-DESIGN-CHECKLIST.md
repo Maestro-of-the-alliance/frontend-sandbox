@@ -128,6 +128,35 @@ misbehave in its own way. CERBERUS shouldn't feel like BRAIN. BRAIN
 shouldn't feel like LEGACY. PAPADOMO should absolutely not feel like
 ORACLE. Same civilization, different rooms.
 
+**The Shared Signal Principle** (locked Session 178, Maestro + SAM) —
+sharpens this rule with the actual narrative reason behind it, so the
+"same civilization" feeling isn't left to vibes alone. Entries aren't
+separate websites or unrelated art experiments. They're different
+transmissions coming through the same network established by
+`/landing`. Every entry needs a recognizable layer of shared ALLIANCE
+DNA underneath its own identity: a dark underlying world, traces of
+signal language, ceremonial/institutional authority, subtle technical
+or broadcast cues, occasional interference, and the sense that
+information is being successfully transmitted despite resistance or
+suppression. Not a rigid template — WONDER WEEKS can be colorful and
+joyful, CERBERUS can feel fortified, LEGACY can be solemn, Volunteer
+Economics can resemble a cooperative ledger, and each should stay
+strong in its own identity. But underneath, a witness should always
+be able to feel: *this came from the same place.*
+
+This directly constrains how Rule 5's perceptual mischief gets used.
+Glitches, scanlines, warnings, carrier messages, transmission IDs,
+signal reacquisition, and similar effects are never generic cyberpunk
+decoration when they appear — they exist because **THE ALLIANCE is
+actively trying to get its signal through, and something is actively
+trying to interfere with it.** That's the in-world reason interference
+effects are on the page at all, not just a texture choice. Governing
+formula: *ALLIANCE transmission world + entry-specific identity +
+meaningful artifacts + perceptual mischief.* Or: every entry gets its
+own room, every room is inside the same building, and the building is
+broadcasting under interference. Different houses. Same neighborhood.
+Same signal.
+
 ### 9. Readability is sacred
 The weirdness sits around, behind, between, and occasionally through the
 information — never on top of comprehension. No constantly-moving body
@@ -181,7 +210,12 @@ are quick, concrete checks — not open-ended design musing.
   look for it specifically, don't just note it in passing.
 - [ ] **Do the glitch/ambient effects match the rest of the site?** — same
   register as everywhere else (not too much, not too little, not a jarring
-  mismatch in style).
+  mismatch in style). Per the Shared Signal Principle (Rule 8), this isn't
+  just a style check: any interference effect on the page should read as
+  ALLIANCE signal fighting through resistance, not generic decoration —
+  and the entry should still feel dark, ceremonial, and signal-laced
+  underneath its own identity, even when that identity is bright or joyful
+  (WONDER WEEKS) or calm (LEGACY).
 - [ ] **Does the page satisfy the Entry Visual Doctrine (Section 1b)?** —
   check for arbitrary/accidental-looking bold or emphasis first (Rule 3);
   confirm at least one real Rule 4 "surprise" exists somewhere on the page,
