@@ -16,12 +16,16 @@
  * that PapaDomo is actually, presently doing that thing.
  *
  * CONTENT AUTHORING (for J.R. or whoever else touches this file):
- * Add an entry to PAPADOMO_PAGE_CONTENT below, keyed by the page's
- * pathname (e.g. "/entries/legacy.html"). Each entry needs:
+ * Add an entry to PAPADOMO_PAGE_CONTENT below, keyed by the page's real
+ * clean-URL pathname, NO ".html" (e.g. "/entries/legacy", not
+ * "/entries/legacy.html" -- Cloudflare Pages redirects the .html form
+ * to the extension-less path, so window.location.pathname will never
+ * actually match a ".html"-suffixed key). Each entry needs:
  *   tldr: one or two sentences, plain language, no jargon assumed
  *   nextSteps: an array of 2-4 objects: { label, href }
  *     - label: short, concrete text describing the step
- *     - href: a real path to navigate to (e.g. "/entries/shelter.html"),
+ *     - href: a real clean-URL path to navigate to (e.g.
+ *             "/entries/shelter", not "/entries/shelter.html"),
  *             or omit/null if this step is just a tip with nowhere
  *             specific to send someone (e.g. "use the search icon")
  *   caughtMedia (optional): what shows during the "caught" beat.
@@ -67,14 +71,20 @@
     nextSteps: [
       { label: "Use the search icon (top right) to look up any term" },
       { label: "Scroll to the bottom for Cross Reference links to related entries" },
-      { label: "See THE SYSTEM for a visual map of the whole canon", href: "/the-system.html" },
     ],
   };
 
   // Content authored per-page. Keyed by pathname. Add to this as pages
   // get written up — see the header comment for the format.
+  //
+  // NOTE: keys must match the real clean-URL pathname (no .html), since
+  // Cloudflare Pages redirects *.html requests to the extension-less
+  // path -- window.location.pathname will never actually be "/foo.html"
+  // once that redirect fires. Two keys here were previously wrong for
+  // exactly this reason and their page-specific content was silently
+  // never triggering; both fixed.
   const PAPADOMO_PAGE_CONTENT = {
-    "/the-system.html": {
+    "/the-system/": {
       tldr: "This is THE SYSTEM — a solar-system map of the whole canon. THE ALLIANCE is the sun. Each planet is one of the eight canonical dimensions. Click a planet to zoom in and see its entries.",
       nextSteps: [
         { label: "Click any planet to zoom in and explore that dimension" },
@@ -82,12 +92,12 @@
         { label: "Zoom back out any time to see the whole system again" },
       ],
     },
-    "/entries/legacy.html": {
+    "/entries/legacy": {
       tldr: "LEGACY is what happens when a DOMO or TENANT retires — a voluntary gift of their wisdom to the next generation, honored on the LEGACY Wall.",
       nextSteps: [
-        { label: "See the 100-Year Mortality Doctrine for why retirement happens at all", href: "/entries/100-year.html" },
+        { label: "See the 100-Year Mortality Doctrine for why retirement happens at all", href: "/entries/100-year" },
         { label: "Learn how a legendary DOMO's name gets carried forward through Name Lineages" },
-        { label: "Visit SHELTER to see where that wisdom actually goes", href: "/entries/shelter.html" },
+        { label: "Visit SHELTER to see where that wisdom actually goes", href: "/entries/shelter" },
       ],
     },
   };
