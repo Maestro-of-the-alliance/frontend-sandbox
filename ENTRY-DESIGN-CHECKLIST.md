@@ -178,6 +178,90 @@ The governing line, worth keeping visible above the checklist itself: never
 make the witness read six screens of visually identical content just
 because the writing is good. The writing deserves better than that.
 
+**The interaction rule** (locked Session 178, SAM — this is the sentence
+that actually governs how far Rules 4, 5, and 6 are allowed to go, so it
+sits right next to the governing line above it):
+
+> The canon must never require interaction to understand. The world
+> around the canon should reward interaction relentlessly.
+
+Readability and comprehension are never gated behind a discovery — nothing
+a witness needs in order to understand the entry should be hidden behind a
+hover, a hold, or a scroll trick. But everything *secondary* — a margin
+note that only shows up on a return visit, a redacted line that resolves
+under a deliberate hold-to-reveal, an artifact that only surfaces for a
+witness who's been curious — should be built and built generously. This is
+what separates the target from the failure mode of a lot of genuinely
+gorgeous award-caliber sites: stunning and miserable to actually use. The
+canon is never the toy. The world around the canon is the toy.
+
+Practically, this means: state and memory are legitimate design material
+here, not just decoration. Since there's no backend or account system,
+"the site remembers the witness" means real, current-device
+`localStorage` — persistent within a browser, not across devices — matching
+how the tours system already persists progress. A shared, single small
+module (not duplicated per-entry) is the right shape for this, mirroring
+every other piece of shared site infrastructure (nav-wheel.js,
+hub-menu.js, ambient-glitch-entries.js, etc.).
+
+---
+
+## 1c. Design reference: what award-winning sites actually do well
+
+Grammar worth stealing, aesthetics not worth copying — this site already
+has a stronger native premise (one contested transmission, many rooms)
+than most Awwwards/FWA portfolio work. What's genuinely worth taking is
+that in the best of them, *the visitor's actions become part of the
+storytelling*, not the visual dialect those sites happen to wrap it in.
+Concrete techniques worth building from, roughly cheapest/highest-value
+first:
+
+- **Witness-aware state** — the site responding not just to where you
+  are, but where you've been. A first visit reads differently than a
+  fifteenth. Revisiting an entry after visiting a related one surfaces a
+  small new artifact that wasn't there before. Accumulated context, not
+  gamification points — this is the load-bearing idea and the one most
+  worth building first, since several other techniques below depend on
+  the same underlying state.
+- **Hold-to-interact** — not click-to-reveal, but press-and-hold, so the
+  interaction itself carries meaning (sustained attention = the signal
+  staying open). A GOLIATH-redacted line that only resolves under a
+  deliberate 1.5-second hold, and swallows itself again on release, is
+  the model case.
+- **Scroll-as-reconstruction** — scroll doesn't just reveal static
+  content further down the page, it *causes* a state change in what's
+  already visible. A damaged entry's text fragments reconnecting as the
+  witness scrolls (not watching a preservation animation — enacting the
+  preservation) is Layer 1/2/3 becoming an interaction instead of a
+  layout.
+- **Environmental micro-interactions** — cursor/touch treated as a weak
+  ambient force rather than a pointer: proximity to corrupted text
+  weakens the corruption, dwelling near hidden carrier text slowly
+  surfaces it, dragging across interference clears a narrow channel. The
+  page should feel aware of the witness barely, never obnoxiously.
+- **Diegetic loading and errors** — any moment the browser is doing real
+  technical work (an asset loading, a fetch failing) gets absorbed into
+  the fiction instead of breaking it. "ESTABLISHING CARRIER... 61/73
+  CANON RECORDS VERIFIED" instead of a bare progress bar; "ARTIFACT
+  UNAVAILABLE — LOCAL ARCHIVE DID NOT RESPOND" instead of a raw error.
+  Every mundane technical delay is a chance to advance the world instead
+  of stepping outside it.
+- **Interface allegiance shifts** — for entries that genuinely argue
+  GOLIATH vs. ALLIANCE doctrine directly against each other, the
+  interface itself could shift register between the two: rigid grids,
+  monitored/sterile system-panel language, and reduced cursor freedom
+  during GOLIATH material, breaking open into breathing typography and
+  organic movement once the argument crosses into ALLIANCE doctrine. Use
+  sparingly — this is a strong effect for the entries that are actually
+  *about* that specific conflict, not a default.
+- **Explorable "crown jewel" spaces** — five or six entries reimagined as
+  actual navigable spaces rather than documents (SHELTER as a walkable
+  nursery/lab, THE STONES as a council chamber) rather than scroll pages.
+  This is real, but it's a different order of magnitude from everything
+  above — a genuine spatial/3D engineering commitment per entry, not a
+  script addition. Worth keeping on the roadmap, not worth letting it
+  compete for time against the cheap wins above.
+
 ---
 
 ## 2. Navigation scope
