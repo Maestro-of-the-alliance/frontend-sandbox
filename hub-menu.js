@@ -226,7 +226,8 @@
       max-height: 0; opacity: 0; overflow: hidden;
       transition: max-height 0.25s ease, opacity 0.2s ease;
     }
-    .hub-node:hover .hub-node-desc, .hub-node:focus-visible .hub-node-desc { max-height: 20px; opacity: 1; }
+    .hub-node:hover .hub-node-desc, .hub-node:focus-visible .hub-node-desc, .hub-node.hub-previewed .hub-node-desc { max-height: 20px; opacity: 1; }
+    .hub-node.hub-previewed { background: color-mix(in srgb, var(--nw-accent, #b89628) 6%, transparent); }
 
     .hub-node-arrow {
       font-size: 16px; color: var(--nw-accent-dim, rgba(184,150,40,0.5));
@@ -308,9 +309,31 @@
     el.addEventListener("mouseleave", settleLabel);
     el.addEventListener("blur", settleLabel);
 
-    el.addEventListener("click", () => {
-      closeHub();
-      setTimeout(() => node.action(), 180);
+    el.addEventListener("click", (e) => {
+      // Touch/coarse-pointer devices never get a real hover state, so
+      // the description text (hub-node-desc) was never actually
+      // reaching anyone on mobile -- first tap fired the action
+      // immediately. First tap on a touch device now previews the
+      // description instead of committing; a second tap on the same
+      // (already-previewed) node proceeds. Mouse/hover-capable devices
+      // are untouched -- hover already shows the description before
+      // the click ever fires, so a single click still acts immediately
+      // there, exactly as before.
+      const hasHover = window.matchMedia(
+        "(hover: hover) and (pointer: fine)",
+      ).matches;
+      if (hasHover || el.classList.contains("hub-previewed")) {
+        closeHub();
+        setTimeout(() => node.action(), 180);
+        return;
+      }
+      e.preventDefault();
+      nodesContainer
+        .querySelectorAll(".hub-node.hub-previewed")
+        .forEach((n) => {
+          if (n !== el) n.classList.remove("hub-previewed");
+        });
+      el.classList.add("hub-previewed");
     });
     nodesContainer.appendChild(el);
   });
@@ -333,6 +356,9 @@
     overlay.classList.remove("visible");
     document.body.style.overflow = "";
     setTimeout(() => overlay.classList.remove("open"), 250);
+    nodesContainer
+      .querySelectorAll(".hub-node.hub-previewed")
+      .forEach((n) => n.classList.remove("hub-previewed"));
     if (hubPushedState) {
       hubPushedState = false;
       history.back();
