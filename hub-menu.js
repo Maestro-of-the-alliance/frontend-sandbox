@@ -19,7 +19,7 @@
 (function () {
   "use strict";
 
-  if (window.location.pathname.startsWith("/preamble")) return;
+  if (window.location.pathname.startsWith("/prototypes/preamble")) return;
 
   const CODE_CHARS =
     "01{}[]<>/\\|=+-*&^%$#@!?;:.,_~`ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";

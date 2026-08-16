@@ -10,7 +10,7 @@
 
   // ── PREAMBLE GUARD ───────────────────────────────────────────────────────
   // No nav on preamble pages. You're in the film.
-  if (window.location.pathname.startsWith("/preamble")) return;
+  if (window.location.pathname.startsWith("/prototypes/preamble")) return;
 
   // ── ENTRY LISTS ──────────────────────────────────────────────────────────
 
