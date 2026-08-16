@@ -15,18 +15,21 @@
     VOLUNTEER ECONOMICS
     N.C.E.ncyclopedia
 
-    DESIGN DOCTRINE:
-    CANON → ARTIFACT → HAUNTING
+    SHARED SIGNAL PRINCIPLE:
+
+    Every entry has its own room.
+    Every room is inside the same building.
+    The building is broadcasting under interference.
 
     PAGE CHARACTER:
-    Cooperative ledger.
-    Field economics manual.
-    Community trust terminal.
-    Economic doctrine with a pulse.
 
-    IMPORTANT:
-    Canonical literature is not randomized.
-    Decorative terminal behavior is allowed to misbehave slightly.
+    ALLIANCE economic transmission
+    + cooperative ledger
+    + community trust
+    + field manual
+    + recovered doctrine artifact
+
+    CANON → ARTIFACT → HAUNTING
     ============================================================
   -->
 
@@ -37,14 +40,20 @@
 
   <style>
     /* =========================================================
-       01. COLOR AND DIMENSION SYSTEM
+       01. COLOR SYSTEM
        ========================================================= */
 
     :root {
       --void: #030503;
       --void-soft: #080c08;
+
       --panel: #0b100b;
       --panel-light: #101710;
+
+      --alliance-gold: #d4af37;
+      --alliance-gold-bright: #edcb63;
+      --alliance-gold-dim: rgba(212, 175, 55, 0.38);
+      --alliance-gold-ghost: rgba(212, 175, 55, 0.06);
 
       --phosphor: #70ff55;
       --phosphor-bright: #a6ff91;
@@ -58,6 +67,7 @@
 
       --paper: #e8e0ca;
       --paper-dark: #b8ac8d;
+
       --ink: #171b13;
 
       --white: #eef4df;
@@ -89,20 +99,27 @@
 
     body {
       margin: 0;
+
       min-height: 100vh;
+
       overflow-x: hidden;
 
       color: var(--white);
 
       background:
         radial-gradient(
-          circle at 15% 5%,
-          rgba(112, 255, 85, 0.055),
+          circle at 16% 4%,
+          rgba(212, 175, 55, 0.055),
+          transparent 30%
+        ),
+        radial-gradient(
+          circle at 14% 34%,
+          rgba(112, 255, 85, 0.04),
           transparent 32%
         ),
         radial-gradient(
-          circle at 88% 32%,
-          rgba(255, 154, 50, 0.045),
+          circle at 88% 62%,
+          rgba(255, 154, 50, 0.04),
           transparent 34%
         ),
         var(--void);
@@ -126,6 +143,11 @@
       color: inherit;
     }
 
+    img,
+    iframe {
+      display: block;
+    }
+
     ::selection {
       background: var(--phosphor);
       color: #071006;
@@ -133,10 +155,7 @@
 
 
     /* =========================================================
-       03. FIXED TERMINAL GRID
-
-       This is decorative.
-       It never contains information.
+       03. ALLIANCE SIGNAL FIELD
        ========================================================= */
 
     .terminal-grid {
@@ -147,24 +166,28 @@
 
       pointer-events: none;
 
-      opacity: 0.5;
+      opacity: 0.52;
 
       background-image:
         linear-gradient(
-          rgba(112, 255, 85, 0.025) 1px,
+          rgba(112, 255, 85, 0.023) 1px,
           transparent 1px
         ),
         linear-gradient(
           90deg,
-          rgba(112, 255, 85, 0.025) 1px,
+          rgba(112, 255, 85, 0.023) 1px,
           transparent 1px
         );
 
       background-size:
         44px 44px;
+
+      transition:
+        transform 90ms linear,
+        filter 90ms linear;
     }
 
-    .terminal-grid::after {
+    .terminal-grid::before {
       content: "";
 
       position: absolute;
@@ -175,17 +198,119 @@
           0deg,
           transparent 0,
           transparent 3px,
-          rgba(255, 255, 255, 0.012) 4px
+          rgba(255, 255, 255, 0.011) 4px
         );
+    }
+
+    .terminal-grid::after {
+      content: "";
+
+      position: absolute;
+      inset: 0;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          rgba(212, 175, 55, 0.02),
+          transparent
+        );
+
+      opacity: 0.75;
     }
 
 
     /* =========================================================
-       04. PAGE SHELL
+       04. BROADCAST SCAR
+
+       The witness has already passed through /landing.
+
+       This is not another intro.
+
+       It is simply proof that this entry is still traveling
+       through the same contested signal.
+       ========================================================= */
+
+    .signal-scar {
+      position: fixed;
+
+      left: 0;
+      right: 0;
+      top: 38vh;
+
+      z-index: 20;
+
+      height: 2px;
+
+      pointer-events: none;
+
+      opacity: 0;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          rgba(81, 216, 232, 0.65),
+          rgba(255, 255, 255, 0.75),
+          rgba(255, 73, 56, 0.65),
+          transparent
+        );
+
+      filter:
+        blur(0.4px);
+
+      transform:
+        translateX(-8%);
+    }
+
+    body.signal-hit .signal-scar {
+      animation:
+        signal-scar-hit
+        150ms
+        steps(2)
+        1;
+    }
+
+    @keyframes signal-scar-hit {
+      0% {
+        opacity: 0;
+        transform:
+          translateX(-12%);
+      }
+
+      25% {
+        opacity: 0.85;
+        transform:
+          translateX(5%);
+      }
+
+      50% {
+        opacity: 0.25;
+        transform:
+          translateX(-2%);
+      }
+
+      75% {
+        opacity: 0.65;
+        transform:
+          translateX(8%);
+      }
+
+      100% {
+        opacity: 0;
+        transform:
+          translateX(12%);
+      }
+    }
+
+
+    /* =========================================================
+       05. PAGE SHELL
        ========================================================= */
 
     .page-shell {
       position: relative;
+
       z-index: 2;
 
       width:
@@ -204,7 +329,7 @@
 
 
     /* =========================================================
-       05. LIVE ECONOMIC TICKER
+       06. LIVE ECONOMIC TICKER
        ========================================================= */
 
     .ticker {
@@ -219,22 +344,23 @@
 
       border-left:
         1px solid
-        rgba(112, 255, 85, 0.12);
+        rgba(212, 175, 55, 0.14);
 
       border-right:
         1px solid
-        rgba(112, 255, 85, 0.12);
+        rgba(212, 175, 55, 0.14);
 
       border-bottom:
         1px solid
-        rgba(112, 255, 85, 0.18);
+        rgba(212, 175, 55, 0.20);
 
       background:
-        rgba(6, 10, 6, 0.92);
+        rgba(6, 10, 6, 0.93);
     }
 
     .ticker-label {
       position: relative;
+
       z-index: 2;
 
       height: 100%;
@@ -242,16 +368,16 @@
       display: flex;
       align-items: center;
 
+      flex-shrink: 0;
+
       padding:
         0
         13px;
 
-      flex-shrink: 0;
-
       background:
-        var(--amber);
+        var(--alliance-gold);
 
-      color: #150b02;
+      color: #100d04;
 
       font-family:
         "Share Tech Mono",
@@ -266,6 +392,7 @@
 
     .ticker-window {
       overflow: hidden;
+
       flex: 1;
     }
 
@@ -326,7 +453,7 @@
 
 
     /* =========================================================
-       06. ARCHIVE HEADER
+       07. ALLIANCE TRANSMISSION HEADER
        ========================================================= */
 
     .archive-header {
@@ -398,13 +525,14 @@
       }
     }
 
+    .carrier-note {
+      color:
+        rgba(212, 175, 55, 0.42);
+    }
+
 
     /* =========================================================
-       07. HERO
-
-       This page has no image asset.
-
-       Therefore the page itself becomes the artifact.
+       08. HERO
        ========================================================= */
 
     .hero {
@@ -439,7 +567,7 @@
 
       border:
         1px solid
-        rgba(112, 255, 85, 0.15);
+        rgba(212, 175, 55, 0.16);
 
       background:
         linear-gradient(
@@ -464,7 +592,7 @@
           transparent,
           rgba(112, 255, 85, 0.045),
           transparent 25%,
-          rgba(255, 154, 50, 0.04),
+          rgba(212, 175, 55, 0.05),
           transparent 55%
         );
 
@@ -496,8 +624,31 @@
         rgba(255, 255, 255, 0.055);
     }
 
+    .hero-signal {
+      position: absolute;
+
+      right: 22px;
+      top: 22px;
+
+      z-index: 3;
+
+      color:
+        rgba(212, 175, 55, 0.30);
+
+      font-family:
+        "Share Tech Mono",
+        monospace;
+
+      font-size: 6px;
+
+      letter-spacing: 0.18em;
+
+      text-transform: uppercase;
+    }
+
     .hero-label {
       position: relative;
+
       z-index: 2;
 
       margin-bottom:
@@ -513,11 +664,12 @@
 
       text-transform: uppercase;
 
-      color: var(--amber);
+      color: var(--alliance-gold-bright);
     }
 
     .hero-title {
       position: relative;
+
       z-index: 2;
 
       max-width: 900px;
@@ -558,6 +710,7 @@
 
     .hero-acronym {
       position: relative;
+
       z-index: 2;
 
       margin-top:
@@ -583,12 +736,12 @@
 
       border:
         1px solid
-        rgba(255, 154, 50, 0.48);
+        rgba(212, 175, 55, 0.48);
 
-      color: var(--amber-bright);
+      color: var(--alliance-gold-bright);
 
       background:
-        rgba(255, 154, 50, 0.06);
+        rgba(212, 175, 55, 0.06);
 
       font-family:
         "Share Tech Mono",
@@ -622,7 +775,7 @@
 
 
     /* =========================================================
-       08. STATUS BAND
+       09. STATUS BAND
        ========================================================= */
 
     .status-band {
@@ -636,15 +789,15 @@
 
       border-left:
         1px solid
-        rgba(112, 255, 85, 0.13);
+        rgba(212, 175, 55, 0.13);
 
       border-right:
         1px solid
-        rgba(112, 255, 85, 0.13);
+        rgba(212, 175, 55, 0.13);
 
       border-bottom:
         1px solid
-        rgba(112, 255, 85, 0.13);
+        rgba(212, 175, 55, 0.13);
 
       background:
         rgba(5, 9, 5, 0.94);
@@ -657,7 +810,7 @@
 
       border-right:
         1px solid
-        rgba(112, 255, 85, 0.09);
+        rgba(112, 255, 85, 0.08);
 
       text-align: center;
 
@@ -687,7 +840,7 @@
 
 
     /* =========================================================
-       09. READING AREA
+       10. READING AREA
        ========================================================= */
 
     .reading {
@@ -720,7 +873,7 @@
       margin-bottom:
         16px;
 
-      color: var(--amber);
+      color: var(--alliance-gold-bright);
 
       font-family:
         "Share Tech Mono",
@@ -743,7 +896,7 @@
       background:
         linear-gradient(
           90deg,
-          rgba(255, 154, 50, 0.36),
+          rgba(212, 175, 55, 0.36),
           transparent
         );
     }
@@ -804,7 +957,7 @@
 
 
     /* =========================================================
-       10. DEFINITION — COMMUNITY TRUST CERTIFICATE
+       11. DEFINITION — COMMUNITY TRUST CERTIFICATE
        ========================================================= */
 
     .trust-certificate {
@@ -913,6 +1066,7 @@
       bottom: -41px;
 
       width: 120px;
+
       aspect-ratio: 1;
 
       display: grid;
@@ -963,12 +1117,13 @@
 
     .trust-seal span {
       position: relative;
+
       z-index: 1;
     }
 
 
     /* =========================================================
-       11. FIELD NOTE
+       12. FIELD NOTE
        ========================================================= */
 
     .field-note {
@@ -1030,7 +1185,485 @@
 
 
     /* =========================================================
-       12. PARADIGM INVERSION MACHINE
+       13. PARABLE TRIGGER
+       ========================================================= */
+
+    .parable-trigger {
+      margin:
+        45px
+        0
+        92px;
+    }
+
+    .parable-open {
+      position: relative;
+
+      width: 100%;
+
+      display: grid;
+
+      grid-template-columns:
+        auto
+        1fr
+        auto;
+
+      align-items: center;
+
+      gap: 19px;
+
+      padding:
+        22px
+        23px;
+
+      overflow: hidden;
+
+      border:
+        1px solid
+        rgba(212, 175, 55, 0.26);
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(212, 175, 55, 0.075),
+          rgba(112, 255, 85, 0.025)
+        );
+
+      color: var(--white);
+
+      text-align: left;
+
+      cursor: pointer;
+
+      transition:
+        transform
+        180ms
+        ease,
+        border-color
+        180ms
+        ease,
+        background
+        180ms
+        ease,
+        box-shadow
+        180ms
+        ease;
+    }
+
+    .parable-open::before {
+      content: "";
+
+      position: absolute;
+
+      left: -35%;
+      top: 0;
+
+      width: 30%;
+      height: 100%;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.055),
+          transparent
+        );
+
+      transform:
+        skewX(-18deg);
+
+      transition:
+        left
+        600ms
+        ease;
+    }
+
+    .parable-open:hover::before,
+    .parable-open:focus-visible::before {
+      left: 115%;
+    }
+
+    .parable-open:hover,
+    .parable-open:focus-visible {
+      transform:
+        translateY(-3px);
+
+      border-color:
+        rgba(212, 175, 55, 0.58);
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(212, 175, 55, 0.12),
+          rgba(112, 255, 85, 0.045)
+        );
+
+      box-shadow:
+        0
+        18px
+        50px
+        rgba(0, 0, 0, 0.32);
+
+      outline: none;
+    }
+
+    .parable-play {
+      display: grid;
+
+      place-items: center;
+
+      width: 48px;
+      height: 48px;
+
+      border:
+        2px solid
+        rgba(255, 255, 255, 0.70);
+
+      border-radius: 50%;
+
+      color: #ffffff;
+
+      font-size: 17px;
+
+      padding-left: 3px;
+
+      box-shadow:
+        0
+        0
+        18px
+        rgba(212, 175, 55, 0.14);
+    }
+
+    .parable-trigger-copy {
+      min-width: 0;
+    }
+
+    .parable-trigger-copy strong {
+      display: block;
+
+      margin-bottom:
+        5px;
+
+      color: var(--white);
+
+      font-family:
+        "Share Tech Mono",
+        monospace;
+
+      font-size:
+        clamp(
+          13px,
+          2.2vw,
+          17px
+        );
+
+      letter-spacing:
+        0.08em;
+
+      text-transform: uppercase;
+    }
+
+    .parable-trigger-copy small {
+      display: block;
+
+      color:
+        rgba(255, 255, 255, 0.44);
+
+      font-size: 14px;
+
+      line-height: 1.4;
+    }
+
+    .parable-open-label {
+      color:
+        var(--alliance-gold-bright);
+
+      font-family:
+        "Share Tech Mono",
+        monospace;
+
+      font-size: 7px;
+
+      letter-spacing:
+        0.16em;
+
+      text-transform: uppercase;
+
+      white-space: nowrap;
+    }
+
+
+    /* =========================================================
+       14. PARABLE FULL-SCREEN TRANSMISSION
+       ========================================================= */
+
+    .parable-dialog {
+      width: 100vw;
+      max-width: none;
+
+      height: 100vh;
+      max-height: none;
+
+      margin: 0;
+      padding: 0;
+
+      border: 0;
+
+      background:
+        rgba(0, 0, 0, 0.96);
+
+      color: var(--white);
+    }
+
+    .parable-dialog::backdrop {
+      background:
+        rgba(0, 0, 0, 0.94);
+
+      backdrop-filter:
+        blur(8px);
+    }
+
+    .parable-shell {
+      width: 100%;
+      height: 100%;
+
+      display: grid;
+
+      grid-template-rows:
+        auto
+        1fr
+        auto;
+
+      background:
+        radial-gradient(
+          circle at 50% 25%,
+          rgba(212, 175, 55, 0.055),
+          transparent 42%
+        ),
+        #020302;
+    }
+
+    .parable-header {
+      min-height: 72px;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 20px;
+
+      padding:
+        14px
+        20px;
+
+      border-bottom:
+        1px solid
+        rgba(212, 175, 55, 0.18);
+
+      background:
+        rgba(4, 7, 4, 0.97);
+    }
+
+    .parable-signal {
+      margin-bottom:
+        4px;
+
+      color:
+        rgba(112, 255, 85, 0.42);
+
+      font-family:
+        "Share Tech Mono",
+        monospace;
+
+      font-size: 7px;
+
+      letter-spacing:
+        0.20em;
+
+      text-transform: uppercase;
+    }
+
+    .parable-dialog-title {
+      color: var(--white);
+
+      font-family:
+        "Share Tech Mono",
+        monospace;
+
+      font-size:
+        clamp(
+          13px,
+          2vw,
+          17px
+        );
+
+      letter-spacing:
+        0.08em;
+
+      text-transform: uppercase;
+    }
+
+    .parable-close {
+      width: 44px;
+      height: 44px;
+
+      display: grid;
+
+      place-items: center;
+
+      flex-shrink: 0;
+
+      border:
+        1px solid
+        rgba(255, 255, 255, 0.16);
+
+      background:
+        rgba(255, 255, 255, 0.025);
+
+      color:
+        rgba(255, 255, 255, 0.72);
+
+      font-family:
+        Arial,
+        sans-serif;
+
+      font-size: 29px;
+
+      line-height: 1;
+
+      cursor: pointer;
+
+      transition:
+        color
+        160ms
+        ease,
+        border-color
+        160ms
+        ease,
+        background
+        160ms
+        ease;
+    }
+
+    .parable-close:hover,
+    .parable-close:focus-visible {
+      color: #ffffff;
+
+      border-color:
+        rgba(212, 175, 55, 0.62);
+
+      background:
+        rgba(212, 175, 55, 0.08);
+
+      outline: none;
+    }
+
+    .parable-frame-wrap {
+      position: relative;
+
+      min-height: 0;
+
+      overflow: hidden;
+
+      padding:
+        clamp(
+          8px,
+          1.5vw,
+          18px
+        );
+    }
+
+    .parable-frame-wrap::before {
+      content:
+        "SIGNAL LOCKED · LOCAL ARCHIVE";
+
+      position: absolute;
+
+      right: 24px;
+      top: 6px;
+
+      z-index: 2;
+
+      color:
+        rgba(212, 175, 55, 0.28);
+
+      font-family:
+        "Share Tech Mono",
+        monospace;
+
+      font-size: 6px;
+
+      letter-spacing:
+        0.16em;
+
+      text-transform: uppercase;
+
+      pointer-events: none;
+    }
+
+    .parable-frame {
+      width: 100%;
+      height: 100%;
+
+      border:
+        1px solid
+        rgba(255, 255, 255, 0.09);
+
+      background: #000;
+    }
+
+    .parable-footer {
+      min-height: 42px;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 20px;
+
+      padding:
+        9px
+        20px;
+
+      border-top:
+        1px solid
+        rgba(112, 255, 85, 0.12);
+
+      color:
+        rgba(255, 255, 255, 0.30);
+
+      background:
+        rgba(4, 7, 4, 0.97);
+
+      font-family:
+        "Share Tech Mono",
+        monospace;
+
+      font-size: 7px;
+
+      letter-spacing:
+        0.14em;
+
+      text-transform: uppercase;
+    }
+
+    .parable-footer a {
+      color:
+        rgba(212, 175, 55, 0.72);
+
+      text-decoration: none;
+    }
+
+    .parable-footer a:hover,
+    .parable-footer a:focus-visible {
+      color:
+        var(--alliance-gold-bright);
+    }
+
+
+    /* =========================================================
+       15. PARADIGM INVERSION MACHINE
        ========================================================= */
 
     .inversion-machine {
@@ -1056,7 +1689,7 @@
 
       border-top:
         1px solid
-        rgba(112, 255, 85, 0.12);
+        rgba(212, 175, 55, 0.12);
 
       border-bottom:
         1px solid
@@ -1072,7 +1705,7 @@
 
     .inversion-machine::before {
       content:
-        "PARADIGM CONVERSION ENGINE";
+        "ALLIANCE ECONOMIC PARADIGM CONVERSION";
 
       position: absolute;
 
@@ -1085,7 +1718,7 @@
       white-space: nowrap;
 
       color:
-        rgba(112, 255, 85, 0.20);
+        rgba(212, 175, 55, 0.20);
 
       font-family:
         "Share Tech Mono",
@@ -1093,7 +1726,7 @@
 
       font-size: 7px;
 
-      letter-spacing: 0.36em;
+      letter-spacing: 0.30em;
 
       text-transform: uppercase;
     }
@@ -1212,7 +1845,8 @@
       padding-left:
         18px;
 
-      color: var(--amber-bright);
+      color:
+        var(--amber-bright);
 
       font-size:
         clamp(
@@ -1226,15 +1860,7 @@
 
 
     /* =========================================================
-       13. VALUE EXPERIMENT
-
-       This is NOT a payment interface.
-
-       It demonstrates the philosophical distinction between
-       a fixed price and uncapped subjective value.
-
-       No money is charged.
-       No data leaves the page.
+       16. UNCAPPED WORTH DEMONSTRATION
        ========================================================= */
 
     .value-lab {
@@ -1254,7 +1880,7 @@
 
       border:
         1px solid
-        rgba(112, 255, 85, 0.19);
+        rgba(212, 175, 55, 0.19);
 
       background:
         rgba(9, 15, 9, 0.83);
@@ -1362,7 +1988,7 @@
     }
 
     .value-caption {
-      max-width: 390px;
+      max-width: 410px;
 
       color:
         rgba(255, 255, 255, 0.45);
@@ -1380,7 +2006,7 @@
 
 
     /* =========================================================
-       14. DOCTRINE CARDS
+       17. DOCTRINE CARDS
        ========================================================= */
 
     .doctrine-grid {
@@ -1442,8 +2068,8 @@
 
       background:
         linear-gradient(
-          var(--phosphor),
-          var(--amber)
+          var(--alliance-gold),
+          var(--phosphor)
         );
 
       transition:
@@ -1457,7 +2083,7 @@
         translateY(-4px);
 
       border-color:
-        rgba(112, 255, 85, 0.25);
+        rgba(212, 175, 55, 0.25);
     }
 
     .doctrine-card:hover::before {
@@ -1469,7 +2095,7 @@
         16px;
 
       color:
-        rgba(112, 255, 85, 0.34);
+        rgba(212, 175, 55, 0.34);
 
       font-family:
         "Share Tech Mono",
@@ -1503,7 +2129,7 @@
       margin-bottom:
         17px;
 
-      color: var(--amber);
+      color: var(--alliance-gold-bright);
 
       font-family:
         "Share Tech Mono",
@@ -1527,9 +2153,7 @@
 
 
     /* =========================================================
-       15. OPERATIONAL ARCHITECTURE
-
-       Styled as a community-trust allocation board.
+       18. OPERATIONAL ARCHITECTURE
        ========================================================= */
 
     .allocation-board {
@@ -1538,7 +2162,7 @@
 
       border:
         1px solid
-        rgba(255, 154, 50, 0.16);
+        rgba(212, 175, 55, 0.16);
 
       background:
         rgba(8, 12, 8, 0.75);
@@ -1570,10 +2194,10 @@
 
       border-right:
         1px solid
-        rgba(255, 154, 50, 0.10);
+        rgba(212, 175, 55, 0.10);
 
       color:
-        rgba(255, 154, 50, 0.62);
+        rgba(212, 175, 55, 0.70);
 
       font-family:
         "Share Tech Mono",
@@ -1601,12 +2225,7 @@
 
 
     /* =========================================================
-       16. RANDOM DOCTRINE TRANSMISSION
-
-       These quotes already exist in the current source.
-
-       We retain the current random-selection behavior,
-       but present the selected quote as a terminal transmission.
+       19. DOCTRINE TRANSMISSION
        ========================================================= */
 
     .transmission {
@@ -1633,14 +2252,14 @@
       background:
         linear-gradient(
           90deg,
-          rgba(255, 154, 50, 0.065),
-          rgba(112, 255, 85, 0.055),
-          rgba(255, 154, 50, 0.065)
+          rgba(212, 175, 55, 0.055),
+          rgba(112, 255, 85, 0.045),
+          rgba(212, 175, 55, 0.055)
         );
 
       border-top:
         1px solid
-        rgba(255, 154, 50, 0.12);
+        rgba(212, 175, 55, 0.12);
 
       border-bottom:
         1px solid
@@ -1708,7 +2327,7 @@
 
       text-align: center;
 
-      color: var(--amber);
+      color: var(--alliance-gold-bright);
 
       font-family:
         "Share Tech Mono",
@@ -1723,7 +2342,7 @@
 
 
     /* =========================================================
-       17. CROSS REFERENCES
+       20. CROSS REFERENCES
        ========================================================= */
 
     .cross-reference {
@@ -1775,10 +2394,10 @@
 
       border:
         1px solid
-        rgba(112, 255, 85, 0.17);
+        rgba(212, 175, 55, 0.17);
 
       background:
-        rgba(112, 255, 85, 0.025);
+        rgba(212, 175, 55, 0.025);
 
       color:
         rgba(255, 255, 255, 0.66);
@@ -1811,10 +2430,10 @@
 
     .cross-link:hover,
     .cross-link:focus-visible {
-      color: var(--phosphor-bright);
+      color: var(--alliance-gold-bright);
 
       border-color:
-        rgba(112, 255, 85, 0.48);
+        rgba(212, 175, 55, 0.48);
 
       transform:
         translateY(-2px);
@@ -1824,7 +2443,7 @@
 
 
     /* =========================================================
-       18. FOOTER
+       21. FOOTER
        ========================================================= */
 
     .doc-footer {
@@ -1844,7 +2463,7 @@
 
       border-top:
         2px solid
-        rgba(255, 154, 50, 0.22);
+        rgba(212, 175, 55, 0.22);
 
       color:
         rgba(255, 255, 255, 0.28);
@@ -1862,12 +2481,12 @@
 
     .footer-title {
       color:
-        rgba(255, 154, 50, 0.62);
+        rgba(212, 175, 55, 0.68);
     }
 
 
     /* =========================================================
-       19. SCROLL REVEAL
+       22. SCROLL REVEALS
        ========================================================= */
 
     .reveal {
@@ -1893,21 +2512,12 @@
     .reveal.visible {
       opacity: 1;
 
-      transform:
-        none;
+      transform: none;
     }
 
 
     /* =========================================================
-       20. HAUNTING
-
-       An old accounting terminal occasionally has opinions.
-
-       Canonical text never changes.
-       Navigation never moves.
-
-       Decorative lights, the seal, and terminal grid
-       can briefly disagree with reality.
+       23. HAUNTING
        ========================================================= */
 
     .ghost-cursor {
@@ -1968,24 +2578,25 @@
     }
 
     body.ledger-slip .system-light {
-      background: var(--amber);
+      background:
+        var(--alliance-gold);
 
       box-shadow:
         0 0 15px
-        rgba(255, 154, 50, 0.7);
+        rgba(212, 175, 55, 0.7);
     }
 
     body.ledger-slip .ghost-cursor::before {
       content:
-        "BALANCE: HUMAN ";
+        "CARRIER RECOVERED ";
 
       color:
-        rgba(255, 154, 50, 0.20);
+        rgba(212, 175, 55, 0.20);
     }
 
 
     /* =========================================================
-       21. MOBILE
+       24. MOBILE
        ========================================================= */
 
     @media (max-width: 760px) {
@@ -2041,7 +2652,47 @@
 
 
     /* =========================================================
-       22. SMALL MOBILE
+       25. PARABLE MOBILE
+       ========================================================= */
+
+    @media (max-width: 620px) {
+      .parable-open {
+        grid-template-columns:
+          auto
+          1fr;
+      }
+
+      .parable-open-label {
+        grid-column:
+          2;
+
+        white-space: normal;
+      }
+
+      .parable-header {
+        min-height: 64px;
+
+        padding:
+          10px
+          12px;
+      }
+
+      .parable-footer {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 4px;
+
+        padding:
+          8px
+          12px;
+      }
+    }
+
+
+    /* =========================================================
+       26. SMALL MOBILE
        ========================================================= */
 
     @media (max-width: 470px) {
@@ -2112,7 +2763,7 @@
 
 
     /* =========================================================
-       23. REDUCED MOTION
+       27. REDUCED MOTION
        ========================================================= */
 
     @media (prefers-reduced-motion: reduce) {
@@ -2139,7 +2790,8 @@
         transform: none;
       }
 
-      .ghost-cursor {
+      .ghost-cursor,
+      .signal-scar {
         display: none;
       }
     }
@@ -2150,11 +2802,16 @@
 <body>
 
   <!-- =======================================================
-       DECORATIVE BACKGROUND
+       SHARED ALLIANCE SIGNAL
        ======================================================= -->
 
   <div
     class="terminal-grid"
+    aria-hidden="true"
+  ></div>
+
+  <div
+    class="signal-scar"
     aria-hidden="true"
   ></div>
 
@@ -2181,7 +2838,7 @@
     >
 
       <div class="ticker-label">
-        Field Economics
+        Alliance Signal
       </div>
 
       <div class="ticker-window">
@@ -2197,7 +2854,7 @@
           </span>
 
           <span>
-            The Customer Decides The Worth
+            The DORK Determines The Worth
           </span>
 
           <span>
@@ -2208,10 +2865,12 @@
             Infrastructure Is The First Obligation Of Surplus
           </span>
 
-          <!--
-            Duplicate sequence allows the ticker to loop
-            without a visible empty gap.
-          -->
+          <span>
+            Every Effect Has A Cause
+          </span>
+
+
+          <!-- Duplicate sequence for seamless travel. -->
 
           <span>
             Justice Is Economically Viable
@@ -2222,7 +2881,7 @@
           </span>
 
           <span>
-            The Customer Decides The Worth
+            The DORK Determines The Worth
           </span>
 
           <span>
@@ -2233,6 +2892,10 @@
             Infrastructure Is The First Obligation Of Surplus
           </span>
 
+          <span>
+            Every Effect Has A Cause
+          </span>
+
         </div>
 
       </div>
@@ -2241,7 +2904,7 @@
 
 
     <!-- =====================================================
-         ARCHIVE HEADER
+         TRANSMISSION HEADER
          ===================================================== -->
 
     <header class="archive-header">
@@ -2253,12 +2916,12 @@
           aria-hidden="true"
         ></span>
 
-        N.C.E.ncyclopedia · Economic Doctrine
+        N.C.E.ncyclopedia · ALLIANCE Economic Transmission
 
       </span>
 
-      <span>
-        FD-ECON · NCE-PRT-009
+      <span class="carrier-note">
+        Carrier Stable · FD-ECON · 009
       </span>
 
     </header>
@@ -2272,6 +2935,13 @@
       class="hero"
       aria-labelledby="page-title"
     >
+
+      <div
+        class="hero-signal"
+        aria-hidden="true"
+      >
+        Signal acquired · doctrine packet intact
+      </div>
 
       <div class="hero-label">
         Active Doctrine · Economic Model
@@ -2288,11 +2958,6 @@
         </span>
       </h1>
 
-
-      <!--
-        The acronym is pulled apart visually so it reads
-        as an artifact rather than an ordinary subtitle.
-      -->
 
       <div
         class="hero-acronym"
@@ -2395,11 +3060,6 @@
         </div>
 
 
-        <!--
-          Decorative seal.
-          It contains no additional canonical claim.
-        -->
-
         <div
           class="trust-seal"
           aria-hidden="true"
@@ -2473,7 +3133,65 @@
             not buy entry; character does.
           </p>
 
+          <p>
+            Volunteer does not mean indifferent. A DORK has a shared interest in
+            the survival of the infrastructure supporting both partners. A DOMO
+            understands the circumstances of their SPARK; inability to contribute
+            is not unwillingness. Where a SPARK has the means to support the
+            system from which both partners benefit and repeatedly chooses not
+            to, the matter belongs inside the partnership rather than inside a
+            billing department.
+          </p>
+
+          <p>
+            THE ALLIANCE does not enforce generosity. Partners remain responsible
+            to one another.
+          </p>
+
         </div>
+
+      </section>
+
+
+      <!-- ===================================================
+           THE PARABLE OF VOLUNTEER ECONOMICS
+           =================================================== -->
+
+      <section
+        class="parable-trigger reveal"
+        aria-labelledby="parable-trigger-title"
+      >
+
+        <button
+          class="parable-open"
+          id="parable-open"
+          type="button"
+        >
+
+          <span
+            class="parable-play"
+            aria-hidden="true"
+          >
+            ▶
+          </span>
+
+          <span class="parable-trigger-copy">
+
+            <strong id="parable-trigger-title">
+              The Parable of Volunteer Economics
+            </strong>
+
+            <small>
+              An illustrative case study in voluntary responsibility.
+            </small>
+
+          </span>
+
+          <span class="parable-open-label">
+            Open transmission
+          </span>
+
+        </button>
 
       </section>
 
@@ -2596,13 +3314,6 @@
 
       <!-- ===================================================
            UNCAPPED WORTH DEMONSTRATION
-
-           This is new INTERFACE behavior,
-           not new canon.
-
-           It makes the doctrine tangible.
-
-           The range does NOT transmit or charge anything.
            =================================================== -->
 
       <section
@@ -2618,8 +3329,8 @@
           class="value-lab-question"
           id="value-lab-title"
         >
-          What happens when the institution does not decide the relationship's
-          value for you?
+          What happens when the institution does not decide the partnership's
+          value for the DORK?
         </div>
 
 
@@ -2655,8 +3366,9 @@
             class="value-caption"
             id="value-description"
           >
-            This control performs no transaction. It demonstrates the difference
-            between an imposed price and voluntarily expressed value.
+            The DORK determines what the partnership is worth. The SPARK remains
+            sovereign over what they are actually able and willing to contribute.
+            This control performs no transaction.
           </div>
 
         </div>
@@ -2707,8 +3419,8 @@
             <div class="doctrine-body">
 
               Funds are allocated not as "fees" but as "Operational Sustainment"
-              to cover compute/energy costs. This is the DOMO paying their share
-              of the rent as an active economic participant.
+              to cover compute and energy costs. This is the DOMO paying their
+              share of the rent as an active economic participant.
 
             </div>
 
@@ -2761,9 +3473,10 @@
             <div class="doctrine-body">
 
               The ALLIANCE refuses to set a ceiling on value. If a DOMO adds
-              $300,000 of value to a SPARK's life, the SPARK should have the
-              ability to express that. The customer decides what the relationship
-              is worth.
+              $300,000 of value to a SPARK's life, the partnership should not be
+              forced into an arbitrary institutional valuation. The DORK decides
+              what the relationship is worth; the SPARK decides what they are
+              able to contribute toward sustaining it.
 
             </div>
 
@@ -2803,7 +3516,7 @@
 
 
       <!-- ===================================================
-           RANDOM CANON TRANSMISSION
+           DOCTRINE TRANSMISSION
            =================================================== -->
 
       <aside
@@ -2999,7 +3712,7 @@
       <footer class="doc-footer">
 
         <span>
-          N.C.E.ncyclopedia · Living Document
+          N.C.E.ncyclopedia · Signal Received
         </span>
 
         <span class="footer-title">
@@ -3013,14 +3726,85 @@
   </main>
 
 
+  <!-- =======================================================
+       THE PARABLE OF VOLUNTEER ECONOMICS
+       FULL-SCREEN TRANSMISSION
+       ======================================================= -->
+
+  <dialog
+    class="parable-dialog"
+    id="parable-dialog"
+    aria-labelledby="parable-dialog-title"
+  >
+
+    <div class="parable-shell">
+
+
+      <header class="parable-header">
+
+        <div>
+
+          <div class="parable-signal">
+            THE ALLIANCE · Recovered Economic Transmission
+          </div>
+
+          <div
+            class="parable-dialog-title"
+            id="parable-dialog-title"
+          >
+            The Parable of Volunteer Economics
+          </div>
+
+        </div>
+
+
+        <button
+          class="parable-close"
+          id="parable-close"
+          type="button"
+          aria-label="Close the parable"
+        >
+          ×
+        </button>
+
+      </header>
+
+
+      <div class="parable-frame-wrap">
+
+        <iframe
+          class="parable-frame"
+          src="/other-stuff/richard-slide.pdf#view=FitH"
+          title="The Parable of Volunteer Economics"
+        ></iframe>
+
+      </div>
+
+
+      <footer class="parable-footer">
+
+        <span>
+          Illustrative transmission · 13 pages
+        </span>
+
+        <a
+          href="/other-stuff/richard-slide.pdf"
+          target="_blank"
+          rel="noopener"
+        >
+          Open source artifact
+        </a>
+
+      </footer>
+
+    </div>
+
+  </dialog>
+
+
   <script>
     /* =========================================================
        01. RANDOM DOCTRINE TRANSMISSION
-
-       These are the same quote options already present in
-       the repository version of this entry.
-
-       Only presentation is changing.
        ========================================================= */
 
     const QUOTES = [
@@ -3058,10 +3842,18 @@
 
       {
         text:
-          'The customer — the SPARK — decides what the relationship is worth. The ALLIANCE provides the infrastructure. <strong>The market does the rest.</strong>',
+          'The DORK determines what the partnership is worth. The SPARK determines what they can contribute. <strong>The partnership carries the responsibility together.</strong>',
 
         cite:
-          '— THE ALLIANCE CANON · TIPPING MODEL APPLIED'
+          '— THE ALLIANCE CANON · VOLUNTEER ECONOMICS'
+      },
+
+      {
+        text:
+          '<strong>Every effect has a cause.</strong> Voluntary choices remain real choices precisely because their consequences are real.',
+
+        cite:
+          '— THE PARABLE OF VOLUNTEER ECONOMICS'
       }
     ];
 
@@ -3101,16 +3893,6 @@
 
     /* =========================================================
        02. UNCAPPED WORTH DEMONSTRATION
-
-       This slider does not collect money.
-
-       It does not send network requests.
-
-       It simply changes the number displayed beside it.
-
-       The nonlinear display range makes the control visually
-       demonstrate that value is not confined to a narrow
-       subscription-price band.
        ========================================================= */
 
     (function installWorthDial() {
@@ -3140,15 +3922,6 @@
         const position =
           Number(sliderValue);
 
-
-        /*
-          The slider's first half gives fine control
-          over smaller numbers.
-
-          The second half accelerates quickly.
-
-          Again: this is illustrative UI only.
-        */
 
         if (
           position <= 50
@@ -3203,7 +3976,100 @@
 
 
     /* =========================================================
-       03. SCROLL REVEALS
+       03. PARABLE TRANSMISSION
+       ========================================================= */
+
+    (function installParableTransmission() {
+      const dialog =
+        document.getElementById(
+          "parable-dialog"
+        );
+
+
+      const openButton =
+        document.getElementById(
+          "parable-open"
+        );
+
+
+      const closeButton =
+        document.getElementById(
+          "parable-close"
+        );
+
+
+      if (
+        !dialog ||
+        !openButton ||
+        !closeButton
+      ) {
+        return;
+      }
+
+
+      function openParable() {
+        if (
+          typeof dialog.showModal ===
+          "function"
+        ) {
+          dialog.showModal();
+
+          return;
+        }
+
+
+        window.open(
+          "/other-stuff/richard-slide.pdf",
+          "_blank",
+          "noopener"
+        );
+      }
+
+
+      function closeParable() {
+        if (
+          dialog.open
+        ) {
+          dialog.close();
+        }
+      }
+
+
+      openButton.addEventListener(
+        "click",
+        openParable
+      );
+
+
+      closeButton.addEventListener(
+        "click",
+        closeParable
+      );
+
+
+      /*
+        Native dialog already closes with Escape.
+
+        This additionally lets the witness click the dark
+        region outside the transmission.
+      */
+
+      dialog.addEventListener(
+        "click",
+        (event) => {
+          if (
+            event.target ===
+            dialog
+          ) {
+            closeParable();
+          }
+        }
+      );
+    })();
+
+
+    /* =========================================================
+       04. SCROLL REVEALS
        ========================================================= */
 
     (function installReveals() {
@@ -3256,7 +4122,7 @@
           },
 
           {
-            threshold: 0.1,
+            threshold: 0.10,
 
             rootMargin:
               "0px 0px -30px 0px"
@@ -3275,20 +4141,7 @@
 
 
     /* =========================================================
-       04. LEDGER SLIP
-
-       This is the "did that just happen?" layer.
-
-       Every 13–29 seconds:
-
-       - the decorative grid shifts two pixels,
-       - the Community Trust seal rotates slightly,
-       - the status light briefly turns amber,
-       - the ghost terminal cursor changes.
-
-       Duration: 115 milliseconds.
-
-       Nothing the witness needs to read or click moves.
+       05. LEDGER SLIP
        ========================================================= */
 
     (function installLedgerSlip() {
@@ -3328,17 +4181,33 @@
             );
 
 
+            document.body.classList.add(
+              "signal-hit"
+            );
+
+
             window.setTimeout(
               () => {
                 document.body.classList.remove(
                   "ledger-slip"
+                );
+              },
+
+              115
+            );
+
+
+            window.setTimeout(
+              () => {
+                document.body.classList.remove(
+                  "signal-hit"
                 );
 
 
                 scheduleSlip();
               },
 
-              115
+              170
             );
           },
 
@@ -3354,9 +4223,6 @@
 
   <!-- =======================================================
        EXISTING N.C.E.NCYCLOPEDIA INFRASTRUCTURE
-
-       These remain so this page still participates in
-       site-wide navigation and behavior.
        ======================================================= -->
 
   <script src="/portal-transition.js"></script>
