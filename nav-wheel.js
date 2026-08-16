@@ -170,31 +170,6 @@
     #nw-burger-fallback.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
     #nw-burger-fallback.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-    #nw-search-fab {
-      position: fixed; top: 16px; right: 84px; z-index: 9000;
-      background: var(--nw-panel);
-      border: 1px solid var(--nw-nav-accent-dim);
-      border-radius: 999px;
-      display: flex; align-items: center; gap: 8px;
-      padding: 11px 16px 11px 12px;
-      cursor: pointer;
-      box-shadow: 0 0 14px var(--nw-nav-accent-faint);
-      transition: all 0.2s;
-      font-family: inherit;
-      color: var(--nw-nav-accent);
-      text-decoration: none;
-    }
-    #nw-search-fab:hover { box-shadow: 0 0 24px var(--nw-nav-accent-dim); transform: translateY(-1px); }
-    #nw-search-fab svg { width: 18px; height: 18px; flex-shrink: 0; stroke: var(--nw-nav-accent); }
-    #nw-search-fab span {
-      font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-      white-space: nowrap;
-    }
-    @media (max-width: 480px) {
-      #nw-search-fab { top: 14px; right: 66px; padding: 10px; }
-      #nw-search-fab span { display: none; }
-    }
-
     #nw-overlay {
       position: fixed; inset: 0; z-index: 8000;
       background: rgba(0,0,0,0.65);
@@ -431,16 +406,11 @@
   }
 
   // ── PERSISTENT SEARCH BUTTON ─────────────────────────────────────────────
-  // Always visible, one tap, no wheel/volume-select detour required.
-  if (!document.getElementById("nw-search-fab")) {
-    const searchFab = document.createElement("a");
-    searchFab.id = "nw-search-fab";
-    searchFab.href = "/canon-search/";
-    searchFab.setAttribute("aria-label", "Search the canon");
-    searchFab.innerHTML =
-      '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span>Search</span>';
-    document.body.appendChild(searchFab);
-  }
+  // Retired: redundant with the hub menu, whose very first node is
+  // SEARCH -- having a second, separate search button sitting right
+  // next to the hamburger duplicated what the hamburger already leads
+  // with. The hamburger alone is now the one consistent entry point
+  // on every page, landing included.
 
   // ── BUILD OVERLAY HTML ───────────────────────────────────────────────────
 

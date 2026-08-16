@@ -42,18 +42,19 @@
       label: "SEARCH",
       desc: "Query the archive directly.",
       action: () => {
-        const fab = document.getElementById("nw-search-fab");
-        if (fab) {
-          fab.click();
-          return;
-        }
+        // The persistent search FAB (nw-search-fab) has been retired
+        // -- it was redundant with this being the hub menu's own
+        // first option. Landing still gets its nicer in-page overlay
+        // with the search field focused; everywhere else goes
+        // straight to the real dedicated search page the old FAB
+        // used to point to, rather than bouncing through /landing.
         const tocSearch = document.getElementById("tocSearch");
         if (tocSearch && typeof window.openTOCInteractive === "function") {
           window.openTOCInteractive();
           setTimeout(() => tocSearch.focus(), 500);
           return;
         }
-        window.location.href = "/landing?toc=open";
+        window.location.href = "/canon-search/";
       },
     },
     {

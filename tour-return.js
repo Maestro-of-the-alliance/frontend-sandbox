@@ -22,7 +22,6 @@
   if (!pending) return;
 
   const NAV_SELECTORS = [
-    "#nw-search-fab",
     "#nw-volume-select",
     ".nw-bottom-nav",
     "#dim-nav",
