@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>N.C.E.ncyclopedia · One More Thing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0908;
+        --panel: #15130f;
+        --text: #d8cfc0;
+        --muted: #8a8377;
+        --gold: #e8920a;
+        --glow: #f5c518;
+        --rule: #3a3630;
+        --display: "Bebas Neue", sans-serif;
+        --body: "Rajdhani", sans-serif;
+        --mono: "Share Tech Mono", monospace;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--body);
+        overflow: hidden;
+      }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .tc-panel {
+        max-width: 560px;
+        width: 100%;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(14px);
+        animation: tcIn 0.7s ease forwards 0.15s;
+      }
+      @keyframes tcIn {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .tc-mono {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.4em;
+        color: var(--muted);
+        text-transform: uppercase;
+        margin-bottom: 22px;
+      }
+      .tc-mono::before {
+        content: "";
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--glow);
+        box-shadow: 0 0 8px var(--glow);
+        margin-right: 10px;
+        vertical-align: middle;
+        animation: tcBlink 2s ease-in-out infinite;
+      }
+      @keyframes tcBlink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.25;
+        }
+      }
+      h1 {
+        font-family: var(--display);
+        font-size: clamp(30px, 6vw, 46px);
+        letter-spacing: 0.02em;
+        color: var(--text);
+        line-height: 1.15;
+        margin-bottom: 18px;
+      }
+      h1 span {
+        color: var(--gold);
+      }
+      .tc-body {
+        font-size: 16px;
+        line-height: 1.7;
+        color: var(--muted);
+        margin-bottom: 40px;
+      }
+      .tc-choices {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .tc-btn {
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 16px 26px;
+        border: 1px solid var(--rule);
+        background: transparent;
+        color: var(--text);
+        cursor: pointer;
+        transition: all 0.2s;
+        min-width: 220px;
+      }
+      .tc-btn-yes {
+        border-color: var(--gold);
+        color: var(--gold);
+      }
+      .tc-btn-yes:hover {
+        background: rgba(232, 146, 10, 0.12);
+        box-shadow: 0 0 18px rgba(232, 146, 10, 0.35);
+      }
+      .tc-btn-no {
+        color: var(--muted);
+      }
+      .tc-btn-no:hover {
+        border-color: var(--muted);
+        color: var(--text);
+      }
+      .tc-btn-sub {
+        display: block;
+        font-family: var(--body);
+        font-size: 11px;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        color: var(--muted);
+        margin-top: 4px;
+        opacity: 0.75;
+      }
+      @media (max-width: 480px) {
+        .tc-choices {
+          flex-direction: column;
+        }
+        .tc-btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="tc-panel">
+      <div class="tc-mono">One more thing before you go in</div>
+      <h1>Want a <span>guided tour</span> first?</h1>
+      <div class="tc-body">
+        PapaDomo can walk you through a few of the entries — no wrong
+        choice either way. Or skip straight in and explore on your own.
+      </div>
+      <div class="tc-choices">
+        <button class="tc-btn tc-btn-yes" id="tc-yes">
+          Yes, show me around
+          <span class="tc-btn-sub">Take a tour</span>
+        </button>
+        <button class="tc-btn tc-btn-no" id="tc-no">
+          No, I'll explore myself
+          <span class="tc-btn-sub">Go straight in</span>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById("tc-yes").addEventListener("click", () => {
+        window.location.href = "/tours/";
+      });
+      document.getElementById("tc-no").addEventListener("click", () => {
+        window.location.href = "/landing.html";
+      });
+    </script>
+  </body>
+</html>
