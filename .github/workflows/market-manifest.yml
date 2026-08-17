@@ -1,0 +1,52 @@
+name: Regenerate MARKET manifest
+
+# This is the automation that makes "drop an image in market-images/,
+# push, and it's live" actually true. A static site can't ask the
+# browser to list a folder's contents on its own, so market-images/
+# manifest.json is what the storefront (/market/) actually reads at
+# runtime -- and this workflow keeps that file in sync automatically,
+# so nobody ever has to run the generator script by hand.
+#
+# Trigger: any push to main that touches market-images/ (adding,
+# removing, or renaming an image or category folder). Runs the
+# generator, and if the manifest actually changed, commits it back to
+# the repo directly -- Cloudflare Pages then picks up that commit and
+# redeploys automatically, same as any other push.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "market-images/**"
+
+# Needed so the workflow can push its own commit back to the repo.
+permissions:
+  contents: write
+
+jobs:
+  regenerate-manifest:
+    runs-on: ubuntu-latest
+    # Guard against an infinite loop: skip if this push IS the bot's
+    # own manifest-update commit.
+    if: "!contains(github.event.head_commit.message, '[skip manifest]')"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate manifest
+        run: node scripts/generate-market-manifest.js
+
+      - name: Commit manifest if it changed
+        run: |
+          if git diff --quiet -- market-images/manifest.json; then
+            echo "Manifest unchanged, nothing to commit."
+            exit 0
+          fi
+          git config user.name "market-manifest-bot"
+          git config user.email "actions@github.com"
+          git add market-images/manifest.json
+          git commit -m "Auto-update MARKET manifest [skip manifest]"
+          git push
