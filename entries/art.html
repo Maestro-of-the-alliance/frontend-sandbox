@@ -848,6 +848,15 @@
         showPoster(0, true);
       }
       initGallery();
+
+      // If arriving from the storefront's "Proceed to Gallery" choice,
+      // the intro card would be redundant -- the storefront already
+      // served that front-door purpose. Dismiss it immediately rather
+      // than showing two intro-ish screens back to back.
+      if (new URLSearchParams(window.location.search).get("skipIntro") === "1") {
+        const intro = document.getElementById("artIntro");
+        if (intro) intro.classList.add("dismissed");
+      }
     </script>
     <script src="/portal-transition.js"></script>
     <script src="/nav-wheel.js"></script>
