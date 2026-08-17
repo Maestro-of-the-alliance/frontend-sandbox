@@ -823,6 +823,7 @@
       }
       .fnd-shaking { animation: fndShake 0.35s ease-in-out; }
     </style>
+    <link rel="stylesheet" href="/papadomo-choice.css" />
   </head>
   <body>
     <div id="scanline-overlay"></div>
@@ -1361,7 +1362,14 @@
       modalCloseBtn.addEventListener("click", closeModal);
 
       document.getElementById("proceed-btn").addEventListener("click", () => {
-        window.location.href = "/tour-choice.html";
+        window.PapaDomoChoice.open({
+          onEnterTour: () => {
+            window.location.href = "/tours/";
+          },
+          onExitHome: () => {
+            window.location.href = "/landing.html";
+          },
+        });
       });
       mediaModal.addEventListener("click", (e) => {
         if (e.target === mediaModal) closeModal();
@@ -1476,5 +1484,6 @@
         schedule(14000, 26000, fireMessage);
       })();
     </script>
+    <script src="/papadomo-choice.js"></script>
   </body>
 </html>
