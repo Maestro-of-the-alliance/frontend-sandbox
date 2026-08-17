@@ -1,0 +1,36 @@
+name: Regenerate ART manifest
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "art-images/**"
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate-manifest:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip manifest]')"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate manifest
+        run: node scripts/generate-art-manifest.js
+
+      - name: Commit manifest if it changed
+        run: |
+          if git diff --quiet -- art-images/manifest.json; then
+            echo "Manifest unchanged, nothing to commit."
+            exit 0
+          fi
+          git config user.name "art-manifest-bot"
+          git config user.email "actions@github.com"
+          git add art-images/manifest.json
+          git commit -m "Auto-update ART manifest [skip manifest]"
+          git push
