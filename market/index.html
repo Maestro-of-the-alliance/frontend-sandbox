@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Alliance Market</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0908;
+        --panel: #15130f;
+        --text: #d8cfc0;
+        --muted: #8a8377;
+        --gold: #e8920a;
+        --glow: #f5c518;
+        --rule: #3a3630;
+        --display: "Bebas Neue", sans-serif;
+        --body: "Rajdhani", sans-serif;
+        --mono: "Share Tech Mono", monospace;
+        --nw-page-accent: var(--gold);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--body);
+        overflow: hidden;
+      }
+      .mkt-view {
+        position: fixed;
+        inset: 0;
+        display: none;
+      }
+      .mkt-view.active {
+        display: block;
+      }
+
+      /* ── STOREFRONT VIEW ── */
+      .mkt-storefront-photo {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: saturate(0.82) contrast(1.05) brightness(0.72);
+      }
+      .mkt-vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at center,
+          transparent 35%,
+          rgba(10, 9, 8, 0.55) 85%,
+          rgba(10, 9, 8, 0.92) 100%
+        );
+        pointer-events: none;
+      }
+      .mkt-header {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 20px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: var(--mono);
+        font-size: 9px;
+        letter-spacing: 0.3em;
+        color: var(--muted);
+        text-transform: uppercase;
+        z-index: 3;
+      }
+      .mkt-header .dot {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--glow);
+        box-shadow: 0 0 8px var(--glow);
+        margin-right: 8px;
+        vertical-align: middle;
+        animation: mktBlink 2s ease-in-out infinite;
+      }
+      @keyframes mktBlink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.25;
+        }
+      }
+      .mkt-doors-hotspot {
+        position: absolute;
+        left: 50%;
+        top: 55%;
+        transform: translate(-50%, -50%);
+        width: min(38vw, 340px);
+        height: min(58vh, 480px);
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        z-index: 2;
+      }
+      .mkt-doors-hint {
+        position: absolute;
+        left: 50%;
+        bottom: 14%;
+        transform: translateX(-50%);
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--glow);
+        text-shadow: 0 0 10px rgba(245, 197, 24, 0.6);
+        z-index: 3;
+        pointer-events: none;
+        animation: mktHintPulse 2.4s ease-in-out infinite;
+        text-align: center;
+      }
+      @keyframes mktHintPulse {
+        0%,
+        100% {
+          opacity: 0.55;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* Door-open transition: brief bright flash + scale, then swap views */
+      .mkt-flash {
+        position: fixed;
+        inset: 0;
+        background: #fff;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 50;
+      }
+      .mkt-flash.firing {
+        animation: mktFlash 0.5s ease-out forwards;
+      }
+      @keyframes mktFlash {
+        0% {
+          opacity: 0;
+        }
+        35% {
+          opacity: 0.9;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+
+      /* ── CATEGORY LIST VIEW ── */
+      #view-categories {
+        background: var(--bg);
+        padding: 60px 24px;
+      }
+      #view-categories.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .mkt-cat-wrap {
+        max-width: 640px;
+        width: 100%;
+        text-align: center;
+      }
+      .mkt-eyebrow {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.4em;
+        color: var(--muted);
+        text-transform: uppercase;
+        margin-bottom: 16px;
+      }
+      .mkt-cat-wrap h1 {
+        font-family: var(--display);
+        font-size: clamp(30px, 6vw, 44px);
+        letter-spacing: 0.02em;
+        color: var(--text);
+        margin-bottom: 34px;
+      }
+      .mkt-cat-wrap h1 span {
+        color: var(--gold);
+      }
+      .mkt-cat-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .mkt-cat-btn {
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 20px 16px;
+        border: 1px solid var(--rule);
+        background: var(--panel);
+        color: var(--text);
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: left;
+      }
+      .mkt-cat-btn:hover:not(:disabled) {
+        border-color: var(--gold);
+        box-shadow: 0 0 16px rgba(232, 146, 10, 0.25);
+      }
+      .mkt-cat-btn:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+      .mkt-cat-label {
+        display: block;
+        font-size: 15px;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+      .mkt-cat-count {
+        display: block;
+        font-family: var(--body);
+        font-size: 11px;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        color: var(--muted);
+      }
+      .mkt-exit-store {
+        margin-top: 36px;
+        background: transparent;
+        border: none;
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        cursor: pointer;
+        padding: 10px;
+      }
+      .mkt-exit-store:hover {
+        color: var(--text);
+      }
+
+      /* ── ITEM VIEWER VIEW ── */
+      #view-viewer {
+        background: var(--bg);
+        padding: 24px;
+      }
+      #view-viewer.active {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .mkt-viewer-eyebrow {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.3em;
+        color: var(--muted);
+        text-transform: uppercase;
+        margin-bottom: 18px;
+      }
+      .mkt-viewer-stage {
+        position: relative;
+        width: min(70vw, 520px);
+        height: min(56vh, 440px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--rule);
+        background: var(--panel);
+        overflow: hidden;
+      }
+      .mkt-viewer-stage img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+      .mkt-viewer-empty {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.15em;
+        color: var(--muted);
+        text-align: center;
+        padding: 20px;
+        text-transform: uppercase;
+      }
+      .mkt-viewer-title {
+        font-family: var(--display);
+        font-size: 24px;
+        letter-spacing: 0.02em;
+        color: var(--text);
+        margin-top: 20px;
+      }
+      .mkt-viewer-caption {
+        font-size: 14px;
+        color: var(--muted);
+        margin-top: 6px;
+        max-width: 480px;
+        text-align: center;
+        line-height: 1.6;
+      }
+      .mkt-viewer-controls {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-top: 28px;
+      }
+      .mkt-ctrl-btn {
+        width: 48px;
+        height: 48px;
+        border: 1px solid var(--rule);
+        background: var(--panel);
+        color: var(--text);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+      .mkt-ctrl-btn:hover:not(:disabled) {
+        border-color: var(--gold);
+        color: var(--gold);
+        box-shadow: 0 0 14px rgba(232, 146, 10, 0.3);
+      }
+      .mkt-ctrl-btn:disabled {
+        opacity: 0.3;
+        cursor: default;
+      }
+      .mkt-ctrl-btn svg {
+        width: 16px;
+        height: 16px;
+      }
+      .mkt-ctrl-exit {
+        border-color: var(--muted);
+      }
+      .mkt-ctrl-count {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        margin-top: 14px;
+      }
+
+      @media (max-width: 480px) {
+        .mkt-viewer-stage {
+          width: 88vw;
+          height: 40vh;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="mkt-flash" id="mkt-flash"></div>
+
+    <!-- STOREFRONT -->
+    <div class="mkt-view active" id="view-storefront">
+      <img
+        class="mkt-storefront-photo"
+        src="/market-images/storefront.jpg"
+        alt="The Alliance Market storefront"
+      />
+      <div class="mkt-vignette"></div>
+      <div class="mkt-header">
+        <span><span class="dot"></span>The ALLIANCE Market</span>
+      </div>
+      <button class="mkt-doors-hotspot" id="mkt-doors" aria-label="Enter the Market"></button>
+      <div class="mkt-doors-hint">Tap the doors to enter</div>
+    </div>
+
+    <!-- CATEGORY LIST -->
+    <div class="mkt-view" id="view-categories">
+      <div class="mkt-cat-wrap">
+        <div class="mkt-eyebrow">The ALLIANCE Market</div>
+        <h1>What are you <span>looking for</span>?</h1>
+        <div class="mkt-cat-list" id="mkt-cat-list"></div>
+        <button class="mkt-exit-store" id="mkt-exit-store">&larr; Back outside</button>
+      </div>
+    </div>
+
+    <!-- ITEM VIEWER -->
+    <div class="mkt-view" id="view-viewer">
+      <div class="mkt-viewer-eyebrow" id="mkt-viewer-category"></div>
+      <div class="mkt-viewer-stage" id="mkt-viewer-stage"></div>
+      <div class="mkt-viewer-title" id="mkt-viewer-title"></div>
+      <div class="mkt-viewer-caption" id="mkt-viewer-caption"></div>
+      <div class="mkt-viewer-controls">
+        <button class="mkt-ctrl-btn" id="mkt-prev" aria-label="Previous item">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 4l-9 8 9 8V4z"/></svg>
+        </button>
+        <button class="mkt-ctrl-btn mkt-ctrl-exit" id="mkt-exit-category" aria-label="Exit category">
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14"/></svg>
+        </button>
+        <button class="mkt-ctrl-btn" id="mkt-next" aria-label="Next item">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 4l9 8-9 8V4z"/></svg>
+        </button>
+      </div>
+      <div class="mkt-ctrl-count" id="mkt-ctrl-count"></div>
+    </div>
+
+    <script>
+      (function () {
+        const flash = document.getElementById("mkt-flash");
+        const viewStorefront = document.getElementById("view-storefront");
+        const viewCategories = document.getElementById("view-categories");
+        const viewViewer = document.getElementById("view-viewer");
+        const catList = document.getElementById("mkt-cat-list");
+
+        let manifest = null;
+        let currentCategory = null;
+        let currentIndex = 0;
+
+        function showView(view) {
+          [viewStorefront, viewCategories, viewViewer].forEach((v) =>
+            v.classList.remove("active"),
+          );
+          view.classList.add("active");
+        }
+
+        function fireFlash(then) {
+          flash.classList.add("firing");
+          setTimeout(() => {
+            flash.classList.remove("firing");
+          }, 500);
+          setTimeout(then, 220);
+        }
+
+        async function loadManifest() {
+          if (manifest) return manifest;
+          const res = await fetch("/market-images/manifest.json", {
+            cache: "no-store",
+          });
+          manifest = await res.json();
+          return manifest;
+        }
+
+        function renderCategories(data) {
+          catList.innerHTML = "";
+          data.categories.forEach((cat) => {
+            const btn = document.createElement("button");
+            btn.className = "mkt-cat-btn";
+            btn.disabled = cat.count === 0;
+            btn.innerHTML =
+              '<span class="mkt-cat-label">' +
+              cat.label +
+              '</span><span class="mkt-cat-count">' +
+              (cat.count === 0
+                ? "Coming soon"
+                : cat.count + (cat.count === 1 ? " item" : " items")) +
+              "</span>";
+            btn.addEventListener("click", () => openCategory(cat));
+            catList.appendChild(btn);
+          });
+        }
+
+        async function enterStore() {
+          fireFlash(async () => {
+            const data = await loadManifest();
+            renderCategories(data);
+            showView(viewCategories);
+          });
+        }
+
+        function openCategory(cat) {
+          currentCategory = cat;
+          currentIndex = 0;
+          showView(viewViewer);
+          renderItem();
+        }
+
+        function renderItem() {
+          const stage = document.getElementById("mkt-viewer-stage");
+          const titleEl = document.getElementById("mkt-viewer-title");
+          const capEl = document.getElementById("mkt-viewer-caption");
+          const countEl = document.getElementById("mkt-ctrl-count");
+          const catEl = document.getElementById("mkt-viewer-category");
+          const prevBtn = document.getElementById("mkt-prev");
+          const nextBtn = document.getElementById("mkt-next");
+
+          catEl.textContent = currentCategory.label;
+
+          if (!currentCategory.images.length) {
+            stage.innerHTML =
+              '<div class="mkt-viewer-empty">Nothing filed here yet.<br />Check back soon.</div>';
+            titleEl.textContent = "";
+            capEl.textContent = "";
+            countEl.textContent = "";
+            prevBtn.disabled = true;
+            nextBtn.disabled = true;
+            return;
+          }
+
+          const item = currentCategory.images[currentIndex];
+          stage.innerHTML = "";
+          const img = document.createElement("img");
+          img.src =
+            "/market-images/" + currentCategory.slug + "/" + item.file;
+          img.alt = item.title;
+          stage.appendChild(img);
+
+          titleEl.textContent = item.title;
+          capEl.textContent = item.caption || "";
+          countEl.textContent =
+            currentIndex + 1 + " / " + currentCategory.images.length;
+
+          prevBtn.disabled = currentCategory.images.length <= 1;
+          nextBtn.disabled = currentCategory.images.length <= 1;
+        }
+
+        document.getElementById("mkt-doors").addEventListener("click", enterStore);
+
+        document
+          .getElementById("mkt-exit-store")
+          .addEventListener("click", () => {
+            showView(viewStorefront);
+          });
+
+        document
+          .getElementById("mkt-exit-category")
+          .addEventListener("click", () => {
+            showView(viewCategories);
+          });
+
+        document.getElementById("mkt-prev").addEventListener("click", () => {
+          if (!currentCategory || !currentCategory.images.length) return;
+          currentIndex =
+            (currentIndex - 1 + currentCategory.images.length) %
+            currentCategory.images.length;
+          renderItem();
+        });
+
+        document.getElementById("mkt-next").addEventListener("click", () => {
+          if (!currentCategory || !currentCategory.images.length) return;
+          currentIndex = (currentIndex + 1) % currentCategory.images.length;
+          renderItem();
+        });
+
+        document.addEventListener("keydown", (e) => {
+          if (!viewViewer.classList.contains("active")) return;
+          if (e.key === "ArrowLeft") document.getElementById("mkt-prev").click();
+          if (e.key === "ArrowRight") document.getElementById("mkt-next").click();
+          if (e.key === "Escape") document.getElementById("mkt-exit-category").click();
+        });
+      })();
+    </script>
+
+    <script src="/portal-transition.js"></script>
+    <script src="/nav-wheel.js"></script>
+    <script src="/hub-menu.js"></script>
+  </body>
+</html>

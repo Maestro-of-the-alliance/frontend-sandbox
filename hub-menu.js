@@ -117,7 +117,7 @@
       label: "MARKET",
       desc: "Movement Artifacts, Relics, Keepsakes, Emblems, Tokens.",
       action: () => {
-        window.location.href = "/entries/market";
+        window.location.href = "/market/";
       },
     },
   ];
