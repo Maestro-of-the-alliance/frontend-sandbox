@@ -18,7 +18,12 @@
  *
  * Category folders become categories automatically -- add a new
  * subfolder under market-images/ and it just shows up as a new
- * category next run, no code changes needed anywhere.
+ * category next run, no code changes needed anywhere. The category's
+ * display label is auto-derived from the folder name (title-cased,
+ * hyphens/underscores become spaces) -- to override that (e.g. so
+ * "t-shirts" displays as "T-Shirts" instead of "T Shirts"), add a
+ * file named _label.txt inside that category folder containing the
+ * exact label to use.
  *
  * Image ordering within a category is alphabetical by filename.
  * Prefix filenames with numbers (01-thing.jpg, 02-other.jpg) for
@@ -80,6 +85,10 @@ function main() {
 
   const categories = categoryFolders.map((slug) => {
     const categoryDir = path.join(MARKET_DIR, slug);
+    const labelOverridePath = path.join(categoryDir, "_label.txt");
+    const label = fs.existsSync(labelOverridePath)
+      ? fs.readFileSync(labelOverridePath, "utf8").trim()
+      : titleCase(slug);
     const files = fs
       .readdirSync(categoryDir, { withFileTypes: true })
       .filter((entry) => entry.isFile())
@@ -99,7 +108,7 @@ function main() {
 
     return {
       slug,
-      label: titleCase(slug),
+      label,
       count: images.length,
       images,
     };
