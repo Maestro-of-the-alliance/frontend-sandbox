@@ -1364,10 +1364,17 @@
       document.getElementById("proceed-btn").addEventListener("click", () => {
         window.PapaDomoChoice.open({
           onEnterTour: () => {
-            window.location.href = "/tours/";
+            // replace(), not href= -- this is the final step of the
+            // onboarding chain (index -> papadomo -> foundation ->
+            // here), and every step in that chain now uses replace()
+            // so the whole sequence collapses to zero extra history
+            // entries. A single back-press from here should skip the
+            // entire onboarding flow, not walk back through it one
+            // screen at a time.
+            window.location.replace("/tours/");
           },
           onExitHome: () => {
-            window.location.href = "/landing.html";
+            window.location.replace("/landing.html");
           },
         });
       });

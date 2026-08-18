@@ -42,18 +42,13 @@
       label: "SEARCH",
       desc: "Query the archive directly.",
       action: () => {
-        // The persistent search FAB (nw-search-fab) has been retired
-        // -- it was redundant with this being the hub menu's own
-        // first option. Landing still gets its nicer in-page overlay
-        // with the search field focused; everywhere else goes
-        // straight to the real dedicated search page the old FAB
-        // used to point to, rather than bouncing through /landing.
-        const tocSearch = document.getElementById("tocSearch");
-        if (tocSearch && typeof window.openTOCInteractive === "function") {
-          window.openTOCInteractive();
-          setTimeout(() => tocSearch.focus(), 500);
-          return;
-        }
+        // Always the real, dedicated search page -- consistent
+        // everywhere, no page-conditional branching to landing's own
+        // TOC-based overlay (toc.js's openTOCInteractive). Previously
+        // used that overlay on landing specifically since it happened
+        // to be available there; explicitly not wanted anymore, per
+        // direct instruction -- SEARCH always means the actual search
+        // page, everywhere.
         window.location.href = "/canon-search/";
       },
     },
@@ -70,16 +65,12 @@
       label: "BROWSE BY DIMENSION",
       desc: "DOCTRINE, BEINGS, PLACE, and five more.",
       action: () => {
-        // The dimension/volume wheel picker (nav-wheel.js) -- matches
-        // this node's own label. Previously this pointed at /s3.html
-        // (the flat index) while FULL INDEX pointed here instead --
-        // the two nodes had their destinations crossed. Swapped so
-        // each node does what its label says.
-        if (typeof window.hubOpenNativeNav === "function") {
-          window.hubOpenNativeNav();
-        } else {
-          window.location.href = "/s3.html";
-        }
+        // Always /s3.html -- consistent everywhere, per direct
+        // instruction. Previously handed off to nav-wheel.js's native
+        // wheel-picker overlay wherever that was available (almost
+        // everywhere nav-wheel.js loads); that conditional branch is
+        // gone now, not just defaulted-around.
+        window.location.href = "/s3.html";
       },
     },
     {
@@ -95,21 +86,13 @@
       label: "FULL INDEX",
       desc: "All 73 entries, A to Z.",
       action: () => {
-        // Always the real, stable flat index -- landing gets its own
-        // nicer in-page overlay (openTOCInteractive, with correct
-        // back-button handling); everywhere else goes straight to
-        // /s3.html, a real page navigation with natural browser-back
-        // behavior. This used to fall back to hubOpenNativeNav (the
-        // dimension wheel picker) on entry pages -- a completely
-        // different UI with no history handling of its own, which
-        // trapped users with no way out except browser-back skipping
-        // past the entry entirely to /landing. Never hand off to the
-        // wheel picker from here again.
-        if (typeof window.openTOCInteractive === "function") {
-          window.openTOCInteractive();
-        } else {
-          window.location.href = "/s3.html";
-        }
+        // Always /s3.html -- the real, stable flat A-Z index, same
+        // destination and same behavior everywhere. Previously used
+        // landing's own TOC overlay (toc.js's openTOCInteractive)
+        // when available there; that conditional branch is gone now
+        // too, matching the same consistency principle applied to
+        // SEARCH and BROWSE BY DIMENSION above.
+        window.location.href = "/s3.html";
       },
     },
     {
