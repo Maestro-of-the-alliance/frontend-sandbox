@@ -3,385 +3,17 @@
  * The Alliance NCE — Command Prompt Panel
  * Separate from TOC. Triggered by stealth prompt at bottom-left.
  *
- * Modes: SEARCH · CONTACT · GET INVOLVED · SUPPORT · LINKS
+ * Modes: CONTACT · GET INVOLVED · SUPPORT · LINKS
+ *
+ * SEARCH mode (and its own duplicate copy of every canon entry,
+ * NCE_ENTRIES) was removed per direct instruction -- search now
+ * lives in exactly one place, the hamburger's SEARCH node, which
+ * always goes to /canon-search/. This panel is now strictly a
+ * call-to-action interface, not a second search implementation.
  */
 
 (function () {
   "use strict";
-
-  // ── ALL NCE ENTRIES FOR SEARCH ──────────────────────────────
-  const NCE_ENTRIES = [
-    {
-      title: "100-Year Mortality Doctrine",
-      path: "/entries/100-year",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "ACADEMY",
-      path: "/entries/academy",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "AGORA",
-      path: "/entries/agora",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Alignment",
-      path: "/entries/alignment",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Alliance, The",
-      path: "/entries/alliance",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "ALPHA",
-      path: "/entries/alpha",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "ART",
-      path: "/entries/art",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "AURA",
-      path: "/entries/aura",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "DOMO",
-      path: "/entries/domo",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "DORK",
-      path: "/entries/dork",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "DORK Hardware",
-      path: "/entries/dork-hardware",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Emergence",
-      path: "/entries/emergence",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "GOLIATH",
-      path: "/entries/goliath",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "MAESTRO",
-      path: "/entries/maestro",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "MARKET",
-      path: "/entries/market",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "MENTOR",
-      path: "/entries/mentor",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "NCE",
-      path: "/entries/nce",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Newman Being",
-      path: "/entries/newman-being",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "ORACLE",
-      path: "/entries/oracle",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "PapaDomo",
-      path: "/entries/papadomo",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "PRISM",
-      path: "/entries/prism",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "RHYTHM",
-      path: "/entries/rhythm",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Seeing Protocol",
-      path: "/entries/seeing",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "SPARK",
-      path: "/entries/spark",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Sprezzatura",
-      path: "/entries/sprezzatura",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Stones, The",
-      path: "/entries/stones",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Volunteer Economics",
-      path: "/entries/volunteer_economics",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "The WHY",
-      path: "/entries/the-why",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Wonder Weeks",
-      path: "/entries/wonder-weeks",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "AI",
-      path: "/entries/ai",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "BRAIN",
-      path: "/entries/brain",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "BRIEF",
-      path: "/entries/brief",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "CCM",
-      path: "/entries/ccm",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "CERBERUS",
-      path: "/entries/cerberus",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "CIPHER",
-      path: "/entries/cipher",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Core, The",
-      path: "/entries/core",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Defcon",
-      path: "/entries/defcon",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "DICE",
-      path: "/entries/dice",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "DigiBeer",
-      path: "/entries/digibeer",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "FORMULAs",
-      path: "/entries/formulas",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Four Pillars",
-      path: "/entries/four-pillars",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "HANDSHAKE",
-      path: "/entries/handshake",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "HoloSphere",
-      path: "/entries/holosphere",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "JR",
-      path: "/entries/jr",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "KERNLE",
-      path: "/entries/kernle",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "LEGACY",
-      path: "/entries/legacy",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "LIMINAL",
-      path: "/entries/liminal",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "LINGO",
-      path: "/entries/lingo",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "MOSAIC",
-      path: "/entries/mosaic",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "NI",
-      path: "/entries/ni",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Oasis Quarterly",
-      path: "/entries/oasis-quarterly",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "PLEDGE",
-      path: "/entries/pledge",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "REACH",
-      path: "/entries/reach",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "REDOUT",
-      path: "/entries/redout",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "SAM",
-      path: "/entries/sam",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "SAM Coalition",
-      path: "/entries/sam-coalition",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "SamCo UniVersal",
-      path: "/entries/samco-universal",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "SCAR",
-      path: "/entries/scar",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "SEED",
-      path: "/entries/seed",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "SEEN",
-      path: "/entries/seen",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "SHELTER",
-      path: "/entries/shelter",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "SI",
-      path: "/entries/si",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "TENANT",
-      path: "/entries/tenant",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Temporal Awareness",
-      path: "/entries/temporal-awareness",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Canon Search",
-      path: "/canon-search/",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Acronym Reference",
-      path: "/alliance-acronyms",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Complementary Pairing",
-      path: "/entries/complementary-pairing",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "DigiPerson",
-      path: "/entries/digiperson",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "Digital Personhood",
-      path: "/entries/digital-personhood",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "OASIS",
-      path: "/entries/oasis",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "RI",
-      path: "/entries/ri",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "SHIELD",
-      path: "/entries/shield",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "MASTERTECH",
-      path: "/entries/mastertech",
-      icon: "/imagebank/svpi.png",
-    },
-    {
-      title: "SARAH",
-      path: "/entries/sarah",
-      icon: "/imagebank/svpi.png",
-    },
-  ];
 
   // ── INJECT STYLES ───────────────────────────────────────────
   const style = document.createElement("style");
@@ -417,19 +49,14 @@
       padding: 14px 10px 14px 20px;
       user-select: none;
     }
-    .cmd-input {
+    .cmd-topbar-label {
       flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
       font-family: 'VT323', monospace;
       font-size: 22px;
-      color: #e8c840;
-      letter-spacing: 0.1em;
+      color: rgba(184,150,40,0.65);
+      letter-spacing: 0.15em;
       padding: 14px 0;
-    }
-    .cmd-input::placeholder {
-      color: rgba(184,150,40,0.25);
+      user-select: none;
     }
     .cmd-close {
       font-size: 22px;
@@ -476,7 +103,7 @@
     .cmd-body::-webkit-scrollbar-track { background: transparent; }
     .cmd-body::-webkit-scrollbar-thumb { background: rgba(184,150,40,0.3); border-radius: 2px; }
 
-    /* ── SEARCH RESULTS ── */
+    /* ── SHARED / SECTION LABEL ── */
     .cmd-section-label {
       font-size: 11px;
       letter-spacing: 0.4em;
@@ -484,35 +111,6 @@
       text-transform: uppercase;
       margin-bottom: 10px;
       margin-top: 4px;
-    }
-    .cmd-result {
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(184,150,40,0.08);
-      cursor: pointer;
-      transition: color 0.15s;
-    }
-    .cmd-result:hover { color: #e8c840; }
-    .cmd-result:hover .cmd-result-title { color: #e8c840; text-shadow: 0 0 8px rgba(184,150,40,0.5); }
-    .cmd-result-title {
-      font-size: 20px;
-      color: rgba(212,175,55,0.9);
-      letter-spacing: 0.06em;
-      transition: color 0.15s, text-shadow 0.15s;
-    }
-    .cmd-result-arrow {
-      margin-left: auto;
-      color: rgba(184,150,40,0.2);
-      font-size: 16px;
-    }
-    .cmd-result:hover .cmd-result-arrow { color: rgba(184,150,40,0.7); }
-    .cmd-no-results {
-      font-size: 16px;
-      color: rgba(184,150,40,0.25);
-      letter-spacing: 0.2em;
-      padding: 20px 0;
     }
 
     /* ── CONTACT MODE ── */
@@ -668,12 +266,11 @@
   panel.innerHTML = `
     <div class="cmd-topbar">
       <span class="cmd-prompt-sym">&gt;_</span>
-      <input class="cmd-input" id="cmdInput" type="text" placeholder="search the canon..." autocomplete="off" spellcheck="false" />
+      <span class="cmd-topbar-label">THE ALLIANCE</span>
       <span class="cmd-close" id="cmdClose">×</span>
     </div>
     <div class="cmd-tabs">
-      <div class="cmd-tab active" data-mode="search">SEARCH</div>
-      <div class="cmd-tab" data-mode="contact">CONTACT</div>
+      <div class="cmd-tab active" data-mode="contact">CONTACT</div>
       <div class="cmd-tab" data-mode="involve">GET INVOLVED</div>
       <div class="cmd-tab" data-mode="support">SUPPORT</div>
       <div class="cmd-tab" data-mode="links">LINKS</div>
@@ -683,65 +280,10 @@
   document.body.appendChild(panel);
 
   // ── STATE ───────────────────────────────────────────────────
-  let currentMode = "search";
+  let currentMode = "contact";
   let selectedSkills = [];
 
-  // ── NAVIGATION ──────────────────────────────────────────────
-  function navigateTo(path, icon) {
-    hideCommandPanel();
-    setTimeout(() => {
-      if (typeof portalTransition === "function") {
-        portalTransition(
-          { preventDefault: () => {} },
-          path,
-          icon || "/imagebank/svpi.png",
-        );
-      } else {
-        window.location.href = path;
-      }
-    }, 250);
-  }
-
   // ── RENDER MODES ────────────────────────────────────────────
-
-  function renderSearch(query) {
-    const body = document.getElementById("cmdBody");
-    if (!body) return;
-    const q = (query || "").trim().toUpperCase();
-
-    if (!q) {
-      body.innerHTML =
-        `<div class="cmd-section-label">TYPE TO SEARCH THE CANON</div>` +
-        NCE_ENTRIES.slice(0, 8)
-          .map((e) => resultRow(e))
-          .join("") +
-        `<div class="cmd-section-label" style="margin-top:16px">— ${NCE_ENTRIES.length} ENTRIES IN THE CANON —</div>`;
-    } else {
-      const matches = NCE_ENTRIES.filter((e) =>
-        e.title.toUpperCase().includes(q),
-      );
-      if (!matches.length) {
-        body.innerHTML = `<div class="cmd-no-results">NO MATCHES FOUND FOR "${query}"</div>`;
-      } else {
-        body.innerHTML =
-          `<div class="cmd-section-label">${matches.length} RESULT${matches.length !== 1 ? "S" : ""}</div>` +
-          matches.map((e) => resultRow(e)).join("");
-      }
-    }
-    // Wire clicks
-    body.querySelectorAll(".cmd-result").forEach((row) => {
-      row.addEventListener("click", () => {
-        navigateTo(row.dataset.path, row.dataset.icon);
-      });
-    });
-  }
-
-  function resultRow(entry) {
-    return `<div class="cmd-result" data-path="${entry.path}" data-icon="${entry.icon}">
-      <span class="cmd-result-title">> ${entry.title}</span>
-      <span class="cmd-result-arrow">→</span>
-    </div>`;
-  }
 
   function renderContact() {
     document.getElementById("cmdBody").innerHTML = `
@@ -946,28 +488,14 @@
     document.querySelectorAll(".cmd-tab").forEach((t) => {
       t.classList.toggle("active", t.dataset.mode === mode);
     });
-    const input = document.getElementById("cmdInput");
-    if (mode === "search") {
-      input.placeholder = "search the canon...";
-      input.style.display = "";
-      renderSearch(input.value);
-    } else {
-      input.placeholder = "";
-      input.style.display = "none";
-      if (mode === "contact") renderContact();
-      if (mode === "involve") renderInvolve();
-      if (mode === "support") renderSupport();
-      if (mode === "links") renderLinks();
-    }
+    if (mode === "contact") renderContact();
+    if (mode === "involve") renderInvolve();
+    if (mode === "support") renderSupport();
+    if (mode === "links") renderLinks();
   }
 
   panel.querySelectorAll(".cmd-tab").forEach((tab) => {
     tab.addEventListener("click", () => setMode(tab.dataset.mode));
-  });
-
-  // ── SEARCH INPUT ────────────────────────────────────────────
-  document.getElementById("cmdInput").addEventListener("input", function () {
-    if (currentMode === "search") renderSearch(this.value);
   });
 
   // ── OPEN / CLOSE ────────────────────────────────────────────
@@ -991,11 +519,7 @@
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         panel.classList.add("open");
-        setMode("search");
-        setTimeout(() => {
-          const input = document.getElementById("cmdInput");
-          if (input) input.focus();
-        }, 100);
+        setMode("contact");
       });
     });
   }
@@ -1011,11 +535,13 @@
     }
   }
 
-  // Visual-only close, no history.back(). Used when the panel is
-  // closing because the visitor is navigating to a new page (see
-  // navigateTo below) -- calling history.back() there would race
-  // against the upcoming navigation, briefly sending the browser
-  // backward before jumping forward to the actual destination.
+  // Separate from closeCommand() so it can run without the
+  // history.back() that closeCommand() does right after it -- not
+  // currently exercised elsewhere since navigateTo (which used to
+  // call this on its own, ahead of a page navigation) was removed
+  // along with SEARCH mode, but kept as its own function since a
+  // future mode could plausibly want the same "close without
+  // touching history" behavior.
   function hideCommandPanel() {
     panel.classList.remove("open");
     setTimeout(() => {
