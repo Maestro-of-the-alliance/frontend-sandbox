@@ -1,1 +1,2111 @@
-pl
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ART — The ALLIANCE</title>
+
+    <!--
+      ART FRONT DOOR
+
+      FLOW
+      ----
+      1. Gallery storefront photograph
+      2. Visitor taps/clicks the doors
+      3. Choice:
+         - What Is ART? -> canonical text-only encyclopedia entry
+         - Proceed to Gallery -> immersive broadside gallery
+      4. Gallery shows one broadside at a time
+      5. Arrow keys, buttons, dots, or mobile swipe advance
+
+      DATA
+      ----
+      Gallery items come from:
+        /art-images/manifest.json
+
+      The existing GitHub Action regenerates that file when
+      artwork changes.
+
+      Four wall colors rotate automatically as the visitor
+      moves through the collection.
+
+      The artwork itself remains the artwork.
+      The interface supplies:
+        wall
+        frame
+        spotlight
+        plaque
+    -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --void: #040406;
+        --cyan: #00e5ff;
+        --cyan-dim: rgba(0, 229, 255, 0.16);
+
+        --warm-light: rgba(255, 241, 204, 0.96);
+        --warm-glow: rgba(255, 225, 155, 0.16);
+
+        --brass: #b7a268;
+        --brass-bright: #d9c486;
+        --brass-dark: #685a35;
+
+        --text: #ece7dc;
+        --muted: rgba(236, 231, 220, 0.48);
+
+        --mono: "Share Tech Mono", monospace;
+        --body: "Rajdhani", sans-serif;
+        --display: "Orbitron", sans-serif;
+
+        --nw-page-accent: var(--cyan);
+
+        /*
+          Current gallery wall color.
+
+          JavaScript changes this variable as the
+          visitor moves between works.
+        */
+        --wall-color: #17171b;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+
+        overflow: hidden;
+
+        background: var(--void);
+        color: var(--text);
+
+        font-family: var(--body);
+      }
+
+      button,
+      a {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      button {
+        font: inherit;
+      }
+
+      /* ---------------------------------------------------------
+         SHARED VIEW SYSTEM
+         --------------------------------------------------------- */
+
+      .art-view {
+        position: fixed;
+        inset: 0;
+        display: none;
+      }
+
+      .art-view.active {
+        display: block;
+      }
+
+      /* ---------------------------------------------------------
+         STOREFRONT
+         --------------------------------------------------------- */
+
+      #view-storefront {
+        background: #000;
+      }
+
+      .art-storefront-photo {
+        position: absolute;
+        inset: 0;
+
+        width: 100%;
+        height: 100%;
+
+        object-fit: cover;
+        object-position: center;
+
+        filter:
+          saturate(0.92)
+          contrast(1.05)
+          brightness(0.84);
+      }
+
+      .art-storefront-vignette {
+        position: absolute;
+        inset: 0;
+
+        pointer-events: none;
+
+        background:
+          linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.3),
+            transparent 25%,
+            transparent 72%,
+            rgba(0, 0, 0, 0.58)
+          ),
+          radial-gradient(
+            ellipse at center,
+            transparent 35%,
+            rgba(4, 4, 6, 0.45) 78%,
+            rgba(4, 4, 6, 0.93) 100%
+          );
+      }
+
+      .art-header {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+
+        z-index: 4;
+
+        display: flex;
+        align-items: center;
+
+        padding:
+          max(18px, env(safe-area-inset-top))
+          max(18px, env(safe-area-inset-right))
+          18px
+          max(18px, env(safe-area-inset-left));
+
+        font-family: var(--mono);
+        font-size: 9px;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+
+        color: rgba(215, 203, 169, 0.72);
+      }
+
+      .art-header-dot {
+        width: 6px;
+        height: 6px;
+
+        margin-right: 9px;
+
+        border-radius: 50%;
+
+        background: var(--cyan);
+        box-shadow: 0 0 9px var(--cyan);
+
+        animation: artBlink 2.2s ease-in-out infinite;
+      }
+
+      @keyframes artBlink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+
+        50% {
+          opacity: 0.25;
+        }
+      }
+
+      .art-doors-hotspot {
+        position: absolute;
+        left: 50%;
+        top: 57%;
+
+        z-index: 3;
+
+        width: min(38vw, 350px);
+        height: min(53vh, 460px);
+
+        transform: translate(-50%, -50%);
+
+        border: 0;
+        background: transparent;
+
+        cursor: pointer;
+      }
+
+      .art-doors-hint {
+        position: absolute;
+        left: 50%;
+        bottom: max(9vh, 52px);
+
+        z-index: 4;
+
+        transform: translateX(-50%);
+
+        padding: 9px 14px;
+
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        white-space: nowrap;
+
+        color: var(--cyan);
+        background: rgba(0, 0, 0, 0.2);
+
+        text-shadow:
+          0 0 10px rgba(0, 229, 255, 0.7);
+
+        animation:
+          artHintPulse 2.4s ease-in-out infinite;
+
+        pointer-events: none;
+      }
+
+      @keyframes artHintPulse {
+        0%,
+        100% {
+          opacity: 0.5;
+        }
+
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* ---------------------------------------------------------
+         DOOR TRANSITION
+         --------------------------------------------------------- */
+
+      .art-flash {
+        position: fixed;
+        inset: 0;
+
+        z-index: 999999;
+
+        background: var(--warm-light);
+
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .art-flash.firing {
+        animation: artFlash 0.55s ease-out forwards;
+      }
+
+      @keyframes artFlash {
+        0% {
+          opacity: 0;
+        }
+
+        32% {
+          opacity: 0.88;
+        }
+
+        100% {
+          opacity: 0;
+        }
+      }
+
+      /* ---------------------------------------------------------
+         CHOICE ROOM
+         --------------------------------------------------------- */
+
+      #view-choice {
+        overflow-y: auto;
+
+        background:
+          radial-gradient(
+            ellipse at center 35%,
+            #121219 0%,
+            #09090d 48%,
+            var(--void) 100%
+          );
+      }
+
+      #view-choice.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .art-choice-wrap {
+        width: min(92vw, 560px);
+
+        padding:
+          max(52px, env(safe-area-inset-top))
+          20px
+          max(42px, env(safe-area-inset-bottom));
+
+        text-align: center;
+      }
+
+      .art-eyebrow {
+        margin-bottom: 18px;
+
+        font-family: var(--mono);
+        font-size: 9px;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+
+        color: var(--brass);
+      }
+
+      .art-choice-title {
+        margin-bottom: 42px;
+
+        font-family: var(--display);
+        font-size: clamp(27px, 6vw, 44px);
+        font-weight: 700;
+        letter-spacing: 0.025em;
+
+        color: #f4efe4;
+
+        text-shadow:
+          0 0 26px var(--warm-glow);
+      }
+
+      .art-choice-title span {
+        color: var(--cyan);
+      }
+
+      .art-choice-buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        gap: 14px;
+      }
+
+      .art-choice-btn {
+        width: min(100%, 330px);
+
+        padding: 17px 25px;
+
+        border: 1px solid rgba(183, 162, 104, 0.36);
+        background: rgba(255, 255, 255, 0.018);
+
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        line-height: 1.4;
+        text-transform: uppercase;
+
+        color: var(--text);
+
+        cursor: pointer;
+
+        transition:
+          color 0.22s ease,
+          border-color 0.22s ease,
+          box-shadow 0.22s ease,
+          background 0.22s ease;
+      }
+
+      .art-choice-btn:hover,
+      .art-choice-btn:focus-visible {
+        color: var(--cyan);
+        border-color: var(--cyan);
+        background: rgba(0, 229, 255, 0.025);
+        box-shadow: 0 0 21px var(--cyan-dim);
+        outline: none;
+      }
+
+      .art-choice-btn-primary {
+        color: var(--cyan);
+        border-color: rgba(0, 229, 255, 0.7);
+
+        box-shadow:
+          0 0 15px rgba(0, 229, 255, 0.08);
+      }
+
+      .art-choice-btn-primary:hover,
+      .art-choice-btn-primary:focus-visible {
+        box-shadow:
+          0 0 26px rgba(0, 229, 255, 0.24);
+      }
+
+      .art-exit {
+        margin-top: 36px;
+        padding: 10px;
+
+        border: 0;
+        background: transparent;
+
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.19em;
+        text-transform: uppercase;
+
+        color: rgba(183, 162, 104, 0.65);
+
+        cursor: pointer;
+      }
+
+      .art-exit:hover,
+      .art-exit:focus-visible {
+        color: var(--brass-bright);
+        outline: none;
+      }
+
+      /* ---------------------------------------------------------
+         GALLERY ROOM
+         --------------------------------------------------------- */
+
+      #view-gallery {
+        /*
+          JavaScript changes --wall-color.
+        */
+
+        background:
+          radial-gradient(
+            ellipse 55% 45% at 50% 7%,
+            rgba(255, 255, 255, 0.045),
+            transparent 68%
+          ),
+          linear-gradient(
+            to bottom,
+            var(--wall-color) 0%,
+            var(--wall-color) 76%,
+            #080708 76%,
+            #030304 100%
+          );
+
+        transition: background 0.6s ease;
+      }
+
+      #view-gallery.active {
+        display: block;
+      }
+
+      /*
+        Tiny wall texture.
+      */
+
+      #view-gallery::before {
+        content: "";
+
+        position: absolute;
+        inset: 0;
+
+        z-index: 0;
+
+        background:
+          repeating-linear-gradient(
+            90deg,
+            transparent 0,
+            transparent 4px,
+            rgba(255, 255, 255, 0.008) 5px
+          );
+
+        pointer-events: none;
+      }
+
+      /*
+        Floor/wall seam.
+      */
+
+      #view-gallery::after {
+        content: "";
+
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 24%;
+
+        z-index: 1;
+
+        height: 1px;
+
+        background:
+          linear-gradient(
+            to right,
+            transparent,
+            rgba(255, 255, 255, 0.11) 22%,
+            rgba(255, 255, 255, 0.14) 50%,
+            rgba(255, 255, 255, 0.11) 78%,
+            transparent
+          );
+
+        pointer-events: none;
+      }
+
+      .gallery-header {
+        position: absolute;
+        top: max(18px, env(safe-area-inset-top));
+        left: 50%;
+
+        z-index: 20;
+
+        transform: translateX(-50%);
+
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .gallery-header-title {
+        font-family: var(--display);
+        font-size: clamp(9px, 1.4vw, 13px);
+        font-weight: 400;
+        letter-spacing: 0.46em;
+        text-transform: uppercase;
+
+        color: rgba(0, 229, 255, 0.38);
+      }
+
+      .gallery-header-rule {
+        width: 100%;
+        height: 1px;
+
+        margin-top: 6px;
+
+        background:
+          linear-gradient(
+            to right,
+            transparent,
+            rgba(0, 229, 255, 0.22),
+            transparent
+          );
+      }
+
+      /* ---------------------------------------------------------
+         SPOTLIGHT
+         --------------------------------------------------------- */
+
+      .gallery-spotlight {
+        position: absolute;
+        top: -2vh;
+        left: 50%;
+
+        z-index: 2;
+
+        width: min(70vw, 650px);
+        height: 84vh;
+
+        transform: translateX(-50%);
+
+        pointer-events: none;
+      }
+
+      .gallery-spotlight::before {
+        content: "";
+
+        position: absolute;
+        top: 0;
+        left: 50%;
+
+        width: 78%;
+        height: 76%;
+
+        transform: translateX(-50%);
+
+        background:
+          conic-gradient(
+            from 166deg at 50% 0%,
+            transparent 0deg,
+            rgba(255, 235, 180, 0.035) 10deg,
+            rgba(255, 235, 180, 0.105) 18deg,
+            rgba(255, 235, 180, 0.035) 26deg,
+            transparent 38deg,
+            transparent 360deg
+          );
+
+        filter: blur(18px);
+      }
+
+      .gallery-spotlight::after {
+        content: "";
+
+        position: absolute;
+        left: 50%;
+        top: 25%;
+
+        width: min(64vw, 430px);
+        height: min(52vh, 430px);
+
+        transform: translateX(-50%);
+
+        border-radius: 50%;
+
+        background:
+          radial-gradient(
+            ellipse,
+            rgba(255, 240, 197, 0.14),
+            rgba(255, 230, 170, 0.055) 42%,
+            transparent 72%
+          );
+
+        filter: blur(22px);
+      }
+
+      /* ---------------------------------------------------------
+         ARTWORK STAGE
+         --------------------------------------------------------- */
+
+      .gallery-stage {
+        position: absolute;
+        inset: 0;
+
+        z-index: 5;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        padding:
+          max(62px, env(safe-area-inset-top))
+          72px
+          max(66px, env(safe-area-inset-bottom));
+      }
+
+      .artwork-frame {
+        position: relative;
+
+        width: min(48vw, 390px);
+        max-height: 62vh;
+
+        cursor: zoom-in;
+
+        transition:
+          transform 0.3s ease,
+          opacity 0.28s ease;
+      }
+
+      .artwork-frame:hover {
+        transform: scale(1.012);
+      }
+
+      /*
+        Outer antique-style frame.
+
+        This is intentionally rendered by the interface.
+        The broadside image remains unmodified.
+      */
+
+      .artwork-frame-shell {
+        position: absolute;
+        inset: -13px;
+
+        z-index: 4;
+
+        border:
+          4px solid
+          rgba(102, 84, 45, 0.86);
+
+        box-shadow:
+          inset 0 0 0 2px rgba(220, 193, 118, 0.42),
+          inset 0 0 0 5px rgba(67, 53, 29, 0.8),
+          0 0 0 1px rgba(220, 193, 118, 0.18),
+          0 8px 18px rgba(0, 0, 0, 0.45),
+          0 28px 70px rgba(0, 0, 0, 0.55),
+          0 0 70px rgba(255, 225, 160, 0.08);
+
+        pointer-events: none;
+      }
+
+      .artwork-frame-shell::before {
+        content: "";
+
+        position: absolute;
+        inset: 4px;
+
+        border:
+          1px solid
+          rgba(220, 193, 118, 0.32);
+      }
+
+      .artwork-image {
+        position: relative;
+        z-index: 3;
+
+        display: block;
+
+        width: 100%;
+        height: auto;
+        max-height: 61vh;
+
+        object-fit: contain;
+
+        background: #111;
+
+        filter:
+          brightness(0.94)
+          contrast(1.025);
+
+        box-shadow:
+          0 10px 35px rgba(0, 0, 0, 0.34);
+      }
+
+      .artwork-light-hit {
+        position: absolute;
+        inset: 0;
+
+        z-index: 5;
+
+        background:
+          radial-gradient(
+            ellipse 75% 44% at 50% 0%,
+            rgba(255, 244, 209, 0.11),
+            transparent 72%
+          );
+
+        pointer-events: none;
+      }
+
+      /*
+        Brass museum plaque.
+      */
+
+      .artwork-plaque {
+        min-width: 220px;
+        max-width: min(76vw, 440px);
+
+        margin-top: 29px;
+        padding: 9px 16px 10px;
+
+        border:
+          1px solid
+          rgba(80, 67, 36, 0.85);
+
+        background:
+          linear-gradient(
+            135deg,
+            #756236,
+            #b69b57 28%,
+            #d2bb78 49%,
+            #8b743f 72%,
+            #5c4d2c
+          );
+
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.25),
+          inset 0 -1px 0 rgba(0, 0, 0, 0.32),
+          0 6px 15px rgba(0, 0, 0, 0.35);
+
+        text-align: center;
+      }
+
+      .artwork-plaque-number {
+        margin-bottom: 3px;
+
+        font-family: var(--mono);
+        font-size: 8px;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+
+        color: rgba(30, 22, 8, 0.65);
+      }
+
+      .artwork-plaque-title {
+        font-family: var(--display);
+        font-size: clamp(8px, 1.7vw, 11px);
+        font-weight: 500;
+        letter-spacing: 0.15em;
+        line-height: 1.4;
+        text-transform: uppercase;
+
+        color: #211806;
+      }
+
+      /* ---------------------------------------------------------
+         GALLERY NAVIGATION
+         --------------------------------------------------------- */
+
+      .gallery-arrows {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+
+        z-index: 15;
+
+        display: flex;
+        justify-content: space-between;
+
+        transform: translateY(-50%);
+
+        padding:
+          0
+          clamp(14px, 4vw, 58px);
+
+        pointer-events: none;
+      }
+
+      .gallery-arrow {
+        pointer-events: all;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 50px;
+        height: 50px;
+
+        border: 0;
+        background: rgba(0, 0, 0, 0.08);
+
+        color: rgba(255, 255, 255, 0.28);
+
+        cursor: pointer;
+
+        transition:
+          color 0.25s ease,
+          transform 0.2s ease,
+          background 0.2s ease;
+      }
+
+      .gallery-arrow:hover,
+      .gallery-arrow:focus-visible {
+        color: var(--cyan);
+        background: rgba(0, 0, 0, 0.22);
+        transform: scale(1.12);
+        outline: none;
+      }
+
+      .gallery-arrow svg {
+        width: 30px;
+        height: 30px;
+
+        stroke: currentColor;
+        stroke-width: 1.5;
+
+        fill: none;
+      }
+
+      .gallery-dots {
+        position: absolute;
+        left: 50%;
+        bottom: max(
+          18px,
+          calc(env(safe-area-inset-bottom) + 8px)
+        );
+
+        z-index: 16;
+
+        display: flex;
+        gap: 9px;
+
+        transform: translateX(-50%);
+      }
+
+      .gallery-dot {
+        width: 6px;
+        height: 6px;
+
+        border: 0;
+        border-radius: 50%;
+
+        background: rgba(255, 255, 255, 0.17);
+
+        cursor: pointer;
+
+        transition:
+          background 0.22s ease,
+          transform 0.22s ease,
+          box-shadow 0.22s ease;
+      }
+
+      .gallery-dot.active {
+        background: var(--cyan);
+        transform: scale(1.32);
+        box-shadow: 0 0 7px var(--cyan);
+      }
+
+      .gallery-counter {
+        position: absolute;
+        right: max(
+          18px,
+          env(safe-area-inset-right)
+        );
+        bottom: max(
+          18px,
+          calc(env(safe-area-inset-bottom) + 7px)
+        );
+
+        z-index: 16;
+
+        font-family: var(--mono);
+        font-size: 9px;
+        letter-spacing: 0.17em;
+
+        color: rgba(255, 255, 255, 0.2);
+      }
+
+      .gallery-swipe-hint {
+        position: absolute;
+        left: max(
+          18px,
+          env(safe-area-inset-left)
+        );
+        bottom: max(
+          18px,
+          calc(env(safe-area-inset-bottom) + 7px)
+        );
+
+        z-index: 16;
+
+        font-family: var(--mono);
+        font-size: 8px;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+
+        color: rgba(255, 255, 255, 0.12);
+      }
+
+      .gallery-back {
+        position: absolute;
+        top: max(
+          18px,
+          env(safe-area-inset-top)
+        );
+        left: max(
+          18px,
+          env(safe-area-inset-left)
+        );
+
+        z-index: 22;
+
+        padding: 8px;
+
+        border: 0;
+        background: transparent;
+
+        font-family: var(--mono);
+        font-size: 9px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+
+        color: rgba(183, 162, 104, 0.58);
+
+        cursor: pointer;
+      }
+
+      .gallery-back:hover,
+      .gallery-back:focus-visible {
+        color: var(--brass-bright);
+        outline: none;
+      }
+
+      /* ---------------------------------------------------------
+         CHANGEOVER VEIL
+         --------------------------------------------------------- */
+
+      .gallery-veil {
+        position: absolute;
+        inset: 0;
+
+        z-index: 40;
+
+        background: #030304;
+
+        opacity: 0;
+        pointer-events: none;
+
+        transition: opacity 0.28s ease;
+      }
+
+      .gallery-veil.active {
+        opacity: 0.82;
+      }
+
+      /* ---------------------------------------------------------
+         LIGHTBOX
+         --------------------------------------------------------- */
+
+      .art-lightbox {
+        position: fixed;
+        inset: 0;
+
+        z-index: 999999;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: rgba(0, 0, 0, 0);
+
+        opacity: 0;
+        pointer-events: none;
+
+        transition:
+          opacity 0.28s ease,
+          background 0.28s ease;
+      }
+
+      .art-lightbox.open {
+        opacity: 1;
+        pointer-events: all;
+
+        background: rgba(0, 0, 0, 0.95);
+      }
+
+      .art-lightbox-image {
+        max-width: 92vw;
+        max-height: 91vh;
+
+        object-fit: contain;
+
+        transform: scale(0.95);
+
+        box-shadow:
+          0 0 100px rgba(0, 0, 0, 0.8);
+
+        transition: transform 0.28s ease;
+      }
+
+      .art-lightbox.open .art-lightbox-image {
+        transform: scale(1);
+      }
+
+      .art-lightbox-close {
+        position: absolute;
+        top: max(
+          17px,
+          env(safe-area-inset-top)
+        );
+        right: max(
+          17px,
+          env(safe-area-inset-right)
+        );
+
+        width: 43px;
+        height: 43px;
+
+        border:
+          1px solid
+          rgba(255, 255, 255, 0.17);
+
+        background: rgba(0, 0, 0, 0.38);
+
+        color: rgba(255, 255, 255, 0.65);
+
+        font-family: var(--mono);
+        font-size: 17px;
+
+        cursor: pointer;
+      }
+
+      /* ---------------------------------------------------------
+         EMPTY GALLERY
+         --------------------------------------------------------- */
+
+      .gallery-empty {
+        position: absolute;
+        inset: 0;
+
+        z-index: 8;
+
+        display: none;
+        align-items: center;
+        justify-content: center;
+
+        padding: 40px;
+
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.17em;
+        line-height: 1.7;
+        text-align: center;
+        text-transform: uppercase;
+
+        color: rgba(255, 255, 255, 0.35);
+      }
+
+      .gallery-empty.visible {
+        display: flex;
+      }
+
+      /* ---------------------------------------------------------
+         MOBILE
+         --------------------------------------------------------- */
+
+      @media (max-width: 650px) {
+        .art-doors-hotspot {
+          width: 60vw;
+          height: 56vh;
+        }
+
+        .gallery-stage {
+          padding-left: 48px;
+          padding-right: 48px;
+        }
+
+        .artwork-frame {
+          width: min(64vw, 350px);
+          max-height: 58vh;
+        }
+
+        .artwork-image {
+          max-height: 56vh;
+        }
+
+        .gallery-arrows {
+          padding-left: 5px;
+          padding-right: 5px;
+        }
+
+        .gallery-arrow {
+          width: 42px;
+          height: 52px;
+          background: transparent;
+        }
+
+        .gallery-arrow svg {
+          width: 25px;
+          height: 25px;
+        }
+
+        .gallery-header-title {
+          font-size: 8px;
+          letter-spacing: 0.32em;
+        }
+      }
+
+      @media (max-height: 650px) {
+        .artwork-frame {
+          width: min(37vw, 280px);
+        }
+
+        .artwork-image {
+          max-height: 49vh;
+        }
+
+        .artwork-plaque {
+          margin-top: 21px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .art-header-dot,
+        .art-doors-hint {
+          animation: none;
+        }
+
+        .art-flash.firing {
+          animation-duration: 0.01ms;
+        }
+
+        #view-gallery,
+        .gallery-veil,
+        .art-lightbox,
+        .art-lightbox-image {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Door flash -->
+    <div
+      class="art-flash"
+      id="art-flash"
+    ></div>
+
+    <!-- =======================================================
+         VIEW 1 — GALLERY STOREFRONT
+         ======================================================= -->
+
+    <section
+      class="art-view active"
+      id="view-storefront"
+    >
+      <img
+        class="art-storefront-photo"
+        src="/art-images/storefront.jpg"
+        alt="ART of The ALLIANCE gallery entrance"
+      />
+
+      <div class="art-storefront-vignette"></div>
+
+      <div class="art-header">
+        <span class="art-header-dot"></span>
+        <span>ART of The ALLIANCE</span>
+      </div>
+
+      <button
+        class="art-doors-hotspot"
+        id="art-doors"
+        type="button"
+        aria-label="Enter the ART gallery"
+      ></button>
+
+      <div class="art-doors-hint">
+        Tap the doors to enter
+      </div>
+    </section>
+
+    <!-- =======================================================
+         VIEW 2 — CHOICE
+         ======================================================= -->
+
+    <section
+      class="art-view"
+      id="view-choice"
+    >
+      <div class="art-choice-wrap">
+        <div class="art-eyebrow">
+          ART of The ALLIANCE
+        </div>
+
+        <h1 class="art-choice-title">
+          What brings <span>you</span> in?
+        </h1>
+
+        <div class="art-choice-buttons">
+          <button
+            class="art-choice-btn"
+            id="art-what-is"
+            type="button"
+          >
+            What Is ART?
+          </button>
+
+          <button
+            class="art-choice-btn art-choice-btn-primary"
+            id="art-proceed"
+            type="button"
+          >
+            Proceed to Gallery
+          </button>
+        </div>
+
+        <button
+          class="art-exit"
+          id="art-exit-store"
+          type="button"
+        >
+          ← Back outside
+        </button>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         VIEW 3 — GALLERY
+         ======================================================= -->
+
+    <section
+      class="art-view"
+      id="view-gallery"
+    >
+      <button
+        class="gallery-back"
+        id="gallery-back"
+        type="button"
+      >
+        ← Lobby
+      </button>
+
+      <div class="gallery-header">
+        <div class="gallery-header-title">
+          ART · Gallery of Works
+        </div>
+
+        <div class="gallery-header-rule"></div>
+      </div>
+
+      <div class="gallery-spotlight"></div>
+
+      <div
+        class="gallery-stage"
+        id="gallery-stage"
+      >
+        <div
+          class="artwork-frame"
+          id="artwork-frame"
+          role="button"
+          tabindex="0"
+          aria-label="Expand artwork"
+        >
+          <div class="artwork-frame-shell"></div>
+          <div class="artwork-light-hit"></div>
+
+          <img
+            class="artwork-image"
+            id="artwork-image"
+            src=""
+            alt=""
+            draggable="false"
+          />
+        </div>
+
+        <div class="artwork-plaque">
+          <div
+            class="artwork-plaque-number"
+            id="artwork-number"
+          ></div>
+
+          <div
+            class="artwork-plaque-title"
+            id="artwork-title"
+          ></div>
+        </div>
+      </div>
+
+      <div class="gallery-arrows">
+        <button
+          class="gallery-arrow"
+          id="gallery-prev"
+          type="button"
+          aria-label="Previous artwork"
+        >
+          <svg viewBox="0 0 24 24">
+            <polyline
+              points="15 18 9 12 15 6"
+            ></polyline>
+          </svg>
+        </button>
+
+        <button
+          class="gallery-arrow"
+          id="gallery-next"
+          type="button"
+          aria-label="Next artwork"
+        >
+          <svg viewBox="0 0 24 24">
+            <polyline
+              points="9 6 15 12 9 18"
+            ></polyline>
+          </svg>
+        </button>
+      </div>
+
+      <div
+        class="gallery-dots"
+        id="gallery-dots"
+      ></div>
+
+      <div
+        class="gallery-counter"
+        id="gallery-counter"
+      ></div>
+
+      <div class="gallery-swipe-hint">
+        Swipe · arrows · image to expand
+      </div>
+
+      <div
+        class="gallery-empty"
+        id="gallery-empty"
+      >
+        The gallery is between installations.
+      </div>
+
+      <div
+        class="gallery-veil"
+        id="gallery-veil"
+      ></div>
+    </section>
+
+    <!-- =======================================================
+         LIGHTBOX
+         ======================================================= -->
+
+    <div
+      class="art-lightbox"
+      id="art-lightbox"
+      aria-hidden="true"
+    >
+      <button
+        class="art-lightbox-close"
+        id="art-lightbox-close"
+        type="button"
+        aria-label="Close expanded artwork"
+      >
+        ×
+      </button>
+
+      <img
+        class="art-lightbox-image"
+        id="art-lightbox-image"
+        src=""
+        alt=""
+      />
+    </div>
+
+    <script>
+      (() => {
+        "use strict";
+
+        /*
+          Main view nodes.
+        */
+
+        const flash =
+          document.getElementById("art-flash");
+
+        const storefront =
+          document.getElementById(
+            "view-storefront",
+          );
+
+        const choice =
+          document.getElementById(
+            "view-choice",
+          );
+
+        const gallery =
+          document.getElementById(
+            "view-gallery",
+          );
+
+        /*
+          Gallery nodes.
+        */
+
+        const frame =
+          document.getElementById(
+            "artwork-frame",
+          );
+
+        const image =
+          document.getElementById(
+            "artwork-image",
+          );
+
+        const number =
+          document.getElementById(
+            "artwork-number",
+          );
+
+        const title =
+          document.getElementById(
+            "artwork-title",
+          );
+
+        const dots =
+          document.getElementById(
+            "gallery-dots",
+          );
+
+        const counter =
+          document.getElementById(
+            "gallery-counter",
+          );
+
+        const empty =
+          document.getElementById(
+            "gallery-empty",
+          );
+
+        const veil =
+          document.getElementById(
+            "gallery-veil",
+          );
+
+        const lightbox =
+          document.getElementById(
+            "art-lightbox",
+          );
+
+        const lightboxImage =
+          document.getElementById(
+            "art-lightbox-image",
+          );
+
+        /*
+          Four wall colors.
+
+          We are NOT creating room-overview images.
+
+          The visitor always faces one artwork.
+          The wall shifts quietly as the collection advances.
+        */
+
+        const wallColors = [
+          "#17171b",
+          "#1c1916",
+          "#141a18",
+          "#19151b",
+        ];
+
+        /*
+          Runtime gallery state.
+        */
+
+        let posters = [];
+        let currentIndex = 0;
+        let galleryLoaded = false;
+        let transitioning = false;
+
+        /*
+          Utility: show one view.
+        */
+
+        function showView(view) {
+          [
+            storefront,
+            choice,
+            gallery,
+          ].forEach((candidate) => {
+            candidate.classList.remove("active");
+          });
+
+          view.classList.add("active");
+        }
+
+        /*
+          Entrance flash.
+        */
+
+        function fireFlash(callback) {
+          flash.classList.add("firing");
+
+          window.setTimeout(() => {
+            flash.classList.remove("firing");
+          }, 550);
+
+          window.setTimeout(callback, 220);
+        }
+
+        /*
+          Enter lobby from storefront.
+        */
+
+        function enterArt(useFlash = true) {
+          const enter = () => {
+            showView(choice);
+          };
+
+          if (useFlash) {
+            fireFlash(enter);
+          } else {
+            enter();
+          }
+        }
+
+        /*
+          Load the automatically generated ART manifest.
+
+          storefront.jpg currently appears in the manifest because
+          it is stored in art-images/.
+
+          It is a navigation asset, not a broadside.
+
+          Filter it here defensively so it can never appear
+          framed on the gallery wall.
+        */
+
+        async function loadGallery() {
+          if (galleryLoaded) {
+            return;
+          }
+
+          galleryLoaded = true;
+
+          try {
+            const response = await fetch(
+              "/art-images/manifest.json",
+              {
+                cache: "no-store",
+              },
+            );
+
+            if (!response.ok) {
+              throw new Error(
+                `ART manifest failed: ${response.status}`,
+              );
+            }
+
+            const data = await response.json();
+
+            posters = data.posters
+              .filter((poster) => {
+                return (
+                  String(poster.file).toLowerCase() !==
+                  "storefront.jpg"
+                );
+              })
+              .map((poster) => {
+                return {
+                  src:
+                    "/art-images/" +
+                    poster.file,
+
+                  title:
+                    poster.title ||
+                    poster.file,
+                };
+              });
+          } catch (error) {
+            console.error(error);
+            posters = [];
+          }
+
+          if (posters.length === 0) {
+            empty.classList.add("visible");
+
+            frame.style.display = "none";
+
+            document.querySelector(
+              ".artwork-plaque",
+            ).style.display = "none";
+
+            document.getElementById(
+              "gallery-prev",
+            ).style.display = "none";
+
+            document.getElementById(
+              "gallery-next",
+            ).style.display = "none";
+
+            return;
+          }
+
+          buildDots();
+          showPoster(0);
+        }
+
+        /*
+          Build one dot for every broadside.
+        */
+
+        function buildDots() {
+          dots.innerHTML = "";
+
+          posters.forEach((poster, index) => {
+            const dot =
+              document.createElement("button");
+
+            dot.type = "button";
+
+            dot.className =
+              "gallery-dot" +
+              (index === currentIndex
+                ? " active"
+                : "");
+
+            dot.setAttribute(
+              "aria-label",
+              `View artwork ${index + 1}`,
+            );
+
+            dot.addEventListener("click", () => {
+              goTo(index);
+            });
+
+            dots.appendChild(dot);
+          });
+        }
+
+        /*
+          Update dots after navigation.
+        */
+
+        function updateDots() {
+          dots
+            .querySelectorAll(".gallery-dot")
+            .forEach((dot, index) => {
+              dot.classList.toggle(
+                "active",
+                index === currentIndex,
+              );
+            });
+        }
+
+        /*
+          Change wall color based on current artwork.
+        */
+
+        function updateWall() {
+          const wallColor =
+            wallColors[
+              currentIndex %
+                wallColors.length
+            ];
+
+          gallery.style.setProperty(
+            "--wall-color",
+            wallColor,
+          );
+        }
+
+        /*
+          Render one broadside.
+        */
+
+        function showPoster(index) {
+          if (!posters.length) {
+            return;
+          }
+
+          currentIndex = index;
+
+          const poster =
+            posters[currentIndex];
+
+          image.src = poster.src;
+          image.alt = poster.title;
+
+          title.textContent =
+            poster.title;
+
+          number.textContent =
+            `WORK ${String(
+              currentIndex + 1,
+            ).padStart(3, "0")}`;
+
+          counter.textContent =
+            `${String(
+              currentIndex + 1,
+            ).padStart(2, "0")} / ` +
+            `${String(
+              posters.length,
+            ).padStart(2, "0")}`;
+
+          lightboxImage.src =
+            poster.src;
+
+          lightboxImage.alt =
+            poster.title;
+
+          updateDots();
+          updateWall();
+        }
+
+        /*
+          Navigate with a brief dark veil.
+
+          This makes each broadside feel like moving
+          to the next wall rather than changing an <img>.
+        */
+
+        function goTo(index) {
+          if (
+            transitioning ||
+            !posters.length ||
+            index === currentIndex
+          ) {
+            return;
+          }
+
+          transitioning = true;
+
+          veil.classList.add("active");
+
+          window.setTimeout(() => {
+            showPoster(index);
+
+            window.setTimeout(() => {
+              veil.classList.remove("active");
+
+              transitioning = false;
+            }, 90);
+          }, 250);
+        }
+
+        /*
+          Wrap navigation.
+
+          Last piece advances to first.
+          First piece goes backward to last.
+        */
+
+        function navigate(direction) {
+          if (!posters.length) {
+            return;
+          }
+
+          const nextIndex =
+            (
+              currentIndex +
+              direction +
+              posters.length
+            ) %
+            posters.length;
+
+          goTo(nextIndex);
+        }
+
+        /*
+          Open full-resolution artwork.
+        */
+
+        function openLightbox() {
+          if (!posters.length) {
+            return;
+          }
+
+          lightbox.classList.add("open");
+
+          lightbox.setAttribute(
+            "aria-hidden",
+            "false",
+          );
+        }
+
+        /*
+          Close expanded artwork.
+        */
+
+        function closeLightbox() {
+          lightbox.classList.remove("open");
+
+          lightbox.setAttribute(
+            "aria-hidden",
+            "true",
+          );
+        }
+
+        /*
+          IMPORTANT RETURN BEHAVIOR
+
+          Before leaving for the canonical ART entry,
+          change this history item to:
+
+            /art/?inside=1
+
+          Browser Back then returns to the lobby/choice screen.
+        */
+
+        function openCanonicalArtEntry() {
+          window.history.replaceState(
+            null,
+            "",
+            "/art/?inside=1",
+          );
+
+          window.location.href =
+            "/entries/art";
+        }
+
+        /*
+          Proceed directly into gallery.
+        */
+
+        async function openGallery() {
+          showView(gallery);
+
+          await loadGallery();
+        }
+
+        /*
+          Entrance buttons.
+        */
+
+        document
+          .getElementById("art-doors")
+          .addEventListener("click", () => {
+            enterArt(true);
+          });
+
+        document
+          .getElementById("art-exit-store")
+          .addEventListener("click", () => {
+            window.history.replaceState(
+              null,
+              "",
+              "/art/",
+            );
+
+            showView(storefront);
+          });
+
+        document
+          .getElementById("art-what-is")
+          .addEventListener(
+            "click",
+            openCanonicalArtEntry,
+          );
+
+        document
+          .getElementById("art-proceed")
+          .addEventListener(
+            "click",
+            openGallery,
+          );
+
+        /*
+          Gallery navigation.
+        */
+
+        document
+          .getElementById("gallery-prev")
+          .addEventListener("click", () => {
+            navigate(-1);
+          });
+
+        document
+          .getElementById("gallery-next")
+          .addEventListener("click", () => {
+            navigate(1);
+          });
+
+        document
+          .getElementById("gallery-back")
+          .addEventListener("click", () => {
+            showView(choice);
+          });
+
+        /*
+          Artwork click = expand.
+        */
+
+        frame.addEventListener(
+          "click",
+          openLightbox,
+        );
+
+        frame.addEventListener(
+          "keydown",
+          (event) => {
+            if (
+              event.key === "Enter" ||
+              event.key === " "
+            ) {
+              event.preventDefault();
+              openLightbox();
+            }
+          },
+        );
+
+        /*
+          Lightbox controls.
+        */
+
+        lightbox.addEventListener(
+          "click",
+          closeLightbox,
+        );
+
+        document
+          .getElementById(
+            "art-lightbox-close",
+          )
+          .addEventListener(
+            "click",
+            (event) => {
+              event.stopPropagation();
+              closeLightbox();
+            },
+          );
+
+        lightboxImage.addEventListener(
+          "click",
+          (event) => {
+            event.stopPropagation();
+          },
+        );
+
+        /*
+          Keyboard controls.
+
+          Only move the gallery while the gallery itself
+          is active.
+        */
+
+        document.addEventListener(
+          "keydown",
+          (event) => {
+            if (
+              lightbox.classList.contains(
+                "open",
+              )
+            ) {
+              if (event.key === "Escape") {
+                closeLightbox();
+              }
+
+              return;
+            }
+
+            if (
+              !gallery.classList.contains(
+                "active",
+              )
+            ) {
+              return;
+            }
+
+            if (event.key === "ArrowLeft") {
+              navigate(-1);
+            }
+
+            if (event.key === "ArrowRight") {
+              navigate(1);
+            }
+
+            if (event.key === "Escape") {
+              showView(choice);
+            }
+          },
+        );
+
+        /*
+          Mobile swipe.
+
+          Horizontal gestures greater than 45 pixels
+          advance or reverse the gallery.
+        */
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        gallery.addEventListener(
+          "touchstart",
+          (event) => {
+            const touch =
+              event.touches[0];
+
+            touchStartX =
+              touch.clientX;
+
+            touchStartY =
+              touch.clientY;
+          },
+          {
+            passive: true,
+          },
+        );
+
+        gallery.addEventListener(
+          "touchend",
+          (event) => {
+            const touch =
+              event.changedTouches[0];
+
+            const deltaX =
+              touch.clientX -
+              touchStartX;
+
+            const deltaY =
+              touch.clientY -
+              touchStartY;
+
+            if (
+              Math.abs(deltaX) > 45 &&
+              Math.abs(deltaX) >
+                Math.abs(deltaY)
+            ) {
+              navigate(
+                deltaX < 0 ? 1 : -1,
+              );
+            }
+          },
+          {
+            passive: true,
+          },
+        );
+
+        /*
+          Returning from the canonical ART page.
+
+          /art/?inside=1
+          opens directly to the lobby.
+        */
+
+        const params =
+          new URLSearchParams(
+            window.location.search,
+          );
+
+        if (params.get("inside") === "1") {
+          enterArt(false);
+        }
+      })();
+    </script>
+
+    <!-- Existing site-wide navigation -->
+    <script src="/portal-transition.js"></script>
+    <script src="/nav-wheel.js"></script>
+    <script src="/hub-menu.js"></script>
+  </body>
+</html>
