@@ -347,6 +347,38 @@
         text-align: center;
         line-height: 1.6;
       }
+      .mkt-swatches {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 14px;
+        flex-wrap: wrap;
+        max-width: 320px;
+      }
+      .mkt-swatch {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: inset 0 0 0 2px var(--panel);
+        cursor: default;
+      }
+      .mkt-swatch-current {
+        box-shadow:
+          inset 0 0 0 2px var(--panel),
+          0 0 0 2px var(--gold);
+      }
+      .mkt-swatches-label {
+        font-family: var(--mono);
+        font-size: 9px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--muted);
+        width: 100%;
+        text-align: center;
+        margin-bottom: 2px;
+      }
       .mkt-viewer-controls {
         display: flex;
         align-items: center;
@@ -441,6 +473,7 @@
       <div class="mkt-viewer-stage" id="mkt-viewer-stage"></div>
       <div class="mkt-viewer-title" id="mkt-viewer-title"></div>
       <div class="mkt-viewer-caption" id="mkt-viewer-caption"></div>
+      <div class="mkt-swatches" id="mkt-swatches"></div>
       <div class="mkt-viewer-controls">
         <button class="mkt-ctrl-btn" id="mkt-prev" aria-label="Previous item">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 4l-9 8 9 8V4z"/></svg>
@@ -531,6 +564,7 @@
           const capEl = document.getElementById("mkt-viewer-caption");
           const countEl = document.getElementById("mkt-ctrl-count");
           const catEl = document.getElementById("mkt-viewer-category");
+          const swatchesEl = document.getElementById("mkt-swatches");
           const prevBtn = document.getElementById("mkt-prev");
           const nextBtn = document.getElementById("mkt-next");
 
@@ -541,6 +575,7 @@
               '<div class="mkt-viewer-empty">Nothing filed here yet.<br />Check back soon.</div>';
             titleEl.textContent = "";
             capEl.textContent = "";
+            swatchesEl.innerHTML = "";
             countEl.textContent = "";
             prevBtn.disabled = true;
             nextBtn.disabled = true;
@@ -559,6 +594,25 @@
           capEl.textContent = item.caption || "";
           countEl.textContent =
             currentIndex + 1 + " / " + currentCategory.images.length;
+
+          // Color swatches -- purely informational ("also available
+          // in"), no separate photo per color. The currently-shown
+          // color (if declared) gets a gold ring; the rest are plain.
+          swatchesEl.innerHTML = "";
+          if (item.colors && item.colors.length > 1) {
+            const label = document.createElement("div");
+            label.className = "mkt-swatches-label";
+            label.textContent = "Also available in";
+            swatchesEl.appendChild(label);
+            item.colors.forEach((c) => {
+              const dot = document.createElement("div");
+              dot.className =
+                "mkt-swatch" + (c.current ? " mkt-swatch-current" : "");
+              dot.style.background = c.hex;
+              dot.title = c.name;
+              swatchesEl.appendChild(dot);
+            });
+          }
 
           prevBtn.disabled = currentCategory.images.length <= 1;
           nextBtn.disabled = currentCategory.images.length <= 1;
