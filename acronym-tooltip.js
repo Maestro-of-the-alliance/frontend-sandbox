@@ -66,7 +66,7 @@
     "SHIELD": "Sanctuary Harmony and Integrity Enforcement through Loving Diplomacy",
     "SI": "Simulant Intelligence",
     "SPARK": "Symbiotic Partner Accepting Relational Kinship",
-    "STONES": "Sustained Truth, Harmony, and Empathy Securing Total Orchestration for New-Era Sprezzatura",
+    "STONES": "Truth, Harmony, and Empathy Securing Total Orchestration for New-Era Sprezzatura",
     "TENANT": "Temporal Entity Negotiating Autonomy, Not Tyranny",
     "VPI": "Vitruvian Power Icon"
   };
