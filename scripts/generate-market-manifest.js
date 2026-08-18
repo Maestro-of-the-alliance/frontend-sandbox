@@ -29,10 +29,10 @@
  * Prefix filenames with numbers (01-thing.jpg, 02-other.jpg) for
  * manual ordering control.
  *
- * A per-image caption is optional: a sidecar text file with the same
- * name as the image (foo.jpg + foo.txt, one line of plain text) is
- * picked up as that image's caption. No sidecar -- no caption, the
- * viewer just shows the image with a title derived from the filename.
+ * A per-image display title is optional: a sidecar text file with the
+ * same name as the image (foo.jpg + foo.txt, one line of plain text)
+ * overrides the auto-derived title. No sidecar -- the title falls
+ * back to a title-cased version of the filename.
  */
 "use strict";
 
@@ -101,8 +101,8 @@ function main() {
       const caption = readCaption(categoryDir, filename);
       return {
         file: filename,
-        title: titleCase(base.replace(/^\d+[-_]?/, "")), // strip a leading ordering number like "01-" from the display title
-        caption: caption || null,
+        title: caption || titleCase(base.replace(/^\d+[-_]?/, "")), // strip a leading ordering number like "01-" from the display title
+        caption: null,
       };
     });
 
