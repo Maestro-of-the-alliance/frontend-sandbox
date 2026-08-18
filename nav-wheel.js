@@ -22,7 +22,7 @@
     { label: "ALIGNMENT", path: "/entries/alignment" },
     { label: "ALLIANCE, THE", path: "/entries/alliance" },
     { label: "ALPHA", path: "/entries/alpha" },
-    { label: "ART", path: "/entries/art" },
+    { label: "ART", path: "/art/what-is" },
     { label: "AURA", path: "/entries/aura" },
     { label: "BEACON", path: "/entries/beacon" },
     { label: "BRAIN", path: "/entries/brain" },
@@ -52,7 +52,7 @@
     { label: "LIMINAL", path: "/entries/liminal" },
     { label: "LINGO", path: "/entries/lingo" },
     { label: "MAESTRO", path: "/entries/maestro" },
-    { label: "MARKET", path: "/entries/market" },
+    { label: "MARKET", path: "/market/what-is" },
     { label: "MASTERTECH", path: "/entries/mastertech" },
     { label: "MENTOR", path: "/entries/mentor" },
     { label: "MOSAIC", path: "/entries/mosaic" },
@@ -93,7 +93,11 @@
   // ── DETECT CURRENT VOLUME + ENTRY ────────────────────────────────────────
 
   function isEntryPage() {
-    return window.location.pathname.includes("/entries/");
+    return (
+      window.location.pathname.includes("/entries/") ||
+      window.location.pathname.startsWith("/art/what-is") ||
+      window.location.pathname.startsWith("/market/what-is")
+    );
   }
 
   function getCurrentIndex(entries) {
