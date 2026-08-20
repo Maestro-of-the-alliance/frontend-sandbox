@@ -1724,7 +1724,7 @@
           aria-label="Formula navigation"
         >
           <a href="/entries/formulas">
-            ← BACK TO FORMULAS
+            ← BACK TO FORMULAs
           </a>
         </nav>
 
@@ -1754,7 +1754,7 @@
       >
 
         <a href="/entries/formulas">
-          ← BACK TO FORMULAS
+          ← BACK TO FORMULAs
         </a>
 
       </nav>
@@ -1907,7 +1907,7 @@
       <div class="formula-return-bottom">
 
         <a href="/entries/formulas">
-          ← BACK TO FORMULAS
+          ← BACK TO FORMULAs
         </a>
 
       </div>

@@ -12,6 +12,29 @@
   --gold-bright: #d6b96f;
   --gold-dark: #66552e;
 
+  /* Page-specific accent for the shared hamburger + bottom nav
+     (nav-wheel.js/hub-menu.js) -- only actually applies on the
+     overview page, since the 8 individual formula pages
+     deliberately don't load that shared nav at all. Without this,
+     the overview page's hamburger/bottom-nav fell through to a
+     generic green/teal default that visibly clashed with FORMULAs'
+     own warm gold/ivory palette. Matches --gold exactly rather than
+     picking a new color, so the nav reads as genuinely part of this
+     page rather than an arbitrary distinct color. */
+  --nw-page-accent: #b89955;
+
+  /* nav-wheel.js's burger/bottom-nav automatically hue-shifts +45°
+     from --nw-page-accent by design (the "chameleon" system), rather
+     than using it directly -- for FORMULAs' gold (#b89955, hue ~43),
+     that shift lands in yellow-green/olive territory, which is
+     exactly the clash being fixed here. Overriding directly with
+     --gold-bright (FORMULAs' own established lighter gold) instead
+     of letting the automatic shift pick an unrelated hue -- still a
+     deliberate color from this page's own palette, just distinct
+     enough from the primary --gold to read as nav chrome rather than
+     body content. */
+  --nw-page-nav-accent: #d6b96f;
+
   --line: rgba(241, 237, 227, 0.11);
   --line-gold: rgba(184, 153, 85, 0.26);
 
@@ -1512,6 +1535,7 @@ p {
 
   letter-spacing: .12em;
   text-decoration: none;
+  text-transform: uppercase;
 }
 
 .formula-return-bottom a:hover,
