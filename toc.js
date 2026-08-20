@@ -620,7 +620,13 @@ window.addEventListener(
 // ── SKIP BOOT / ANIMATION ──
 
 function skipBoot() {
+  // The tocOverlay-open guard only matters for the boot/directory
+  // stages below, which are unreachable now that nothing opens
+  // tocOverlay anymore. Without this exception, a click while the
+  // intro message is still mid-type would hit this guard and return
+  // immediately, silently swallowing the click.
   if (
+    !introTyping &&
     !tocOverlay.classList.contains(
       "open",
     )
@@ -637,6 +643,7 @@ function skipBoot() {
     introTyping = false;
     introDone = true;
 
+    startIdleLoop();
     openCommand();
 
     return;
@@ -665,6 +672,54 @@ function skipBoot() {
   }
 }
 
+// ── IDLE PROMPT LOOP ──
+// Once the one-time boot message has finished, the prompt cycles
+// "CONTACT US" -- types out, holds, deletes, holds, repeats -- so
+// the trigger stays inviting rather than sitting static/blank.
+// Started once from each of the two places introDone becomes true
+// (typeIntro's natural completion, skipBoot's forced completion).
+
+const IDLE_MESSAGE = "CONTACT US";
+let idleLoopStarted = false;
+let idleTimer = null;
+
+function startIdleLoop() {
+  if (idleLoopStarted) return;
+  idleLoopStarted = true;
+
+  let i = 0;
+  let deleting = false;
+
+  function step() {
+    if (!deleting) {
+      if (i <= IDLE_MESSAGE.length) {
+        promptText.textContent = IDLE_MESSAGE.slice(0, i);
+        i += 1;
+        idleTimer = setTimeout(step, 90);
+      } else {
+        idleTimer = setTimeout(() => {
+          deleting = true;
+          step();
+        }, 1600);
+      }
+    } else {
+      if (i >= 0) {
+        promptText.textContent = IDLE_MESSAGE.slice(0, i);
+        i -= 1;
+        idleTimer = setTimeout(step, 50);
+      } else {
+        idleTimer = setTimeout(() => {
+          deleting = false;
+          i = 0;
+          step();
+        }, 700);
+      }
+    }
+  }
+
+  step();
+}
+
 // ── TYPE INTRO PROMPT ──
 
 function typeIntro() {
@@ -688,6 +743,7 @@ function typeIntro() {
     introTyping = false;
     introDone = true;
 
+    startIdleLoop();
     openCommand();
   }
 }
