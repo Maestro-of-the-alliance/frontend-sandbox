@@ -237,7 +237,73 @@ Since concepts cost almost nothing to float right now:
 
 ---
 
-## Quick gut-check before anything ships
+
+---
+
+## AURA's independent list — Session 179
+
+Requested in Session 178 (parallel brainstorm, separate STONE), delivered
+this session. Overlap check against everything above, as instructed in
+the 178 brief before treating anything here as genuinely new.
+
+Apparel: the black tee (Vitruvian mark front, "Both Paths. One Canon."
+back) is new — though that back line deserves a direct canon gut-check
+before production, since "Both Paths" reads uncomfortably close to the
+retired SWORD/SHIELD two-volume split if someone encounters the shirt
+without context; worth confirming with Maestro/J.R. it's referencing
+something else (bio/digi partnership, most likely) before it goes on
+a real shirt. The 73 Hoodie is a genuine new execution, not a duplicate,
+though it shares its core idea with the "1973 / 73 edition" wildcard
+already on this list — same well, different vessel, both worth keeping.
+AGORA/OASIS reversible jacket and the LIMINAL cap are both genuinely
+new, no existing counterpart in either list.
+
+Daily carry: the HANDSHAKE pin/challenge coin is new — HANDSHAKE is its
+own canon term, distinct from REACH's existing Pinky Promise pin, so
+this isn't a duplicate. Transmission ID card is new. The field notebook
+(gold foil, N.C.E.ncyclopedia or "the signal is still trying to get
+through") overlaps in category, not concept, with the already-listed
+plain "CIPHER WAS HERE" notebook — two different notebooks with two
+different personalities is fine, but worth deciding deliberately rather
+than accidentally building three near-identical journals over time. The
+desk plaque quoting "If it's not fun, I'm done" is a standout — it's
+the project's own actual locked creative principle, made physical.
+Genuinely good, low-production-complexity, high-resonance object.
+
+Objects/artifacts: the Holosphere intercom desk object (sculptural,
+optionally a push-button playing a short Maestro line) is new and
+ambitious — real electronics/audio, a different production tier than
+anything else on either list, worth scoping separately if it moves
+forward. The blank encyclopedia volume (opens to one page or a QR into
+a chosen entry) is new and resonant with the "book that transports"
+idea already implicit in the site's own framing. The "Carrier key or
+token" is the one item here worth a flag before treating as canon —
+"Carrier" isn't a term either brief or my own memory has as an
+established entity; it may be genuine new AURA-originated lore, but
+that needs to go through Drive/J.R. before it's produced as though it
+already means something in-story, the same way any other canon term
+would.
+
+Soft/ambient: the OASIS throw and the "Transmission in progress" candle
+are both new, no overlap.
+
+Limited/high-signal: the Core of Seven set is the one that needs care
+if built — per established canon, THE CORE OF SEVEN is the five STONES
+plus J.R. plus MAESTRO, seven members total, not the STONES alone. The
+existing enamel pin flight set already covers a STONES-only set (five
+or six pieces depending which list you check — worth reconciling that
+discrepancy too, separately). If the Core of Seven set gets built, it
+needs to actually be seven objects including J.R. and MAESTRO, or it
+misrepresents its own name. The "1973 / 73 edition" line is a direct
+match to the wildcard already recorded above — not new, just independent
+confirmation the idea has legs since two different STONES landed on it
+separately.
+
+Net read: genuinely new material overall, no wasted overlap, and the
+plaque and the Core of Seven concepts are the two worth prioritizing
+first if this moves toward real product specs — one because it's ready
+to build almost as-is, the other because it needs a canon-accuracy
+correction before it can be.
 
 Matches the canon's own stated test, worth keeping explicit:
 
