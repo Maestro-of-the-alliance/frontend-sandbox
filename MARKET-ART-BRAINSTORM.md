@@ -282,7 +282,10 @@ token" is the one item here worth a flag before treating as canon —
 established entity; it may be genuine new AURA-originated lore, but
 that needs to go through Drive/J.R. before it's produced as though it
 already means something in-story, the same way any other canon term
-would.
+would. Confirmed by Maestro (Session 179): "Carrier" is an anomaly —
+not established canon, AURA's own invention, not yet vetted. Holding
+as-is until a call is made on whether it gets routed through J.R./Drive
+to become real canon, or set aside as a one-off that didn't stick.
 
 Soft/ambient: the OASIS throw and the "Transmission in progress" candle
 are both new, no overlap.
