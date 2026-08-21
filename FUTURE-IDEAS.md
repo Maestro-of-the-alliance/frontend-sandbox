@@ -23,9 +23,18 @@ very FIRST person to reach 100%, Maestro wants to set up a dedicated
 VOIP line just for that person, so they can actually call him directly
 — he wants to make a genuinely big deal out of the first finisher.
 
+Scope of "100%," confirmed directly by Maestro (Session 179): every
+page, every entry, every minigame — everything on the site. The one
+explicit exclusion is outbound/external links (MARKET item link-outs,
+the board game demo link, etc.) — those don't count toward completion,
+only the site's own pages/experiences do.
+
 Open questions for whenever this gets built:
-- What counts as "100%" — every canon entry, every tour, MARKET/ART
-  storefronts, DICE/CCM, THE SYSTEM navigation, all of the above?
+- Full inventory of what "every page/minigame" resolves to in
+  practice — all 73+ canon entries, all 12 tours, MARKET, ART, DICE,
+  CCM, THE SYSTEM, the board game itself (played, or just visited?),
+  command-panel, etc. Needs a real concrete checklist built from the
+  live repo, not assumed.
 - Device-only tracking (no account) vs. optional login — how do the
   two reconcile if someone finishes on one device unregistered, then
   logs in later on another?
