@@ -393,6 +393,74 @@
     }, randInt(1800, 3200));
   }
 
+  function fireVignettePulse() {
+    // New (Session 179) — a radial vignette breathing at the screen's
+    // edges, distinct from paperShift's flat sepia wash. Reads as the
+    // signal's own edges losing and regaining focus.
+    const el = document.createElement("div");
+    el.style.cssText = `position:fixed;inset:0;pointer-events:none;z-index:99969;opacity:0;box-shadow:inset 0 0 ${rand(60,140)}px rgba(0,0,0,0.5);transition:opacity 0.6s ease;`;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.opacity = "1";
+      setTimeout(() => {
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 700);
+      }, rand(500, 1000));
+    });
+  }
+
+  function fireCornerTimestamp() {
+    // New — a small REC-style corner readout with a fake running
+    // timestamp, like archival broadcast footage. Distinct register
+    // from the protocol notices (surveillance/archival vs. security).
+    const h = randInt(0, 23).toString().padStart(2, "0");
+    const m = randInt(0, 59).toString().padStart(2, "0");
+    const s = randInt(0, 59).toString().padStart(2, "0");
+    const el = document.createElement("div");
+    el.style.cssText = `position:fixed;font-family:'Share Tech Mono',monospace;font-size:clamp(9px,1.2vw,12px);letter-spacing:0.15em;color:rgba(255,74,74,0.6);pointer-events:none;z-index:99981;opacity:0;transition:opacity 0.3s ease;`;
+    el.textContent = `● REC ${h}:${m}:${s}`;
+    Object.assign(el.style, cornerPosition());
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.opacity = "0.8";
+      setTimeout(() => {
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 350);
+      }, rand(1400, 2400));
+    });
+  }
+
+  function fireFlickerFrame() {
+    // New — a single very quick full-screen brightness dip, almost
+    // subliminal. The smallest, most frequent-feeling effect in the
+    // pool by design.
+    const shell = document.getElementById("pageShell") || document.body;
+    shell.style.transition = "none";
+    shell.style.filter = `brightness(${rand(0.4, 0.7)})`;
+    setTimeout(() => {
+      shell.style.filter = "";
+    }, rand(50, 100));
+  }
+
+  function fireDriftLine() {
+    // New — a faint vertical line drifting horizontally across the
+    // screen over a couple seconds, distinct from the horizontal
+    // scanline sweep already in the pool.
+    const goRight = Math.random() > 0.5;
+    const el = document.createElement("div");
+    const dur = rand(1800, 3000);
+    el.style.cssText = `position:fixed;top:0;bottom:0;width:1px;background:linear-gradient(180deg,transparent,rgba(212,175,55,0.35),transparent);pointer-events:none;z-index:99969;opacity:0;left:${goRight ? "-1%" : "101%"};transition:left ${dur}ms linear, opacity 0.4s ease;`;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.opacity = "1";
+      el.style.left = goRight ? "101%" : "-1%";
+      setTimeout(() => {
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 450);
+      }, dur - 300);
+    });
+  }
+
   // ── MEDIUM TIER — clearly visible, moderate frequency ─────────
 
   const BLEED_COLORS = [
@@ -576,6 +644,106 @@
       setTimeout(shake, rand(28, 60));
     };
     shake();
+  }
+
+  function fireChannelSwitch() {
+    // New (Session 179) — a brief black cut plus a channel-number
+    // readout, like a physical channel dial turning. Distinct rhythm
+    // from fireStatic (hard cut, not a fade).
+    const overlay = document.createElement("div");
+    overlay.style.cssText = `position:fixed;inset:0;background:#000;pointer-events:none;z-index:99990;opacity:0;`;
+    const label = document.createElement("div");
+    label.style.cssText = `position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'VT323',monospace;font-size:clamp(24px,6vw,56px);letter-spacing:0.15em;color:#d4af37;`;
+    label.textContent = `CH ${randInt(1, 13).toString().padStart(2, "0")}`;
+    overlay.appendChild(label);
+    document.body.appendChild(overlay);
+    overlay.style.opacity = "1";
+    setTimeout(() => {
+      overlay.style.transition = "opacity 0.2s ease";
+      overlay.style.opacity = "0";
+      setTimeout(() => overlay.remove(), 250);
+    }, rand(180, 320));
+  }
+
+  function fireAudioWaveform() {
+    // New — a horizontal row of bars near the bottom of the screen,
+    // animating like a live signal-strength/waveform readout. Purely
+    // visual; not tied to any real audio (site has none playing here).
+    const container = document.createElement("div");
+    container.style.cssText = `position:fixed;left:50%;bottom:6vh;transform:translateX(-50%);display:flex;align-items:flex-end;gap:3px;height:40px;pointer-events:none;z-index:99979;opacity:0;transition:opacity 0.3s ease;`;
+    const barCount = randInt(14, 22);
+    const bars = [];
+    for (let i = 0; i < barCount; i++) {
+      const bar = document.createElement("div");
+      bar.style.cssText = `width:3px;background:rgba(212,175,55,0.55);height:${rand(4, 36)}px;transition:height 0.12s ease;`;
+      container.appendChild(bar);
+      bars.push(bar);
+    }
+    document.body.appendChild(container);
+    container.style.opacity = "1";
+    let ticks = 0;
+    const interval = setInterval(() => {
+      bars.forEach((b) => (b.style.height = rand(4, 36) + "px"));
+      ticks++;
+      if (ticks > 8) {
+        clearInterval(interval);
+        container.style.opacity = "0";
+        setTimeout(() => container.remove(), 350);
+      }
+    }, 120);
+  }
+
+  function fireCoordinateGlitch() {
+    // New — a corner readout of fake coordinates + a short hash,
+    // distinct format from fireEncryptionBleed's scrolling code rows
+    // and fireHexAudit's plain hex string.
+    const lat = (rand(-89, 89)).toFixed(4);
+    const lon = (rand(-179, 179)).toFixed(4);
+    const hash = Array.from({ length: 6 }, () => "0123456789ABCDEF"[randInt(0, 15)]).join("");
+    const el = document.createElement("div");
+    el.style.cssText = `position:fixed;font-family:'Share Tech Mono',monospace;font-size:clamp(9px,1.3vw,12px);letter-spacing:0.12em;color:rgba(92,220,235,0.6);pointer-events:none;z-index:99981;opacity:0;transition:opacity 0.3s ease;white-space:nowrap;`;
+    el.textContent = `LOC ${lat}° ${lon}° · TRACE ${hash}`;
+    Object.assign(el.style, cornerPosition());
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.opacity = "0.75";
+      setTimeout(() => {
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 350);
+      }, rand(1400, 2400));
+    });
+  }
+
+  function fireMarginNote() {
+    // New — a small italic annotation near a real on-page text
+    // element (falls back to a corner if none found), reading like a
+    // hand-verified margin note rather than a bold official stamp.
+    // Distinct in register from fireStampFlash's bordered block stamp.
+    const notes = ["verified ✓", "cross-ref: OK", "checks out", "confirmed", "as recorded"];
+    const targets = document.querySelectorAll(".section p, .spec-val, .fn-body, p");
+    const el = document.createElement("div");
+    el.style.cssText = `position:fixed;font-family:'Share Tech Mono',monospace;font-style:italic;font-size:clamp(10px,1.4vw,13px);color:rgba(212,175,55,0.55);pointer-events:none;z-index:99981;opacity:0;transition:opacity 0.3s ease;`;
+    el.textContent = pick(notes);
+    if (targets.length) {
+      const t = targets[randInt(0, targets.length - 1)];
+      const rect = t.getBoundingClientRect();
+      if (rect.width) {
+        el.style.left = rect.right - 40 + "px";
+        el.style.top = rect.top - 16 + "px";
+      } else {
+        Object.assign(el.style, cornerPosition());
+      }
+    } else {
+      Object.assign(el.style, cornerPosition());
+    }
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.opacity = "0.8";
+      setTimeout(() => {
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 350);
+      }, rand(1300, 2200));
+    });
   }
 
   // ── LARGE TIER — rare, dramatic, the actual show ───────────────
@@ -796,6 +964,90 @@
     }, 150);
   }
 
+  function fireBlackout() {
+    // New (Session 179) — an instant hard cut to black and an
+    // equally hard cut back, no fade either direction. Deliberately
+    // more brutal than fireJammingFreeze's brightness/contrast shift.
+    const overlay = document.createElement("div");
+    overlay.style.cssText = `position:fixed;inset:0;background:#000;pointer-events:none;z-index:99996;`;
+    document.body.appendChild(overlay);
+    setTimeout(() => overlay.remove(), rand(200, 450));
+  }
+
+  function fireCipherOverlay() {
+    // New — a full-screen block of structured, uppercase substitution-
+    // cipher-looking text that holds briefly then fades as a single
+    // reveal, distinct from fireScramble's per-frame chaotic noise
+    // (this doesn't re-randomize mid-effect; it reads as one
+    // intercepted message, not static).
+    const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let block = "";
+    for (let i = 0; i < 240; i++) {
+      block += LETTERS[randInt(0, 25)];
+      if (i % 30 === 29) block += "\n";
+      else if (i % 5 === 4) block += " ";
+    }
+    const el = document.createElement("div");
+    el.style.cssText = `position:fixed;inset:0;z-index:99994;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;font-family:'VT323',monospace;font-size:clamp(10px,1.8vw,15px);letter-spacing:0.15em;line-height:1.5;color:rgba(212,175,55,0.5);text-align:center;padding:20px;background:rgba(0,0,0,0.85);transition:opacity 0.3s ease;`;
+    el.textContent = block;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.opacity = "1";
+      setTimeout(() => {
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 400);
+      }, rand(900, 1500));
+    });
+  }
+
+  function fireArchiveSeal() {
+    // New — a large centered ceremonial seal graphic slamming down
+    // with a shake, giving a visual payoff to the "ARCHIVE SEAL:
+    // UNBROKEN" line that already exists in the protocol notice pool.
+    const shell = document.getElementById("pageShell") || document.body;
+    const el = document.createElement("div");
+    el.style.cssText = `position:fixed;top:50%;left:50%;width:clamp(140px,22vw,220px);height:clamp(140px,22vw,220px);transform:translate(-50%,-50%) scale(1.6) rotate(-8deg);border:3px solid rgba(212,175,55,0.75);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Share Tech Mono',monospace;font-size:clamp(11px,1.6vw,14px);letter-spacing:0.2em;color:rgba(212,175,55,0.8);text-align:center;pointer-events:none;z-index:99996;opacity:0;box-shadow:0 0 30px rgba(212,175,55,0.25);transition:opacity 0.15s ease, transform 0.3s cubic-bezier(.2,1.4,.4,1);`;
+    el.textContent = "ARCHIVE SEAL";
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.opacity = "1";
+      el.style.transform = "translate(-50%,-50%) scale(1) rotate(0deg)";
+      shell.classList.add("si-shaking");
+      setTimeout(() => shell.classList.remove("si-shaking"), 400);
+      setTimeout(() => {
+        el.style.transition = "opacity 0.4s ease";
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 450);
+      }, rand(1200, 1800));
+    });
+  }
+
+  function fireTransmissionCountdown() {
+    // New — a 3-2-1 countdown beat before a brief blackout, a
+    // dramatic run-up distinct from every other large effect, which
+    // all fire immediately rather than building toward something.
+    let n = 3;
+    function tick() {
+      if (n === 0) {
+        fireBlackout();
+        return;
+      }
+      message.textContent = String(n);
+      message.style.color = "#ffaa00";
+      message.style.fontSize = "clamp(48px,10vw,120px)";
+      message.style.top = "50%";
+      message.style.transition = "";
+      message.style.opacity = "1";
+      n--;
+      setTimeout(() => {
+        message.style.transition = "opacity 0.15s";
+        message.style.opacity = "0";
+        setTimeout(tick, 200);
+      }, 500);
+    }
+    tick();
+  }
+
   // ── INERT STUBS — real assets not yet supplied, do not fake ────
 
   let cassetteHissWarned = false;
@@ -829,6 +1081,10 @@
       fireDoubleScan,
       fireLedgerPulse,
       fireHexAudit,
+      fireVignettePulse,
+      fireCornerTimestamp,
+      fireFlickerFrame,
+      fireDriftLine,
     ],
     medium: [
       fireColorBleed,
@@ -841,6 +1097,10 @@
       fireRedactionAttempt,
       fireScreenTear,
       fireDocumentShake,
+      fireChannelSwitch,
+      fireAudioWaveform,
+      fireCoordinateGlitch,
+      fireMarginNote,
     ],
     large: [
       fireScramble,
@@ -853,6 +1113,10 @@
       fireFullMeltdown,
       fireSignalDropout,
       fireEndOfBroadcast,
+      fireBlackout,
+      fireCipherOverlay,
+      fireArchiveSeal,
+      fireTransmissionCountdown,
     ],
   };
 

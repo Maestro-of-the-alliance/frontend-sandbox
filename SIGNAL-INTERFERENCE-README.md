@@ -149,6 +149,51 @@ as the signal cutting in and out), **end of broadcast** (the "PLEASE
 STAND BY" full-screen card — genuinely one of the strongest single
 effects across the four old scripts).
 
+## Second expansion — 40 effects (Session 179, same session)
+
+Maestro asked for the pool to be "numerous." The four old scripts were
+by that point fully mined out — every real, already-written effect had
+already been ported — so this batch is genuinely new content, not
+salvage. Built to match the established visual language rather than
+invent a new one: same monospace fonts (`VT323`, `Share Tech Mono`),
+same gold/cyan/red palette, same self-cleaning DOM-element pattern
+every other effect already uses.
+
+**Small (+4, now 12):** vignette pulse (breathing edge-darkening,
+distinct from paperShift's flat wash), corner timestamp (a small
+"● REC hh:mm:ss" readout, archival-surveillance register rather than
+security-protocol register), flicker frame (a near-subliminal single
+brightness dip, the quickest/smallest effect in the whole pool),
+drift line (a faint vertical line crossing the screen horizontally,
+distinct axis from the existing scanline sweep).
+
+**Medium (+4, now 14):** channel switch (a hard black cut plus a
+"CH 07"-style readout, like a physical dial turning), audio waveform
+(a row of animating bars implying signal strength — purely visual, no
+real audio backing it since none exists on these pages), coordinate
+glitch (a corner readout of fake lat/lon plus a short trace hash,
+different format from both encryptionBleed and hexAudit), margin note
+(a small italic annotation — "verified ✓", "cross-ref: OK" — placed
+near a real on-page paragraph/spec value when one exists, distinct
+register from stampFlash's bold bordered stamp).
+
+**Large (+4, now 14):** blackout (an instant hard cut to black and
+back, no fade either direction — more brutal than jammingFreeze's
+brightness/contrast shift), cipher overlay (a full-screen block of
+structured uppercase cipher-looking text that holds and fades once,
+distinct from scramble's continuously re-randomizing noise), archive
+seal (a large ceremonial seal graphic slamming into center with a
+shake — gives an actual visual payoff to the "ARCHIVE SEAL: UNBROKEN"
+line that already existed only as text in the protocol notice pool),
+transmission countdown (a 3-2-1 beat that builds into a blackout — the
+only large effect that builds toward something rather than firing
+immediately).
+
+Verified the same way as before: all 40 effects fire without throwing,
+both immediately and after a window covering every delayed cleanup;
+per-page config overrides still work; all 40 fire cleanly against
+maestro.html's actual real markup, not just a generic stand-in.
+
 ## First live trial: entries/maestro.html (Session 179)
 
 Live as of this session. `randanime_maestro.js` and `ambient-glitch-
