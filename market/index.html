@@ -394,6 +394,27 @@
         text-align: center;
         margin-bottom: 2px;
       }
+      .mkt-item-link {
+        display: none;
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: var(--vwr-text);
+        background: var(--vwr-panel);
+        border: 1px solid var(--vwr-brass);
+        padding: 12px 24px;
+        margin-top: 18px;
+        transition: all 0.2s;
+      }
+      .mkt-item-link.visible {
+        display: inline-block;
+      }
+      .mkt-item-link:hover {
+        background: var(--vwr-brass);
+        color: var(--vwr-bg);
+      }
       .mkt-viewer-controls {
         display: flex;
         align-items: center;
@@ -489,6 +510,7 @@
       <div class="mkt-viewer-title" id="mkt-viewer-title"></div>
       <div class="mkt-viewer-caption" id="mkt-viewer-caption"></div>
       <div class="mkt-swatches" id="mkt-swatches"></div>
+      <a class="mkt-item-link" id="mkt-item-link" href="#"></a>
       <div class="mkt-viewer-controls">
         <button class="mkt-ctrl-btn" id="mkt-prev" aria-label="Previous item">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 4l-9 8 9 8V4z"/></svg>
@@ -592,6 +614,9 @@
             capEl.textContent = "";
             swatchesEl.innerHTML = "";
             countEl.textContent = "";
+            const emptyLinkEl = document.getElementById("mkt-item-link");
+            emptyLinkEl.classList.remove("visible");
+            emptyLinkEl.removeAttribute("href");
             prevBtn.disabled = true;
             nextBtn.disabled = true;
             return;
@@ -627,6 +652,20 @@
               dot.title = c.name;
               swatchesEl.appendChild(dot);
             });
+          }
+
+          // Optional link-out (e.g. a playable demo) -- only shown
+          // when the item actually declares one via its .link.txt
+          // sidecar. Same-tab navigation, matching every other
+          // internal link on the site rather than opening a new tab.
+          const linkEl = document.getElementById("mkt-item-link");
+          if (item.link && item.link.url) {
+            linkEl.textContent = item.link.label || "Play Demo";
+            linkEl.href = item.link.url;
+            linkEl.classList.add("visible");
+          } else {
+            linkEl.classList.remove("visible");
+            linkEl.removeAttribute("href");
           }
 
           prevBtn.disabled = false;

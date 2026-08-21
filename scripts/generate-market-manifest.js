@@ -40,6 +40,13 @@
  * treated as the color actually shown in the photo (gets a ringed
  * swatch in the viewer); every other line is shown as "also available
  * in" with a plain swatch. No sidecar -- no swatches shown at all.
+ *
+ * An item can also link out to something real -- a playable demo, an
+ * external page, whatever -- via a sidecar file named
+ * <image>.link.txt. First line is the URL; an optional second line
+ * is the button label (defaults to "Play Demo" if omitted). The
+ * viewer renders this as a real clickable button under the item, not
+ * just descriptive text. No sidecar -- no button shown at all.
  */
 "use strict";
 
@@ -114,6 +121,26 @@ function readColors(categoryDir, imageFilename) {
   return parsed.map((color, i) => ({ ...color, current: i === 0 }));
 }
 
+function readLink(categoryDir, imageFilename) {
+  const base = imageFilename.slice(0, imageFilename.lastIndexOf("."));
+  const sidecarPath = path.join(categoryDir, base + ".link.txt");
+  if (!fs.existsSync(sidecarPath)) return null;
+  let raw;
+  try {
+    raw = fs.readFileSync(sidecarPath, "utf8");
+  } catch (e) {
+    return null;
+  }
+  const lines = raw
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  if (!lines.length) return null;
+  const url = lines[0];
+  const label = lines[1] || "Play Demo";
+  return { url, label };
+}
+
 function main() {
   if (!fs.existsSync(MARKET_DIR)) {
     console.error(`market-images/ not found at ${MARKET_DIR}`);
@@ -143,11 +170,13 @@ function main() {
       const base = filename.slice(0, filename.lastIndexOf("."));
       const caption = readCaption(categoryDir, filename);
       const colors = readColors(categoryDir, filename);
+      const link = readLink(categoryDir, filename);
       return {
         file: filename,
         title: caption || titleCase(base.replace(/^\d+[-_]?/, "")), // strip a leading ordering number like "01-" from the display title
         caption: null,
         colors,
+        link,
       };
     });
 
