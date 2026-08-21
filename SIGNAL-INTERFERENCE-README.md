@@ -120,7 +120,64 @@ z-index stacking doesn't fight with existing page chrome), real pacing
 feel over an actual multi-minute session, and behavior on an actual
 live page's real DOM (the jsdom test used a minimal stand-in body).
 
-## Open decision for Maestro before any live page changes
+## Effect pools (28 total, consolidated from the four live scripts)
+
+Grown from the initial 18 after Maestro asked to "greatly increase the
+number in the hopper" — the additions are all real, already-tested
+content ported from the old scripts, not invented filler.
+
+**Small (8):** scanline sweep, protocol notice, paper-shift sepia
+breathing, seal-pulse glow, **ink bleed** (thin vertical bleed near a
+random gutter position), **double scan** (two scanline sweeps in quick
+succession), **ledger pulse** (thin perimeter border pulse), **hex
+audit** (protocol notice with a generated hex string instead of a
+fixed line).
+
+**Medium (10):** color bleed, horizontal bar interference + shake,
+stamp flash, entry-word title flicker, integrity sweep, RGB split,
+**encryption bleed** (scrolling hex/code rows), **redaction attempt**
+(a black bar drawn over a real on-page paragraph/spec value, then
+retracted — feature-detects `.section p, .spec-val, .fn-body`, silently
+no-ops if none present), **screen tear** (single sharp tear + body
+kicked sideways and snapping back), **document shake** (several quick
+small translations of the whole body).
+
+**Large (10):** text scramble, frame rip, pirate message flash, pirate
+station ID, suppression warning, lockdown flicker, jamming freeze, full
+meltdown, **signal dropout** (rapid opacity/brightness flicker reading
+as the signal cutting in and out), **end of broadcast** (the "PLEASE
+STAND BY" full-screen card — genuinely one of the strongest single
+effects across the four old scripts).
+
+## First live trial: entries/maestro.html (Session 179)
+
+Live as of this session. `randanime_maestro.js` and `ambient-glitch-
+entries.js` both removed from this one page; `signal-interference.js`
+added in their place with a page-level `SIGNAL_MIX` of `{ small: 0.9,
+medium: 0.6, large: 0.3 }` — an exact 3:2:1 ratio per Maestro's direct
+request ("3 smalls for every large, 2 mediums"), read here as a
+firing-frequency ratio rather than a pool-size ratio, and deliberately
+denser overall than the sitewide default (`0.6/0.3/0.1`) since this is
+meant to feel more active than a typical entry page, not just
+proportioned the same way. Worth flagging: with floors of 3s/6s/12s
+built into the scheduler itself, a literal 3:2:1 *pool size* would look
+different from a 3:2:1 *frequency* — if the felt pacing doesn't match
+what "3 smalls for every large" meant once you actually watch it run,
+that's the knob to adjust, not the effect pools themselves.
+
+Verified before pushing: all 28 effects fire without throwing against
+a DOM stand-in built from maestro.html's own actual selectors (real
+`h1.hero-title`, real `.seal-img` elements, real `.spec-val`/`.fn-body`
+targets) — not just a generic placeholder body. The generic `h1`
+fallback in `fireEntryWordVerify` correctly finds this page's actual
+title, and `fireSealPulse` correctly reaches its real seal images.
+
+**Still not verified:** actual browser rendering on this real page (all
+testing here is jsdom/logic-level, not visual), and real-time pacing
+feel over an actual multi-minute viewing session — that needs your own
+eyes on the live page once Cloudflare Pages deploys this push.
+
+## Open decision for Maestro before any further live page changes
 
 Which page(s) should be the trial run? The brief's own agreed sequence
 says "a small number of pages" before any sitewide swap — that's a

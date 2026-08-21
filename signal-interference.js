@@ -328,6 +328,71 @@
     }, rand(800, 1400));
   }
 
+  function fireInkBleed() {
+    // Ported from randanime_maestro.js. A thin vertical bleed near the
+    // page's own gutter — subtle, easy to miss, which is the point.
+    const bleed = document.createElement("div");
+    bleed.style.cssText = `position:fixed;left:${rand(8, 92)}%;top:${rand(15, 75)}%;width:2px;height:${rand(50, 140)}px;background:linear-gradient(180deg,transparent,rgba(184,134,11,0.85),rgba(184,134,11,0.5),transparent);pointer-events:none;z-index:99989;opacity:0;transition:opacity 0.5s ease;box-shadow:0 0 6px rgba(184,134,11,0.35);`;
+    document.body.appendChild(bleed);
+    requestAnimationFrame(() => {
+      bleed.style.opacity = "1";
+      setTimeout(() => {
+        bleed.style.opacity = "0";
+        setTimeout(() => bleed.remove(), 600);
+      }, rand(1200, 2200));
+    });
+  }
+
+  function fireDoubleScan() {
+    // Ported from ambient-glitch.js — two scanline sweeps in quick
+    // succession rather than one. Kept in small tier since it's built
+    // entirely from the small-tier scanline primitive.
+    fireScanline();
+    setTimeout(fireScanline, 120 + Math.random() * 200);
+  }
+
+  function fireLedgerPulse() {
+    // Ported from randanime_shield.js's ledgerSealPulse — a thin
+    // border pulse around the page perimeter, quiet perimeter
+    // confirmation rather than a full-screen event.
+    const el = document.createElement("div");
+    el.style.cssText = `position:fixed;inset:18px;pointer-events:none;z-index:99977;opacity:0;border:1px solid rgba(212,175,55,0.11);box-shadow:inset 0 0 24px rgba(212,175,55,0.025),0 0 22px rgba(212,175,55,0.045);transition:opacity 0.3s ease,transform 0.3s ease;`;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.opacity = "0.5";
+      el.style.transform = "scale(1)";
+      setTimeout(() => {
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 400);
+      }, rand(900, 1500));
+    });
+  }
+
+  function fireHexAudit() {
+    // Ported from randanime_shield.js — a protocol notice whose text
+    // is a generated hex string rather than a fixed line. Reuses the
+    // same visual as fireProtocolNotice but is its own pool entry
+    // since the content generation is genuinely different.
+    const chars = "0123456789ABCDEF";
+    let hex = "";
+    const len = randInt(8, 16);
+    for (let i = 0; i < len; i++) {
+      if (i > 0 && i % 4 === 0) hex += " ";
+      hex += chars[randInt(0, chars.length - 1)];
+    }
+    const prefix = pick(["AUTH:", "HASH:", "SIG:", "KEY:", "SEAL:"]);
+    const el = document.createElement("div");
+    el.className = "si-protocol-notice cyan";
+    el.textContent = `${prefix} ${hex}`;
+    Object.assign(el.style, cornerPosition());
+    document.body.appendChild(el);
+    setTimeout(() => {
+      el.style.transition = "opacity 0.42s ease";
+      el.style.opacity = "0";
+      setTimeout(() => el.remove(), 520);
+    }, randInt(1800, 3200));
+  }
+
   // ── MEDIUM TIER — clearly visible, moderate frequency ─────────
 
   const BLEED_COLORS = [
@@ -415,6 +480,102 @@
       overlay.style.opacity = "0";
       setTimeout(() => overlay.remove(), 200);
     }, rand(120, 260));
+  }
+
+  function fireEncryptionBleed() {
+    // Ported from randanime_maestro.js — rows of hex/code text
+    // scrolling across a horizontal band, like a log dump caught
+    // mid-scroll.
+    const lines = randInt(2, 5);
+    const container = document.createElement("div");
+    container.style.cssText = `position:fixed;top:${rand(10, 70)}%;left:0;right:0;pointer-events:none;z-index:99989;overflow:hidden;`;
+    const CODE_CHARS = "01{}[]<>/\\|=+-*&^%$#@!?;:.,_~`ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    for (let i = 0; i < lines; i++) {
+      const line = document.createElement("div");
+      const isHex = Math.random() > 0.4;
+      const content = isHex
+        ? `0x${randInt(0, 0xffffffff).toString(16).toUpperCase()} ERR:${randInt(0, 0xffff).toString(16).toUpperCase()}`
+        : Array.from({ length: randInt(28, 55) }, () => CODE_CHARS[randInt(0, CODE_CHARS.length - 1)]).join("");
+      const dur = rand(1800, 3200);
+      line.textContent = content;
+      line.style.cssText = `font-family:'Share Tech Mono',monospace;font-size:${rand(9, 12)}px;color:rgba(184,134,11,${rand(0.28, 0.55)});letter-spacing:0.1em;padding:${rand(1, 3)}px 0;white-space:nowrap;transform:translateX(-110%);`;
+      container.appendChild(line);
+      setTimeout(() => {
+        line.style.transition = `transform ${dur}ms linear`;
+        line.style.transform = "translateX(110%)";
+      }, i * rand(50, 150));
+    }
+    document.body.appendChild(container);
+    setTimeout(() => {
+      container.style.transition = "opacity 0.4s";
+      container.style.opacity = "0";
+      setTimeout(() => container.remove(), 500);
+    }, rand(2500, 3600));
+  }
+
+  function fireRedactionAttempt() {
+    // Ported from randanime_maestro.js — a black bar drawn over a
+    // random real paragraph/spec value already on the page, then
+    // retracted. Feature-detects; quietly no-ops if none present.
+    const targets = document.querySelectorAll(".section p, .spec-val, .fn-body");
+    if (!targets.length) return;
+    const target = targets[randInt(0, targets.length - 1)];
+    const rect = target.getBoundingClientRect();
+    if (!rect.width) return;
+    const bar = document.createElement("div");
+    bar.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top + rand(0, rect.height * 0.6)}px;width:${rect.width * rand(0.25, 0.85)}px;height:${rand(14, 24)}px;background:#000;pointer-events:none;z-index:99988;opacity:0;transition:opacity 0.06s ease;`;
+    document.body.appendChild(bar);
+    requestAnimationFrame(() => {
+      bar.style.opacity = "1";
+      setTimeout(() => {
+        bar.style.transition = "opacity 0.35s ease, transform 0.35s ease";
+        bar.style.opacity = "0";
+        bar.style.transform = "scaleX(0)";
+        setTimeout(() => bar.remove(), 400);
+      }, rand(400, 900));
+    });
+  }
+
+  function fireScreenTear() {
+    // Ported from randanime_maestro.js — a single sharp tear line
+    // with the whole body kicked sideways and snapping back.
+    const tearY = rand(15, 85);
+    const offset = rand(6, 25);
+    const duration = rand(100, 220);
+    const tear = document.createElement("div");
+    tear.style.cssText = `position:fixed;top:${tearY}%;left:0;right:0;height:${rand(1, 5)}px;background:rgba(255,255,255,0.98);pointer-events:none;z-index:99989;box-shadow:0 0 0 1px rgba(184,134,11,0.2);`;
+    document.body.appendChild(tear);
+    document.body.style.transition = "none";
+    document.body.style.transform = `translateX(${offset}px)`;
+    setTimeout(() => {
+      document.body.style.transition = `transform ${duration}ms ease`;
+      document.body.style.transform = "translateX(0)";
+      tear.style.transition = "opacity 0.1s";
+      tear.style.opacity = "0";
+      setTimeout(() => {
+        tear.remove();
+        document.body.style.transition = "";
+      }, duration + 150);
+    }, rand(80, 160));
+  }
+
+  function fireDocumentShake() {
+    // Ported from randanime_maestro.js — several quick small
+    // translations in sequence, distinct from fireHBar's shake since
+    // this moves the whole body, not just a page-shell wrapper.
+    const shakes = randInt(4, 7);
+    let count = 0;
+    const shake = () => {
+      if (count >= shakes) {
+        document.body.style.transform = "";
+        return;
+      }
+      document.body.style.transition = "none";
+      document.body.style.transform = `translate(${rand(-4, 4)}px,${rand(-2, 2)}px)`;
+      count++;
+      setTimeout(shake, rand(28, 60));
+    };
+    shake();
   }
 
   // ── LARGE TIER — rare, dramatic, the actual show ───────────────
@@ -580,6 +741,61 @@
     }, 800);
   }
 
+  function fireSignalDropout() {
+    // Ported from randanime_maestro.js — rapid opacity/brightness
+    // flicker on the whole body, distinct from lockdown's steady red
+    // wash. Reads as the signal itself cutting in and out.
+    const flickers = randInt(3, 6);
+    let count = 0;
+    const flick = () => {
+      if (count >= flickers) {
+        document.body.style.opacity = "1";
+        document.body.style.filter = "";
+        return;
+      }
+      const isOut = count % 2 === 0;
+      document.body.style.transition = "none";
+      document.body.style.opacity = isOut ? String(rand(0.1, 0.4)) : "1";
+      document.body.style.filter = isOut
+        ? `brightness(${rand(1.5, 2.5)}) contrast(${rand(0.5, 1.3)})`
+        : "";
+      count++;
+      setTimeout(flick, rand(40, 100));
+    };
+    flick();
+  }
+
+  function fireEndOfBroadcast() {
+    // Ported from ambient-glitch.js — "the main event." A full-screen
+    // PLEASE STAND BY card, genuinely one of the strongest single
+    // effects across the four old scripts per the 178 brief's own
+    // read on it. Builds and reuses its own card across firings
+    // rather than recreating the DOM every time.
+    let psb = document.getElementById("si-psb");
+    if (!psb) {
+      psb = document.createElement("div");
+      psb.id = "si-psb";
+      psb.style.cssText = `position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99997;opacity:0;pointer-events:none;font-family:'VT323',monospace;transition:opacity 0.08s;`;
+      psb.innerHTML = `
+        <div style="color:#d4af37;font-size:clamp(11px,2vw,15px);letter-spacing:0.4em;margin-bottom:1.2em;opacity:0.7;">CHANNEL 7 · BROADCAST NETWORK</div>
+        <div style="color:#d4af37;font-size:clamp(28px,7vw,64px);letter-spacing:0.25em;text-align:center;line-height:1.1;">PLEASE<br>STAND BY</div>
+        <div style="color:#d4af37;font-size:clamp(10px,1.8vw,14px);letter-spacing:0.5em;margin-top:1.4em;opacity:0.6;">CHANNEL 7 WILL RETURN SHORTLY</div>
+      `;
+      document.body.appendChild(psb);
+    }
+    fireStatic(0.9);
+    setTimeout(() => {
+      psb.style.opacity = "1";
+      const holdTime = 1800 + Math.random() * 1200;
+      setTimeout(() => {
+        fireStatic(0.9);
+        setTimeout(() => {
+          psb.style.opacity = "0";
+        }, 200);
+      }, holdTime);
+    }, 150);
+  }
+
   // ── INERT STUBS — real assets not yet supplied, do not fake ────
 
   let cassetteHissWarned = false;
@@ -604,7 +820,16 @@
   // ── TIER POOLS ──────────────────────────────────────────────────
 
   const POOLS = {
-    small: [fireScanline, fireProtocolNotice, firePaperShift, fireSealPulse],
+    small: [
+      fireScanline,
+      fireProtocolNotice,
+      firePaperShift,
+      fireSealPulse,
+      fireInkBleed,
+      fireDoubleScan,
+      fireLedgerPulse,
+      fireHexAudit,
+    ],
     medium: [
       fireColorBleed,
       fireHBar,
@@ -612,6 +837,10 @@
       fireEntryWordVerify,
       fireIntegritySweep,
       fireRGBSplit,
+      fireEncryptionBleed,
+      fireRedactionAttempt,
+      fireScreenTear,
+      fireDocumentShake,
     ],
     large: [
       fireScramble,
@@ -622,6 +851,8 @@
       fireLockdownFlicker,
       fireJammingFreeze,
       fireFullMeltdown,
+      fireSignalDropout,
+      fireEndOfBroadcast,
     ],
   };
 
