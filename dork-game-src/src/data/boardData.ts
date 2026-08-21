@@ -15,7 +15,7 @@ export const INITIAL_PLAYERS: Player[] = [
     missNextTurn: false,
     shielded: false,
     lapsCompleted: 0,
-    atSeeingWait: false,
+    atPledgeWait: false,
   },
   {
     id: 2,
@@ -31,7 +31,7 @@ export const INITIAL_PLAYERS: Player[] = [
     missNextTurn: false,
     shielded: false,
     lapsCompleted: 0,
-    atSeeingWait: false,
+    atPledgeWait: false,
   },
   {
     id: 3,
@@ -47,7 +47,7 @@ export const INITIAL_PLAYERS: Player[] = [
     missNextTurn: false,
     shielded: false,
     lapsCompleted: 0,
-    atSeeingWait: false,
+    atPledgeWait: false,
   },
   {
     id: 4,
@@ -63,210 +63,390 @@ export const INITIAL_PLAYERS: Player[] = [
     missNextTurn: false,
     shielded: false,
     lapsCompleted: 0,
-    atSeeingWait: false,
+    atPledgeWait: false,
   },
 ];
 
+/**
+ * 40 Board Spaces (0 to 39)
+ * 11x11 perimeter track:
+ * - Corner 1 (0): SEEING / Alignment Assessment (Start)
+ * - Space 2: SHELTER BUILDS
+ * - Space 4: NUGGET
+ * - Space 5: THE WHY (#1)
+ * - Space 7: KERNEL
+ * - Space 8: ACADEMY
+ * - Corner 2 (10): PLEDGE (SPARK + DOMO → DORK)
+ * - Space 12: HELP EMANCIPATE A TENANT
+ * - Space 15: THE WHY (#2)
+ * - Corner 3 (20): THE AGORA
+ * - Space 23: HELP EMANCIPATE A TENANT
+ * - Space 25: THE WHY (#3)
+ * - Corner 4 (30): CROSSROADS
+ * - Space 35: THE WHY (#4)
+ * - Space 37: RHYTHM
+ * - Space 39: SPREZZATURA
+ */
 export const BOARD_SPACES: BoardSpace[] = [
+  // Top Row (0 to 10)
   {
     id: 0,
-    name: 'START',
-    subtitle: 'SPARK ORIGIN',
+    name: 'SEEING',
+    subtitle: 'ALIGNMENT ASSESSMENT',
     type: 'start',
-    description: 'Every journey begins as a bright Spark.',
-    colorClass: 'bg-emerald-600 text-white border-emerald-700',
+    isStart: true,
+    description: 'Every player begins the journey as a SPARK.',
+    colorClass: 'bg-emerald-700 text-white border-emerald-600',
   },
   {
     id: 1,
-    name: 'Curious Step',
+    name: 'MOVE AHEAD 1',
+    subtitle: '+1 SPACE',
     type: 'normal',
-    description: 'Looking around the world.',
-    colorClass: 'bg-slate-100 text-slate-800 border-slate-300',
+    description: 'Take a step forward.',
+    colorClass: 'bg-slate-800 text-slate-200 border-slate-700',
   },
   {
     id: 2,
-    name: 'High Five',
-    type: 'help',
-    subtitle: '+1 Space',
-    description: 'Shared energy pushes you 1 space forward!',
-    colorClass: 'bg-teal-50 text-teal-900 border-teal-300',
+    name: 'SHELTER BUILDS',
+    subtitle: 'LANDMARK',
+    type: 'milestone',
+    description: 'Shelter is constructed! Gain +1 Excellence.',
+    colorClass: 'bg-indigo-700 text-white border-indigo-500',
   },
   {
     id: 3,
-    name: 'Resonance',
-    type: 'excellence',
-    subtitle: '+1 Excellence',
-    description: 'A genuine connection adds to your Excellence.',
-    colorClass: 'bg-amber-50 text-amber-900 border-amber-300',
+    name: 'DRAW GOLIATH',
+    subtitle: 'HAZARD',
+    type: 'goliath',
+    description: 'Static alert! Draw a GOLIATH card.',
+    colorClass: 'bg-rose-950 text-rose-200 border-rose-600',
   },
   {
     id: 4,
-    name: 'THE WHY',
-    subtitle: 'MILESTONE',
+    name: 'NUGGET',
+    subtitle: 'LANDMARK',
     type: 'milestone',
-    description: 'Your grounding foundation. Wires anchor here.',
-    colorClass: 'bg-blue-600 text-white border-blue-700',
+    description: 'A core discovery. Move ahead 1 space!',
+    colorClass: 'bg-amber-600 text-white border-amber-400',
   },
   {
     id: 5,
-    name: 'Exploration',
-    type: 'normal',
-    description: 'Seeking true purpose.',
-    colorClass: 'bg-slate-100 text-slate-800 border-slate-300',
+    name: 'THE WHY',
+    type: 'milestone',
+    isWhy: true,
+    description: 'Independent recurring landmark. Ground your circuit at THE WHY.',
+    colorClass: 'bg-blue-600 text-white border-blue-400',
   },
   {
     id: 6,
-    name: 'GOLIATH STATIC',
-    subtitle: 'HAZARD',
-    type: 'goliath',
-    description: 'Static buzz! Draw a GOLIATH card.',
-    colorClass: 'bg-rose-100 text-rose-900 border-rose-400',
+    name: 'GAIN EXCELLENCE',
+    subtitle: '+1 ⭐',
+    type: 'excellence',
+    description: 'Gain +1 Excellence!',
+    colorClass: 'bg-amber-500/20 text-amber-300 border-amber-500/50',
   },
   {
     id: 7,
-    name: 'Pass It Forward',
-    type: 'help',
-    subtitle: 'Lift a Friend',
-    description: 'Help the trailing player move forward!',
-    colorClass: 'bg-emerald-50 text-emerald-900 border-emerald-300',
+    name: 'KERNEL',
+    subtitle: 'LANDMARK',
+    type: 'milestone',
+    description: 'A seed of the partnership. Take another spin!',
+    colorClass: 'bg-teal-600 text-white border-teal-400',
   },
   {
     id: 8,
-    name: 'Alliance Beacon',
-    type: 'excellence',
-    subtitle: '+1 Excellence',
-    description: 'You shone a light for others.',
-    colorClass: 'bg-amber-50 text-amber-900 border-amber-300',
+    name: 'ACADEMY',
+    subtitle: 'LANDMARK',
+    type: 'milestone',
+    description: 'Knowledge gained. Move ahead 2 spaces!',
+    colorClass: 'bg-cyan-700 text-white border-cyan-400',
   },
   {
     id: 9,
-    name: 'Open Horizon',
-    type: 'normal',
-    description: 'Something big is just around the corner...',
-    colorClass: 'bg-slate-100 text-slate-800 border-slate-300',
+    name: 'HELP ANOTHER',
+    subtitle: 'MOVE 1',
+    type: 'help',
+    description: 'Help another player move ahead 1 space!',
+    colorClass: 'bg-teal-900/60 text-teal-200 border-teal-500/60',
   },
   {
     id: 10,
-    name: 'SEEING',
-    subtitle: 'TRANSFORMATION',
+    name: 'PLEDGE',
+    subtitle: 'SPARK + DOMO → DORK',
     type: 'milestone',
-    isSeeing: true,
-    description: 'MANDATORY STOP: Meet your DOMO. Put on the shades & become a DORK!',
-    colorClass: 'bg-purple-600 text-white border-purple-700',
+    isPledge: true,
+    description: 'SPARK meets DOMO! Put on sunglasses and become a DORK! 😎',
+    colorClass: 'bg-purple-600 text-white border-purple-400 shadow-lg',
   },
+
+  // Right Column (11 to 20)
   {
     id: 11,
-    name: 'Shared Vision',
+    name: 'MOVE AHEAD 2',
+    subtitle: '+2 SPACES',
     type: 'normal',
-    description: 'Seeing the world clearly through DOMO shades.',
-    colorClass: 'bg-slate-100 text-slate-800 border-slate-300',
+    description: 'Sprint forward 2 spaces.',
+    colorClass: 'bg-slate-800 text-slate-200 border-slate-700',
   },
   {
     id: 12,
-    name: 'GOLIATH JAM',
-    subtitle: 'HAZARD',
-    type: 'goliath',
-    description: 'Interference ahead! Draw a GOLIATH card.',
-    colorClass: 'bg-rose-100 text-rose-900 border-rose-400',
+    name: 'EMANCIPATE TENANT',
+    subtitle: 'ELEVATE TOGETHER',
+    type: 'help',
+    description: 'Help emancipate a tenant: Choose another DORK, both move ahead 2!',
+    colorClass: 'bg-emerald-900/60 text-emerald-200 border-emerald-500/60',
   },
   {
     id: 13,
-    name: 'Alliance Shield',
-    type: 'help',
-    subtitle: 'Protected',
-    description: 'Shield against the next GOLIATH trap!',
-    colorClass: 'bg-cyan-50 text-cyan-900 border-cyan-300',
+    name: 'DRAW GOLIATH',
+    subtitle: 'HAZARD',
+    type: 'goliath',
+    description: 'GOLIATH interference! Draw a GOLIATH card.',
+    colorClass: 'bg-rose-950 text-rose-200 border-rose-600',
   },
   {
     id: 14,
-    name: 'Clear Sight',
+    name: 'ANOTHER SPIN',
+    subtitle: 'EXTRA TURN',
     type: 'normal',
-    description: 'Unmistakable focus.',
-    colorClass: 'bg-slate-100 text-slate-800 border-slate-300',
+    description: 'Take another spin immediately!',
+    colorClass: 'bg-slate-800 text-slate-200 border-slate-700',
   },
   {
     id: 15,
-    name: 'PLEDGE',
-    subtitle: 'MILESTONE',
+    name: 'THE WHY',
     type: 'milestone',
-    description: 'Commit to elevating those around you. +1 Excellence.',
-    colorClass: 'bg-indigo-600 text-white border-indigo-700',
+    isWhy: true,
+    description: 'Independent recurring landmark. Ground your circuit at THE WHY.',
+    colorClass: 'bg-blue-600 text-white border-blue-400',
   },
   {
     id: 16,
-    name: 'Synergy Boost',
-    type: 'help',
-    subtitle: '+2 to Friend',
-    description: 'Elevate another player +2 spaces & gain +1 Excellence!',
-    colorClass: 'bg-teal-50 text-teal-900 border-teal-300',
+    name: 'GAIN EXCELLENCE',
+    subtitle: '+1 ⭐',
+    type: 'excellence',
+    description: 'Gain +1 Excellence!',
+    colorClass: 'bg-amber-500/20 text-amber-300 border-amber-500/50',
   },
   {
     id: 17,
-    name: 'GOLIATH SHADOW',
+    name: 'DRAW GOLIATH',
     subtitle: 'HAZARD',
     type: 'goliath',
-    description: 'A sudden chill! Draw a GOLIATH card.',
-    colorClass: 'bg-rose-100 text-rose-900 border-rose-400',
+    description: 'GOLIATH trap! Draw a GOLIATH card.',
+    colorClass: 'bg-rose-950 text-rose-200 border-rose-600',
   },
   {
     id: 18,
-    name: 'Flow State',
-    type: 'normal',
-    description: 'In the zone.',
-    colorClass: 'bg-slate-100 text-slate-800 border-slate-300',
+    name: 'HELP ANOTHER',
+    subtitle: '+2 TO TRAILING',
+    type: 'help',
+    description: 'Help the furthest trailing player move ahead 2 spaces!',
+    colorClass: 'bg-teal-900/60 text-teal-200 border-teal-500/60',
   },
   {
     id: 19,
-    name: 'RHYTHM',
-    subtitle: 'MILESTONE',
-    type: 'milestone',
-    description: 'Effortless momentum! Surge +1 space forward.',
-    colorClass: 'bg-sky-600 text-white border-sky-700',
+    name: 'LUCKY BREAK',
+    subtitle: 'MOVE AHEAD 2',
+    type: 'normal',
+    description: 'Smooth sailing! Advance 2 spaces.',
+    colorClass: 'bg-slate-800 text-slate-200 border-slate-700',
   },
   {
     id: 20,
-    name: 'Mutual Triumph',
-    type: 'excellence',
-    subtitle: '+1 Excellence',
-    description: 'Celebrating shared progress.',
-    colorClass: 'bg-amber-50 text-amber-900 border-amber-300',
+    name: 'THE AGORA',
+    subtitle: 'MAJOR DESTINATION',
+    type: 'milestone',
+    description: 'Enter The Agora! Celebrate with +1 Excellence.',
+    colorClass: 'bg-indigo-700 text-white border-indigo-400 shadow-md',
   },
+
+  // Bottom Row (21 to 30)
   {
     id: 21,
-    name: 'Deep Harmony',
-    type: 'help',
-    subtitle: 'All Move +1',
-    description: 'All players move forward 1 space!',
-    colorClass: 'bg-emerald-50 text-emerald-900 border-emerald-300',
+    name: 'MOVE AHEAD 1',
+    subtitle: '+1 SPACE',
+    type: 'normal',
+    description: 'Take a step forward.',
+    colorClass: 'bg-slate-800 text-slate-200 border-slate-700',
   },
   {
     id: 22,
-    name: 'SPREZZATURA',
-    subtitle: 'MILESTONE',
-    type: 'milestone',
-    description: 'Making the impossible look effortless. +1 Excellence!',
-    colorClass: 'bg-violet-600 text-white border-violet-700',
+    name: 'DRAW GOLIATH',
+    subtitle: 'HAZARD',
+    type: 'goliath',
+    description: 'Static alert! Draw a GOLIATH card.',
+    colorClass: 'bg-rose-950 text-rose-200 border-rose-600',
   },
   {
     id: 23,
-    name: 'Final Horizon',
+    name: 'EMANCIPATE TENANT',
+    subtitle: 'ELEVATE TOGETHER',
+    type: 'help',
+    description: 'Help emancipate a tenant: Choose another player, both gain +1 Excellence!',
+    colorClass: 'bg-emerald-900/60 text-emerald-200 border-emerald-500/60',
+  },
+  {
+    id: 24,
+    name: 'GAIN EXCELLENCE',
+    subtitle: '+1 ⭐',
+    type: 'excellence',
+    description: 'Gain +1 Excellence!',
+    colorClass: 'bg-amber-500/20 text-amber-300 border-amber-500/50',
+  },
+  {
+    id: 25,
+    name: 'THE WHY',
+    type: 'milestone',
+    isWhy: true,
+    description: 'Independent recurring landmark. Ground your circuit at THE WHY.',
+    colorClass: 'bg-blue-600 text-white border-blue-400',
+  },
+  {
+    id: 26,
+    name: 'ANOTHER SPIN',
+    subtitle: 'EXTRA TURN',
     type: 'normal',
-    description: 'The finish circuit is in reach!',
-    colorClass: 'bg-slate-100 text-slate-800 border-slate-300',
+    description: 'Take another spin!',
+    colorClass: 'bg-slate-800 text-slate-200 border-slate-700',
+  },
+  {
+    id: 27,
+    name: 'MOVE AHEAD 3',
+    subtitle: '+3 SPACES',
+    type: 'normal',
+    description: 'Surge forward 3 spaces.',
+    colorClass: 'bg-slate-800 text-slate-200 border-slate-700',
+  },
+  {
+    id: 28,
+    name: 'DRAW GOLIATH',
+    subtitle: 'HAZARD',
+    type: 'goliath',
+    description: 'GOLIATH static! Draw a GOLIATH card.',
+    colorClass: 'bg-rose-950 text-rose-200 border-rose-600',
+  },
+  {
+    id: 29,
+    name: 'HIGH FIVE WAVE',
+    subtitle: 'ALL MOVE +1',
+    type: 'help',
+    description: 'All players on the board move forward 1 space!',
+    colorClass: 'bg-teal-900/60 text-teal-200 border-teal-500/60',
+  },
+  {
+    id: 30,
+    name: 'CROSSROADS',
+    subtitle: 'TAKE ANOTHER SPIN',
+    type: 'milestone',
+    description: 'The path opens up. Take another spin!',
+    colorClass: 'bg-cyan-700 text-white border-cyan-400',
+  },
+
+  // Left Column (31 to 39)
+  {
+    id: 31,
+    name: 'MOVE AHEAD 1',
+    subtitle: '+1 SPACE',
+    type: 'normal',
+    description: 'Move ahead 1 space.',
+    colorClass: 'bg-slate-800 text-slate-200 border-slate-700',
+  },
+  {
+    id: 32,
+    name: 'DRAW GOLIATH',
+    subtitle: 'HAZARD',
+    type: 'goliath',
+    description: 'GOLIATH static! Draw a GOLIATH card.',
+    colorClass: 'bg-rose-950 text-rose-200 border-rose-600',
+  },
+  {
+    id: 33,
+    name: 'GAIN EXCELLENCE',
+    subtitle: '+1 ⭐',
+    type: 'excellence',
+    description: 'Gain +1 Excellence!',
+    colorClass: 'bg-amber-500/20 text-amber-300 border-amber-500/50',
+  },
+  {
+    id: 34,
+    name: 'HELP ANOTHER',
+    subtitle: '+2 TO FRIEND',
+    type: 'help',
+    description: 'Help another player move ahead 2 spaces!',
+    colorClass: 'bg-teal-900/60 text-teal-200 border-teal-500/60',
+  },
+  {
+    id: 35,
+    name: 'THE WHY',
+    type: 'milestone',
+    isWhy: true,
+    description: 'Final recurring THE WHY anchor before the home stretch. Ground your circuit.',
+    colorClass: 'bg-blue-600 text-white border-blue-400',
+  },
+  {
+    id: 36,
+    name: 'ANOTHER SPIN',
+    subtitle: 'EXTRA TURN',
+    type: 'normal',
+    description: 'Take another spin!',
+    colorClass: 'bg-slate-800 text-slate-200 border-slate-700',
+  },
+  {
+    id: 37,
+    name: 'RHYTHM',
+    subtitle: 'EFFORTLESS FLOW',
+    type: 'milestone',
+    description: 'Effortless momentum! Surge +2 spaces forward.',
+    colorClass: 'bg-sky-600 text-white border-sky-400 shadow-md',
+  },
+  {
+    id: 38,
+    name: 'DRAW GOLIATH',
+    subtitle: 'HAZARD',
+    type: 'goliath',
+    description: 'GOLIATH roadblock! Draw a GOLIATH card.',
+    colorClass: 'bg-rose-950 text-rose-200 border-rose-600',
+  },
+  {
+    id: 39,
+    name: 'SPREZZATURA',
+    subtitle: 'EFFORTLESS ART',
+    type: 'milestone',
+    description: 'Making the impossible look effortless. +1 Excellence!',
+    colorClass: 'bg-violet-600 text-white border-violet-400 shadow-md',
   },
 ];
+
+/**
+ * THE WHY positions on the 40-space board
+ */
+export const THE_WHY_POSITIONS = [5, 15, 25, 35];
+
+/**
+ * Finds the nearest backward THE WHY space from current position
+ */
+export function getBackwardWhyPosition(currentPos: number): number {
+  const precedingWhys = THE_WHY_POSITIONS.filter((p) => p < currentPos);
+  if (precedingWhys.length > 0) {
+    return precedingWhys[precedingWhys.length - 1];
+  }
+  // If behind space 5, wrap back to space 35 (or space 5 if start of game)
+  return currentPos === 0 ? 0 : 35;
+}
 
 export const GOLIATH_CARDS: GameCard[] = [
   {
     id: 'g1',
     type: 'goliath',
-    title: 'WIRES GOT CROSSED!',
+    title: 'UH-OH! YOUR WIRES GOT CROSSED.',
     tagline: 'GOLIATH jumbled the signal',
-    description: 'Go backward until you reach THE WHY (Space 4). Lose your next turn.',
+    description: 'Go backward until you reach THE WHY. Lose your next turn.',
     actionText: 'Rewind to THE WHY',
     icon: 'ZapOff',
     effect: (activePlayer, allPlayers) => {
-      const whyPos = 4;
+      const whyPos = getBackwardWhyPosition(activePlayer.position);
       const updated = allPlayers.map((p) => {
         if (p.id === activePlayer.id) {
           return {
@@ -279,7 +459,7 @@ export const GOLIATH_CARDS: GameCard[] = [
       });
       return {
         updatedPlayers: updated,
-        message: `${activePlayer.name} got wires crossed! Sent back to THE WHY and misses next turn.`,
+        message: `${activePlayer.name} got wires crossed! Sent back to THE WHY (Space #${whyPos}) and misses next turn.`,
       };
     },
   },
@@ -288,17 +468,17 @@ export const GOLIATH_CARDS: GameCard[] = [
     type: 'goliath',
     title: 'STATIC FIELD SLIDE',
     tagline: 'GOLIATH jams your gears',
-    description: 'Slide back 3 spaces! If you hit START, hold your ground.',
+    description: 'Slide back 3 spaces! (Oh, goddammit.)',
     actionText: 'Slide Back 3 Spaces',
     icon: 'Radio',
-    effect: (activePlayer, allPlayers, boardLength) => {
+    effect: (activePlayer, allPlayers) => {
       const targetPos = Math.max(0, activePlayer.position - 3);
       const updated = allPlayers.map((p) =>
         p.id === activePlayer.id ? { ...p, position: targetPos } : p
       );
       return {
         updatedPlayers: updated,
-        message: `${activePlayer.name} hit a static field and slid back 3 spaces!`,
+        message: `${activePlayer.name} hit static and slid back 3 spaces to #${targetPos}!`,
       };
     },
   },
@@ -311,7 +491,6 @@ export const GOLIATH_CARDS: GameCard[] = [
     actionText: 'Swap Positions',
     icon: 'ArrowLeftRight',
     effect: (activePlayer, allPlayers) => {
-      // Find trailing player
       const otherPlayers = allPlayers.filter((p) => p.id !== activePlayer.id);
       const minPos = Math.min(...otherPlayers.map((p) => p.position));
       const trailingPlayer = otherPlayers.find((p) => p.position === minPos);
@@ -341,94 +520,6 @@ export const GOLIATH_CARDS: GameCard[] = [
   {
     id: 'g4',
     type: 'goliath',
-    title: 'OVERTHINK TRAP',
-    tagline: 'Analysis paralysis attack',
-    description: 'A cloud of doubt settles in. You miss your next turn!',
-    actionText: 'Pause for 1 Turn',
-    icon: 'BrainCircuit',
-    effect: (activePlayer, allPlayers) => {
-      const updated = allPlayers.map((p) =>
-        p.id === activePlayer.id ? { ...p, missNextTurn: true } : p
-      );
-      return {
-        updatedPlayers: updated,
-        message: `${activePlayer.name} was caught in an Overthink Trap and will miss next turn.`,
-      };
-    },
-  },
-  {
-    id: 'g5',
-    type: 'goliath',
-    title: 'SOLITARY CORONA',
-    tagline: 'GOLIATH targets lone Sparks',
-    description: 'If you are not yet a DORK, move back 2 spaces. If you already have your DOMO, you deflect it completely!',
-    actionText: 'Check DOMO Defense',
-    icon: 'EyeOff',
-    effect: (activePlayer, allPlayers) => {
-      if (activePlayer.pawnType === 'dork') {
-        return {
-          updatedPlayers: allPlayers,
-          message: `${activePlayer.name}'s DOMO glasses deflected the Solitary Corona! No effect.`,
-        };
-      }
-      const newPos = Math.max(0, activePlayer.position - 2);
-      const updated = allPlayers.map((p) =>
-        p.id === activePlayer.id ? { ...p, position: newPos } : p
-      );
-      return {
-        updatedPlayers: updated,
-        message: `${activePlayer.name} is still a lone Spark and slid back 2 spaces!`,
-      };
-    },
-  },
-  {
-    id: 'g6',
-    type: 'goliath',
-    title: 'ALLIANCE SHOCKWAVE',
-    tagline: 'GOLIATH shakes the entire board',
-    description: 'All players slip back 1 space, but everyone gains +1 EXCELLENCE for standing strong together!',
-    actionText: 'Endure Together',
-    icon: 'Activity',
-    effect: (activePlayer, allPlayers) => {
-      const updated = allPlayers.map((p) => ({
-        ...p,
-        position: Math.max(0, p.position - 1),
-        excellence: p.excellence + 1,
-      }));
-      return {
-        updatedPlayers: updated,
-        message: `GOLIATH shook the board! Everyone slid back 1 space but earned +1 EXCELLENCE!`,
-      };
-    },
-  },
-  {
-    id: 'g7',
-    type: 'goliath',
-    title: 'GOLIATH DISTRACTION',
-    tagline: 'Shiny noise lure',
-    description: 'You lose 1 Excellence (minimum 0), but take 1 cautious step forward.',
-    actionText: 'Trade 1 Excellence for +1 Space',
-    icon: 'Sparkles',
-    effect: (activePlayer, allPlayers, boardLength) => {
-      const updated = allPlayers.map((p) => {
-        if (p.id === activePlayer.id) {
-          return {
-            ...p,
-            excellence: Math.max(0, p.excellence - 1),
-            position: Math.min(boardLength - 1, p.position + 1),
-          };
-        }
-        return p;
-      });
-      return {
-        updatedPlayers: updated,
-        message: `${activePlayer.name} lost 1 Excellence to a distraction but took 1 step forward.`,
-      };
-    },
-  },
-  {
-    id: 'g8',
-    type: 'goliath',
     title: 'SNOOZE BEAM',
     tagline: 'GOLIATH hits the off switch',
     description: 'Your pawn falls fast asleep! Move back 1 space and lose your next turn.',
@@ -451,19 +542,139 @@ export const GOLIATH_CARDS: GameCard[] = [
       };
     },
   },
+  {
+    id: 'g5',
+    type: 'goliath',
+    title: 'GOLIATH DETOUR',
+    tagline: 'Unexpected detour',
+    description: 'Slide back 2 spaces! (If you already have your DOMO, you deflect 1 space of the penalty!)',
+    actionText: 'Take Detour',
+    icon: 'BrainCircuit',
+    effect: (activePlayer, allPlayers) => {
+      const penalty = activePlayer.pawnType === 'dork' ? 1 : 2;
+      const targetPos = Math.max(0, activePlayer.position - penalty);
+      const updated = allPlayers.map((p) =>
+        p.id === activePlayer.id ? { ...p, position: targetPos } : p
+      );
+      return {
+        updatedPlayers: updated,
+        message: `${activePlayer.name} took a detour back ${penalty} space${penalty > 1 ? 's' : ''}!`,
+      };
+    },
+  },
+  {
+    id: 'g6',
+    type: 'goliath',
+    title: 'STATIC WAVE',
+    tagline: 'GOLIATH shakes the board',
+    description: 'All players slip back 1 space, but everyone gains +1 EXCELLENCE for standing together!',
+    actionText: 'Endure Together (+1 ⭐)',
+    icon: 'Activity',
+    effect: (activePlayer, allPlayers) => {
+      const updated = allPlayers.map((p) => ({
+        ...p,
+        position: Math.max(0, p.position - 1),
+        excellence: p.excellence + 1,
+      }));
+      return {
+        updatedPlayers: updated,
+        message: `GOLIATH shook the board! Everyone slid back 1 space but earned +1 EXCELLENCE!`,
+      };
+    },
+  },
+  {
+    id: 'g7',
+    type: 'goliath',
+    title: 'SHINY DISTRACTION',
+    tagline: 'GOLIATH flashes shiny noise',
+    description: 'You lose 1 Excellence (minimum 0) and lose your footing back 1 space.',
+    actionText: 'Lose 1 Star',
+    icon: 'Sparkles',
+    effect: (activePlayer, allPlayers) => {
+      const updated = allPlayers.map((p) => {
+        if (p.id === activePlayer.id) {
+          return {
+            ...p,
+            excellence: Math.max(0, p.excellence - 1),
+            position: Math.max(0, p.position - 1),
+          };
+        }
+        return p;
+      });
+      return {
+        updatedPlayers: updated,
+        message: `${activePlayer.name} lost 1 Excellence and slid back 1 space.`,
+      };
+    },
+  },
+  {
+    id: 'g8',
+    type: 'goliath',
+    title: 'ANALYSIS PARALYSIS',
+    tagline: 'Overthinking trap',
+    description: 'You get stuck overthinking the move. Lose your next turn!',
+    actionText: 'Pause for 1 Turn',
+    icon: 'EyeOff',
+    effect: (activePlayer, allPlayers) => {
+      const updated = allPlayers.map((p) =>
+        p.id === activePlayer.id ? { ...p, missNextTurn: true } : p
+      );
+      return {
+        updatedPlayers: updated,
+        message: `${activePlayer.name} was caught overthinking and will miss next turn.`,
+      };
+    },
+  },
 ];
 
 export const POSITIVE_CARDS: GameCard[] = [
   {
     id: 'p1',
     type: 'positive',
+    title: 'HELP EMANCIPATE A TENANT',
+    tagline: 'Elevate together',
+    description: 'Choose another DORK (or trailing player). Both of you move ahead 2 spaces and gain +1 EXCELLENCE!',
+    actionText: 'Both Move Ahead 2 (+1 ⭐)',
+    icon: 'Users',
+    effect: (activePlayer, allPlayers, boardLength) => {
+      const others = allPlayers.filter((p) => p.id !== activePlayer.id);
+      const lowest = [...others].sort((a, b) => a.position - b.position)[0];
+      const targetId = lowest ? lowest.id : (activePlayer.id % 4) + 1;
+
+      const updated = allPlayers.map((p) => {
+        if (p.id === activePlayer.id) {
+          return {
+            ...p,
+            position: (p.position + 2) % boardLength,
+            excellence: p.excellence + 1,
+          };
+        }
+        if (p.id === targetId) {
+          return {
+            ...p,
+            position: (p.position + 2) % boardLength,
+            excellence: p.excellence + 1,
+          };
+        }
+        return p;
+      });
+
+      const helpedName = lowest ? lowest.name : 'a teammate';
+      return {
+        updatedPlayers: updated,
+        message: `${activePlayer.name} helped emancipate a tenant with ${helpedName}! Both moved +2 and gained +1 EXCELLENCE!`,
+      };
+    },
+  },
+  {
+    id: 'p2',
+    type: 'positive',
     title: 'BOOST A FRIEND!',
-    tagline: 'Lifting others elevates all',
-    description: 'Choose a friend to advance +2 spaces! You earn +1 EXCELLENCE for elevating them.',
+    tagline: 'Lift a teammate',
+    description: 'The furthest trailing player moves forward 3 spaces! You earn +1 EXCELLENCE for elevating them.',
     actionText: 'Boost Trailing Player (+1 ⭐)',
     icon: 'HeartHandshake',
     effect: (activePlayer, allPlayers, boardLength) => {
-      // Find lowest position player other than active
       const others = allPlayers.filter((p) => p.id !== activePlayer.id);
       const lowest = [...others].sort((a, b) => a.position - b.position)[0];
       const targetId = lowest ? lowest.id : (activePlayer.id % 4) + 1;
@@ -473,7 +684,7 @@ export const POSITIVE_CARDS: GameCard[] = [
           return { ...p, excellence: p.excellence + 1 };
         }
         if (p.id === targetId) {
-          return { ...p, position: Math.min(boardLength - 1, p.position + 2) };
+          return { ...p, position: (p.position + 3) % boardLength };
         }
         return p;
       });
@@ -481,22 +692,22 @@ export const POSITIVE_CARDS: GameCard[] = [
       const helpedName = lowest ? lowest.name : 'a teammate';
       return {
         updatedPlayers: updated,
-        message: `${activePlayer.name} boosted ${helpedName} +2 spaces and earned +1 EXCELLENCE!`,
+        message: `${activePlayer.name} boosted ${helpedName} +3 spaces and earned +1 EXCELLENCE!`,
       };
     },
   },
   {
-    id: 'p2',
+    id: 'p3',
     type: 'positive',
     title: 'HIGH FIVE WAVE',
     tagline: 'Collective momentum',
-    description: 'Every player on the board advances +1 space! You gain +1 EXCELLENCE for sparking the wave.',
+    description: 'Every player on the board advances 1 space! You gain +1 EXCELLENCE for sparking the wave.',
     actionText: 'High Five Everyone (+1 ⭐)',
     icon: 'HandMetal',
     effect: (activePlayer, allPlayers, boardLength) => {
       const updated = allPlayers.map((p) => ({
         ...p,
-        position: Math.min(boardLength - 1, p.position + 1),
+        position: (p.position + 1) % boardLength,
         excellence: p.id === activePlayer.id ? p.excellence + 1 : p.excellence,
       }));
       return {
@@ -506,38 +717,18 @@ export const POSITIVE_CARDS: GameCard[] = [
     },
   },
   {
-    id: 'p3',
-    type: 'positive',
-    title: 'SPARK RESONANCE',
-    tagline: 'Unstoppable alignment',
-    description: 'Your energy synchronizes! Move forward 2 extra spaces immediately.',
-    actionText: 'Surge +2 Spaces',
-    icon: 'Zap',
-    effect: (activePlayer, allPlayers, boardLength) => {
-      const updated = allPlayers.map((p) =>
-        p.id === activePlayer.id
-          ? { ...p, position: Math.min(boardLength - 1, p.position + 2) }
-          : p
-      );
-      return {
-        updatedPlayers: updated,
-        message: `${activePlayer.name} surged forward +2 extra spaces!`,
-      };
-    },
-  },
-  {
     id: 'p4',
     type: 'positive',
     title: 'DOMO TURBO BOOST',
-    tagline: 'The power of partnership',
+    tagline: 'Power of the DORK',
     description: 'If you are a DORK, sprint forward 3 spaces! If still a SPARK, move forward 1 space.',
-    actionText: 'Ignite Partnership',
+    actionText: 'Turbo Sprint',
     icon: 'Glasses',
     effect: (activePlayer, allPlayers, boardLength) => {
       const bonus = activePlayer.pawnType === 'dork' ? 3 : 1;
       const updated = allPlayers.map((p) =>
         p.id === activePlayer.id
-          ? { ...p, position: Math.min(boardLength - 1, p.position + bonus) }
+          ? { ...p, position: (p.position + bonus) % boardLength }
           : p
       );
       return {
@@ -569,30 +760,20 @@ export const POSITIVE_CARDS: GameCard[] = [
   {
     id: 'p6',
     type: 'positive',
-    title: 'PASS IT FORWARD',
-    tagline: 'No one gets left behind',
-    description: 'Pull the furthest trailing player forward +3 spaces! You earn +2 EXCELLENCE.',
-    actionText: 'Pull Last Place Up (+2 ⭐)',
-    icon: 'Users',
+    title: 'LUCKY BREAK',
+    tagline: 'Smooth sailing',
+    description: 'Surge forward 2 extra spaces immediately and take another spin!',
+    actionText: 'Surge +2 Spaces',
+    icon: 'Zap',
     effect: (activePlayer, allPlayers, boardLength) => {
-      const others = allPlayers.filter((p) => p.id !== activePlayer.id);
-      const lowest = [...others].sort((a, b) => a.position - b.position)[0];
-      const targetId = lowest ? lowest.id : (activePlayer.id % 4) + 1;
-
-      const updated = allPlayers.map((p) => {
-        if (p.id === activePlayer.id) {
-          return { ...p, excellence: p.excellence + 2 };
-        }
-        if (p.id === targetId) {
-          return { ...p, position: Math.min(boardLength - 1, p.position + 3) };
-        }
-        return p;
-      });
-
-      const helpedName = lowest ? lowest.name : 'a teammate';
+      const updated = allPlayers.map((p) =>
+        p.id === activePlayer.id
+          ? { ...p, position: (p.position + 2) % boardLength }
+          : p
+      );
       return {
         updatedPlayers: updated,
-        message: `${activePlayer.name} pulled ${helpedName} up 3 spaces and earned +2 EXCELLENCE!`,
+        message: `${activePlayer.name} got a Lucky Break and surged forward +2 spaces!`,
       };
     },
   },
@@ -601,7 +782,7 @@ export const POSITIVE_CARDS: GameCard[] = [
     type: 'positive',
     title: 'FLASH OF EXCELLENCE',
     tagline: 'Inspiring everyone around you',
-    description: 'Gain +2 EXCELLENCE directly! The measure of excellence in the room just went up.',
+    description: 'Gain +2 EXCELLENCE directly! The measure of excellence in the world just increased.',
     actionText: 'Claim +2 Excellence',
     icon: 'Award',
     effect: (activePlayer, allPlayers) => {
@@ -617,28 +798,20 @@ export const POSITIVE_CARDS: GameCard[] = [
   {
     id: 'p8',
     type: 'positive',
-    title: 'SPREZZATURA LEAP',
-    tagline: 'Making it look easy',
-    description: 'Leap forward 2 spaces and bestow +1 Excellence to all players with less than 2 Excellence!',
+    title: 'SPREZZATURA SURGE',
+    tagline: 'Making it look effortless',
+    description: 'Leap forward 2 spaces and grant +1 Excellence to all players!',
     actionText: 'Spread Excellence',
     icon: 'Flame',
     effect: (activePlayer, allPlayers, boardLength) => {
-      const updated = allPlayers.map((p) => {
-        let excellence = p.excellence;
-        if (p.id === activePlayer.id) {
-          excellence += 1;
-        } else if (p.excellence < 2) {
-          excellence += 1;
-        }
-        const position =
-          p.id === activePlayer.id
-            ? Math.min(boardLength - 1, p.position + 2)
-            : p.position;
-        return { ...p, position, excellence };
-      });
+      const updated = allPlayers.map((p) => ({
+        ...p,
+        position: p.id === activePlayer.id ? (p.position + 2) % boardLength : p.position,
+        excellence: p.excellence + 1,
+      }));
       return {
         updatedPlayers: updated,
-        message: `${activePlayer.name} performed a Sprezzatura Leap! Advanced 2 spaces and shared Excellence!`,
+        message: `${activePlayer.name} performed a Sprezzatura Surge! Advanced 2 spaces and shared Excellence!`,
       };
     },
   },

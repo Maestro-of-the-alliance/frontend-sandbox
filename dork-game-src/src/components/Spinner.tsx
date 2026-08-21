@@ -28,7 +28,7 @@ export const SPINNER_SEGMENTS: { label: string; value: SpinResult; color: string
   { label: '2', value: 2, color: '#10b981', textColor: '#ffffff', angle: 67.5 },
   { label: '3', value: 3, color: '#3b82f6', textColor: '#ffffff', angle: 112.5 },
   { label: 'GOLIATH', value: 'goliath', color: '#dc2626', textColor: '#ffffff', angle: 157.5 },
-  { label: '1', value: 1, color: '#f59e0b', textColor: '#ffffff', angle: 202.5 },
+  { label: '4', value: 4, color: '#8b5cf6', textColor: '#ffffff', angle: 202.5 },
   { label: '2', value: 2, color: '#10b981', textColor: '#ffffff', angle: 247.5 },
   { label: '3', value: 3, color: '#3b82f6', textColor: '#ffffff', angle: 292.5 },
   { label: 'GOLIATH', value: 'goliath', color: '#dc2626', textColor: '#ffffff', angle: 337.5 },
@@ -53,8 +53,8 @@ export const Spinner: React.FC<SpinnerProps> = ({
     setIsSpinning(true);
     sound.playSpinTick();
 
-    // Pick a random outcome with weighted distribution (mostly 1, 2, 3 and ~20% goliath)
-    const outcomes: SpinResult[] = [1, 2, 3, 1, 2, 3, 'goliath', 2];
+    // Pick a random outcome with weighted distribution (1, 2, 3, 4 and ~20% goliath)
+    const outcomes: SpinResult[] = [1, 2, 3, 4, 2, 3, 'goliath', 3];
     const chosenResult = outcomes[Math.floor(Math.random() * outcomes.length)];
     
     // Find all matching segments
@@ -85,7 +85,7 @@ export const Spinner: React.FC<SpinnerProps> = ({
       .start({
         rotate: finalRotation,
         transition: {
-          duration: 2.2,
+          duration: 2.8,
           ease: [0.15, 0.9, 0.25, 1], // snappy start with smooth dramatic deceleration
         },
       })
@@ -99,16 +99,19 @@ export const Spinner: React.FC<SpinnerProps> = ({
         } else {
           sound.playHop();
         }
-        onSpinComplete(chosenResult);
+        // Give 1100ms for player to clearly read what was spun before initiating movement/event
+        setTimeout(() => {
+          onSpinComplete(chosenResult);
+        }, 1100);
       });
   };
 
-  // Trigger auto spin for computer players after short pleasant delay
+  // Trigger auto spin for computer players after relaxed, pleasant delay
   useEffect(() => {
     if (!isHuman && autoSpin && !isSpinning && !disabled) {
       const timer = setTimeout(() => {
         handleSpin();
-      }, 700);
+      }, 1600);
       return () => clearTimeout(timer);
     }
   }, [isHuman, autoSpin, isSpinning, disabled]);

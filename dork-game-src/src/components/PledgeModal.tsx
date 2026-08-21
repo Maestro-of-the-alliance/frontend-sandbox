@@ -5,13 +5,13 @@ import { Pawn } from './Pawn';
 import { sound } from '../utils/audio';
 import { Sparkles, Glasses, ArrowRight } from 'lucide-react';
 
-interface SeeingModalProps {
+interface PledgeModalProps {
   player: Player;
   isOpen: boolean;
   onContinue: () => void;
 }
 
-export const SeeingModal: React.FC<SeeingModalProps> = ({
+export const PledgeModal: React.FC<PledgeModalProps> = ({
   player,
   isOpen,
   onContinue,
@@ -22,12 +22,12 @@ export const SeeingModal: React.FC<SeeingModalProps> = ({
     }
   }, [isOpen]);
 
-  // Auto proceed for computer players after readable duration
+  // Auto proceed for computer players after relaxed delay so players can read the story
   useEffect(() => {
     if (isOpen && !player.isHuman) {
       const timer = setTimeout(() => {
         onContinue();
-      }, 2400);
+      }, 4200);
       return () => clearTimeout(timer);
     }
   }, [isOpen, player.isHuman, onContinue]);
@@ -50,19 +50,19 @@ export const SeeingModal: React.FC<SeeingModalProps> = ({
             {/* Header Badge */}
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-500/20 border border-purple-400/40 rounded-full text-xs font-black text-purple-300 uppercase tracking-wider mb-4">
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              <span>Milestone Reached: SEEING</span>
+              <span>Corner Milestone: PLEDGE</span>
             </div>
 
             {/* Title */}
             <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-1">
-              MEET YOUR DOMO
+              SPARK + DOMO → DORK
             </h2>
-            <p className="text-purple-200 text-sm font-medium italic mb-6">
-              "I found my partner. Something changed."
+            <p className="text-purple-200 text-sm font-medium italic mb-5">
+              "I found my partner. Sunglasses equipped." 😎
             </p>
 
             {/* Transformation Pawn Showcase */}
-            <div className="relative py-4 flex items-center justify-center gap-6">
+            <div className="relative py-3 flex items-center justify-center gap-6">
               {/* Spark (Prior) */}
               <div className="flex flex-col items-center opacity-50 scale-90">
                 <Pawn type="spark" color={player.color} size="md" />
@@ -81,7 +81,7 @@ export const SeeingModal: React.FC<SeeingModalProps> = ({
               <motion.div
                 initial={{ scale: 0.5, rotate: -10 }}
                 animate={{ scale: 1.15, rotate: 0 }}
-                transition={{ delay: 0.3, type: 'spring', stiffness: 300 }}
+                transition={{ delay: 0.2, type: 'spring', stiffness: 300 }}
                 className="flex flex-col items-center"
               >
                 <Pawn
@@ -97,16 +97,16 @@ export const SeeingModal: React.FC<SeeingModalProps> = ({
               </motion.div>
             </div>
 
-            {/* Rule explanation in one simple sentence */}
-            <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-3 my-4 text-left">
-              <p className="text-xs text-slate-200 leading-relaxed">
-                <strong className="text-amber-400">Departure Rule:</strong> To leave SEEING, you must spin <strong className="text-white">1 or 2</strong>. (Spinning anything else keeps you exploring SEEING until next turn).
+            {/* Humorous one-liner */}
+            <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-3 my-4 text-center">
+              <p className="text-xs text-slate-200 leading-relaxed font-semibold">
+                You’re officially a <strong className="text-amber-400">DORK</strong> now. Deflect GOLIATH penalties and increase the measure of excellence!
               </p>
             </div>
 
             {/* Action Button */}
             <button
-              id="seeing-continue-btn"
+              id="pledge-continue-btn"
               onClick={onContinue}
               className="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 active:scale-98 text-white font-black text-sm uppercase tracking-wider rounded-xl border border-purple-400 shadow-lg cursor-pointer transition-all"
             >

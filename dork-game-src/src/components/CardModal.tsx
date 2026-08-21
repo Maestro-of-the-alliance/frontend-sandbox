@@ -55,12 +55,12 @@ export const CardModal: React.FC<CardModalProps> = ({
   isOpen,
   onApply,
 }) => {
-  // Auto proceed for AI players after delay
+  // Auto proceed for AI players after relaxed delay so players can read the card
   useEffect(() => {
     if (isOpen && !activePlayer.isHuman) {
       const timer = setTimeout(() => {
         onApply();
-      }, 2500);
+      }, 4500);
       return () => clearTimeout(timer);
     }
   }, [isOpen, activePlayer.isHuman, onApply]);

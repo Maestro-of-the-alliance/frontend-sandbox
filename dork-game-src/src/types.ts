@@ -10,13 +10,13 @@ export interface Player {
   hex: string;
   lightHex: string;
   borderHex: string;
-  position: number; // 0 to boardLength - 1
+  position: number; // 0 to 39
   pawnType: PawnType;
   excellence: number;
   missNextTurn: boolean;
   shielded: boolean;
   lapsCompleted: number;
-  atSeeingWait: boolean; // Stuck at SEEING waiting for a 1 or 2
+  atPledgeWait?: boolean;
 }
 
 export type SpaceType = 
@@ -35,7 +35,9 @@ export interface BoardSpace {
   description?: string;
   iconName?: string;
   colorClass?: string;
-  isSeeing?: boolean;
+  isPledge?: boolean;
+  isWhy?: boolean;
+  isStart?: boolean;
 }
 
 export type CardType = 'goliath' | 'positive';
@@ -60,7 +62,7 @@ export interface GameCard {
   };
 }
 
-export type SpinResult = 1 | 2 | 3 | 'goliath';
+export type SpinResult = 1 | 2 | 3 | 4 | 'goliath';
 
 export interface TurnLog {
   id: string;
@@ -68,3 +70,4 @@ export interface TurnLog {
   type: 'spin' | 'move' | 'goliath' | 'help' | 'transformation' | 'win';
   timestamp: number;
 }
+
