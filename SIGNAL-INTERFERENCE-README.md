@@ -262,6 +262,53 @@ every time without this) — confirmed it actually builds three layers
 carrying the real title text in the three intended colors, not just
 that it "didn't throw."
 
+## How to add a new effect — the actual contract
+
+Proven in practice: 21 effects were added across four separate rounds
+this session without ever touching the scheduler, `effectiveRange`, or
+the timing constants once. The contract is genuinely two steps.
+
+**Step 1 — write a plain, no-argument function.** It owns its entire
+lifecycle: builds its own DOM elements, styles them inline (reuse the
+palette below), and cleans itself up with `setTimeout`/`.remove()`.
+Nothing else in the file needs to know it exists.
+
+**Step 2 — add the function name to a tier array.** `POOLS.small`,
+`POOLS.medium`, or `POOLS.large`. That's the only registration step.
+The scheduler just does `pick(pool)()` — it doesn't care how many
+effects are in a pool or what they do.
+
+Minimal template:
+```js
+function fireYourEffectName() {
+  const el = document.createElement("div");
+  el.style.cssText = `position:fixed;pointer-events:none;z-index:99969;opacity:0;transition:opacity 0.3s ease;/* your styling */`;
+  document.body.appendChild(el);
+  requestAnimationFrame(() => {
+    el.style.opacity = "1";
+    setTimeout(() => {
+      el.style.opacity = "0";
+      setTimeout(() => el.remove(), 400);
+    }, rand(800, 1500)); // how long it holds before fading
+  });
+}
+```
+Then just add `fireYourEffectName,` inside the right tier's array in
+`POOLS`.
+
+Shared palette already established (reuse rather than invent new
+colors): gold `rgba(212,175,55,*)` / `rgba(184,134,11,*)`, cyan
+`rgba(92,220,235,*)`, red `rgba(255,74,74,*)`. Fonts: `'VT323'` for
+large display text, `'Share Tech Mono'` for readouts/labels. `pick()`,
+`rand()`, `randInt()`, and `cornerPosition()` are all available
+helpers already defined near the top of the file.
+
+One soft convention, not a hard rule: check the existing pool for
+something conceptually close before naming a new effect, so two
+effects don't quietly do the same thing under different names — every
+new effect this session got a one-line comment noting what it's
+distinct from, for exactly this reason.
+
 ## First live trial: entries/maestro.html (Session 179)
 
 Live as of this session. `randanime_maestro.js` and `ambient-glitch-
