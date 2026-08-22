@@ -643,8 +643,13 @@ function skipBoot() {
     introTyping = false;
     introDone = true;
 
-    startIdleLoop();
-    openCommand();
+    // The "CONTACT US" idle loop + click-to-open-command-panel that
+    // used to live here (Session 179: retired) has moved to the
+    // hub menu's own COMMAND PROMPT node instead. Once the one-time
+    // boot intro finishes (here, via skip-click), the prompt has
+    // nothing further to do -- hide it rather than leave a dead,
+    // no-longer-interactive "CONTACT US" loop on screen.
+    hidePromptForOverlay();
 
     return;
   }
@@ -743,8 +748,11 @@ function typeIntro() {
     introTyping = false;
     introDone = true;
 
-    startIdleLoop();
-    openCommand();
+    // Same retirement as skipBoot's matching branch above -- the
+    // idle "CONTACT US" loop and its command-panel trigger moved to
+    // the hub menu (Session 179). Hide the prompt once the one-time
+    // intro finishes naturally, rather than starting a now-dead loop.
+    hidePromptForOverlay();
   }
 }
 
@@ -783,7 +791,11 @@ stealthSearch.addEventListener(
       return;
     }
 
-    openCommand();
+    // Steady state, after the one-time intro is fully done: the
+    // prompt is already hidden by this point (see hidePromptForOverlay
+    // calls above), so this is unreachable in practice, but kept as a
+    // harmless no-op rather than calling the retired command-panel
+    // trigger, in case some future change re-reveals the element here.
   },
 );
 

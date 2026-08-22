@@ -512,7 +512,18 @@
   function openCommand() {
     panel.style.display = "flex";
     if (!cmdPushedState) {
-      history.pushState({ cmdOpen: true }, "", "/landing?cmd=open");
+      // Was hardcoded to "/landing?cmd=open" -- correct only when this
+      // panel lived exclusively on landing.html. Now sitewide (Session
+      // 179), so it must reflect whatever page it was actually opened
+      // from, or the back button would silently misbehave everywhere
+      // except landing.
+      const currentPath = window.location.pathname + window.location.search;
+      const separator = currentPath.includes("?") ? "&" : "?";
+      history.pushState(
+        { cmdOpen: true },
+        "",
+        `${currentPath}${separator}cmd=open`,
+      );
       cmdPushedState = true;
     }
     // Double rAF ensures the panel is painted before we try to write to cmdBody

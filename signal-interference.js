@@ -63,6 +63,12 @@
     if (hub && hub.classList.contains("open")) return true;
     const toc = document.getElementById("tocOverlay");
     if (toc && toc.classList.contains("open")) return true;
+    // Added Session 179, ahead of command-panel.js's sitewide rollout
+    // (previously only lived on landing.html, where this gap had gone
+    // unnoticed) -- effects firing over a CONTACT/SUPPORT form would
+    // be genuinely bad, not just a cosmetic overlap.
+    const cmd = document.getElementById("cmdPanel");
+    if (cmd && cmd.classList.contains("open")) return true;
     return false;
   }
 

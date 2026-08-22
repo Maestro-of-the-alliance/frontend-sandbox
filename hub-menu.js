@@ -62,19 +62,6 @@
     },
     {
       code: "03",
-      label: "BROWSE BY DIMENSION",
-      desc: "DOCTRINE, BEINGS, PLACE, and five more.",
-      action: () => {
-        // Always /s3.html -- consistent everywhere, per direct
-        // instruction. Previously handed off to nav-wheel.js's native
-        // wheel-picker overlay wherever that was available (almost
-        // everywhere nav-wheel.js loads); that conditional branch is
-        // gone now, not just defaulted-around.
-        window.location.href = "/s3.html";
-      },
-    },
-    {
-      code: "04",
       label: "ENTER THE SYSTEM",
       desc: "Navigate the NCE as a live solar map.",
       action: () => {
@@ -82,25 +69,45 @@
       },
     },
     {
-      code: "05",
+      code: "04",
       label: "FULL INDEX",
-      desc: "All 73 entries, A to Z.",
+      desc: "All 73 entries, A to Z, browsable by dimension.",
       action: () => {
         // Always /s3.html -- the real, stable flat A-Z index, same
         // destination and same behavior everywhere. Previously used
         // landing's own TOC overlay (toc.js's openTOCInteractive)
         // when available there; that conditional branch is gone now
-        // too, matching the same consistency principle applied to
-        // SEARCH and BROWSE BY DIMENSION above.
+        // too. Also previously had a separate "BROWSE BY DIMENSION"
+        // node alongside this one -- both pointed at this exact same
+        // /s3.html destination with no query param, meaning they were
+        // functionally identical despite different labels. Retired
+        // (Session 179) rather than faked into two real destinations,
+        // since s3.html's own filter UI already handles dimension
+        // browsing well once you're on the page -- confirmed directly
+        // rather than assumed.
         window.location.href = "/s3.html";
       },
     },
     {
-      code: "06",
+      code: "05",
       label: "MARKET",
       desc: "Movement Artifacts, Relics, Keepsakes, Emblems, Tokens.",
       action: () => {
         window.location.href = "/market/";
+      },
+    },
+    {
+      // No code/label/desc/arrow shown for this one -- deliberately
+      // just a blinking command-prompt glyph, the idea carried over
+      // from landing's retired "stealth prompt" (Session 179) rather
+      // than a normal labeled row. See isPrompt handling in the
+      // render loop below.
+      isPrompt: true,
+      ariaLabel: "Command Prompt",
+      action: () => {
+        if (typeof window.openCommand === "function") {
+          window.openCommand();
+        }
       },
     },
   ];
@@ -219,13 +226,24 @@
     }
     .hub-node:hover .hub-node-arrow, .hub-node:focus-visible .hub-node-arrow { transform: translateX(0); opacity: 1; }
 
+    /* The one node with no code/label/desc/arrow -- just a blinking
+       command-prompt glyph, carrying over the idea from landing's
+       retired stealth prompt (Session 179) rather than a labeled row. */
+    .hub-node-prompt-glyph {
+      font-family: 'VT323', 'Share Tech Mono', monospace;
+      font-size: 22px; letter-spacing: 0.1em;
+      color: var(--nw-accent, #b89628);
+      display: flex; align-items: center; gap: 2px;
+    }
+    .hub-node-prompt-glyph .hub-cursor-blink { animation: hub-blink 1s steps(1) infinite; }
+
     @keyframes hub-fade-in { to { opacity: 1; } }
     @keyframes hub-blink { 0%, 45% { opacity: 1; } 50%, 95% { opacity: 0; } 100% { opacity: 1; } }
     @keyframes hub-node-in { to { opacity: 1; transform: translateX(0); } }
 
     @media (prefers-reduced-motion: reduce) {
       .hub-eyebrow, .hub-title, .hub-sub, .hub-node { animation: none !important; opacity: 1 !important; transform: none !important; }
-      .hub-cursor { animation: none !important; }
+      .hub-cursor, .hub-node-prompt-glyph .hub-cursor-blink { animation: none !important; }
     }
   `;
   document.head.appendChild(style);
@@ -249,8 +267,34 @@
   NODES.forEach((node, i) => {
     const el = document.createElement("button");
     el.type = "button";
-    el.className = "hub-node";
     el.style.animationDelay = `${0.32 + i * 0.06}s`;
+
+    if (node.isPrompt) {
+      // Deliberately minimal -- no code, label, description, or arrow.
+      // Just a blinking command-prompt glyph, carrying over landing's
+      // retired stealth-prompt idea (Session 179) into the hub menu
+      // instead. aria-label keeps it real for screen readers despite
+      // the sparse visible markup.
+      el.className = "hub-node hub-node--prompt";
+      el.setAttribute("aria-label", node.ariaLabel || "Command Prompt");
+      el.innerHTML = `
+        <span class="hub-node-prompt-glyph">
+          <span>&gt;</span><span class="hub-cursor-blink">_</span>
+        </span>
+      `;
+      // No hover-revealed description exists to preview here, so
+      // (unlike the regular nodes below) touch devices get the same
+      // immediate-action behavior as mouse/hover devices -- there's
+      // nothing to preview first.
+      el.addEventListener("click", () => {
+        closeHub();
+        setTimeout(() => node.action(), 180);
+      });
+      nodesContainer.appendChild(el);
+      return;
+    }
+
+    el.className = "hub-node";
     el.innerHTML = `
       <span class="hub-node-code">${node.code}</span>
       <span class="hub-node-body">
