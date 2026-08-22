@@ -201,6 +201,42 @@ both immediately and after a window covering every delayed cleanup;
 per-page config overrides still work; all 40 fire cleanly against
 maestro.html's actual real markup, not just a generic stand-in.
 
+## Small tier doubled — 24 small, 52 total (Session 179, same session)
+
+Direct request: double the small-tier count. 12 new effects added,
+all genuinely new (the well was already dry from the two prior
+expansions), deliberately the quietest, least "glitch," most ambient
+additions yet — the point of this batch was to make the small tier
+feel like a living texture rather than a fixed rotation of the same
+dozen beats.
+
+New small-tier effects: dust mote (a single tiny speck drifting slowly
+on a diagonal, like dust in projector light — the quietest effect in
+the whole pool), static whisper (an extremely faint single-frame
+static flash, reusing the shared static primitive at very low
+intensity), cursor ghost (a faint expanding ring at a random point,
+like a phantom click echo), ghost text (a faint, fast-fading duplicate
+of the page's own title offset slightly — distinct from
+fireEntryWordVerify, which flickers the real title in place rather
+than spawning a copy), pulse dot (a small blinking status-light dot in
+a corner, pure indicator with no text), edge crackle (a few faint
+hairline sparks along one screen edge), signal bars (a small
+phone-style four-bar signal indicator, distinct from the medium-tier
+audio waveform's wide row of many bars), timecode blip (a quick
+SMPTE-style ticking counter, distinct from corner timestamp's static
+surveillance-camera readout), hairline fracture (a single small jagged
+static crack line at a fixed spot, distinct from drift line which
+travels), color temp drift (a very subtle cool/blue hue shift, the
+opposite pole from paper shift's warm sepia), frequency blip (a single
+thin EQ-style bar blinking once, distinct from both signal bars and
+the medium-tier waveform), margin tick (a tiny crosshair calibration
+mark, the most utilitarian-looking effect in the pool).
+
+Verified the same way as every prior expansion: all 52 effects fire
+without throwing (immediate + delayed-cleanup window), config
+overrides still work, all 52 fire cleanly against maestro.html's real
+markup.
+
 ## First live trial: entries/maestro.html (Session 179)
 
 Live as of this session. `randanime_maestro.js` and `ambient-glitch-

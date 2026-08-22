@@ -461,6 +461,249 @@
     });
   }
 
+  function fireDustMote() {
+    // New (Session 179, small-tier doubling) — a single tiny mote
+    // drifting slowly on a diagonal, like dust caught in projector
+    // light. The quietest, least "glitch," most ambient effect in
+    // the pool.
+    const el = document.createElement("div");
+    const startX = rand(10, 90);
+    const startY = rand(10, 90);
+    const dur = rand(3000, 5500);
+    el.style.cssText = `position:fixed;left:${startX}vw;top:${startY}vh;width:2px;height:2px;border-radius:50%;background:rgba(212,175,55,0.6);box-shadow:0 0 4px rgba(212,175,55,0.5);pointer-events:none;z-index:99968;opacity:0;transition:opacity 1.2s ease, transform ${dur}ms linear;`;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.opacity = "0.7";
+      el.style.transform = `translate(${rand(-40, 40)}px, ${rand(-60, -20)}px)`;
+      setTimeout(() => {
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 1300);
+      }, dur - 800);
+    });
+  }
+
+  function fireStaticWhisper() {
+    // New — an extremely faint, single-frame static texture flash.
+    // Reuses the shared #si-static element at very low intensity so
+    // it barely registers, distinct from the punchier fireStatic
+    // calls used inside large-tier effects.
+    fireStatic(0.12);
+  }
+
+  function fireCursorGhost() {
+    // New — a faint expanding ring at a random point, like a phantom
+    // click/echo landing somewhere on the page.
+    const el = document.createElement("div");
+    const x = rand(10, 90);
+    const y = rand(10, 90);
+    el.style.cssText = `position:fixed;left:${x}vw;top:${y}vh;width:6px;height:6px;margin:-3px;border-radius:50%;border:1px solid rgba(92,220,235,0.55);pointer-events:none;z-index:99969;opacity:0;transform:scale(1);transition:opacity 0.7s ease, transform 0.7s ease;`;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.opacity = "1";
+      el.style.transform = "scale(6)";
+      setTimeout(() => {
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 750);
+      }, 80);
+    });
+  }
+
+  function fireGhostText() {
+    // New — a faint, quickly-fading duplicate of the page's own title
+    // offset slightly, like a chromatic afterimage. Distinct from
+    // fireEntryWordVerify (medium), which flickers the real title in
+    // place rather than spawning a ghost copy of it.
+    const title =
+      document.getElementById("entryWord") ||
+      document.querySelector(".entry-word, .title, h1");
+    if (!title) return;
+    const rect = title.getBoundingClientRect();
+    if (!rect.width) return;
+    const ghost = document.createElement("div");
+    const cs = window.getComputedStyle(title);
+    ghost.textContent = title.textContent;
+    ghost.style.cssText = `position:fixed;left:${rect.left + rand(-3, 3)}px;top:${rect.top + rand(-2, 2)}px;width:${rect.width}px;font-family:${cs.fontFamily};font-size:${cs.fontSize};letter-spacing:${cs.letterSpacing};color:rgba(92,220,235,0.35);pointer-events:none;z-index:99969;opacity:0;transition:opacity 0.25s ease;`;
+    document.body.appendChild(ghost);
+    requestAnimationFrame(() => {
+      ghost.style.opacity = "1";
+      setTimeout(() => {
+        ghost.style.opacity = "0";
+        setTimeout(() => ghost.remove(), 300);
+      }, rand(120, 260));
+    });
+  }
+
+  function firePulseDot() {
+    // New — a small pulsing status-light dot in a corner, distinct
+    // from fireCornerTimestamp's text readout — this is a pure
+    // indicator light, no text at all.
+    const el = document.createElement("div");
+    el.style.cssText = `position:fixed;width:6px;height:6px;border-radius:50%;background:rgba(212,175,55,0.8);box-shadow:0 0 8px rgba(212,175,55,0.7);pointer-events:none;z-index:99981;opacity:0;transition:opacity 0.25s ease;`;
+    Object.assign(el.style, cornerPosition());
+    document.body.appendChild(el);
+    let pulses = 0;
+    const pulse = () => {
+      el.style.opacity = el.style.opacity === "0.9" ? "0.2" : "0.9";
+      pulses++;
+      if (pulses < 5) setTimeout(pulse, 180);
+      else setTimeout(() => el.remove(), 200);
+    };
+    pulse();
+  }
+
+  function fireEdgeCrackle() {
+    // New — a few faint hairline sparks along one screen edge, like
+    // static discharge at the border. Distinct from fireInkBleed
+    // (single bleed near a gutter) and fireDriftLine (a single line
+    // traveling all the way across).
+    const edge = pick(["top", "bottom", "left", "right"]);
+    const isVertical = edge === "left" || edge === "right";
+    const container = document.createElement("div");
+    container.style.cssText = `position:fixed;pointer-events:none;z-index:99968;opacity:0;transition:opacity 0.3s ease;${
+      isVertical
+        ? `top:0;bottom:0;${edge}:0;width:14px;`
+        : `left:0;right:0;${edge}:0;height:14px;`
+    }`;
+    const sparkCount = randInt(3, 6);
+    for (let i = 0; i < sparkCount; i++) {
+      const spark = document.createElement("div");
+      const pos = rand(2, 98);
+      spark.style.cssText = isVertical
+        ? `position:absolute;top:${pos}%;left:0;width:${rand(4, 12)}px;height:1px;background:rgba(212,175,55,0.5);`
+        : `position:absolute;left:${pos}%;top:0;width:1px;height:${rand(4, 12)}px;background:rgba(212,175,55,0.5);`;
+      container.appendChild(spark);
+    }
+    document.body.appendChild(container);
+    requestAnimationFrame(() => {
+      container.style.opacity = "1";
+      setTimeout(() => {
+        container.style.opacity = "0";
+        setTimeout(() => container.remove(), 350);
+      }, rand(200, 400));
+    });
+  }
+
+  function fireSignalBars() {
+    // New — a small phone-style signal-strength indicator (four bars,
+    // rising heights) appearing briefly in a corner, filling in then
+    // gone. Distinct from fireAudioWaveform (medium tier, a wide row
+    // of many animating bars at the bottom of the screen).
+    const container = document.createElement("div");
+    container.style.cssText = `position:fixed;display:flex;align-items:flex-end;gap:2px;height:14px;pointer-events:none;z-index:99981;opacity:0;transition:opacity 0.25s ease;`;
+    Object.assign(container.style, cornerPosition());
+    const heights = [4, 7, 10, 14];
+    heights.forEach((h) => {
+      const bar = document.createElement("div");
+      bar.style.cssText = `width:3px;height:${h}px;background:rgba(92,220,235,0.6);`;
+      container.appendChild(bar);
+    });
+    document.body.appendChild(container);
+    requestAnimationFrame(() => {
+      container.style.opacity = "0.85";
+      setTimeout(() => {
+        container.style.opacity = "0";
+        setTimeout(() => container.remove(), 300);
+      }, rand(700, 1300));
+    });
+  }
+
+  function fireTimecodeBlip() {
+    // New — a quick SMPTE-style timecode counter (hh:mm:ss:ff) that
+    // appears already mid-count and vanishes almost immediately.
+    // Distinct from fireCornerTimestamp, which reads as a static
+    // surveillance-camera readout rather than a ticking film counter.
+    const el = document.createElement("div");
+    const h = randInt(0, 23).toString().padStart(2, "0");
+    const m = randInt(0, 59).toString().padStart(2, "0");
+    const s = randInt(0, 59).toString().padStart(2, "0");
+    const f = randInt(0, 29).toString().padStart(2, "0");
+    el.style.cssText = `position:fixed;font-family:'Share Tech Mono',monospace;font-size:clamp(9px,1.1vw,11px);letter-spacing:0.1em;color:rgba(212,175,55,0.5);pointer-events:none;z-index:99981;opacity:0;transition:opacity 0.15s ease;`;
+    el.textContent = `${h}:${m}:${s}:${f}`;
+    Object.assign(el.style, cornerPosition());
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.opacity = "0.7";
+      setTimeout(() => {
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 200);
+      }, rand(180, 350));
+    });
+  }
+
+  function fireHairlineFracture() {
+    // New — a single jagged, barely-visible crack line appearing at
+    // a fixed random spot then vanishing. Static, not traveling --
+    // distinct from fireDriftLine (moves) and fireInkBleed (a
+    // straight vertical bleed).
+    const x = rand(10, 90);
+    const y = rand(10, 90);
+    const w = rand(30, 90);
+    const h = rand(20, 60);
+    const el = document.createElement("div");
+    el.style.cssText = `position:fixed;left:${x}vw;top:${y}vh;width:${w}px;height:${h}px;pointer-events:none;z-index:99969;opacity:0;transition:opacity 0.2s ease;`;
+    el.innerHTML = `<svg width="${w}" height="${h}" style="overflow:visible"><path d="M0,${h * 0.2} L${w * 0.3},${h * 0.5} L${w * 0.15},${h * 0.7} L${w * 0.6},${h} " stroke="rgba(255,255,255,0.25)" stroke-width="0.6" fill="none"/></svg>`;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.opacity = "1";
+      setTimeout(() => {
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 250);
+      }, rand(150, 300));
+    });
+  }
+
+  function fireColorTempDrift() {
+    // New — a very subtle cool/blue color-temperature shift, the
+    // opposite pole from firePaperShift's warm sepia breathing.
+    document.body.style.transition = "filter 1.1s ease";
+    document.body.style.filter = `hue-rotate(${rand(-6, 6)}deg) saturate(${rand(0.94, 1.04)})`;
+    setTimeout(() => {
+      document.body.style.filter = "";
+      setTimeout(() => {
+        document.body.style.transition = "";
+      }, 1200);
+    }, rand(900, 1500));
+  }
+
+  function fireFrequencyBlip() {
+    // New — a single thin EQ-style bar blinking once at a random
+    // position, distinct from fireSignalBars (four bars, a corner
+    // indicator cluster) and fireAudioWaveform (medium tier, many
+    // bars across the bottom).
+    const el = document.createElement("div");
+    const x = rand(5, 95);
+    const h = rand(10, 40);
+    el.style.cssText = `position:fixed;left:${x}vw;bottom:${rand(4, 30)}vh;width:2px;height:${h}px;background:rgba(212,175,55,0.55);pointer-events:none;z-index:99969;opacity:0;transition:opacity 0.15s ease, height 0.15s ease;`;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.opacity = "1";
+      el.style.height = h * rand(1.3, 2) + "px";
+      setTimeout(() => {
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 200);
+      }, rand(120, 240));
+    });
+  }
+
+  function fireMarginTick() {
+    // New — a tiny crosshair/tick mark briefly appearing near a
+    // screen edge, like a calibration reference mark. The smallest,
+    // most utilitarian-looking mark in the whole pool.
+    const el = document.createElement("div");
+    const size = 10;
+    el.style.cssText = `position:fixed;width:${size}px;height:${size}px;pointer-events:none;z-index:99968;opacity:0;transition:opacity 0.2s ease;`;
+    el.innerHTML = `<svg width="${size}" height="${size}"><line x1="${size/2}" y1="0" x2="${size/2}" y2="${size}" stroke="rgba(212,175,55,0.45)" stroke-width="1"/><line x1="0" y1="${size/2}" x2="${size}" y2="${size/2}" stroke="rgba(212,175,55,0.45)" stroke-width="1"/></svg>`;
+    Object.assign(el.style, cornerPosition());
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.opacity = "1";
+      setTimeout(() => {
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 250);
+      }, rand(500, 1000));
+    });
+  }
+
   // ── MEDIUM TIER — clearly visible, moderate frequency ─────────
 
   const BLEED_COLORS = [
@@ -1085,6 +1328,18 @@
       fireCornerTimestamp,
       fireFlickerFrame,
       fireDriftLine,
+      fireDustMote,
+      fireStaticWhisper,
+      fireCursorGhost,
+      fireGhostText,
+      firePulseDot,
+      fireEdgeCrackle,
+      fireSignalBars,
+      fireTimecodeBlip,
+      fireHairlineFracture,
+      fireColorTempDrift,
+      fireFrequencyBlip,
+      fireMarginTick,
     ],
     medium: [
       fireColorBleed,
