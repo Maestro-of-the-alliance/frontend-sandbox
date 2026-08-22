@@ -337,16 +337,55 @@ testing here is jsdom/logic-level, not visual), and real-time pacing
 feel over an actual multi-minute viewing session — that needs your own
 eyes on the live page once Cloudflare Pages deploys this push.
 
-## Open decision for Maestro before any further live page changes
+## Sitewide rollout complete (Session 179, same session)
 
-Which page(s) should be the trial run? The brief's own agreed sequence
-says "a small number of pages" before any sitewide swap — that's a
-rollout/creative call, not something to guess at unilaterally on a
-live site. Once picked, the plan is: add `signal-interference.js`
-alongside (not replacing) the existing script(s) on that one page
-first would risk double-firing effects, so the real move is a straight
-swap — remove the old `<script>` tag(s), add the new one plus a
-`SIGNAL_MIX` tuned for that page's existing register (e.g. an entry
-page would probably want a mix leaning toward SHIELD's quieter
-small/medium-heavy feel rather than landing's large-tier-heavy pirate
-chaos) — verify, then decide on wider rollout from there.
+Per direct instruction: every live page except `/warning` (the
+`index.html` ACCESS DENIED gate) and the WE ARE DORK board game demo
+now runs the PBE. 77 pages total.
+
+Worth noting: the 178 brief's original count of 155 pages loading
+`randanime_shield.js` didn't match what a direct grep found tonight —
+the real number was 83 (11 of which turned out to be stale duplicates
+in `scripts/walkthrough_check/`, a scratch directory never actually
+served, leaving 72 real live pages). Numbers drift between sessions;
+recounted directly rather than trusting the earlier figure.
+
+**72 entry pages:** `randanime_shield.js` + `ambient-glitch-entries.js`
+(both running simultaneously, uncoordinated, on every one of them)
+replaced with a single `signal-interference.js` include. No per-page
+`SIGNAL_MIX` override — these use the engine's own sitewide default
+(`0.6/0.3/0.1`), a quieter register than MAESTRO's or the landing
+pages', matching what SHIELD's original character was going for.
+
+**5 landing/hub pages** (`dice-src`+`dice`, `the-system-src`+
+`the-system`, `landing.html`): `ambient-glitch.js` replaced with a
+denser, more large-tier-leaning mix (`0.7/0.5/0.5`) matching these
+pages' prior punchier pirate-broadcast character — this was the "main
+event" engine, and it's meant to still feel that way.
+
+**`foundation.html` deliberately excluded.** It never actually loaded
+`ambient-glitch.js` as a script include — it only mentions it in a
+comment, because it has its own bespoke inline glitch effects
+"inspired by" the same techniques rather than using the shared script.
+That's a genuinely different situation the original six-script
+consolidation scope never covered, and it deserves its own decision
+rather than getting silently folded into a sitewide sweep. Also found:
+`entries/ai.html` had a small custom `.signal-decay` effect with a
+comment explicitly assuming it layers "on top of (not replacing)
+randanime_shield.js" — updated that comment to reference the PBE
+instead, since the assumption still holds, just under a new name.
+
+Verified before pushing: every one of the 77 touched files has exactly
+one `signal-interference.js` include and zero remaining old script
+tags (checked programmatically across all of them, not sampled);
+zero pages ended up with duplicate PBE includes; the engine file
+itself was untouched by this rollout and still passes its full test
+suite.
+
+**Not yet verified:** real browser rendering across this many
+different page templates and layouts at once. The engine's DOM/CSS is
+self-contained and shouldn't conflict with page-specific styles, but
+77 pages is a lot of surface area to have only checked with jsdom —
+worth spot-checking a handful of different page types (not just
+entries) once this deploys.
+
