@@ -21,6 +21,7 @@ import { Spinner } from './components/Spinner';
 import { PlayerRoster } from './components/PlayerRoster';
 import { PledgeModal } from './components/PledgeModal';
 import { CardModal } from './components/CardModal';
+import { OpportunityModal } from './components/OpportunityModal';
 import { WinModal } from './components/WinModal';
 import { SetupModal } from './components/SetupModal';
 import { PauseModal } from './components/PauseModal';
@@ -31,7 +32,6 @@ import {
   VolumeX,
   RotateCcw,
   Glasses,
-  Info,
   Pause,
   Play,
   Users,
@@ -44,6 +44,7 @@ export default function App() {
   const [isCardModalOpen, setIsCardModalOpen] = useState<boolean>(false);
   const [isPledgeModalOpen, setIsPledgeModalOpen] = useState<boolean>(false);
   const [pledgePlayer, setPledgePlayer] = useState<Player | null>(null);
+  const [isOpportunityModalOpen, setIsOpportunityModalOpen] = useState<boolean>(false);
   const [winner, setWinner] = useState<Player | null>(null);
   const [isWinModalOpen, setIsWinModalOpen] = useState<boolean>(false);
   const [logs, setLogs] = useState<TurnLog[]>([]);
@@ -132,6 +133,7 @@ export default function App() {
     setIsCardModalOpen(false);
     setIsPledgeModalOpen(false);
     setPledgePlayer(null);
+    setIsOpportunityModalOpen(false);
     setWinner(null);
     setIsWinModalOpen(false);
     setIsProcessingTurn(false);
@@ -149,91 +151,81 @@ export default function App() {
     addLog(
       `Game started with ${selectedCount} human player${selectedCount > 1 ? 's' : ''} and ${
         4 - selectedCount
-      } auto-bot${4 - selectedCount !== 1 ? 's' : ''}. Every player begins at SEEING as a SPARK!`
+      } auto bot${4 - selectedCount !== 1 ? 's' : ''}.`
     );
   };
 
-  // Prompt restart setup modal
+  // Quick reset game (keeps current player mode)
+  const handleQuickRestart = () => {
+    handleStartGame(humanCount);
+  };
+
+  // Open Restart Setup
   const handleOpenRestartSetup = () => {
     setIsPaused(false);
     setIsRestartSetup(true);
     setIsSetupModalOpen(true);
   };
 
-  // Quick Restart without changing player count
-  const handleQuickRestart = () => {
-    handleStartGame(humanCount);
-  };
-
-  // Advance to next player
-  const advanceTurn = useCallback((overrideIndex?: number) => {
-    const nextIdx = overrideIndex !== undefined ? overrideIndex : (activePlayerIndex + 1) % players.length;
-    setActivePlayerIndex(nextIdx);
+  // Advance turn to next player
+  const advanceTurn = useCallback(() => {
     setIsProcessingTurn(false);
+    setActivePlayerIndex((prevIndex) => {
+      const nextIndex = (prevIndex + 1) % players.length;
+      const nextPlayer = players[nextIndex];
 
-    const nextPlayer = players[nextIdx];
-    
-    // Check if next player is asleep / misses turn
-    if (nextPlayer.missNextTurn) {
-      addLog(`${nextPlayer.name} was paused by GOLIATH and skipped their turn.`, 'goliath');
-      setTurnMessage(`⏳ ${nextPlayer.name} is paused by GOLIATH and skips this turn.`);
-      setPlayers((prev) =>
-        prev.map((p, idx) => (idx === nextIdx ? { ...p, missNextTurn: false } : p))
-      );
-      setTimeout(() => {
-        advanceTurn((nextIdx + 1) % players.length);
-      }, 2200);
-      return;
-    }
-
-    if (nextPlayer.isHuman) {
-      setTurnMessage(`${nextPlayer.name}'s turn — Click SPIN!`);
-    } else {
-      setTurnMessage(`${nextPlayer.name} (Auto Bot) is spinning...`);
-    }
-  }, [activePlayerIndex, players, addLog]);
-
-  // Handle spin outcome
-  const handleSpinResult = (result: SpinResult) => {
-    setIsProcessingTurn(true);
-
-    // 1. GOLIATH SPIN RESULT
-    if (result === 'goliath') {
-      addLog(`${activePlayer.name} spun GOLIATH!`, 'goliath');
-      setTurnMessage(`⚠ ${activePlayer.name} spun GOLIATH!`);
-      
-      // Check if player has active shield
-      if (activePlayer.shielded) {
-        sound.playExcellenceChime();
-        addLog(`🛡️ ALLIANCE SHIELD protected ${activePlayer.name} from GOLIATH's hazard!`, 'help');
-        setTurnMessage(`🛡️ ALLIANCE SHIELD protected ${activePlayer.name}!`);
+      // Check if next player is asleep / misses turn
+      if (nextPlayer.missNextTurn) {
         setPlayers((prev) =>
           prev.map((p, idx) =>
-            idx === activePlayerIndex ? { ...p, shielded: false } : p
+            idx === nextIndex ? { ...p, missNextTurn: false } : p
           )
         );
+        addLog(`💤 ${nextPlayer.name} misses their turn.`, 'hazard');
+        setTurnMessage(`💤 ${nextPlayer.name} misses this turn.`);
+
+        // Skip to player after next
         setTimeout(() => {
           advanceTurn();
-        }, 2200);
-        return;
+        }, 1500);
+        return nextIndex;
       }
 
-      // Pick a random Goliath card
+      setTurnMessage(
+        nextPlayer.isHuman
+          ? `${nextPlayer.name}'s turn — Click SPIN!`
+          : `${nextPlayer.name} (Auto Bot) is spinning...`
+      );
+      return nextIndex;
+    });
+  }, [players, addLog]);
+
+  // Handle Spinner outcome
+  const handleSpinResult = (result: SpinResult) => {
+    if (isProcessingTurn || winner || isPaused) return;
+    setIsProcessingTurn(true);
+
+    if (result === 'goliath') {
+      sound.playGoliathAlarm();
+      addLog(`🚨 ${activePlayer.name} spun GOLIATH! Draw a hazard card!`, 'hazard');
+      setTurnMessage(`🚨 ${activePlayer.name} hit GOLIATH! Drawing hazard...`);
       const randomCard = GOLIATH_CARDS[Math.floor(Math.random() * GOLIATH_CARDS.length)];
       setActiveCard(randomCard);
       setIsCardModalOpen(true);
       return;
     }
 
-    // 2. NUMERIC SPIN RESULT (1, 2, 3, or 4)
-    const moveSteps = result as number;
-    addLog(`${activePlayer.name} spun a ${moveSteps}.`);
-    setTurnMessage(`🎲 ${activePlayer.name} spun a ${moveSteps} — Moving forward!`);
-    executeMovement(moveSteps);
+    // Numerical move (1, 2, 3, or 4)
+    const steps = Number(result);
+    sound.playHop();
+    addLog(`🎲 ${activePlayer.name} spun ${steps}. Moving forward ${steps} space${steps > 1 ? 's' : ''}.`);
+    setTurnMessage(`🎲 ${activePlayer.name} spun ${steps} — moving ${steps} space${steps > 1 ? 's' : ''}...`);
+
+    handleMovePlayer(steps);
   };
 
-  // Perform movement along track (40 spaces)
-  const executeMovement = (steps: number) => {
+  // Move player along perimeter track
+  const handleMovePlayer = (steps: number) => {
     const currentPos = activePlayer.position;
     const boardLength = BOARD_SPACES.length; // 40
     const isSpark = activePlayer.pawnType === 'spark';
@@ -250,7 +242,7 @@ export default function App() {
               ...p,
               position: pledgePos,
               pawnType: 'dork',
-              excellence: p.excellence + 1, // Bonus for finding DOMO & taking Pledge
+              excellence: p.excellence + 1,
             };
           }
           return p;
@@ -276,7 +268,7 @@ export default function App() {
     const finalPos = newRawPos % boardLength;
     const newLaps = activePlayer.lapsCompleted + (completedLap ? 1 : 0);
 
-    // Update state
+    // Update state position
     setPlayers((prev) =>
       prev.map((p, idx) => {
         if (idx === activePlayerIndex) {
@@ -293,10 +285,9 @@ export default function App() {
     const spaceData = BOARD_SPACES[finalPos];
     sound.playHop();
 
-    // Check Win Condition (Completed circuit + at least 2 Excellence as DORK)
+    // Check Win Condition: Completed circuit + at least 2 Excellence as DORK
     if (completedLap || (newLaps >= 1 && finalPos >= 0)) {
       if (activePlayer.excellence >= 2 && activePlayer.pawnType === 'dork') {
-        // Instant Victory!
         const victoriousPlayer = {
           ...activePlayer,
           position: finalPos,
@@ -306,20 +297,67 @@ export default function App() {
         setIsWinModalOpen(true);
         addLog(`🏆 ${activePlayer.name} WON THE GAME by increasing the measure of excellence!`, 'win');
         return;
-      } else if (activePlayer.excellence < 2) {
-        // Quick boost opportunity to keep game fast
-        sound.playExcellenceChime();
-        addLog(`${activePlayer.name} completed a circuit! Rewarded +1 EXCELLENCE for endurance.`, 'help');
-        setPlayers((prev) =>
-          prev.map((p, idx) =>
-            idx === activePlayerIndex ? { ...p, excellence: p.excellence + 1 } : p
-          )
-        );
+      } else if (completedLap && activePlayer.excellence < 2) {
+        // Final Opportunity Mechanic: Completing a lap does NOT grant automatic Excellence.
+        // Instead, the player gets a final opportunity to help another or draw a card!
+        addLog(`${activePlayer.name} completed the lap but needs 2 Excellence. Final opportunity triggered!`);
+        setTurnMessage(`🌟 ${activePlayer.name} completed the lap! Final opportunity to gain Excellence.`);
+        setIsOpportunityModalOpen(true);
+        return;
       }
     }
 
     // Resolve landing on space
     resolveSpaceLanding(spaceData, finalPos);
+  };
+
+  // Final Opportunity: Option A - Help another player
+  const handleOpportunityHelp = () => {
+    setIsOpportunityModalOpen(false);
+    const others = players.filter((p) => p.id !== activePlayer.id);
+    const lowest = [...others].sort((a, b) => a.position - b.position)[0];
+    const targetId = lowest ? lowest.id : (activePlayer.id % 4) + 1;
+
+    setPlayers((prev) =>
+      prev.map((p) => {
+        if (p.id === activePlayer.id) {
+          return { ...p, excellence: p.excellence + 1 };
+        }
+        if (p.id === targetId) {
+          return { ...p, position: (p.position + 2) % BOARD_SPACES.length };
+        }
+        return p;
+      })
+    );
+
+    const helpedName = lowest ? lowest.name : 'a player';
+    sound.playExcellenceChime();
+    addLog(`⭐ ${activePlayer.name} helped ${helpedName} move +2 and earned +1 EXCELLENCE!`, 'help');
+    setTurnMessage(`⭐ ${activePlayer.name} helped ${helpedName} and gained 1 Excellence!`);
+
+    // Re-check win condition after gaining Excellence
+    if (activePlayer.excellence + 1 >= 2 && activePlayer.pawnType === 'dork') {
+      setTimeout(() => {
+        const victoriousPlayer = {
+          ...activePlayer,
+          excellence: activePlayer.excellence + 1,
+        };
+        setWinner(victoriousPlayer);
+        setIsWinModalOpen(true);
+        addLog(`🏆 ${activePlayer.name} WON THE GAME by increasing the measure of excellence!`, 'win');
+      }, 1200);
+      return;
+    }
+
+    setTimeout(() => advanceTurn(), 2200);
+  };
+
+  // Final Opportunity: Option B - Draw an action card
+  const handleOpportunityDraw = () => {
+    setIsOpportunityModalOpen(false);
+    const randomPositive = POSITIVE_CARDS[Math.floor(Math.random() * POSITIVE_CARDS.length)];
+    setActiveCard(randomPositive);
+    setIsCardModalOpen(true);
   };
 
   // Resolve space effects
@@ -357,7 +395,7 @@ export default function App() {
 
     // 4. Milestone spaces
     if (space.id === 20) {
-      // THE AGORA (Corner 3)
+      // THE AGORA
       sound.playExcellenceChime();
       addLog(`🏛️ ${activePlayer.name} reached THE AGORA (+1 EXCELLENCE)!`, 'help');
       setTurnMessage(`🏛️ ${activePlayer.name} entered THE AGORA (+1 EXCELLENCE)!`);
@@ -373,8 +411,8 @@ export default function App() {
     if (space.id === 37) {
       // RHYTHM
       sound.playHop();
-      addLog(`⚡ ${activePlayer.name} hit RHYTHM momentum and surged +2 spaces forward!`);
-      setTurnMessage(`⚡ ${activePlayer.name} hit RHYTHM — +2 spaces surge!`);
+      addLog(`⚡ ${activePlayer.name} hit RHYTHM and moved +2 spaces forward!`);
+      setTurnMessage(`⚡ ${activePlayer.name} hit RHYTHM — +2 spaces!`);
       setPlayers((prev) =>
         prev.map((p, idx) =>
           idx === activePlayerIndex
@@ -389,7 +427,7 @@ export default function App() {
     if (space.id === 39) {
       // SPREZZATURA
       sound.playExcellenceChime();
-      addLog(`🔥 ${activePlayer.name} reached SPREZZATURA effortless mastery (+1 EXCELLENCE)!`, 'help');
+      addLog(`🔥 ${activePlayer.name} reached SPREZZATURA (+1 EXCELLENCE)!`, 'help');
       setTurnMessage(`🔥 ${activePlayer.name} reached SPREZZATURA (+1 EXCELLENCE)!`);
       setPlayers((prev) =>
         prev.map((p, idx) =>
@@ -410,8 +448,8 @@ export default function App() {
 
     if (space.id === 1 || space.id === 4 || space.id === 21 || space.id === 31) {
       // Move Ahead 1
-      addLog(`⏩ ${activePlayer.name} moved ahead 1 extra space.`);
-      setTurnMessage(`⏩ ${activePlayer.name} stepped forward 1 extra space.`);
+      addLog(`⏩ ${activePlayer.name} moved ahead 1 space.`);
+      setTurnMessage(`⏩ ${activePlayer.name} stepped forward 1 space.`);
       setPlayers((prev) =>
         prev.map((p, idx) =>
           idx === activePlayerIndex
@@ -423,14 +461,28 @@ export default function App() {
       return;
     }
 
-    if (space.id === 8 || space.id === 11 || space.id === 19) {
-      // Move Ahead 2
-      addLog(`⏩ ${activePlayer.name} moved ahead 2 extra spaces.`);
-      setTurnMessage(`⏩ ${activePlayer.name} surged ahead 2 extra spaces!`);
+    if (space.id === 2 || space.id === 8 || space.id === 11 || space.id === 19 || space.id === 27) {
+      // Milestone or surge spaces
+      if (space.id === 2) {
+        sound.playExcellenceChime();
+        addLog(`⭐ ${activePlayer.name} reached SHELTER BUILDS (+1 EXCELLENCE)!`, 'help');
+        setTurnMessage(`⭐ ${activePlayer.name} reached SHELTER BUILDS (+1 EXCELLENCE)!`);
+        setPlayers((prev) =>
+          prev.map((p, idx) =>
+            idx === activePlayerIndex ? { ...p, excellence: p.excellence + 1 } : p
+          )
+        );
+        setTimeout(() => advanceTurn(), 2200);
+        return;
+      }
+
+      const advanceAmt = space.id === 27 ? 3 : 2;
+      addLog(`⏩ ${activePlayer.name} moved ahead ${advanceAmt} spaces.`);
+      setTurnMessage(`⏩ ${activePlayer.name} moved ahead ${advanceAmt} spaces.`);
       setPlayers((prev) =>
         prev.map((p, idx) =>
           idx === activePlayerIndex
-            ? { ...p, position: (p.position + 2) % BOARD_SPACES.length }
+            ? { ...p, position: (p.position + advanceAmt) % BOARD_SPACES.length }
             : p
         )
       );
@@ -438,158 +490,162 @@ export default function App() {
       return;
     }
 
-    if (space.id === 27) {
-      // Move Ahead 3
-      addLog(`🚀 ${activePlayer.name} surged ahead 3 extra spaces!`);
-      setTurnMessage(`🚀 ${activePlayer.name} surged ahead 3 extra spaces!`);
-      setPlayers((prev) =>
-        prev.map((p, idx) =>
-          idx === activePlayerIndex
-            ? { ...p, position: (p.position + 3) % BOARD_SPACES.length }
-            : p
-        )
-      );
-      setTimeout(() => advanceTurn(), 2000);
-      return;
-    }
-
-    // Normal space -> advance turn
+    // Default: End turn and proceed
     setTimeout(() => {
       advanceTurn();
     }, 1800);
   };
 
-  // Close card modal & apply card effect
+  // Apply Card Modal action
   const handleApplyCard = () => {
     if (!activeCard) return;
 
-    const result = activeCard.effect(activePlayer, players, BOARD_SPACES.length);
+    // Check if player is protected from Goliath
+    if (activeCard.type === 'goliath' && activePlayer.shielded) {
+      setPlayers((prev) =>
+        prev.map((p, idx) =>
+          idx === activePlayerIndex ? { ...p, shielded: false } : p
+        )
+      );
+      addLog(`🛡️ ${activePlayer.name}'s shield absorbed the GOLIATH card!`, 'help');
+      setTurnMessage(`🛡️ Shield protected ${activePlayer.name}!`);
+      setIsCardModalOpen(false);
+      setActiveCard(null);
+      setTimeout(() => advanceTurn(), 2000);
+      return;
+    }
+
+    // Execute effect function
+    const result = activeCard.effect(
+      activePlayer,
+      players,
+      BOARD_SPACES.length
+    );
+
     setPlayers(result.updatedPlayers);
-    addLog(result.message, activeCard.type === 'goliath' ? 'goliath' : 'help');
+    addLog(result.message, activeCard.type === 'goliath' ? 'hazard' : 'help');
     setTurnMessage(result.message);
 
     setIsCardModalOpen(false);
     setActiveCard(null);
 
-    // Check if anyone won from this effect
-    const potentialWinner = result.updatedPlayers.find(
-      (p) => p.excellence >= 2 && p.pawnType === 'dork' && p.lapsCompleted >= 1
-    );
-
-    if (potentialWinner) {
-      setWinner(potentialWinner);
+    // Check if player gained enough Excellence to win after positive card
+    const updatedActive = result.updatedPlayers.find((p) => p.id === activePlayer.id);
+    if (
+      updatedActive &&
+      updatedActive.lapsCompleted >= 1 &&
+      updatedActive.excellence >= 2 &&
+      updatedActive.pawnType === 'dork'
+    ) {
+      setWinner(updatedActive);
       setIsWinModalOpen(true);
+      addLog(`🏆 ${updatedActive.name} WON THE GAME by increasing the measure of excellence!`, 'win');
       return;
     }
 
-    setTimeout(() => {
-      advanceTurn();
-    }, 1800);
+    setTimeout(() => advanceTurn(), 2200);
   };
 
-  // Close pledge modal & continue
+  // Continue from Pledge Modal
   const handleContinueFromPledge = () => {
     setIsPledgeModalOpen(false);
     setPledgePlayer(null);
-    setTimeout(() => {
-      advanceTurn();
-    }, 1600);
+    setTimeout(() => advanceTurn(), 1800);
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-between p-2 sm:p-4 select-none">
-      {/* Top Header Bar */}
-      <header className="w-full max-w-5xl flex items-center justify-between py-2 px-3 bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl mb-2 shadow-md">
-        {/* Branding & Subtitle */}
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-rose-600 border border-rose-400 flex items-center justify-center text-white font-black text-sm shadow-inner">
-            <Glasses className="w-4 h-4" />
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-between p-2 sm:p-4 selection:bg-amber-400 selection:text-slate-950 font-sans">
+      {/* Top Navigation Bar */}
+      <header className="w-full max-w-5xl flex items-center justify-between py-2 px-3 sm:px-4 bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-2xl shadow-lg mb-2">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-xl bg-purple-600/30 border border-purple-400 flex items-center justify-center text-amber-300">
+            <Glasses className="w-5 h-5" />
           </div>
           <div>
-            <div className="flex items-center gap-1.5">
-              <h1 className="text-base sm:text-lg font-black tracking-tight text-white uppercase">
-                WE ARE DORK
-              </h1>
-              <span className="text-[10px] font-black px-1.5 py-0.2 bg-amber-400 text-slate-950 rounded uppercase tracking-wider">
-                40 Spaces
+            <h1 className="text-base sm:text-lg font-black tracking-tight text-white uppercase flex items-center gap-1.5 leading-none">
+              WE ARE DORK
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                DEMO
               </span>
-            </div>
-            <p className="text-[10px] sm:text-xs text-slate-400 font-medium">
-              The ALLIANCE vs. GOLIATH Family Board Game
+            </h1>
+            <p className="text-[10px] text-slate-400 font-medium leading-none mt-0.5">
+              The ALLIANCE vs. GOLIATH Board Game
             </p>
           </div>
         </div>
 
-        {/* Header Controls: Pause, Players/Restart, Sound */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Mid-Game Pause Button */}
+        {/* Quick controls */}
+        <div className="flex items-center gap-1.5">
+          {/* Pause / Resume Button */}
           <button
-            id="pause-toggle-btn"
+            id="header-pause-btn"
             onClick={handleTogglePause}
-            className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-black border transition-all cursor-pointer ${
+            disabled={isSetupModalOpen || isWinModalOpen}
+            className={`p-2 rounded-xl border transition-all cursor-pointer flex items-center gap-1 text-xs font-bold ${
               isPaused
-                ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-md animate-pulse'
-                : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                ? 'bg-amber-400 text-slate-950 border-amber-300 animate-pulse'
+                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
             }`}
-            title={isPaused ? 'Resume Game' : 'Pause Game'}
+            title={isPaused ? 'Resume Match' : 'Pause Match'}
           >
-            {isPaused ? <Play className="w-3.5 h-3.5 fill-slate-950" /> : <Pause className="w-3.5 h-3.5" />}
-            <span>{isPaused ? 'RESUME' : 'PAUSE'}</span>
+            {isPaused ? <Play className="w-4 h-4 fill-slate-950" /> : <Pause className="w-4 h-4" />}
+            <span className="hidden sm:inline">{isPaused ? 'Resume' : 'Pause'}</span>
           </button>
 
-          {/* Player Setup / Restart Button */}
+          {/* Change Setup / Restart */}
           <button
-            id="restart-game-btn"
+            id="header-players-setup-btn"
             onClick={handleOpenRestartSetup}
-            className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-black border border-slate-700 transition-colors cursor-pointer"
-            title="Choose number of players / Restart match"
+            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors cursor-pointer flex items-center gap-1 text-xs font-bold"
+            title="Configure Player Count / Restart"
           >
-            <RotateCcw className="w-3.5 h-3.5 text-amber-400" />
-            <span className="hidden sm:inline">RESTART</span>
+            <Users className="w-4 h-4 text-amber-400" />
+            <span className="hidden sm:inline">{humanCount}P Setup</span>
           </button>
 
-          {/* Sound Toggle */}
+          {/* Mute toggle */}
           <button
-            id="sound-toggle-btn"
+            id="header-mute-btn"
             onClick={handleToggleMute}
-            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors border border-slate-700 cursor-pointer"
-            title={isMuted ? 'Unmute Sound' : 'Mute Sound'}
+            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors cursor-pointer"
+            title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
           >
             {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
+          </button>
+
+          {/* Quick Restart */}
+          <button
+            id="header-restart-btn"
+            onClick={handleQuickRestart}
+            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors cursor-pointer"
+            title="Restart Match"
+          >
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </header>
 
-      {/* Main Game Layout Container */}
-      <main className="w-full max-w-5xl flex flex-col lg:flex-row items-center justify-center gap-4 flex-1">
-        {/* Left / Top: Player Roster & Quick Log */}
-        <div className="w-full lg:w-72 flex flex-col gap-2.5 order-2 lg:order-1">
+      {/* Main Game Arena */}
+      <main className="w-full max-w-5xl flex-1 flex flex-col lg:flex-row items-center lg:items-start justify-center gap-3">
+        {/* Left Column: Player Roster + Event Match Feed */}
+        <div className="w-full lg:w-80 flex flex-col gap-2.5 order-2 lg:order-1">
           <PlayerRoster
             players={players}
             activePlayerId={activePlayer.id}
             onToggleHuman={handleToggleHuman}
             humanCount={humanCount}
             onSetHumanCount={handleSetHumanCount}
-            disabled={isProcessingTurn || isCardModalOpen || isPledgeModalOpen || isPaused || isSetupModalOpen}
+            disabled={isProcessingTurn || isPaused}
           />
 
-          {/* Quick Context / Instruction Hint */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 text-xs text-slate-300">
-            <div className="flex items-center justify-between font-bold text-amber-400 mb-1">
-              <div className="flex items-center gap-1.5">
-                <Info className="w-3.5 h-3.5" />
-                <span>HOW TO PLAY</span>
-              </div>
-              <button
-                onClick={handleOpenRestartSetup}
-                className="text-[10px] text-slate-400 hover:text-amber-300 flex items-center gap-1 transition-colors cursor-pointer"
-              >
-                <Users className="w-3 h-3" />
-                <span>Players</span>
-              </button>
+          {/* Game Objective Card */}
+          <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-xs text-slate-300">
+            <div className="font-black text-amber-300 uppercase tracking-wider mb-1 flex items-center justify-between">
+              <span>Goal of the Game</span>
+              <span className="text-[10px] text-slate-400">2 ⭐ & 1 Lap</span>
             </div>
             <p className="text-[11px] leading-relaxed text-slate-400">
-              Start at <strong className="text-emerald-300">SEEING</strong> as a <strong className="text-slate-200">SPARK</strong>. Reach <strong className="text-purple-300">PLEDGE</strong> to meet your <strong className="text-purple-300">DOMO</strong> & become a <strong className="text-amber-300">DORK</strong> 😎. Avoid GOLIATH setbacks, elevate others, and gain <strong className="text-amber-400">Excellence</strong>!
+              Start at <strong className="text-emerald-300">SEEING</strong> as a <strong className="text-slate-200">SPARK</strong>. Reach <strong className="text-purple-300">PLEDGE</strong> to meet your <strong className="text-purple-300">DOMO</strong> & become a <strong className="text-amber-300">DORK</strong> 😎. Avoid GOLIATH setbacks, help others, and gain <strong className="text-amber-400">Excellence</strong>!
             </p>
           </div>
 
@@ -623,6 +679,7 @@ export default function App() {
                   isProcessingTurn ||
                   isCardModalOpen ||
                   isPledgeModalOpen ||
+                  isOpportunityModalOpen ||
                   !!winner ||
                   isPaused ||
                   isSetupModalOpen
@@ -672,7 +729,15 @@ export default function App() {
         />
       )}
 
-      {/* 2. GOLIATH / ALLIANCE Card Modal */}
+      {/* 2. Final Opportunity Modal */}
+      <OpportunityModal
+        player={activePlayer}
+        isOpen={isOpportunityModalOpen}
+        onHelpOther={handleOpportunityHelp}
+        onDrawCard={handleOpportunityDraw}
+      />
+
+      {/* 3. GOLIATH / ALLIANCE Card Modal */}
       <CardModal
         card={activeCard}
         activePlayer={activePlayer}
@@ -680,7 +745,7 @@ export default function App() {
         onApply={handleApplyCard}
       />
 
-      {/* 3. Victory Modal */}
+      {/* 4. Victory Modal */}
       <WinModal
         winner={winner}
         isOpen={isWinModalOpen}

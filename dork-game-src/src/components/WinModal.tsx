@@ -89,13 +89,13 @@ export const WinModal: React.FC<WinModalProps> = ({
               </span>
             </div>
 
-            {/* Core Message requested by user */}
+            {/* Core Message */}
             <h2 className="text-xl sm:text-2xl font-black text-amber-300 tracking-tight uppercase leading-tight mb-3">
               YOU INCREASED THE MEASURE OF EXCELLENCE IN THE WORLD.
             </h2>
 
             <p className="text-slate-300 text-xs sm:text-sm max-w-md mx-auto mb-6">
-              A SPARK found their DOMO, became a DORK, weathered GOLIATH's interference, elevated their fellow travelers, and completed the journey.
+              A SPARK met their DOMO, became a DORK, overcame GOLIATH setbacks, helped fellow players, and completed the journey.
             </p>
 
             {/* Winner Pawn Visual */}
@@ -116,7 +116,7 @@ export const WinModal: React.FC<WinModalProps> = ({
                   <span>{winner.excellence} Excellence Stars</span>
                 </div>
                 <div className="text-[11px] text-emerald-400 font-semibold">
-                  ✓ DOMO Partnership Active
+                  ✓ DOMO Active
                 </div>
               </div>
             </div>

@@ -11,13 +11,10 @@ import {
   HeartHandshake,
   Skull,
   Landmark,
-  Compass,
   Eye,
   Anchor,
   X,
   Info,
-  ChevronRight,
-  ShieldCheck,
 } from 'lucide-react';
 
 interface BoardProps {
@@ -64,7 +61,7 @@ const SPACE_COORDINATES: { [id: number]: { col: number; row: number } } = {
   27: { col: 3, row: 10 },
   28: { col: 2, row: 10 },
   29: { col: 1, row: 10 },
-  30: { col: 0, row: 10 }, // CROSSROADS (Corner 4)
+  30: { col: 0, row: 10 }, // TAKE ANOTHER SPIN (Corner 4)
 
   // Left Column: bottom to top (31 to 39)
   31: { col: 0, row: 9 },
@@ -90,7 +87,7 @@ export const Board: React.FC<BoardProps> = ({
   // Popover state: opens on intentional tap / click or lingering hover / hold
   const [inspectedSpace, setInspectedSpace] = useState<BoardSpace | null>(null);
 
-  // Timers to enforce hover/touch linger exception (prevent accidental triggers while passing over)
+  // Timers to enforce hover/touch linger exception
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const touchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -117,7 +114,6 @@ export const Board: React.FC<BoardProps> = ({
 
   const handleMouseEnterSpace = (space: BoardSpace) => {
     clearHoverTimer();
-    // Only open if the user pauses/lingers over this square for LINGER_THRESHOLD_MS
     hoverTimerRef.current = setTimeout(() => {
       setInspectedSpace(space);
     }, LINGER_THRESHOLD_MS);
@@ -136,7 +132,6 @@ export const Board: React.FC<BoardProps> = ({
 
   const handleTouchStartSpace = (space: BoardSpace) => {
     clearTouchTimer();
-    // Hold exception for touch devices
     touchTimerRef.current = setTimeout(() => {
       setInspectedSpace(space);
     }, LINGER_THRESHOLD_MS);
@@ -157,7 +152,7 @@ export const Board: React.FC<BoardProps> = ({
     if (space.id === 0) return <Eye className={`${iconClass} text-emerald-300`} />;
     if (space.isPledge) return <Glasses className={`${iconClass} text-amber-300 animate-pulse`} />;
     if (space.id === 20) return <Landmark className={`${iconClass} text-indigo-300`} />;
-    if (space.id === 30) return <Compass className={`${iconClass} text-cyan-300`} />;
+    if (space.id === 30) return <Zap className={`${iconClass} text-cyan-300`} />;
     if (space.isWhy) return <Anchor className={`${iconClass} text-blue-300`} />;
     if (space.id === 37) return <Sparkles className={`${iconClass} text-sky-300`} />;
     if (space.id === 39) return <Flame className={`${iconClass} text-violet-300`} />;
@@ -168,16 +163,14 @@ export const Board: React.FC<BoardProps> = ({
   };
 
   const getSpaceTypeBadge = (space: BoardSpace) => {
-    if (space.id === 0) return { label: 'START / ASSESSMENT', bg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' };
-    if (space.isPledge) return { label: 'TRANSFORMATION CORNER', bg: 'bg-purple-500/25 text-purple-200 border-purple-400/50' };
-    if (space.id === 20) return { label: 'CORNER 3 DESTINATION', bg: 'bg-indigo-500/20 text-indigo-300 border-indigo-400/40' };
-    if (space.id === 30) return { label: 'CORNER 4 DESTINATION', bg: 'bg-cyan-500/20 text-cyan-300 border-cyan-400/40' };
-    if (space.isWhy) return { label: 'THE WHY • RECURRING ANCHOR', bg: 'bg-blue-500/25 text-blue-200 border-blue-400/50' };
-    if (space.type === 'goliath') return { label: 'GOLIATH HAZARD', bg: 'bg-rose-500/20 text-rose-300 border-rose-500/40' };
-    if (space.type === 'help') return { label: 'ALLIANCE ELEVATION', bg: 'bg-teal-500/20 text-teal-300 border-teal-500/40' };
-    if (space.type === 'excellence') return { label: 'EXCELLENCE REWARD', bg: 'bg-amber-500/20 text-amber-300 border-amber-500/40' };
-    if (space.type === 'milestone') return { label: 'LANDMARK', bg: 'bg-indigo-500/20 text-indigo-200 border-indigo-500/40' };
-    return { label: 'BOARD SPACE', bg: 'bg-slate-700/40 text-slate-300 border-slate-600/40' };
+    if (space.id === 0) return { label: 'START', bg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' };
+    if (space.isPledge) return { label: 'PLEDGE CORNER', bg: 'bg-purple-500/25 text-purple-200 border-purple-400/50' };
+    if (space.id === 20) return { label: 'THE AGORA', bg: 'bg-indigo-500/20 text-indigo-300 border-indigo-400/40' };
+    if (space.isWhy) return { label: 'THE WHY', bg: 'bg-blue-500/25 text-blue-200 border-blue-400/50' };
+    if (space.type === 'goliath') return { label: 'GOLIATH', bg: 'bg-rose-500/20 text-rose-300 border-rose-500/40' };
+    if (space.type === 'help') return { label: 'HELP', bg: 'bg-teal-500/20 text-teal-300 border-teal-500/40' };
+    if (space.type === 'excellence') return { label: 'EXCELLENCE', bg: 'bg-amber-500/20 text-amber-300 border-amber-500/40' };
+    return { label: 'SPACE', bg: 'bg-slate-700/40 text-slate-300 border-slate-600/40' };
   };
 
   return (
@@ -205,7 +198,6 @@ export const Board: React.FC<BoardProps> = ({
                 gridColumnStart: coords.col + 1,
                 gridRowStart: coords.row + 1,
               }}
-              // Desktop hover linger & mobile hold/tap handlers
               onMouseEnter={() => handleMouseEnterSpace(space)}
               onMouseLeave={handleMouseLeaveSpace}
               onClick={(e) => handleClickSpace(e, space)}
@@ -246,7 +238,7 @@ export const Board: React.FC<BoardProps> = ({
                 </div>
               </div>
 
-              {/* Space Name: Strictly "THE WHY" for the 4 side spots */}
+              {/* Space Name */}
               <div className="text-center my-auto px-0.5 leading-tight">
                 <span
                   className={`block font-black tracking-tight leading-none truncate ${
@@ -301,7 +293,7 @@ export const Board: React.FC<BoardProps> = ({
           );
         })}
 
-        {/* Center Arena: 9x9 Grid Area in the middle (cols 2..10, rows 2..10 in 1-based CSS) */}
+        {/* Center Arena: 9x9 Grid Area in the middle */}
         <div
           style={{
             gridColumn: '2 / 11',
@@ -317,20 +309,20 @@ export const Board: React.FC<BoardProps> = ({
             </span>
           </div>
 
-          {/* Center Interactive Widget (Spinner & Active Turn Controls) */}
+          {/* Center Interactive Widget */}
           <div className="relative z-10 w-full h-full flex flex-col items-center justify-center">
             {centerContent}
           </div>
 
-          {/* Quick Helper Tag at bottom of Arena */}
+          {/* Quick Helper Tag */}
           <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex items-center gap-1 text-[9px] text-slate-500 font-medium bg-slate-950/70 px-2 py-0.5 rounded-full border border-slate-800/80 pointer-events-none whitespace-nowrap">
             <Info className="w-2.5 h-2.5 text-amber-400" />
-            <span>Linger or click any square for full rules & text</span>
+            <span>Linger or click any square for details</span>
           </div>
         </div>
       </div>
 
-      {/* FULL UNTRUNCATED SPACE DETAIL POPOVER (Hover / Tap / Hold Popout) */}
+      {/* SPACE DETAIL POPOVER */}
       <AnimatePresence>
         {inspectedSpace && (
           <div
@@ -387,7 +379,7 @@ export const Board: React.FC<BoardProps> = ({
                 {inspectedSpace.description}
               </div>
 
-              {/* Occupying Pawns on this space (if any) */}
+              {/* Occupying Pawns */}
               {(() => {
                 const occupants = players.filter((p) => p.position === inspectedSpace.id);
                 return (
@@ -411,9 +403,6 @@ export const Board: React.FC<BoardProps> = ({
                             >
                               {occ.name}
                             </span>
-                            <span className="text-[9px] uppercase text-slate-400">
-                              ({occ.pawnType})
-                            </span>
                           </div>
                         ))}
                       </div>
@@ -422,7 +411,6 @@ export const Board: React.FC<BoardProps> = ({
                 );
               })()}
 
-              {/* Dismiss hint */}
               <p className="text-[10px] text-center text-slate-500 mt-3">
                 Tap anywhere outside or press ✕ to close
               </p>

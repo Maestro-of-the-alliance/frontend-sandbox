@@ -46,7 +46,7 @@ export interface GameCard {
   id: string;
   type: CardType;
   title: string;
-  tagline: string;
+  tagline?: string;
   description: string;
   actionText: string;
   icon: string;
@@ -67,7 +67,6 @@ export type SpinResult = 1 | 2 | 3 | 4 | 'goliath';
 export interface TurnLog {
   id: string;
   text: string;
-  type: 'spin' | 'move' | 'goliath' | 'help' | 'transformation' | 'win';
+  type: 'spin' | 'move' | 'goliath' | 'help' | 'transformation' | 'win' | 'hazard';
   timestamp: number;
 }
-

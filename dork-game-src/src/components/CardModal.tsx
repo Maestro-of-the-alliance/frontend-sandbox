@@ -19,7 +19,6 @@ import {
   Users,
   Award,
   Flame,
-  ShieldAlert,
 } from 'lucide-react';
 
 interface CardModalProps {
@@ -98,75 +97,66 @@ export const CardModal: React.FC<CardModalProps> = ({
                 {isGoliath ? (
                   <>
                     <Skull className="w-3.5 h-3.5 text-rose-400" />
-                    <span>GOLIATH CARD</span>
+                    <span>GOLIATH HAZARD</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                    <span>ALLIANCE EVENT</span>
+                    <Sparkles className="w-3.5 h-3.5 text-teal-400" />
+                    <span>ALLIANCE CARD</span>
                   </>
                 )}
               </span>
             </div>
 
-            {/* Icon Graphic */}
-            <div className="my-4 flex items-center justify-center">
+            {/* Icon Banner */}
+            <div className="flex items-center justify-center my-3">
               <div
-                className={`w-16 h-16 rounded-2xl flex items-center justify-center border shadow-lg ${
+                className={`w-16 h-16 rounded-2xl flex items-center justify-center border-2 ${
                   isGoliath
-                    ? 'bg-rose-600/20 border-rose-500 text-rose-400'
-                    : 'bg-teal-600/20 border-teal-400 text-amber-300'
+                    ? 'bg-rose-900/40 border-rose-500/80 text-rose-400'
+                    : 'bg-teal-900/40 border-teal-400/80 text-teal-300'
                 }`}
               >
                 <IconComponent className="w-9 h-9" />
               </div>
             </div>
 
-            {/* Card Title */}
-            <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight mb-1">
+            {/* Title */}
+            <h3 className="text-lg sm:text-xl font-black text-white tracking-tight uppercase mb-1">
               {card.title}
             </h3>
 
-            {/* Tagline */}
-            <p
-              className={`text-xs font-bold uppercase tracking-wider mb-4 ${
-                isGoliath ? 'text-rose-400' : 'text-teal-300'
-              }`}
-            >
-              {card.tagline}
-            </p>
-
-            {/* Description Card */}
+            {/* Description */}
             <div
-              className={`rounded-xl p-3.5 mb-6 text-left border ${
+              className={`rounded-2xl p-3.5 my-3 text-xs sm:text-sm font-medium leading-relaxed ${
                 isGoliath
-                  ? 'bg-slate-900/90 border-rose-900/60 text-slate-200'
-                  : 'bg-slate-900/90 border-teal-900/60 text-slate-200'
+                  ? 'bg-rose-950/70 border border-rose-800/80 text-rose-200'
+                  : 'bg-teal-950/70 border border-teal-800/80 text-teal-100'
               }`}
             >
-              <p className="text-xs sm:text-sm font-medium leading-relaxed">
-                {card.description}
-              </p>
-
-              {isShieldedFromGoliath && (
-                <div className="mt-2 pt-2 border-t border-rose-800 flex items-center gap-1.5 text-amber-300 text-xs font-bold">
-                  <ShieldAlert className="w-4 h-4 text-cyan-400" />
-                  <span>ALLIANCE SHIELD ACTIVE: Hazard neutralized!</span>
+              {isShieldedFromGoliath ? (
+                <div className="flex flex-col items-center gap-1 text-emerald-300 font-bold">
+                  <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                  <span>ALLIANCE SHIELD BLOCKED THIS GOLIATH SETBACK!</span>
                 </div>
+              ) : (
+                card.description
               )}
             </div>
 
-            {/* Action Button */}
+            {/* Action / Continue Button */}
             <button
-              id="card-execute-btn"
+              id="apply-card-btn"
               onClick={onApply}
-              className={`w-full py-3 px-4 rounded-xl font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg transition-all cursor-pointer ${
+              className={`w-full py-3 px-6 rounded-xl font-black text-sm uppercase tracking-wider shadow-lg transition-all active:scale-98 cursor-pointer border ${
                 isGoliath
-                  ? 'bg-rose-600 hover:bg-rose-500 text-white border border-rose-400'
-                  : 'bg-teal-500 hover:bg-teal-400 text-slate-950 border border-teal-300'
+                  ? 'bg-rose-600 hover:bg-rose-500 text-white border-rose-400'
+                  : 'bg-teal-600 hover:bg-teal-500 text-white border-teal-400'
               }`}
             >
-              {activePlayer.isHuman ? card.actionText || 'Continue' : 'Resolving...'}
+              {activePlayer.isHuman
+                ? card.actionText || 'Continue'
+                : 'Applying card...'}
             </button>
           </motion.div>
         </div>
