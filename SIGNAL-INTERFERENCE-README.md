@@ -1,4 +1,11 @@
-# signal-interference.js — design notes (Session 179)
+# signal-interference.js — PBE (Pirate Broadcast Engine) — design notes (Session 179)
+
+Officially named the PBE as of this session. "Signal interference" was
+the working description; PBE is the name going forward in conversation
+and documentation. The filename itself stays `signal-interference.js`
+unless you want a rename pass later — changing it now would mean
+re-wiring every `<script src>` that already points to it, including
+the live one on `entries/maestro.html`.
 
 Status: **core scheduler + effect library built and tested standalone.
 Not wired into any live page yet.** Per the 178 brief's agreed sequence

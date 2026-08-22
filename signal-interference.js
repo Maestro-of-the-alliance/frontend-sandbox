@@ -1,5 +1,5 @@
 /**
- * signal-interference.js — UNIFIED SIGNAL INTERFERENCE ENGINE v1
+ * signal-interference.js — PBE (PIRATE BROADCAST ENGINE) v1
  * ==========================================================
  * Replaces (once trialed and rolled out): ambient-glitch.js,
  * ambient-glitch-entries.js, randanime_shield.js, randanime_maestro.js,
