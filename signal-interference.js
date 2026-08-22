@@ -74,7 +74,15 @@
   // inert — no CSS injected, no elements created, no timers started.
   // This is a genuine fix: only ambient-glitch-entries.js honored this
   // before; the landing engine and both randanime variants did not.
-  if (reduceMotion) return;
+  // Logged explicitly (added Session 179) rather than silently, since
+  // silent-and-inert is indistinguishable from silent-and-broken
+  // without this line.
+  if (reduceMotion) {
+    console.info(
+      "[PBE] prefers-reduced-motion is set — engine intentionally inert. No CSS, elements, or timers created.",
+    );
+    return;
+  }
 
   // ── RANDOM HELPERS ────────────────────────────────────────────
 
@@ -1431,6 +1439,10 @@
   scheduleTier("small");
   scheduleTier("medium");
   scheduleTier("large");
+
+  console.info(
+    `[PBE] loaded and scheduled — mix: small ${mix.small}, medium ${mix.medium}, large ${mix.large} — pool sizes: ${POOLS.small.length}/${POOLS.medium.length}/${POOLS.large.length}. First fire lands within a few seconds per tier.`,
+  );
 
   // Exposed for debugging/tuning from the console on a trial page —
   // not part of the public API, just makes hand-testing pacing easier.
