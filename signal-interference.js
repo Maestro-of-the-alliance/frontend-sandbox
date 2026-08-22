@@ -997,6 +997,52 @@
     });
   }
 
+  function fireHeaderChromaSplit() {
+    // New (direct request) — the page's own title genuinely splits
+    // into red/green/blue channel duplicates, drifts apart a little,
+    // then pulls back together and recombines. Distinct from
+    // fireRGBSplit (a whole-screen color overlay that snaps and fades,
+    // never recombines) and fireGhostText (a single cyan duplicate
+    // that just fades away, no channel split, no recombine motion).
+    // Feature-detects the title the same way fireEntryWordVerify and
+    // fireGhostText already do; silently no-ops if none found.
+    const title =
+      document.getElementById("entryWord") ||
+      document.querySelector(".entry-word, .title, h1");
+    if (!title) return;
+    const rect = title.getBoundingClientRect();
+    if (!rect.width) return;
+    const cs = window.getComputedStyle(title);
+    const spread = rand(3, 8);
+    const layers = [
+      { color: "rgba(255,0,60,0.7)", dx: -spread, dy: 0 },
+      { color: "rgba(0,255,90,0.55)", dx: 0, dy: spread * 0.6 },
+      { color: "rgba(40,120,255,0.7)", dx: spread, dy: 0 },
+    ];
+    const container = document.createElement("div");
+    container.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;height:${rect.height}px;pointer-events:none;z-index:99969;mix-blend-mode:screen;`;
+    const nodes = layers.map((l) => {
+      const el = document.createElement("div");
+      el.textContent = title.textContent;
+      el.style.cssText = `position:absolute;inset:0;font-family:${cs.fontFamily};font-size:${cs.fontSize};font-weight:${cs.fontWeight};letter-spacing:${cs.letterSpacing};line-height:${cs.lineHeight};color:${l.color};white-space:nowrap;transform:translate(0,0);transition:transform 260ms ease-out;`;
+      container.appendChild(el);
+      return { el, dx: l.dx, dy: l.dy };
+    });
+    document.body.appendChild(container);
+    requestAnimationFrame(() => {
+      nodes.forEach(({ el, dx, dy }) => {
+        el.style.transform = `translate(${dx}px, ${dy}px)`;
+      });
+      setTimeout(() => {
+        nodes.forEach(({ el }) => {
+          el.style.transition = "transform 340ms ease-in";
+          el.style.transform = "translate(0,0)";
+        });
+        setTimeout(() => container.remove(), 400);
+      }, rand(260, 420));
+    });
+  }
+
   // ── LARGE TIER — rare, dramatic, the actual show ───────────────
 
   const NOISE = "█▓▒░╠╬╣╔╗╚╝║═▲▼◄►◆○●□■?!@#$%^&*<>/\\|{}~`";
@@ -1364,6 +1410,7 @@
       fireAudioWaveform,
       fireCoordinateGlitch,
       fireMarginNote,
+      fireHeaderChromaSplit,
     ],
     large: [
       fireScramble,

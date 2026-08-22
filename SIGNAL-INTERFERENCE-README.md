@@ -237,6 +237,31 @@ without throwing (immediate + delayed-cleanup window), config
 overrides still work, all 52 fire cleanly against maestro.html's real
 markup.
 
+## fireHeaderChromaSplit — direct request (Session 179)
+
+Asked for specifically: the page's title separating into RGB, drifting
+apart slightly, then recombining. Neither existing effect actually did
+this — `fireRGBSplit` is a whole-screen color overlay that snaps to
+offset and only fades, never recombines; `fireGhostText` spawns one
+single-color duplicate of the title that fades away, no channel split,
+no recombine motion.
+
+`fireHeaderChromaSplit` (medium tier, 53rd effect) builds three real
+duplicate layers of the actual title text — red, green, blue, each
+`mix-blend-mode: screen` — drifts them apart a few pixels in different
+directions over ~260ms, holds briefly, then animates all three back to
+zero offset over ~340ms before removing the layers. Feature-detects
+the title the same way `fireEntryWordVerify` and `fireGhostText`
+already do (`#entryWord` / `.entry-word` / `.title` / `h1`); silently
+no-ops if none found.
+
+Verified with a dedicated test using a mocked non-zero
+`getBoundingClientRect` (jsdom doesn't do real layout, so the default
+zero-width rect would make the feature-detection guard silently bail
+every time without this) — confirmed it actually builds three layers
+carrying the real title text in the three intended colors, not just
+that it "didn't throw."
+
 ## First live trial: entries/maestro.html (Session 179)
 
 Live as of this session. `randanime_maestro.js` and `ambient-glitch-
