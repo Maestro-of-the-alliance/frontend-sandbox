@@ -1400,10 +1400,17 @@
   function effectiveRange(tier, weight) {
     const floor = TIER_FLOOR_MS[tier];
     const [baseMin, baseMax] = TIER_BASE_RANGE_MS[tier];
-    const w = Math.max(0.05, Math.min(1, weight));
-    // At weight 1.0: full base range. As weight drops toward 0.05,
-    // the range widens (rarer), but min never drops below the floor.
-    const min = Math.max(floor, baseMin);
+    // No upper clamp — a page can push a tier's weight past 1.0 to go
+    // denser than the base range (a mixing-board channel pushed past
+    // unity gain). The lower guard (min+1000) below still keeps the
+    // range sane no matter how high weight goes.
+    const w = Math.max(0.05, weight);
+    // At weight 1.0: full base range. Both ends scale with weight now
+    // (previously only max did, which meant doubling weight fell well
+    // short of doubling the actual fire rate) -- min is bounded by the
+    // tier's hard floor, so weight can never push a tier faster than
+    // that floor no matter how high it's pushed.
+    const min = Math.max(floor, baseMin / w);
     const max = Math.max(min + 1000, baseMax / w);
     return [min, max];
   }
