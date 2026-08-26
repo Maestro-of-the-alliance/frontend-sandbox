@@ -35,7 +35,23 @@
     50% { transform: scale(1.25); opacity: 1; }
   }
 
-  /* Boat reveal panel -- shown when the telescope hotspot is clicked */
+  /* Balcony video reveal -- zoom transition into a video player */
+  #video-panel {
+    position: fixed; inset: 0; z-index: 60; display: none;
+    align-items: center; justify-content: center; background: #000;
+    opacity: 0; transition: opacity 0.6s ease;
+  }
+  #video-panel.showing { opacity: 1; }
+  #video-panel video {
+    width: 100%; height: 100%; object-fit: cover;
+    transform: scale(1.15); transition: transform 0.8s ease;
+  }
+  #video-panel.showing video { transform: scale(1); }
+  #video-close {
+    position: fixed; top: 30px; right: 30px; z-index: 61;
+    color: #fff; font-size: 2rem; cursor: pointer;
+    background: none; border: none; display: none; text-shadow: 0 0 8px rgba(0,0,0,0.8);
+  }
   #boat-panel {
     position: fixed; inset: 0; z-index: 60; display: none;
     align-items: center; justify-content: center;
@@ -83,6 +99,12 @@
 
 <div id="intercom-hotspot" class="hotspot-marker" style="display:none;"></div>
 <div id="telescope-hotspot" class="hotspot-marker" style="display:none;"></div>
+<div id="balcony-hotspot" class="hotspot-marker" style="display:none;"></div>
+
+<div id="video-panel">
+  <video id="welcome-video" src="welcome.mp4" playsinline></video>
+</div>
+<button id="video-close" aria-label="Close">&times;</button>
 
 <div id="boat-panel">
   <img id="boat-image" src="boat-01.png" alt="A distant sight through the telescope" />
@@ -203,11 +225,16 @@
   // genuinely centered in frame). These are the real, verified values.
   const telescopePos = lonLatToVector3(0, 0, HOTSPOT_RADIUS);
   const intercomPos = lonLatToVector3(133, -7, HOTSPOT_RADIUS);
+  // The middle balcony/sunset window -- also verified in Blender this
+  // same session, from the same panorama file, before it was closed.
+  const balconyPos = lonLatToVector3(95.58, 0, HOTSPOT_RADIUS);
 
   const telescopeEl = document.getElementById("telescope-hotspot");
   const intercomEl = document.getElementById("intercom-hotspot");
+  const balconyEl = document.getElementById("balcony-hotspot");
   telescopeEl.style.display = "block";
   intercomEl.style.display = "block";
+  balconyEl.style.display = "block";
 
   function projectToScreen(vec3, el) {
     const projected = vec3.clone().project(camera);
@@ -235,6 +262,7 @@
     camera.lookAt(target);
     projectToScreen(telescopePos, telescopeEl);
     projectToScreen(intercomPos, intercomEl);
+    projectToScreen(balconyPos, balconyEl);
     renderer.render(scene, camera);
   }
   animate();
@@ -288,6 +316,42 @@
     boatPanel.style.display = "none";
     boatClose.style.display = "none";
   });
+
+  // --- Balcony video interaction ---
+  const videoPanel = document.getElementById("video-panel");
+  const videoClose = document.getElementById("video-close");
+  const welcomeVideo = document.getElementById("welcome-video");
+
+  balconyEl.addEventListener("click", () => {
+    videoPanel.style.display = "flex";
+    videoClose.style.display = "block";
+    // Play is called directly inside this click handler -- that's a
+    // real user gesture as far as the browser's autoplay policy is
+    // concerned, so audio should be allowed to play here even though
+    // it wouldn't on page load or on a timer.
+    welcomeVideo.currentTime = 0;
+    welcomeVideo.muted = false;
+    const playPromise = welcomeVideo.play();
+    if (playPromise !== undefined) {
+      playPromise.catch((err) => {
+        console.warn("Video play was blocked:", err);
+      });
+    }
+    requestAnimationFrame(() => {
+      videoPanel.classList.add("showing");
+    });
+  });
+
+  function closeVideo() {
+    welcomeVideo.pause();
+    videoPanel.classList.remove("showing");
+    setTimeout(() => {
+      videoPanel.style.display = "none";
+      videoClose.style.display = "none";
+    }, 600);
+  }
+  videoClose.addEventListener("click", closeVideo);
+  welcomeVideo.addEventListener("ended", closeVideo);
 })();
 </script>
 </body>
