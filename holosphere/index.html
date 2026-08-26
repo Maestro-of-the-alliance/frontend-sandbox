@@ -72,6 +72,20 @@
     color: #fff; font-size: 2rem; cursor: pointer;
     background: none; border: none; display: none; text-shadow: 0 0 8px rgba(0,0,0,0.8);
   }
+
+  /* Door cutscene -- full pre-rendered scene photos (closed, then open
+     with PapaDOMO), not a small in-scene sprite, since that's the
+     actual asset shape. Crossfades over the live view briefly before
+     handing off to the tour page. */
+  #door-panel {
+    position: fixed; inset: 0; z-index: 65; display: none;
+    align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.6s ease;
+  }
+  #door-panel img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: opacity 0.4s ease;
+  }
   #boat-panel {
     position: fixed; inset: 0; z-index: 60; display: none;
     align-items: center; justify-content: center;
@@ -150,6 +164,10 @@
   <video id="welcome-video" src="welcome.mp4" playsinline></video>
 </div>
 <button id="video-close" aria-label="Close">&times;</button>
+
+<div id="door-panel">
+  <img id="door-image" src="door-closed.png" alt="A door opens" />
+</div>
 
 <div id="boat-panel">
   <img id="boat-image" src="boat-01.png" alt="A distant sight through the telescope" />
@@ -334,7 +352,7 @@
   // Dissolve the chosen word into small glowing blocks, then navigate.
   // A lighter, native approximation of the reference video's particle
   // break-up effect -- no fixed video needed, works at any screen size.
-  function dissolveAndGo(button, destination) {
+  function dissolveAndGo(button, onComplete) {
     const rect = button.getBoundingClientRect();
     button.classList.add("dissolving");
     const blockSize = 6;
@@ -355,14 +373,33 @@
       }
     }
     welcomeChoices.style.opacity = "0";
-    setTimeout(() => { window.location.href = destination; }, 750);
+    setTimeout(onComplete, 750);
   }
 
+  const doorPanel = document.getElementById("door-panel");
+  const doorImage = document.getElementById("door-image");
+
   document.getElementById("choice-tour").addEventListener("click", (e) => {
-    dissolveAndGo(e.currentTarget, "/tours/");
+    dissolveAndGo(e.currentTarget, () => {
+      // Door sequence: closed, then open with PapaDOMO stepping through,
+      // then on to the actual tour page. These are full pre-rendered
+      // scene photos (not isolated sprites), so this plays as a brief
+      // full-screen cutscene rather than a 3D-positioned in-scene object.
+      doorImage.src = "door-closed.png";
+      doorPanel.style.display = "flex";
+      requestAnimationFrame(() => { doorPanel.style.opacity = "1"; });
+      setTimeout(() => {
+        doorImage.src = "door-open-papadomo.png";
+      }, 1100);
+      setTimeout(() => {
+        window.location.href = "/tours/";
+      }, 2600);
+    });
   });
   document.getElementById("choice-wander").addEventListener("click", (e) => {
-    dissolveAndGo(e.currentTarget, "/s3");
+    dissolveAndGo(e.currentTarget, () => {
+      window.location.href = "/s3";
+    });
   });
 
   // --- Telescope interaction ---
