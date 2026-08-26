@@ -191,7 +191,12 @@
   camera.position.set(0, 0, 0);
 
   // --- Drag-to-look-around, rotation only, no zoom/pan ---
-  let lon = 0, lat = 0;
+  // Starting view -- a first attempt at "facing the desk," splitting
+  // the difference between the confirmed intercom reading (-138.5)
+  // and the confirmed balcony reading (-180.2) so the opening view
+  // shows both the desk and some ocean, not just one or the other.
+  // Easy to adjust once you actually see it load.
+  let lon = -160, lat = -10;
   let isDragging = false;
   let prevX = 0, prevY = 0;
 
@@ -239,16 +244,18 @@
   }
 
   const HOTSPOT_RADIUS = 480;
-  // These positions were originally estimated by cropping the panorama
-  // and eyeballing pixel coordinates -- that first estimate turned out
-  // wrong when actually tested (confirmed by loading the real panorama
-  // into Blender and sweeping the camera until each object was
-  // genuinely centered in frame). These are the real, verified values.
-  const telescopePos = lonLatToVector3(0, 0, HOTSPOT_RADIUS);
-  const intercomPos = lonLatToVector3(133, -7, HOTSPOT_RADIUS);
-  // The middle balcony/sunset window -- also verified in Blender this
-  // same session, from the same panorama file, before it was closed.
-  const balconyPos = lonLatToVector3(95.58, 0, HOTSPOT_RADIUS);
+  // Real, crosshair-confirmed coordinates -- read directly off the
+  // live debug readout with the center crosshair, not derived from
+  // Blender or estimated from the raw image. The earlier two rounds
+  // of guessed positions were both confirmed wrong; these replace
+  // them entirely.
+  const telescopePos = lonLatToVector3(-266.6, -4.5, HOTSPOT_RADIUS);
+  const intercomPos = lonLatToVector3(-138.5, -35.4, HOTSPOT_RADIUS);
+  // The middle balcony/sunset window.
+  const balconyPos = lonLatToVector3(-180.2, -0.8, HOTSPOT_RADIUS);
+  // Confirmed but not yet wired up: the spot near the desk where the
+  // 16-bit tour door should appear on the "yes" choice -- lon: -116.6,
+  // lat: -23.4. Saved here so it isn't lost before that feature gets built.
 
   const telescopeEl = document.getElementById("telescope-hotspot");
   const intercomEl = document.getElementById("intercom-hotspot");
