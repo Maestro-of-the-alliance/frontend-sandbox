@@ -19,29 +19,33 @@
     transition: opacity 0.8s ease;
   }
 
-  /* Intercom call button -- a real, styled stand-in until a rendered
-     intercom is actually baked into a future panorama pass. */
-  #intercom-btn {
-    position: fixed; bottom: 8vh; left: 50%; transform: translateX(-50%);
-    z-index: 20; width: 64px; height: 64px; border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #b5442e, #7a2a1a);
-    border: 3px solid #d4af37; box-shadow: 0 0 20px rgba(212,175,55,0.5);
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    animation: intercomPulse 2.4s ease-in-out infinite;
+  /* 3D hotspot markers -- positioned in world space via raycasting,
+     not fixed screen positions. Both the telescope and intercom are
+     now genuinely rendered in the panorama art itself. */
+  .hotspot-marker {
+    position: fixed; width: 40px; height: 40px; margin: -20px 0 0 -20px;
+    border-radius: 50%; border: 2px solid #d4af37;
+    background: rgba(212,175,55,0.15);
+    box-shadow: 0 0 16px rgba(212,175,55,0.6);
+    cursor: pointer; z-index: 20; pointer-events: auto;
+    animation: hotspotPulse 2.2s ease-in-out infinite;
   }
-  #intercom-btn::before {
-    content: ''; width: 26px; height: 26px; border-radius: 50%;
-    background: repeating-radial-gradient(circle, #ddd 0px, #ddd 1.5px, transparent 1.5px, transparent 4px);
+  @keyframes hotspotPulse {
+    0%, 100% { transform: scale(1); opacity: 0.75; }
+    50% { transform: scale(1.25); opacity: 1; }
   }
-  @keyframes intercomPulse {
-    0%, 100% { box-shadow: 0 0 20px rgba(212,175,55,0.5); }
-    50% { box-shadow: 0 0 34px rgba(212,175,55,0.9); }
+
+  /* Boat reveal panel -- shown when the telescope hotspot is clicked */
+  #boat-panel {
+    position: fixed; inset: 0; z-index: 60; display: none;
+    align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.75);
   }
-  #intercom-label {
-    position: fixed; bottom: 4.5vh; left: 50%; transform: translateX(-50%);
-    z-index: 20; color: #d4af37; font-size: 0.75rem; letter-spacing: 0.2em;
-    text-transform: uppercase; text-shadow: 0 0 8px rgba(0,0,0,0.8);
-    pointer-events: none;
+  #boat-panel img { max-width: 70vw; max-height: 70vh; border-radius: 50%; }
+  #boat-close {
+    position: fixed; top: 30px; right: 30px; z-index: 61;
+    color: #d4af37; font-size: 2rem; cursor: pointer;
+    background: none; border: none; display: none;
   }
 
   /* Welcome panel */
@@ -77,8 +81,13 @@
 <div id="loading-overlay">ENTERING THE HOLOSPHERE&hellip;</div>
 <canvas id="holosphere-canvas"></canvas>
 
-<div id="intercom-btn" aria-label="Call the intercom"></div>
-<div id="intercom-label">Tap to call</div>
+<div id="intercom-hotspot" class="hotspot-marker" style="display:none;"></div>
+<div id="telescope-hotspot" class="hotspot-marker" style="display:none;"></div>
+
+<div id="boat-panel">
+  <img id="boat-image" src="boat-01.png" alt="A distant sight through the telescope" />
+</div>
+<button id="boat-close" aria-label="Close">&times;</button>
 
 <div id="welcome-panel">
   <div id="welcome-box">
@@ -170,6 +179,45 @@
   }, { passive: true });
   canvas.addEventListener("touchend", onPointerUp);
 
+  // --- 3D hotspot markers ---
+  // Positions computed from the actual panorama image: cropped and
+  // pixel-measured to find the telescope and intercom, then converted
+  // from image UV coordinates to spherical lon/lat. Placed at a radius
+  // just inside the panorama sphere so they sit "on" the objects they
+  // represent rather than floating in front of them.
+  function lonLatToVector3(lonDeg, latDeg, radius) {
+    const phi = THREE.MathUtils.degToRad(90 - latDeg);
+    const theta = THREE.MathUtils.degToRad(lonDeg);
+    return new THREE.Vector3(
+      radius * Math.sin(phi) * Math.cos(theta),
+      radius * Math.cos(phi),
+      radius * Math.sin(phi) * Math.sin(theta)
+    );
+  }
+
+  const HOTSPOT_RADIUS = 480;
+  const telescopePos = lonLatToVector3(84.42, -9.44, HOTSPOT_RADIUS);
+  const intercomPos = lonLatToVector3(216.12, -30.34, HOTSPOT_RADIUS);
+
+  const telescopeEl = document.getElementById("telescope-hotspot");
+  const intercomEl = document.getElementById("intercom-hotspot");
+  telescopeEl.style.display = "block";
+  intercomEl.style.display = "block";
+
+  function projectToScreen(vec3, el) {
+    const projected = vec3.clone().project(camera);
+    // Behind the camera -- hide rather than show a flipped/wrapped position.
+    if (projected.z > 1) {
+      el.style.display = "none";
+      return;
+    }
+    el.style.display = "block";
+    const x = (projected.x * 0.5 + 0.5) * window.innerWidth;
+    const y = (-projected.y * 0.5 + 0.5) * window.innerHeight;
+    el.style.left = x + "px";
+    el.style.top = y + "px";
+  }
+
   function animate() {
     requestAnimationFrame(animate);
     const phi = THREE.MathUtils.degToRad(90 - lat);
@@ -180,6 +228,8 @@
       500 * Math.sin(phi) * Math.sin(theta)
     );
     camera.lookAt(target);
+    projectToScreen(telescopePos, telescopeEl);
+    projectToScreen(intercomPos, intercomEl);
     renderer.render(scene, camera);
   }
   animate();
@@ -191,15 +241,13 @@
   });
 
   // --- Intercom interaction ---
-  const intercomBtn = document.getElementById("intercom-btn");
-  const intercomLabel = document.getElementById("intercom-label");
   const welcomePanel = document.getElementById("welcome-panel");
   const welcomeText = document.getElementById("welcome-text");
   const welcomeChoices = document.getElementById("welcome-choices");
 
-  intercomBtn.addEventListener("click", () => {
-    intercomBtn.style.display = "none";
-    intercomLabel.style.display = "none";
+  intercomEl.addEventListener("click", () => {
+    telescopeEl.style.display = "none";
+    intercomEl.style.display = "none";
     welcomePanel.style.display = "flex";
     requestAnimationFrame(() => {
       welcomeText.style.opacity = "1";
@@ -212,6 +260,28 @@
   });
   document.getElementById("choice-wander").addEventListener("click", () => {
     window.location.href = "/s3";
+  });
+
+  // --- Telescope interaction ---
+  const boatPanel = document.getElementById("boat-panel");
+  const boatClose = document.getElementById("boat-close");
+  const boatImage = document.getElementById("boat-image");
+
+  // Pool of boat images -- currently just the one real generated asset.
+  // Add more filenames here as they're generated, and this will pick
+  // randomly among them each time the telescope is used.
+  const BOAT_IMAGES = ["boat-01.png"];
+
+  telescopeEl.addEventListener("click", () => {
+    const choice = BOAT_IMAGES[Math.floor(Math.random() * BOAT_IMAGES.length)];
+    boatImage.src = choice;
+    boatPanel.style.display = "flex";
+    boatClose.style.display = "block";
+  });
+
+  boatClose.addEventListener("click", () => {
+    boatPanel.style.display = "none";
+    boatClose.style.display = "none";
   });
 })();
 </script>
