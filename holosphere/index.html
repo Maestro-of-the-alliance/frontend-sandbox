@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>THE HOLOSPHERE — The ALLIANCE For The Future</title>
+<style>
+  html, body {
+    margin: 0; padding: 0; overflow: hidden; height: 100%; width: 100%;
+    background: #000; font-family: 'Georgia', serif;
+  }
+  #holosphere-canvas { position: fixed; inset: 0; display: block; cursor: grab; }
+  #holosphere-canvas:active { cursor: grabbing; }
+
+  #loading-overlay {
+    position: fixed; inset: 0; background: #000; color: #d4af37;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; letter-spacing: 0.3em; z-index: 100;
+    transition: opacity 0.8s ease;
+  }
+
+  /* Intercom call button -- a real, styled stand-in until a rendered
+     intercom is actually baked into a future panorama pass. */
+  #intercom-btn {
+    position: fixed; bottom: 8vh; left: 50%; transform: translateX(-50%);
+    z-index: 20; width: 64px; height: 64px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #b5442e, #7a2a1a);
+    border: 3px solid #d4af37; box-shadow: 0 0 20px rgba(212,175,55,0.5);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    animation: intercomPulse 2.4s ease-in-out infinite;
+  }
+  #intercom-btn::before {
+    content: ''; width: 26px; height: 26px; border-radius: 50%;
+    background: repeating-radial-gradient(circle, #ddd 0px, #ddd 1.5px, transparent 1.5px, transparent 4px);
+  }
+  @keyframes intercomPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(212,175,55,0.5); }
+    50% { box-shadow: 0 0 34px rgba(212,175,55,0.9); }
+  }
+  #intercom-label {
+    position: fixed; bottom: 4.5vh; left: 50%; transform: translateX(-50%);
+    z-index: 20; color: #d4af37; font-size: 0.75rem; letter-spacing: 0.2em;
+    text-transform: uppercase; text-shadow: 0 0 8px rgba(0,0,0,0.8);
+    pointer-events: none;
+  }
+
+  /* Welcome panel */
+  #welcome-panel {
+    position: fixed; inset: 0; z-index: 50; display: none;
+    align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.55); backdrop-filter: blur(2px);
+  }
+  #welcome-box {
+    max-width: 560px; margin: 20px; padding: 40px 36px; text-align: center;
+    background: rgba(20,14,8,0.92); border: 1px solid rgba(212,175,55,0.4);
+    border-radius: 4px; color: #eee2c8;
+  }
+  #welcome-text {
+    font-size: 1.15rem; line-height: 1.7; margin-bottom: 32px;
+    font-style: italic; opacity: 0; transition: opacity 1.2s ease;
+  }
+  #welcome-choices {
+    display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+    opacity: 0; transition: opacity 0.8s ease;
+  }
+  .choice-btn {
+    padding: 14px 28px; background: transparent; border: 1px solid #d4af37;
+    color: #d4af37; font-family: 'Georgia', serif; font-size: 0.95rem;
+    letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+  .choice-btn:hover { background: #d4af37; color: #1a1206; }
+</style>
+</head>
+<body>
+
+<div id="loading-overlay">ENTERING THE HOLOSPHERE&hellip;</div>
+<canvas id="holosphere-canvas"></canvas>
+
+<div id="intercom-btn" aria-label="Call the intercom"></div>
+<div id="intercom-label">Tap to call</div>
+
+<div id="welcome-panel">
+  <div id="welcome-box">
+    <div id="welcome-text">
+      Well, look who found the good spot. Welcome to the HoloSphere. Hope
+      the view was worth the trip. Now — you can let PapaDomo walk you
+      through this properly, or you can wander it yourself and find your
+      own way through. Either's fine by me. Just have fun with it. And
+      keep an eye out &mdash; there might be a surprise or two where
+      you're least expecting one.
+    </div>
+    <div id="welcome-choices">
+      <button class="choice-btn" id="choice-tour">Take the Tour</button>
+      <button class="choice-btn" id="choice-wander">Wander at My Leisure</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  const canvas = document.getElementById("holosphere-canvas");
+  const loadingOverlay = document.getElementById("loading-overlay");
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(
+    75, window.innerWidth / window.innerHeight, 0.1, 1000
+  );
+
+  const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  // Inverted sphere so the texture renders on the INSIDE, visible from
+  // the camera sitting at its center.
+  const geometry = new THREE.SphereGeometry(500, 60, 40);
+  geometry.scale(-1, 1, 1);
+
+  const loader = new THREE.TextureLoader();
+  loader.load(
+    "panorama.png",
+    function (texture) {
+      const material = new THREE.MeshBasicMaterial({ map: texture });
+      const sphere = new THREE.Mesh(geometry, material);
+      scene.add(sphere);
+      loadingOverlay.style.opacity = "0";
+      setTimeout(() => { loadingOverlay.style.display = "none"; }, 800);
+    },
+    undefined,
+    function (err) {
+      loadingOverlay.textContent = "Couldn't load the HoloSphere. Please refresh.";
+      console.error(err);
+    }
+  );
+
+  camera.position.set(0, 0, 0);
+
+  // --- Drag-to-look-around, rotation only, no zoom/pan ---
+  let lon = 0, lat = 0;
+  let isDragging = false;
+  let prevX = 0, prevY = 0;
+
+  function onPointerDown(x, y) {
+    isDragging = true;
+    prevX = x; prevY = y;
+  }
+  function onPointerMove(x, y) {
+    if (!isDragging) return;
+    const dx = x - prevX;
+    const dy = y - prevY;
+    lon -= dx * 0.15;
+    lat += dy * 0.15;
+    lat = Math.max(-85, Math.min(85, lat));
+    prevX = x; prevY = y;
+  }
+  function onPointerUp() { isDragging = false; }
+
+  canvas.addEventListener("mousedown", (e) => onPointerDown(e.clientX, e.clientY));
+  window.addEventListener("mousemove", (e) => onPointerMove(e.clientX, e.clientY));
+  window.addEventListener("mouseup", onPointerUp);
+
+  canvas.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 1) onPointerDown(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
+  canvas.addEventListener("touchmove", (e) => {
+    if (e.touches.length === 1) onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
+  canvas.addEventListener("touchend", onPointerUp);
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const phi = THREE.MathUtils.degToRad(90 - lat);
+    const theta = THREE.MathUtils.degToRad(lon);
+    const target = new THREE.Vector3(
+      500 * Math.sin(phi) * Math.cos(theta),
+      500 * Math.cos(phi),
+      500 * Math.sin(phi) * Math.sin(theta)
+    );
+    camera.lookAt(target);
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  // --- Intercom interaction ---
+  const intercomBtn = document.getElementById("intercom-btn");
+  const intercomLabel = document.getElementById("intercom-label");
+  const welcomePanel = document.getElementById("welcome-panel");
+  const welcomeText = document.getElementById("welcome-text");
+  const welcomeChoices = document.getElementById("welcome-choices");
+
+  intercomBtn.addEventListener("click", () => {
+    intercomBtn.style.display = "none";
+    intercomLabel.style.display = "none";
+    welcomePanel.style.display = "flex";
+    requestAnimationFrame(() => {
+      welcomeText.style.opacity = "1";
+      setTimeout(() => { welcomeChoices.style.opacity = "1"; }, 900);
+    });
+  });
+
+  document.getElementById("choice-tour").addEventListener("click", () => {
+    window.location.href = "/tours/";
+  });
+  document.getElementById("choice-wander").addEventListener("click", () => {
+    window.location.href = "/s3";
+  });
+})();
+</script>
+</body>
+</html>
