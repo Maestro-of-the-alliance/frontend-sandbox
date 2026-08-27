@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>THE HOLOSPHERE — The ALLIANCE For The Future</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Press+Start+2P&display=swap');
 
   html, body {
     margin: 0; padding: 0; overflow: hidden; height: 100%; width: 100%;
@@ -90,7 +90,7 @@
      handing off to the tour page. */
   #door-panel {
     position: fixed; inset: 0; z-index: 65; display: none;
-    align-items: center; justify-content: center; flex-direction: column;
+    align-items: flex-end; justify-content: center;
     opacity: 0; transition: opacity 1.2s ease;
   }
   #door-panel img {
@@ -98,29 +98,53 @@
     transition: opacity 0.8s ease;
     position: absolute; inset: 0;
   }
+  /* PapaDOMO's own lines get a classic retro JRPG textbox -- distinct
+     from the golden neon script used for the tour invitation, which
+     stays as-is. Pixel font, bordered box, portrait, blinking
+     continue arrow. */
+  #papadomo-textbox {
+    position: relative; z-index: 66; width: 92vw; max-width: 720px;
+    margin-bottom: 4vh;
+    display: flex; align-items: stretch; gap: 0;
+    background: #3a4a5e;
+    border: 4px solid #1a222c;
+    box-shadow: inset 0 0 0 2px #7a8ba0, 0 6px 0 rgba(0,0,0,0.4);
+    opacity: 0; transition: opacity 1s ease;
+  }
+  #papadomo-portrait-frame {
+    flex: 0 0 auto; width: 76px; height: 76px; margin: 10px;
+    background: #1a222c; border: 3px solid #7a8ba0;
+    overflow: hidden;
+  }
+  #papadomo-portrait-frame img {
+    width: 100%; height: 100%; object-fit: cover;
+    image-rendering: pixelated;
+  }
+  #papadomo-text-area {
+    flex: 1 1 auto; padding: 14px 16px; display: flex;
+    flex-direction: column; justify-content: center; position: relative;
+  }
   #door-dialogue {
-    position: relative; z-index: 66;
-    font-family: 'Dancing Script', cursive; font-weight: 700;
-    font-size: clamp(1.5rem, 4.5vw, 2.6rem); text-align: center;
-    color: #ffd76b; max-width: 80vw;
-    text-shadow: 0 0 8px rgba(255,215,107,0.9), 0 0 20px rgba(255,180,50,0.7);
-    opacity: 0; transition: opacity 1.2s ease;
-    padding: 0 20px 60px;
+    font-family: 'Press Start 2P', monospace; font-size: 0.75rem;
+    line-height: 1.9; color: #fff;
+    text-shadow: 2px 2px 0 #1a222c;
   }
   #door-continue-hint {
-    position: relative; z-index: 66;
-    color: #ffd76b; font-family: 'Georgia', serif; font-size: 0.9rem;
-    letter-spacing: 0.15em; text-transform: uppercase;
-    opacity: 0; cursor: pointer;
+    position: absolute; right: 14px; bottom: 10px;
+    width: 0; height: 0; cursor: pointer;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 10px solid #fff;
+    opacity: 0;
   }
-  /* Applied via JS once the hint should start pulsing, kept separate
-     from the initial opacity so the fade-in and the infinite pulse
+  /* Applied via JS once the hint should start blinking, kept separate
+     from the initial opacity so the fade-in and the infinite blink
      don't fight over the same property at the same time. */
   #door-continue-hint.pulsing {
-    animation: continueHintPulse 1.8s ease-in-out infinite;
+    animation: continueHintBlink 0.9s steps(1) infinite;
   }
-  @keyframes continueHintPulse {
-    0%, 100% { opacity: 0.5; } 50% { opacity: 1; }
+  @keyframes continueHintBlink {
+    0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; }
   }
   /* Fully opaque black -- a real telescope shows you something
      completely separate from your surroundings, so nothing of the
@@ -237,8 +261,15 @@
 
 <div id="door-panel">
   <img id="door-image" src="door-closed.png" alt="A door opens" />
-  <div id="door-dialogue"></div>
-  <div id="door-continue-hint">Click to continue</div>
+  <div id="papadomo-textbox">
+    <div id="papadomo-portrait-frame">
+      <img src="papadomo-portrait.png" alt="PapaDOMO" />
+    </div>
+    <div id="papadomo-text-area">
+      <div id="door-dialogue"></div>
+      <div id="door-continue-hint"></div>
+    </div>
+  </div>
 </div>
 
 <div id="boat-panel">
@@ -454,6 +485,7 @@
 
   const doorPanel = document.getElementById("door-panel");
   const doorImage = document.getElementById("door-image");
+  const papadomoTextbox = document.getElementById("papadomo-textbox");
   const doorDialogue = document.getElementById("door-dialogue");
   const doorContinueHint = document.getElementById("door-continue-hint");
 
@@ -472,13 +504,14 @@
   document.getElementById("choice-tour").addEventListener("click", (e) => {
     dissolveAndGo(e.currentTarget, () => {
       // Door sequence: closed, then open with PapaDOMO stepping through,
-      // then he actually says something, and the visitor has to click
-      // to continue -- this no longer auto-advances on a timer. Slower
-      // throughout, since the original pacing felt rushed.
+      // then his textbox appears with something he says, and the
+      // visitor has to click the blinking arrow to continue -- this
+      // no longer auto-advances on a timer. Slower throughout, since
+      // the original pacing felt rushed.
       doorImage.src = "door-closed.png";
       doorImage.style.opacity = "1";
       doorDialogue.innerHTML = PAPADOMO_LINES[Math.floor(Math.random() * PAPADOMO_LINES.length)];
-      doorDialogue.style.opacity = "0";
+      papadomoTextbox.style.opacity = "0";
       doorContinueHint.style.opacity = "0";
       doorContinueHint.classList.remove("pulsing");
       doorPanel.style.display = "flex";
@@ -489,7 +522,7 @@
       }, 2000);
 
       setTimeout(() => {
-        doorDialogue.style.opacity = "1";
+        papadomoTextbox.style.opacity = "1";
       }, 3600);
 
       setTimeout(() => {
