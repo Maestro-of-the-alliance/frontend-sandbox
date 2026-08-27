@@ -517,6 +517,14 @@
       doorImage.style.cursor = "pointer";
       requestAnimationFrame(() => { doorPanel.style.opacity = "1"; });
 
+      function proceedToTours() {
+        doorPanel.removeEventListener("click", proceedToTours);
+        doorPanel.style.opacity = "0";
+        setTimeout(() => {
+          window.location.href = "/tours/";
+        }, 800);
+      }
+
       function openTheDoor() {
         doorImage.removeEventListener("click", openTheDoor);
         doorImage.style.cursor = "default";
@@ -525,20 +533,18 @@
           papadomoTextbox.style.opacity = "1";
         }, 1200);
         setTimeout(() => {
+          // Not a real choice here, just "proceed whenever you're
+          // ready" -- so the whole screen is clickable, not just the
+          // small triangle. The triangle stays as a visual cue, but
+          // isn't the only hit target; easier to actually tap,
+          // especially on mobile.
           doorContinueHint.style.opacity = "1";
           doorContinueHint.classList.add("pulsing");
+          doorPanel.style.cursor = "pointer";
+          doorPanel.addEventListener("click", proceedToTours);
         }, 2200);
       }
       doorImage.addEventListener("click", openTheDoor);
-
-      function proceedToTours() {
-        doorContinueHint.removeEventListener("click", proceedToTours);
-        doorPanel.style.opacity = "0";
-        setTimeout(() => {
-          window.location.href = "/tours/";
-        }, 800);
-      }
-      doorContinueHint.addEventListener("click", proceedToTours);
     });
   });
   document.getElementById("choice-wander").addEventListener("click", (e) => {
