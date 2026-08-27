@@ -14,16 +14,19 @@
   #holosphere-canvas { position: fixed; inset: 0; display: block; cursor: grab; }
   #holosphere-canvas:active { cursor: grabbing; }
 
+  /* Calibration tools, only for finding hotspot coordinates -- not
+     part of the real experience. Hidden by default now that the
+     confirmed positions are locked in; set display:none -> block on
+     both rules below if a future hotspot needs re-calibrating. */
   #debug-readout {
+    display: none;
     position: fixed; top: 12px; left: 12px; z-index: 90;
     color: #0f0; font-family: monospace; font-size: 0.85rem;
     background: rgba(0,0,0,0.6); padding: 6px 10px; border-radius: 4px;
     pointer-events: none;
   }
-  /* Fixed screen-center crosshair -- lets you line an object up
-     precisely before reading its lon/lat off the debug readout,
-     instead of eyeballing "roughly in the middle." */
   #center-crosshair {
+    display: none;
     position: fixed; top: 50%; left: 50%; width: 24px; height: 24px;
     margin: -12px 0 0 -12px; z-index: 90; pointer-events: none;
   }
@@ -67,6 +70,14 @@
     transform: scale(1.15); transition: transform 0.8s ease;
   }
   #video-panel.showing video { transform: scale(1); }
+  /* On narrow/portrait screens, this landscape video would get
+     cropped down to a tiny sliver by object-fit: cover fighting the
+     phone's tall aspect ratio. Switch to contain there instead --
+     letterboxed (black bars top/bottom) but the whole video visible,
+     rather than zoomed into one corner of it. */
+  @media (max-aspect-ratio: 4/5) {
+    #video-panel video { object-fit: contain; }
+  }
   #video-close {
     position: fixed; top: 30px; right: 30px; z-index: 61;
     color: #fff; font-size: 2rem; cursor: pointer;
