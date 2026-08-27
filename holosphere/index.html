@@ -148,6 +148,11 @@
     /* No transition here -- pinch/wheel zoom needs to track the
        user's input in real time, not ease toward a fixed value. */
     cursor: zoom-in;
+    /* Without this, the browser's own native pinch-to-zoom gesture
+       fights the custom JS pinch handling below -- this is exactly
+       the kind of thing that only shows up on a real phone, not in
+       a syntax check. */
+    touch-action: none;
   }
   #boat-close {
     position: fixed; top: 30px; right: 30px; z-index: 61;
