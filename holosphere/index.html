@@ -59,17 +59,26 @@
   }
   /* Individually sized per object -- a shared small fixed dot made
      these frustratingly precise to hit. Each is sized to roughly
-     cover the actual thing it represents, not just its center point. */
+     cover the actual thing it represents, not just its center point.
+     clamp() with viewport units instead of one fixed pixel size, so
+     these scale sensibly on a narrow phone instead of a desktop-sized
+     value dominating most of a small screen. */
   #balcony-hotspot {
-    width: 480px; height: 560px; margin: -280px 0 0 -240px;
+    width: clamp(220px, 55vw, 480px); height: clamp(160px, 30vh, 400px);
+    margin-top: calc(clamp(160px, 30vh, 400px) / -2);
+    margin-left: calc(clamp(220px, 55vw, 480px) / -2);
     border-radius: 8%;
   }
   #telescope-hotspot {
-    width: 160px; height: 320px; margin: -160px 0 0 -80px;
+    width: clamp(90px, 22vw, 160px); height: clamp(160px, 35vh, 320px);
+    margin-top: calc(clamp(160px, 35vh, 320px) / -2);
+    margin-left: calc(clamp(90px, 22vw, 160px) / -2);
     border-radius: 20%;
   }
   #intercom-hotspot {
-    width: 110px; height: 110px; margin: -55px 0 0 -55px;
+    width: clamp(70px, 18vw, 110px); height: clamp(70px, 18vw, 110px);
+    margin-top: calc(clamp(70px, 18vw, 110px) / -2);
+    margin-left: calc(clamp(70px, 18vw, 110px) / -2);
   }
 
   /* Balcony video reveal -- zoom transition into a video player */
@@ -393,6 +402,45 @@
   }, { passive: true });
   canvas.addEventListener("touchend", onPointerUp);
 
+  // Hotspots sit on top of the canvas, so any touch/click starting on
+  // one is captured by the hotspot element, not the canvas -- the
+  // canvas's own mousedown/touchstart never fires for that touch, no
+  // matter how the hotspot is sized. That created a real dead zone
+  // for camera dragging wherever a hotspot sat, reported directly as
+  // "can't move around on mobile" once the hotspots were enlarged.
+  //
+  // Fix: each hotspot now also starts the same shared drag (so
+  // dragging from a hotspot rotates the camera exactly like dragging
+  // from open canvas), and only fires its own action if the gesture
+  // stayed within a small movement threshold -- a genuine tap, not a
+  // drag that happened to start on top of it.
+  const TAP_MOVE_THRESHOLD = 8;
+  function makeHotspotInteractive(el, activate) {
+    let startX = 0, startY = 0, moved = false;
+    function start(x, y) {
+      startX = x; startY = y; moved = false;
+      onPointerDown(x, y);
+    }
+    function move(x, y) {
+      if (Math.hypot(x - startX, y - startY) > TAP_MOVE_THRESHOLD) moved = true;
+      onPointerMove(x, y);
+    }
+    function end() {
+      onPointerUp();
+      if (!moved) activate();
+    }
+    el.addEventListener("mousedown", (e) => { e.stopPropagation(); start(e.clientX, e.clientY); });
+    el.addEventListener("mousemove", (e) => { if (isDragging) move(e.clientX, e.clientY); });
+    el.addEventListener("mouseup", (e) => { e.stopPropagation(); end(); });
+    el.addEventListener("touchstart", (e) => {
+      if (e.touches.length === 1) start(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    el.addEventListener("touchmove", (e) => {
+      if (e.touches.length === 1) move(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    el.addEventListener("touchend", end);
+  }
+
   // --- 3D hotspot markers ---
   // Positions computed from the actual panorama image: cropped and
   // pixel-measured to find the telescope and intercom, then converted
@@ -473,7 +521,7 @@
   const welcomeText = document.getElementById("welcome-text");
   const welcomeChoices = document.getElementById("welcome-choices");
 
-  intercomEl.addEventListener("click", () => {
+  makeHotspotInteractive(intercomEl, () => {
     telescopeEl.style.display = "none";
     intercomEl.style.display = "none";
     welcomePanel.style.display = "flex";
@@ -707,7 +755,7 @@
     if (e.touches.length < 2) pinchStartDist = null;
   });
 
-  telescopeEl.addEventListener("click", () => {
+  makeHotspotInteractive(telescopeEl, () => {
     const choice = BOAT_IMAGES[Math.floor(Math.random() * BOAT_IMAGES.length)];
     boatImage.src = choice;
     resetBoatZoom();
@@ -731,13 +779,13 @@
   const videoClose = document.getElementById("video-close");
   const welcomeVideo = document.getElementById("welcome-video");
 
-  balconyEl.addEventListener("click", () => {
+  makeHotspotInteractive(balconyEl, () => {
     videoPanel.style.display = "flex";
     videoClose.style.display = "block";
-    // Play is called directly inside this click handler -- that's a
-    // real user gesture as far as the browser's autoplay policy is
-    // concerned, so audio should be allowed to play here even though
-    // it wouldn't on page load or on a timer.
+    // Play is called synchronously within the same tap gesture's call
+    // stack (no async boundary crossed inside makeHotspotInteractive),
+    // so this still counts as a direct user gesture for the browser's
+    // autoplay policy, same as before.
     welcomeVideo.currentTime = 0;
     welcomeVideo.muted = false;
     const playPromise = welcomeVideo.play();
