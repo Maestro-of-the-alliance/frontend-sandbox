@@ -97,12 +97,24 @@
     width: 100%; height: 100%; object-fit: cover;
     transition: opacity 0.4s ease;
   }
+  /* Fully opaque black -- a real telescope shows you something
+     completely separate from your surroundings, so nothing of the
+     live scene should show through at all, not even dimmed. */
   #boat-panel {
     position: fixed; inset: 0; z-index: 60; display: none;
     align-items: center; justify-content: center;
-    background: rgba(0,0,0,0.75);
+    background: #000;
+    opacity: 0; filter: blur(16px);
+    transition: opacity 0.5s ease, filter 0.5s ease;
   }
-  #boat-panel img { max-width: 70vw; max-height: 70vh; border-radius: 50%; }
+  #boat-panel.showing { opacity: 1; filter: blur(0); }
+  #boat-panel img {
+    max-width: 70vw; max-height: 70vh; border-radius: 50%;
+    /* Soft falloff at the rim instead of a hard, flat cutout --
+       reads more like real lens optics than a pasted circle. */
+    -webkit-mask-image: radial-gradient(circle, black 62%, transparent 92%);
+    mask-image: radial-gradient(circle, black 62%, transparent 92%);
+  }
   #boat-close {
     position: fixed; top: 30px; right: 30px; z-index: 61;
     color: #d4af37; font-size: 2rem; cursor: pointer;
@@ -428,11 +440,17 @@
     boatImage.src = choice;
     boatPanel.style.display = "flex";
     boatClose.style.display = "block";
+    requestAnimationFrame(() => {
+      boatPanel.classList.add("showing");
+    });
   });
 
   boatClose.addEventListener("click", () => {
-    boatPanel.style.display = "none";
-    boatClose.style.display = "none";
+    boatPanel.classList.remove("showing");
+    setTimeout(() => {
+      boatPanel.style.display = "none";
+      boatClose.style.display = "none";
+    }, 500);
   });
 
   // --- Balcony video interaction ---
