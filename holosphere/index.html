@@ -206,6 +206,11 @@
        the kind of thing that only shows up on a real phone, not in
        a syntax check. */
     touch-action: none;
+    /* Belt-and-suspenders alongside draggable="false" and the
+       mousedown preventDefault() -- covers browsers that respect the
+       CSS property specifically. */
+    -webkit-user-drag: none;
+    user-drag: none;
   }
   #boat-panel img:active { cursor: grabbing; }
   #boat-close {
@@ -296,7 +301,7 @@
 
 <div id="boat-panel">
   <div id="boat-window">
-    <img id="boat-image" src="boat-01.png" alt="A distant sight through the telescope" />
+    <img id="boat-image" src="boat-01.png" alt="A distant sight through the telescope" draggable="false" />
   </div>
 </div>
 <button id="boat-close" aria-label="Close">&times;</button>
@@ -621,8 +626,17 @@
 
   // Mouse drag-to-pan, so an off-center subject can actually be
   // recentered once zoomed in, not just magnified in place.
+  //
+  // <img> elements have native browser drag-to-save behavior on by
+  // default, which fights with custom mouse-based dragging -- a
+  // native drag doesn't fire regular mousemove events the same way,
+  // so mouseup can end up not resetting isDraggingBoat cleanly. That's
+  // almost certainly what caused the "click toggles it instead of
+  // hold-and-drag" behavior reported. preventDefault() on mousedown
+  // stops the native drag from ever starting.
   let isDraggingBoat = false, boatDragStartX = 0, boatDragStartY = 0;
   boatImage.addEventListener("mousedown", (e) => {
+    e.preventDefault();
     isDraggingBoat = true;
     boatDragStartX = e.clientX - boatPanX;
     boatDragStartY = e.clientY - boatPanY;
