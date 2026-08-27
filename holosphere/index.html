@@ -46,7 +46,7 @@
      not fixed screen positions. Both the telescope and intercom are
      now genuinely rendered in the panorama art itself. */
   .hotspot-marker {
-    position: fixed; width: 40px; height: 40px; margin: -20px 0 0 -20px;
+    position: fixed;
     border-radius: 50%;
     cursor: pointer; z-index: 20; pointer-events: auto;
     /* Invisible in the real experience -- confirmed via the debug
@@ -56,6 +56,20 @@
        clickable feels like your own find rather than the UI pointing
        at it. */
     opacity: 0;
+  }
+  /* Individually sized per object -- a shared small fixed dot made
+     these frustratingly precise to hit. Each is sized to roughly
+     cover the actual thing it represents, not just its center point. */
+  #balcony-hotspot {
+    width: 480px; height: 560px; margin: -280px 0 0 -240px;
+    border-radius: 8%;
+  }
+  #telescope-hotspot {
+    width: 160px; height: 320px; margin: -160px 0 0 -80px;
+    border-radius: 20%;
+  }
+  #intercom-hotspot {
+    width: 110px; height: 110px; margin: -55px 0 0 -55px;
   }
 
   /* Balcony video reveal -- zoom transition into a video player */
@@ -97,6 +111,15 @@
     width: 100%; height: 100%; object-fit: cover;
     transition: opacity 0.8s ease;
     position: absolute; inset: 0;
+  }
+  /* Same real bug as the welcome video: a landscape image with
+     object-fit: cover crops heavily on a narrow portrait phone,
+     which was pushing PapaDOMO out of frame entirely -- reported
+     directly as the view getting "parked in the corner," unable to
+     see or interact with anything. Contain instead on narrow/portrait
+     screens, same fix as before. */
+  @media (max-aspect-ratio: 4/5) {
+    #door-panel img { object-fit: contain; background: #000; }
   }
   /* PapaDOMO's own lines get a classic retro JRPG textbox -- distinct
      from the golden neon script used for the tour invitation, which
