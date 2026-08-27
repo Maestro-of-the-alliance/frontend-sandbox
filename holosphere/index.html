@@ -224,7 +224,7 @@
 
 <div id="door-panel">
   <img id="door-image" src="door-closed.png" alt="A door opens" />
-  <div id="door-dialogue">Come on, then &mdash; let's go see what's worth seeing.</div>
+  <div id="door-dialogue"></div>
   <div id="door-continue-hint">Click to continue</div>
 </div>
 
@@ -444,6 +444,18 @@
   const doorDialogue = document.getElementById("door-dialogue");
   const doorContinueHint = document.getElementById("door-continue-hint");
 
+  // A pool of things PapaDOMO might say once the door opens -- picked
+  // at random each visit, matching the same randomized-pool pattern
+  // used elsewhere (the boat images, the PBE's own message pools).
+  const PAPADOMO_LINES = [
+    "Come on, then &mdash; let's go see what's worth seeing.",
+    "Did you know PapaDOMO's tour of the N.C.E.ncyclopedia has a perfect rating on Trust Advisor.",
+    "After the tour we have a short survey we'd love for you to fill out. It only takes about two hours.",
+    "MAESTRO's known to make surprise appearances. Maybe today we'll get lucky.",
+    "You think I'm funny looking? You should see MamaDOMO.",
+    "What do you have there, glooshoos? Glue shoes. Let's go!",
+  ];
+
   document.getElementById("choice-tour").addEventListener("click", (e) => {
     dissolveAndGo(e.currentTarget, () => {
       // Door sequence: closed, then open with PapaDOMO stepping through,
@@ -452,6 +464,7 @@
       // throughout, since the original pacing felt rushed.
       doorImage.src = "door-closed.png";
       doorImage.style.opacity = "1";
+      doorDialogue.innerHTML = PAPADOMO_LINES[Math.floor(Math.random() * PAPADOMO_LINES.length)];
       doorDialogue.style.opacity = "0";
       doorContinueHint.style.opacity = "0";
       doorContinueHint.classList.remove("pulsing");
