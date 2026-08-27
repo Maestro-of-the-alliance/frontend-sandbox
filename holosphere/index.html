@@ -147,13 +147,14 @@
     transform-origin: center center;
     /* No transition here -- pinch/wheel zoom needs to track the
        user's input in real time, not ease toward a fixed value. */
-    cursor: zoom-in;
+    cursor: grab;
     /* Without this, the browser's own native pinch-to-zoom gesture
        fights the custom JS pinch handling below -- this is exactly
        the kind of thing that only shows up on a real phone, not in
        a syntax check. */
     touch-action: none;
   }
+  #boat-panel img:active { cursor: grabbing; }
   #boat-close {
     position: fixed; top: 30px; right: 30px; z-index: 61;
     color: #d4af37; font-size: 2rem; cursor: pointer;
@@ -524,10 +525,10 @@
     "grumpy.png",
   ];
 
-  // Real, user-driven zoom -- mouse wheel on desktop, pinch on touch --
-  // rather than a fixed automatic animation. Applies to the img
-  // generically, so it works the same way for whichever boat image is
-  // currently loaded, no per-image setup needed.
+  // Real, user-driven zoom and reposition -- mouse wheel + drag on
+  // desktop, pinch + single-finger drag on touch -- rather than a
+  // fixed automatic animation. Applies to the img generically, so it
+  // works the same way for whichever boat image is currently loaded.
   const ZOOM_MIN = 1, ZOOM_MAX = 5;
   let boatZoom = 1, boatPanX = 0, boatPanY = 0;
 
@@ -548,9 +549,26 @@
     applyBoatTransform();
   }, { passive: false });
 
-  // Pinch-to-zoom: track the distance between two touch points and
-  // scale relative to how that distance changes between move events.
+  // Mouse drag-to-pan, so an off-center subject can actually be
+  // recentered once zoomed in, not just magnified in place.
+  let isDraggingBoat = false, boatDragStartX = 0, boatDragStartY = 0;
+  boatImage.addEventListener("mousedown", (e) => {
+    isDraggingBoat = true;
+    boatDragStartX = e.clientX - boatPanX;
+    boatDragStartY = e.clientY - boatPanY;
+  });
+  window.addEventListener("mousemove", (e) => {
+    if (!isDraggingBoat) return;
+    boatPanX = e.clientX - boatDragStartX;
+    boatPanY = e.clientY - boatDragStartY;
+    applyBoatTransform();
+  });
+  window.addEventListener("mouseup", () => { isDraggingBoat = false; });
+
+  // Pinch-to-zoom (two fingers) and drag-to-pan (one finger) --
+  // distinguished by touch count, same element.
   let pinchStartDist = null, pinchStartZoom = 1;
+  let boatTouchStartX = 0, boatTouchStartY = 0;
   function touchDist(touches) {
     const dx = touches[0].clientX - touches[1].clientX;
     const dy = touches[0].clientY - touches[1].clientY;
@@ -560,6 +578,9 @@
     if (e.touches.length === 2) {
       pinchStartDist = touchDist(e.touches);
       pinchStartZoom = boatZoom;
+    } else if (e.touches.length === 1) {
+      boatTouchStartX = e.touches[0].clientX - boatPanX;
+      boatTouchStartY = e.touches[0].clientY - boatPanY;
     }
   }, { passive: true });
   boatImage.addEventListener("touchmove", (e) => {
@@ -568,6 +589,11 @@
       const newDist = touchDist(e.touches);
       const ratio = newDist / pinchStartDist;
       boatZoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, pinchStartZoom * ratio));
+      applyBoatTransform();
+    } else if (e.touches.length === 1) {
+      e.preventDefault();
+      boatPanX = e.touches[0].clientX - boatTouchStartX;
+      boatPanY = e.touches[0].clientY - boatTouchStartY;
       applyBoatTransform();
     }
   }, { passive: false });
