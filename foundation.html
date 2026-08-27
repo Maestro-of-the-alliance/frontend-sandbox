@@ -782,7 +782,8 @@
          override on the script tag near the end of this file, rather
          than lost. ---------- */
     </style>
-    <link rel="stylesheet" href="/papadomo-choice.css" />
+    <!-- papadomo-choice.css removed -- Foundation no longer opens
+         PapaDomoChoice; that logic now lives only on landing.html -->
   </head>
   <body>
     <div id="scanline-overlay"></div>
@@ -1316,21 +1317,11 @@
       modalCloseBtn.addEventListener("click", closeModal);
 
       document.getElementById("proceed-btn").addEventListener("click", () => {
-        window.PapaDomoChoice.open({
-          onEnterTour: () => {
-            // replace(), not href= -- this is the final step of the
-            // onboarding chain (index -> papadomo -> foundation ->
-            // here), and every step in that chain now uses replace()
-            // so the whole sequence collapses to zero extra history
-            // entries. A single back-press from here should skip the
-            // entire onboarding flow, not walk back through it one
-            // screen at a time.
-            window.location.replace("/tours/");
-          },
-          onExitHome: () => {
-            window.location.replace("/landing.html");
-          },
-        });
+        // Foundation no longer offers its own tour-or-home choice here --
+        // that question now belongs to the HOLOSPHERE, which stages it
+        // properly (the door, PapaDOMO appearing) rather than a plain
+        // modal. Foundation always proceeds straight to landing now.
+        window.location.replace("/landing.html");
       });
       mediaModal.addEventListener("click", (e) => {
         if (e.target === mediaModal) closeModal();
@@ -1355,6 +1346,5 @@
       };
     </script>
     <script src="/signal-interference.js"></script>
-    <script src="/papadomo-choice.js"></script>
   </body>
 </html>
