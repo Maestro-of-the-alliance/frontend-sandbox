@@ -637,23 +637,44 @@
 
   // Pinch-to-zoom (two fingers) and drag-to-pan (one finger) --
   // distinguished by touch count, same element.
+  //
+  // Real fingers almost never lift at exactly the same instant, so a
+  // pinch gesture very often collapses from 2 touches to 1 for a
+  // moment before fully ending. The original version only set up its
+  // "start" reference point in touchstart, so when that collapse
+  // happened mid-gesture, the single remaining finger would suddenly
+  // compute its pan position against a stale (or zero) reference,
+  // causing a jarring jump right at that instant -- exactly the
+  // "wonky, no forgiveness" feeling reported. Fix: recalibrate the
+  // relevant reference point every time the touch count itself
+  // changes, not just on a fresh touchstart, so 2-to-1 or 1-to-2
+  // transitions are always smooth regardless of timing.
   let pinchStartDist = null, pinchStartZoom = 1;
   let boatTouchStartX = 0, boatTouchStartY = 0;
+  let lastTouchCount = 0;
   function touchDist(touches) {
     const dx = touches[0].clientX - touches[1].clientX;
     const dy = touches[0].clientY - touches[1].clientY;
     return Math.hypot(dx, dy);
   }
-  boatImage.addEventListener("touchstart", (e) => {
-    if (e.touches.length === 2) {
-      pinchStartDist = touchDist(e.touches);
+  function recalibrateTouch(touches) {
+    if (touches.length === 2) {
+      pinchStartDist = touchDist(touches);
       pinchStartZoom = boatZoom;
-    } else if (e.touches.length === 1) {
-      boatTouchStartX = e.touches[0].clientX - boatPanX;
-      boatTouchStartY = e.touches[0].clientY - boatPanY;
+    } else if (touches.length === 1) {
+      boatTouchStartX = touches[0].clientX - boatPanX;
+      boatTouchStartY = touches[0].clientY - boatPanY;
     }
+  }
+  boatImage.addEventListener("touchstart", (e) => {
+    recalibrateTouch(e.touches);
+    lastTouchCount = e.touches.length;
   }, { passive: true });
   boatImage.addEventListener("touchmove", (e) => {
+    if (e.touches.length !== lastTouchCount) {
+      recalibrateTouch(e.touches);
+      lastTouchCount = e.touches.length;
+    }
     if (e.touches.length === 2 && pinchStartDist) {
       e.preventDefault();
       const newDist = touchDist(e.touches);
@@ -668,6 +689,7 @@
     }
   }, { passive: false });
   boatImage.addEventListener("touchend", (e) => {
+    lastTouchCount = e.touches.length;
     if (e.touches.length < 2) pinchStartDist = null;
   });
 
