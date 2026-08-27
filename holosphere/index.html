@@ -118,7 +118,6 @@
   }
   #papadomo-portrait-frame img {
     width: 100%; height: 100%; object-fit: cover;
-    image-rendering: pixelated;
   }
   #papadomo-text-area {
     flex: 1 1 auto; padding: 14px 16px; display: flex;
@@ -515,20 +514,22 @@
       doorContinueHint.style.opacity = "0";
       doorContinueHint.classList.remove("pulsing");
       doorPanel.style.display = "flex";
+      doorImage.style.cursor = "pointer";
       requestAnimationFrame(() => { doorPanel.style.opacity = "1"; });
 
-      setTimeout(() => {
+      function openTheDoor() {
+        doorImage.removeEventListener("click", openTheDoor);
+        doorImage.style.cursor = "default";
         doorImage.src = "door-open-papadomo.png";
-      }, 2000);
-
-      setTimeout(() => {
-        papadomoTextbox.style.opacity = "1";
-      }, 3600);
-
-      setTimeout(() => {
-        doorContinueHint.style.opacity = "1";
-        doorContinueHint.classList.add("pulsing");
-      }, 4600);
+        setTimeout(() => {
+          papadomoTextbox.style.opacity = "1";
+        }, 1200);
+        setTimeout(() => {
+          doorContinueHint.style.opacity = "1";
+          doorContinueHint.classList.add("pulsing");
+        }, 2200);
+      }
+      doorImage.addEventListener("click", openTheDoor);
 
       function proceedToTours() {
         doorContinueHint.removeEventListener("click", proceedToTours);
