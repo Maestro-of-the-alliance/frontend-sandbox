@@ -137,8 +137,15 @@
      so the window itself never changes size. Only the image inside
      it zooms, simulating the telescope finding focus on its subject. */
   #boat-window {
-    width: 70vw; height: 70vw; max-width: 70vh; max-height: 70vh;
-    aspect-ratio: 1 / 1; border-radius: 50%; overflow: hidden;
+    /* min() guarantees a genuinely square box on any screen shape --
+       the previous approach mixed vw for width/height with vh for
+       max-width/max-height plus a redundant aspect-ratio, which
+       different browsers can resolve inconsistently. On a narrow
+       portrait phone that mismatch produced a non-square box, which
+       turned the circular mask into a warped, sliced-off shape
+       instead of a clean circle. */
+    width: min(70vw, 70vh); height: min(70vw, 70vh);
+    border-radius: 50%; overflow: hidden;
     -webkit-mask-image: radial-gradient(circle, black 62%, transparent 92%);
     mask-image: radial-gradient(circle, black 62%, transparent 92%);
   }
