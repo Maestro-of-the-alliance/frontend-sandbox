@@ -47,15 +47,15 @@
      now genuinely rendered in the panorama art itself. */
   .hotspot-marker {
     position: fixed; width: 40px; height: 40px; margin: -20px 0 0 -20px;
-    border-radius: 50%; border: 2px solid #d4af37;
-    background: rgba(212,175,55,0.15);
-    box-shadow: 0 0 16px rgba(212,175,55,0.6);
+    border-radius: 50%;
     cursor: pointer; z-index: 20; pointer-events: auto;
-    animation: hotspotPulse 2.2s ease-in-out infinite;
-  }
-  @keyframes hotspotPulse {
-    0%, 100% { transform: scale(1); opacity: 0.75; }
-    50% { transform: scale(1.25); opacity: 1; }
+    /* Invisible in the real experience -- confirmed via the debug
+       crosshair earlier, no longer needed as a visible glow. Still a
+       real, clickable target at this exact size and position, just
+       not shown, so discovering the telescope/intercom/balcony are
+       clickable feels like your own find rather than the UI pointing
+       at it. */
+    opacity: 0;
   }
 
   /* Balcony video reveal -- zoom transition into a video player */
@@ -90,12 +90,37 @@
      handing off to the tour page. */
   #door-panel {
     position: fixed; inset: 0; z-index: 65; display: none;
-    align-items: center; justify-content: center;
-    opacity: 0; transition: opacity 0.6s ease;
+    align-items: center; justify-content: center; flex-direction: column;
+    opacity: 0; transition: opacity 1.2s ease;
   }
   #door-panel img {
     width: 100%; height: 100%; object-fit: cover;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.8s ease;
+    position: absolute; inset: 0;
+  }
+  #door-dialogue {
+    position: relative; z-index: 66;
+    font-family: 'Dancing Script', cursive; font-weight: 700;
+    font-size: clamp(1.5rem, 4.5vw, 2.6rem); text-align: center;
+    color: #ffd76b; max-width: 80vw;
+    text-shadow: 0 0 8px rgba(255,215,107,0.9), 0 0 20px rgba(255,180,50,0.7);
+    opacity: 0; transition: opacity 1.2s ease;
+    padding: 0 20px 60px;
+  }
+  #door-continue-hint {
+    position: relative; z-index: 66;
+    color: #ffd76b; font-family: 'Georgia', serif; font-size: 0.9rem;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    opacity: 0; cursor: pointer;
+  }
+  /* Applied via JS once the hint should start pulsing, kept separate
+     from the initial opacity so the fade-in and the infinite pulse
+     don't fight over the same property at the same time. */
+  #door-continue-hint.pulsing {
+    animation: continueHintPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes continueHintPulse {
+    0%, 100% { opacity: 0.5; } 50% { opacity: 1; }
   }
   /* Fully opaque black -- a real telescope shows you something
      completely separate from your surroundings, so nothing of the
@@ -119,18 +144,10 @@
   }
   #boat-panel img {
     width: 100%; height: 100%; object-fit: cover;
-    transform: scale(1) translate(0, 0);
-  }
-  /* Simulates the telescope swinging onto its subject and zooming
-     in to focus, rather than the image just appearing already
-     framed -- starts wider and off-center, settles centered and
-     roughly 3x closer, while the porthole itself stays a fixed size. */
-  #boat-panel.showing img {
-    animation: telescopeFindFocus 1.6s cubic-bezier(0.22, 0.8, 0.28, 1) forwards;
-  }
-  @keyframes telescopeFindFocus {
-    0% { transform: scale(1) translate(10%, -6%); }
-    100% { transform: scale(3) translate(0, 0); }
+    transform-origin: center center;
+    /* No transition here -- pinch/wheel zoom needs to track the
+       user's input in real time, not ease toward a fixed value. */
+    cursor: zoom-in;
   }
   #boat-close {
     position: fixed; top: 30px; right: 30px; z-index: 61;
@@ -207,6 +224,8 @@
 
 <div id="door-panel">
   <img id="door-image" src="door-closed.png" alt="A door opens" />
+  <div id="door-dialogue">Come on, then &mdash; let's go see what's worth seeing.</div>
+  <div id="door-continue-hint">Click to continue</div>
 </div>
 
 <div id="boat-panel">
@@ -267,10 +286,12 @@
   camera.position.set(0, 0, 0);
 
   // --- Drag-to-look-around, rotation only, no zoom/pan ---
-  // Starting view -- "facing the desk," level and straight-on rather
-  // than tilted down, matching the clean, direct composition Maestro
-  // pointed to as the reference for how this should open.
-  let lon = -160, lat = 0;
+  // Starting view -- using the balcony's own confirmed coordinates
+  // (lon -180.2, lat -0.8) directly, since that's the actual
+  // crosshair-verified "great sunset view" position, not another
+  // guess. The earlier split-the-difference attempt (lon -160) was
+  // still not landing right.
+  let lon = -180.2, lat = -0.8;
   let isDragging = false;
   let prevX = 0, prevY = 0;
 
@@ -420,22 +441,44 @@
 
   const doorPanel = document.getElementById("door-panel");
   const doorImage = document.getElementById("door-image");
+  const doorDialogue = document.getElementById("door-dialogue");
+  const doorContinueHint = document.getElementById("door-continue-hint");
 
   document.getElementById("choice-tour").addEventListener("click", (e) => {
     dissolveAndGo(e.currentTarget, () => {
       // Door sequence: closed, then open with PapaDOMO stepping through,
-      // then on to the actual tour page. These are full pre-rendered
-      // scene photos (not isolated sprites), so this plays as a brief
-      // full-screen cutscene rather than a 3D-positioned in-scene object.
+      // then he actually says something, and the visitor has to click
+      // to continue -- this no longer auto-advances on a timer. Slower
+      // throughout, since the original pacing felt rushed.
       doorImage.src = "door-closed.png";
+      doorImage.style.opacity = "1";
+      doorDialogue.style.opacity = "0";
+      doorContinueHint.style.opacity = "0";
+      doorContinueHint.classList.remove("pulsing");
       doorPanel.style.display = "flex";
       requestAnimationFrame(() => { doorPanel.style.opacity = "1"; });
+
       setTimeout(() => {
         doorImage.src = "door-open-papadomo.png";
-      }, 1100);
+      }, 2000);
+
       setTimeout(() => {
-        window.location.href = "/tours/";
-      }, 2600);
+        doorDialogue.style.opacity = "1";
+      }, 3600);
+
+      setTimeout(() => {
+        doorContinueHint.style.opacity = "1";
+        doorContinueHint.classList.add("pulsing");
+      }, 4600);
+
+      function proceedToTours() {
+        doorContinueHint.removeEventListener("click", proceedToTours);
+        doorPanel.style.opacity = "0";
+        setTimeout(() => {
+          window.location.href = "/tours/";
+        }, 800);
+      }
+      doorContinueHint.addEventListener("click", proceedToTours);
     });
   });
   document.getElementById("choice-wander").addEventListener("click", (e) => {
@@ -454,9 +497,61 @@
   // randomly among them each time the telescope is used.
   const BOAT_IMAGES = ["boat-01.png"];
 
+  // Real, user-driven zoom -- mouse wheel on desktop, pinch on touch --
+  // rather than a fixed automatic animation. Applies to the img
+  // generically, so it works the same way for whichever boat image is
+  // currently loaded, no per-image setup needed.
+  const ZOOM_MIN = 1, ZOOM_MAX = 5;
+  let boatZoom = 1, boatPanX = 0, boatPanY = 0;
+
+  function applyBoatTransform() {
+    boatImage.style.transform =
+      `translate(${boatPanX}px, ${boatPanY}px) scale(${boatZoom})`;
+  }
+
+  function resetBoatZoom() {
+    boatZoom = 1; boatPanX = 0; boatPanY = 0;
+    applyBoatTransform();
+  }
+
+  boatImage.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 0.15 : -0.15;
+    boatZoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, boatZoom + delta));
+    applyBoatTransform();
+  }, { passive: false });
+
+  // Pinch-to-zoom: track the distance between two touch points and
+  // scale relative to how that distance changes between move events.
+  let pinchStartDist = null, pinchStartZoom = 1;
+  function touchDist(touches) {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.hypot(dx, dy);
+  }
+  boatImage.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 2) {
+      pinchStartDist = touchDist(e.touches);
+      pinchStartZoom = boatZoom;
+    }
+  }, { passive: true });
+  boatImage.addEventListener("touchmove", (e) => {
+    if (e.touches.length === 2 && pinchStartDist) {
+      e.preventDefault();
+      const newDist = touchDist(e.touches);
+      const ratio = newDist / pinchStartDist;
+      boatZoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, pinchStartZoom * ratio));
+      applyBoatTransform();
+    }
+  }, { passive: false });
+  boatImage.addEventListener("touchend", (e) => {
+    if (e.touches.length < 2) pinchStartDist = null;
+  });
+
   telescopeEl.addEventListener("click", () => {
     const choice = BOAT_IMAGES[Math.floor(Math.random() * BOAT_IMAGES.length)];
     boatImage.src = choice;
+    resetBoatZoom();
     boatPanel.style.display = "flex";
     boatClose.style.display = "block";
     requestAnimationFrame(() => {
