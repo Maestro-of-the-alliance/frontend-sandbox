@@ -19,14 +19,14 @@
      confirmed positions are locked in; set display:none -> block on
      both rules below if a future hotspot needs re-calibrating. */
   #debug-readout {
-    display: block;
+    display: none;
     position: fixed; top: 12px; left: 12px; z-index: 90;
     color: #0f0; font-family: monospace; font-size: 0.85rem;
     background: rgba(0,0,0,0.6); padding: 6px 10px; border-radius: 4px;
     pointer-events: none;
   }
   #center-crosshair {
-    display: block;
+    display: none;
     position: fixed; top: 50%; left: 50%; width: 24px; height: 24px;
     margin: -12px 0 0 -12px; z-index: 90; pointer-events: none;
   }
@@ -132,36 +132,29 @@
   }
   /* PapaDOMO's own lines get a classic retro JRPG textbox -- distinct
      from the golden neon script used for the tour invitation, which
-     stays as-is. Pixel font, bordered box, portrait, blinking
-     continue arrow. */
+     stays as-is. Now uses the real finished textbox art (portrait
+     tab baked in) as a background image instead of building the
+     frame out of CSS borders. */
   #papadomo-textbox {
     position: relative; z-index: 66; width: 92vw; max-width: 720px;
+    aspect-ratio: 2172 / 724;
     margin-bottom: 4vh;
-    display: flex; align-items: stretch; gap: 0;
-    background: #3a4a5e;
-    border: 4px solid #1a222c;
-    box-shadow: inset 0 0 0 2px #7a8ba0, 0 6px 0 rgba(0,0,0,0.4);
+    background-image: url('papadomo-textbox.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
     opacity: 0; transition: opacity 1s ease;
   }
-  #papadomo-portrait-frame {
-    flex: 0 0 auto; width: 76px; height: 76px; margin: 10px;
-    background: #1a222c; border: 3px solid #7a8ba0;
-    overflow: hidden;
-  }
-  #papadomo-portrait-frame img {
-    width: 100%; height: 100%; object-fit: cover;
-  }
   #papadomo-text-area {
-    flex: 1 1 auto; padding: 14px 16px; display: flex;
-    flex-direction: column; justify-content: center; position: relative;
+    position: absolute; left: 8%; right: 8%; top: 40%; bottom: 12%;
+    display: flex; flex-direction: column; justify-content: center;
   }
   #door-dialogue {
-    font-family: 'Press Start 2P', monospace; font-size: 0.75rem;
-    line-height: 1.9; color: #fff;
+    font-family: 'Press Start 2P', monospace; font-size: 0.7rem;
+    line-height: 1.8; color: #fff;
     text-shadow: 2px 2px 0 #1a222c;
   }
   #door-continue-hint {
-    position: absolute; right: 14px; bottom: 10px;
+    position: absolute; right: 3%; bottom: 6%;
     width: 0; height: 0; cursor: pointer;
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
@@ -298,9 +291,6 @@
 <div id="door-panel">
   <img id="door-image" src="door-closed.jpg" alt="A door opens" />
   <div id="papadomo-textbox">
-    <div id="papadomo-portrait-frame">
-      <img src="papadomo-portrait.png" alt="PapaDOMO" />
-    </div>
     <div id="papadomo-text-area">
       <div id="door-dialogue"></div>
       <div id="door-continue-hint"></div>
@@ -567,38 +557,82 @@
   // A pool of things PapaDOMO might say once the door opens -- picked
   // at random each visit, matching the same randomized-pool pattern
   // used elsewhere (the boat images, the PBE's own message pools).
+  // Each entry is [setup] or [setup, punchline] -- lines with a real
+  // comedic turn get split, so the punchline lands as its own beat
+  // after a click, rather than the whole joke dumping out at once.
   const PAPADOMO_LINES = [
-    "Come on, then &mdash; let's go see what's worth seeing.",
-    "Did you know PapaDOMO's tour of the N.C.E.ncyclopedia has a perfect rating on Trust Advisor.",
-    "After the tour we have a short survey we'd love for you to fill out. It only takes about two hours.",
-    "MAESTRO's known to make surprise appearances. Maybe today we'll get lucky.",
-    "You think I'm funny looking? You should see MamaDOMO.",
-    "What do you have there, glooshoos? Glue shoes. Let's go!",
+    ["Come on, then &mdash; let's go see what's worth seeing."],
+    ["Did you know PapaDOMO's tour of the N.C.E.ncyclopedia has a perfect rating on Trust Advisor."],
+    ["After the tour we have a short survey we'd love for you to fill out.", "It only takes about two hours."],
+    ["MAESTRO's known to make surprise appearances.", "Maybe today we'll get lucky."],
+    ["You think I'm funny looking?", "You should see MamaDOMO."],
+    ["What do you have there, glooshoos?", "Glue shoes. Let's go!"],
   ];
+
+  // Typewriter effect -- reveals text one character at a time rather
+  // than the whole line appearing at once, matching classic JRPG
+  // textbox pacing. innerHTML is set incrementally by walking the
+  // source string; entity references like &mdash; are handled by
+  // decoding first so they don't get split mid-entity.
+  function typeText(el, html, onComplete, speed) {
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    const text = div.textContent;
+    el.textContent = "";
+    let i = 0;
+    const interval = setInterval(() => {
+      i++;
+      el.textContent = text.slice(0, i);
+      if (i >= text.length) {
+        clearInterval(interval);
+        if (onComplete) onComplete();
+      }
+    }, speed || 28);
+    return interval;
+  }
 
   document.getElementById("choice-tour").addEventListener("click", (e) => {
     dissolveAndGo(e.currentTarget, () => {
-      // Door sequence: closed, then open with PapaDOMO stepping through,
-      // then his textbox appears with something he says, and the
-      // visitor has to click the blinking arrow to continue -- this
-      // no longer auto-advances on a timer. Slower throughout, since
-      // the original pacing felt rushed.
+      // Door sequence: closed (click to open), PapaDOMO steps through,
+      // his textbox fades in and types out a setup line; if that line
+      // has a punchline, a click reveals it as its own beat; then a
+      // final click (anywhere on screen) proceeds to /tours/.
       doorImage.src = "door-closed.jpg";
       doorImage.style.opacity = "1";
-      doorDialogue.innerHTML = PAPADOMO_LINES[Math.floor(Math.random() * PAPADOMO_LINES.length)];
       papadomoTextbox.style.opacity = "0";
+      doorDialogue.textContent = "";
       doorContinueHint.style.opacity = "0";
       doorContinueHint.classList.remove("pulsing");
       doorPanel.style.display = "flex";
       doorImage.style.cursor = "pointer";
       requestAnimationFrame(() => { doorPanel.style.opacity = "1"; });
 
+      const [setupLine, punchLine] = PAPADOMO_LINES[Math.floor(Math.random() * PAPADOMO_LINES.length)];
+      let phase = "typing"; // "typing" -> "awaiting-punchline" -> "awaiting-proceed"
+
+      function showContinueHint() {
+        phase = "awaiting-proceed";
+        doorContinueHint.style.opacity = "1";
+        doorContinueHint.classList.add("pulsing");
+      }
+
       function proceedToTours() {
-        doorPanel.removeEventListener("click", proceedToTours);
+        doorPanel.removeEventListener("click", onPanelClick);
         doorPanel.style.opacity = "0";
         setTimeout(() => {
           window.location.href = "/tours/";
         }, 800);
+      }
+
+      function onPanelClick() {
+        if (phase === "awaiting-punchline") {
+          phase = "typing";
+          typeText(doorDialogue, punchLine, showContinueHint);
+        } else if (phase === "awaiting-proceed") {
+          proceedToTours();
+        }
+        // While phase === "typing", clicks are ignored -- let the
+        // line finish typing rather than skipping it.
       }
 
       function openTheDoor() {
@@ -607,18 +641,16 @@
         doorImage.src = "door-open-papadomo.jpg";
         setTimeout(() => {
           papadomoTextbox.style.opacity = "1";
+          typeText(doorDialogue, setupLine, () => {
+            if (punchLine) {
+              phase = "awaiting-punchline";
+            } else {
+              showContinueHint();
+            }
+          });
         }, 1200);
-        setTimeout(() => {
-          // Not a real choice here, just "proceed whenever you're
-          // ready" -- so the whole screen is clickable, not just the
-          // small triangle. The triangle stays as a visual cue, but
-          // isn't the only hit target; easier to actually tap,
-          // especially on mobile.
-          doorContinueHint.style.opacity = "1";
-          doorContinueHint.classList.add("pulsing");
-          doorPanel.style.cursor = "pointer";
-          doorPanel.addEventListener("click", proceedToTours);
-        }, 2200);
+        doorPanel.style.cursor = "pointer";
+        doorPanel.addEventListener("click", onPanelClick);
       }
       doorImage.addEventListener("click", openTheDoor);
     });
