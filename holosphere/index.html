@@ -512,6 +512,7 @@
   const welcomeChoices = document.getElementById("welcome-choices");
 
   makeHotspotInteractive(intercomEl, () => {
+    pushOverlayState("welcome");
     telescopeEl.style.display = "none";
     intercomEl.style.display = "none";
     welcomePanel.style.display = "flex";
@@ -603,6 +604,7 @@
       doorDialogue.textContent = "";
       doorContinueHint.style.opacity = "0";
       doorContinueHint.classList.remove("pulsing");
+      pushOverlayState("door");
       doorPanel.style.display = "flex";
       doorImage.style.cursor = "pointer";
       requestAnimationFrame(() => { doorPanel.style.opacity = "1"; });
@@ -791,6 +793,7 @@
     const choice = BOAT_IMAGES[Math.floor(Math.random() * BOAT_IMAGES.length)];
     boatImage.src = choice;
     resetBoatZoom();
+    pushOverlayState("boat");
     boatPanel.style.display = "flex";
     boatClose.style.display = "block";
     requestAnimationFrame(() => {
@@ -798,13 +801,12 @@
     });
   });
 
-  boatClose.addEventListener("click", () => {
-    boatPanel.classList.remove("showing");
-    setTimeout(() => {
-      boatPanel.style.display = "none";
-      boatClose.style.display = "none";
-    }, 500);
-  });
+  // Routes through history.back() rather than hiding directly -- the
+  // single popstate handler below is the one place that actually
+  // hides overlay UI, so the X button and the phone's back gesture
+  // both close this the same way instead of two separate code paths
+  // that could drift out of sync.
+  boatClose.addEventListener("click", () => { history.back(); });
 
   // --- Balcony video interaction ---
   const videoPanel = document.getElementById("video-panel");
@@ -812,6 +814,7 @@
   const welcomeVideo = document.getElementById("welcome-video");
 
   makeHotspotInteractive(balconyEl, () => {
+    pushOverlayState("video");
     videoPanel.style.display = "flex";
     videoClose.style.display = "block";
     // Play is called synchronously within the same tap gesture's call
@@ -831,16 +834,72 @@
     });
   });
 
-  function closeVideo() {
-    welcomeVideo.pause();
-    videoPanel.classList.remove("showing");
-    setTimeout(() => {
-      videoPanel.style.display = "none";
-      videoClose.style.display = "none";
-    }, 600);
-  }
+  // Same reasoning as the boat panel's close button -- routes through
+  // history.back() rather than hiding directly, so there's one single
+  // place (the popstate handler below) that actually closes overlay
+  // UI, whether triggered by this button, the video ending, or the
+  // phone's own back gesture.
+  function closeVideo() { history.back(); }
   videoClose.addEventListener("click", closeVideo);
   welcomeVideo.addEventListener("ended", closeVideo);
+
+  // --- Overlay history management ---
+  // None of the four overlays (welcome/tour prompt, telescope/boat,
+  // balcony video, door sequence) created a real browser history
+  // entry of their own -- they're all just DOM show/hide within the
+  // same page. That meant pressing back (or the phone's back gesture)
+  // while one was open skipped past it entirely and fell through to
+  // actual page history, landing all the way back on landing.html
+  // instead of just closing the overlay -- reported directly with the
+  // telescope, but the same underlying gap existed for all four.
+  //
+  // Fix: opening an overlay pushes a fake history state; popstate
+  // closes whichever overlay is currently open instead of letting the
+  // browser navigate away. Explicit close buttons (boatClose,
+  // videoClose) now route through history.back() rather than hiding
+  // directly, so there's one single source of truth for "how an
+  // overlay actually closes" instead of two paths that could drift
+  // out of sync with each other.
+  let currentOverlay = null;
+
+  function pushOverlayState(name) {
+    currentOverlay = name;
+    history.pushState({ holosphereOverlay: name }, "", location.href);
+  }
+
+  function closeOverlayUI(name) {
+    if (name === "welcome") {
+      welcomePanel.style.display = "none";
+      telescopeEl.style.display = "block";
+      intercomEl.style.display = "block";
+    } else if (name === "boat") {
+      boatPanel.classList.remove("showing");
+      setTimeout(() => {
+        boatPanel.style.display = "none";
+        boatClose.style.display = "none";
+      }, 500);
+    } else if (name === "video") {
+      welcomeVideo.pause();
+      videoPanel.classList.remove("showing");
+      setTimeout(() => {
+        videoPanel.style.display = "none";
+        videoClose.style.display = "none";
+      }, 600);
+    } else if (name === "door") {
+      doorPanel.style.opacity = "0";
+      setTimeout(() => { doorPanel.style.display = "none"; }, 800);
+    }
+  }
+
+  window.addEventListener("popstate", () => {
+    if (currentOverlay) {
+      closeOverlayUI(currentOverlay);
+      currentOverlay = null;
+    }
+    // If no overlay was open, this is a genuine back navigation (e.g.
+    // away from the HOLOSPHERE entirely) -- let the browser handle it
+    // normally, nothing extra needed here.
+  });
 })();
 </script>
 </body>
