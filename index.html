@@ -179,6 +179,7 @@
         id="warning-video"
         src="/warning.mp4"
         playsinline
+        preload="auto"
       ></video>
       <audio id="voice-track"></audio>
     </div>
@@ -320,10 +321,28 @@
         // Safari, Fire OS Silk, Android Chrome) block unmuted autoplay
         // otherwise, and a swallowed rejection here means the video never
         // starts, "ended" never fires, and the sequence hangs forever.
-        Promise.all([vid.play(), voice.play()]).catch(() => {});
+        //
+        // Separate catches, not one combined Promise.all().catch() --
+        // that swallowed which one actually failed, making a real bug
+        // (video failing to play while audio succeeded) invisible.
+        vid.play().catch((err) => {
+          console.warn("Warning video failed to play:", err);
+        });
+        voice.play().catch((err) => {
+          console.warn("Voice track failed to play:", err);
+        });
         vid.addEventListener("ended", () => {
           if (introActive && introPhase === "video") advanceToDialup();
         });
+        // Safety net: if the video silently fails to play (the exact bug
+        // this was just fixed for, but worth guarding regardless), its
+        // "ended" event never fires and the sequence would otherwise
+        // hang here forever. Real video duration is ~16s; this fires at
+        // 22s as a fallback and is a no-op if "ended" already advanced
+        // the sequence, since introPhase would no longer be "video".
+        setTimeout(() => {
+          if (introActive && introPhase === "video") advanceToDialup();
+        }, 22000);
       }
 
       function enterFromGate() {
