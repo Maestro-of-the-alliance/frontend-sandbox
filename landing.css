@@ -728,6 +728,23 @@ body {
   text-shadow: 0 0 10px rgba(184, 150, 40, 0.4);
 }
 
+/* Command prompt access has moved to the hamburger menu -- this old
+   bottom-left terminal trigger should never appear on landing.html
+   anymore. Two separate legacy scripts (toc.js's restorePromptAfterOverlay,
+   called when the old TOC overlay closes, and broadcast.js's
+   glitchTypePrompt, called on a timer during the intro sequence) both
+   independently set this element's inline visibility back to "visible",
+   which is what was actually causing it to still flash even though the
+   markup itself sets visibility:hidden. Rather than risk modifying the
+   internal logic of either legacy file, this !important rule overrides
+   any inline style either script sets, since !important beats inline
+   styles regardless of which script runs or when. */
+.stealth-search {
+  visibility: hidden !important;
+  display: none !important;
+  pointer-events: none !important;
+}
+
 .prompt-arrow {
   user-select: none;
 }
