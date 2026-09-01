@@ -197,7 +197,7 @@
     -webkit-mask-image: radial-gradient(circle, black 62%, transparent 92%);
     mask-image: radial-gradient(circle, black 62%, transparent 92%);
   }
-  #boat-panel img {
+  #boat-panel img, #boat-panel video {
     width: 100%; height: 100%; object-fit: cover;
     transform-origin: center center;
     /* No transition here -- pinch/wheel zoom needs to track the
@@ -208,13 +208,16 @@
        the kind of thing that only shows up on a real phone, not in
        a syntax check. */
     touch-action: none;
-    /* Belt-and-suspenders alongside draggable="false" and the
-       mousedown preventDefault() -- covers browsers that respect the
-       CSS property specifically. */
+    /* Belt-and-suspenders alongside the mousedown preventDefault() --
+       covers browsers that respect the CSS property specifically. */
     -webkit-user-drag: none;
     user-drag: none;
   }
-  #boat-panel img:active { cursor: grabbing; }
+  #boat-panel img:active, #boat-panel video:active { cursor: grabbing; }
+  /* The pool is now entirely video -- suppress native browser chrome
+     (play button flash, download/fullscreen affordances) so it reads
+     as a porthole image that happens to move, not a video player. */
+  #boat-panel video::-webkit-media-controls { display: none !important; }
   #boat-close {
     position: fixed; top: 30px; right: 30px; z-index: 61;
     color: #d4af37; font-size: 2rem; cursor: pointer;
@@ -300,7 +303,7 @@
 
 <div id="boat-panel">
   <div id="boat-window">
-    <img id="boat-image" src="boat-01.png" alt="A distant sight through the telescope" draggable="false" />
+    <video id="boat-image" loop playsinline webkit-playsinline aria-label="A distant sight through the telescope"></video>
   </div>
 </div>
 <button id="boat-close" aria-label="Close">&times;</button>
@@ -668,18 +671,21 @@
   const boatClose = document.getElementById("boat-close");
   const boatImage = document.getElementById("boat-image");
 
-  // Pool of boat images -- currently just the one real generated asset.
-  // Add more filenames here as they're generated, and this will pick
-  // randomly among them each time the telescope is used.
-  const BOAT_IMAGES = [
-    "boat-01.png",
-    "pyramid-skieme.png",
-    "seeing-is-believing.png",
-    "relaxing.png",
-    "over-the-limit.png",
-    "bob-the-shark.png",
-    "tug-a-yacht.png",
-    "grumpy.png",
+  // Pool of boat clips -- converted from static PNGs to looping video,
+  // hosted on the nce-media R2 bucket. All 9 confirmed live (Sep 1
+  // 2026). Add more URLs here as they're generated; picked randomly
+  // each time the telescope is used.
+  const R2_BASE = "https://pub-bb8a474a69904ed98a408132316f149b.r2.dev";
+  const BOAT_MEDIA = [
+    `${R2_BASE}/floaty.mp4`,      // life preserver / pina colada man
+    `${R2_BASE}/ski.mp4`,         // 7 skiers building a pyramid
+    `${R2_BASE}/fatman.mp4`,      // new gag, content TBD
+    `${R2_BASE}/periscope.mp4`,   // lone periscope
+    `${R2_BASE}/mermaid.mp4`,     // mermaid floating
+    `${R2_BASE}/alien.mp4`,       // aliens fishing from a UFO
+    `${R2_BASE}/sharkbite.mp4`,   // shark in floaties and sunglasses
+    `${R2_BASE}/tug.mp4`,         // tugboat towing a yacht
+    `${R2_BASE}/grumpy.mp4`,      // two old guys fishing
   ];
 
   // Real, user-driven zoom and reposition -- mouse wheel + drag on
@@ -817,8 +823,22 @@
   });
 
   makeHotspotInteractive(telescopeEl, () => {
-    const choice = BOAT_IMAGES[Math.floor(Math.random() * BOAT_IMAGES.length)];
+    const choice = BOAT_MEDIA[Math.floor(Math.random() * BOAT_MEDIA.length)];
     boatImage.src = choice;
+    boatImage.currentTime = 0;
+    // Muted, same as the ambient boat pool was silent before as static
+    // images -- these clips are meant to read as a moving photograph
+    // seen through a lens, not a video with its own soundtrack. If
+    // that changes, play() is already called synchronously within
+    // this tap gesture's call stack, so unmuting later needs no
+    // further autoplay-policy workaround (same pattern as welcomeVideo).
+    boatImage.muted = true;
+    const playPromise = boatImage.play();
+    if (playPromise !== undefined) {
+      playPromise.catch((err) => {
+        console.warn("Boat video play was blocked:", err);
+      });
+    }
     resetBoatZoom();
     pushOverlayState("boat");
     boatPanel.style.display = "flex";
@@ -900,6 +920,7 @@
       telescopeEl.style.display = "block";
       intercomEl.style.display = "block";
     } else if (name === "boat") {
+      boatImage.pause();
       boatPanel.classList.remove("showing");
       setTimeout(() => {
         boatPanel.style.display = "none";
