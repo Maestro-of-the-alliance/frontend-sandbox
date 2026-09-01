@@ -295,6 +295,13 @@
      transition type, rather than three separate overlay elements. -->
 <canvas id="fx-canvas" style="position:fixed; inset:0; z-index:70; pointer-events:none; display:none;"></canvas>
 
+<!-- Same under-construction placard as town-20.html's own Visitor
+     Center hotspot -- shown here too since the 60%-town scene's
+     Visitor Center has nowhere further to send visitors yet either. -->
+<div id="construction-panel" style="position:fixed; inset:0; z-index:80; background:#111; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.6s ease;">
+  <img src="../papadomo-under-construction.png" alt="Sequence under construction" style="max-width:80vw; max-height:80vh; object-fit:contain;" />
+</div>
+
 <div id="video-panel">
   <video id="welcome-video" src="welcome.mp4" playsinline></video>
 </div>
@@ -894,11 +901,20 @@
           runShimmerTransition("panorama-town-60.png", () => {
             visitorCenterEl.style.display = "block";
             makeHotspotInteractive(visitorCenterEl, () => {
-              // Visitor Center reached -- this is meant to zoom/blur
-              // into a video that doesn't exist yet. Intentionally
-              // inert for now: the hotspot is real and tappable, it
-              // just has nowhere to go until that footage exists.
-              console.log("Visitor Center tapped -- video stage not yet built.");
+              // Visitor Center reached -- same placard/hold/handoff
+              // pattern as town-20.html's own Visitor Center hotspot,
+              // landing at /tours/ (the tour-choice card index)
+              // instead of foundation.html, since this is the
+              // returning-visitor path, not the first-time onboarding
+              // path.
+              const constructionPanel = document.getElementById("construction-panel");
+              constructionPanel.style.opacity = "1";
+              setTimeout(() => {
+                constructionPanel.style.opacity = "0";
+                setTimeout(() => {
+                  window.location.href = "/tours/";
+                }, 700);
+              }, 4000);
             });
           });
         });
