@@ -117,19 +117,21 @@
     opacity: 0; transition: opacity 1.2s ease;
   }
   #door-panel img {
-    width: 100%; height: 100%; object-fit: cover;
+    width: 100%; height: 100%; object-fit: contain; background: #000;
     transition: opacity 0.8s ease;
     position: absolute; inset: 0;
   }
-  /* Same real bug as the welcome video: a landscape image with
-     object-fit: cover crops heavily on a narrow portrait phone,
-     which was pushing PapaDOMO out of frame entirely -- reported
-     directly as the view getting "parked in the corner," unable to
-     see or interact with anything. Contain instead on narrow/portrait
-     screens, same fix as before. */
-  @media (max-aspect-ratio: 4/5) {
-    #door-panel img { object-fit: contain; background: #000; }
-  }
+  /* door-closed.jpg / door-open-papadomo.jpg are fixed portrait photos
+     (1080x1920), not content meant to crop-fill. object-fit: cover was
+     only ever correct by accident on viewports close to that aspect
+     ratio -- on a narrow phone it cropped PapaDOMO out of frame
+     entirely (reported as the view getting "parked in the corner"),
+     and on a wide laptop it did the mirror-image version: stretched
+     the narrow image to fill the wide container's width, producing
+     an extreme, cropped-in zoom (reported directly, confirmed via
+     screenshot). contain has no failure mode here since the asset's
+     shape is fixed -- letterboxing on an odd aspect ratio is a much
+     smaller cost than losing the subject entirely. */
   /* PapaDOMO's own lines get a classic retro JRPG textbox -- distinct
      from the golden neon script used for the tour invitation, which
      stays as-is. Now uses the real finished textbox art (portrait
