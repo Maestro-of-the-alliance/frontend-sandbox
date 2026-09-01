@@ -287,6 +287,13 @@
 <div id="intercom-hotspot" class="hotspot-marker" style="display:none;"></div>
 <div id="telescope-hotspot" class="hotspot-marker" style="display:none;"></div>
 <div id="balcony-hotspot" class="hotspot-marker" style="display:none;"></div>
+<div id="door3d-hotspot" class="hotspot-marker" style="display:none;"></div>
+<div id="visitor-center-hotspot" class="hotspot-marker" style="display:none;"></div>
+
+<!-- Shared canvas for the scene-to-scene transition effects (fireworks,
+     shimmer, zoom-blur). One canvas, different draw routines per
+     transition type, rather than three separate overlay elements. -->
+<canvas id="fx-canvas" style="position:fixed; inset:0; z-index:70; pointer-events:none; display:none;"></canvas>
 
 <div id="video-panel">
   <video id="welcome-video" src="welcome.mp4" playsinline></video>
@@ -342,11 +349,14 @@
   geometry.scale(-1, 1, 1);
 
   const loader = new THREE.TextureLoader();
+  let sphere = null; // populated once the initial load resolves; scene
+                      // transitions later swap sphere.material.map
+                      // directly rather than rebuilding the mesh.
   loader.load(
     "panorama.png",
     function (texture) {
       const material = new THREE.MeshBasicMaterial({ map: texture });
-      const sphere = new THREE.Mesh(geometry, material);
+      sphere = new THREE.Mesh(geometry, material);
       scene.add(sphere);
       loadingOverlay.style.opacity = "0";
       setTimeout(() => { loadingOverlay.style.display = "none"; }, 800);
@@ -462,6 +472,17 @@
   const intercomPos = lonLatToVector3(-138.5, -35.4, HOTSPOT_RADIUS);
   // The middle balcony/sunset window.
   const balconyPos = lonLatToVector3(-180.2, -0.8, HOTSPOT_RADIUS);
+
+  // Pixel-estimated from the raw panorama-door.png source, cross-checked
+  // against the telescope/intercom's own confirmed coordinates for
+  // calibration -- NOT yet live-crosshair-confirmed. Same caveat as
+  // every other pixel-only guess in this project: expect to nudge
+  // this once it's actually checked on the live deployed scene.
+  const door3dPos = lonLatToVector3(-83, -4.5, HOTSPOT_RADIUS);
+  // Visitor Center sign in panorama-town-60.png -- pixel-measured from
+  // the source image (sign centered ~x=480, y=300 of 1774x887), same
+  // calibration as everything else here. Same live-confirmation caveat.
+  const visitorCenterPos = lonLatToVector3(-252, 24, HOTSPOT_RADIUS);
   // Confirmed but not yet wired up: the spot near the desk where the
   // 16-bit tour door should appear on the "yes" choice -- lon: -116.6,
   // lat: -23.4. Saved here so it isn't lost before that feature gets built.
@@ -469,6 +490,8 @@
   const telescopeEl = document.getElementById("telescope-hotspot");
   const intercomEl = document.getElementById("intercom-hotspot");
   const balconyEl = document.getElementById("balcony-hotspot");
+  const door3dEl = document.getElementById("door3d-hotspot");
+  const visitorCenterEl = document.getElementById("visitor-center-hotspot");
   telescopeEl.style.display = "block";
   intercomEl.style.display = "block";
   balconyEl.style.display = "block";
@@ -487,6 +510,20 @@
     el.style.top = y + "px";
   }
 
+  // projectToScreen unconditionally sets display:"block" whenever a
+  // hotspot is in view, with no awareness of a deliberate manual hide
+  // elsewhere in the code. That was invisible before (whatever it
+  // incorrectly re-showed sat underneath an opaque panel anyway), but
+  // it's a real bug once hotspots need to be permanently retired
+  // mid-session (e.g. telescope/intercom/balcony once the tour is
+  // committed to). Track retirement explicitly rather than relying on
+  // style.display, which projectToScreen treats as its own to manage.
+  const retiredHotspots = new Set();
+  function retireHotspot(el) {
+    retiredHotspots.add(el);
+    el.style.display = "none";
+  }
+
   function animate() {
     requestAnimationFrame(animate);
     const phi = THREE.MathUtils.degToRad(90 - lat);
@@ -498,9 +535,11 @@
     );
     camera.lookAt(target);
     debugEl.textContent = `lon: ${lon.toFixed(1)}   lat: ${lat.toFixed(1)}`;
-    projectToScreen(telescopePos, telescopeEl);
-    projectToScreen(intercomPos, intercomEl);
-    projectToScreen(balconyPos, balconyEl);
+    if (!retiredHotspots.has(telescopeEl)) projectToScreen(telescopePos, telescopeEl);
+    if (!retiredHotspots.has(intercomEl)) projectToScreen(intercomPos, intercomEl);
+    if (!retiredHotspots.has(balconyEl)) projectToScreen(balconyPos, balconyEl);
+    if (!retiredHotspots.has(door3dEl)) projectToScreen(door3dPos, door3dEl);
+    if (!retiredHotspots.has(visitorCenterEl)) projectToScreen(visitorCenterPos, visitorCenterEl);
     renderer.render(scene, camera);
   }
   animate();
@@ -510,6 +549,238 @@
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
+
+  // --- Scene transitions (fireworks, shimmer, ...) ---
+  //
+  // The HOLOSPHERE moves through a sequence of scenes on the same
+  // live sphere -- office -> office-with-door -> town-60% -> (future)
+  // town video -- by swapping sphere.material.map rather than
+  // reloading the page or rebuilding the mesh. Each transition:
+  //   1. Starts loading the next texture immediately (in the
+  //      background) so it's ready well before it's needed.
+  //   2. Plays a full-screen effect on #fx-canvas that builds to a
+  //      fully-obscuring peak.
+  //   3. Swaps the texture at that peak, invisibly.
+  //   4. Fades the effect out, revealing the new scene.
+  // If the texture isn't done loading by the time the effect wants
+  // to peak, the peak hold is extended rather than swapping early to
+  // a still-blank texture -- a late-but-clean swap beats an on-time
+  // glitch.
+
+  const fxCanvas = document.getElementById("fx-canvas");
+  const fxCtx = fxCanvas.getContext("2d");
+
+  function preloadTexture(url) {
+    return new Promise((resolve, reject) => {
+      loader.load(url, resolve, undefined, reject);
+    });
+  }
+
+  function swapSphereTexture(newTexture) {
+    if (!sphere) return;
+    const oldMap = sphere.material.map;
+    sphere.material.map = newTexture;
+    sphere.material.needsUpdate = true;
+    if (oldMap) oldMap.dispose();
+  }
+
+  function resizeFxCanvas() {
+    fxCanvas.width = window.innerWidth;
+    fxCanvas.height = window.innerHeight;
+  }
+
+  // --- Fireworks: intercom "Yes" -> office-with-door ---
+  //
+  // Several bursts of particles arcing up and out with gravity, timed
+  // to overlap, building to a full white peak-flash, then fading to
+  // reveal the new scene underneath. Runs entirely on #fx-canvas;
+  // nothing here depends on the DOM beyond that one element.
+  function runFireworksTransition(nextTextureUrl, onRevealed) {
+    resizeFxCanvas();
+    fxCanvas.style.display = "block";
+    fxCanvas.style.opacity = "1";
+
+    const texturePromise = preloadTexture(nextTextureUrl);
+    let textureReady = null;
+    texturePromise.then((tex) => { textureReady = tex; });
+
+    const W = fxCanvas.width, H = fxCanvas.height;
+    const startTime = performance.now();
+    const BUILD_MS = 2200;   // bursts firing and climbing
+    const PEAK_MS = 500;     // minimum full-white hold
+    const FADE_MS = 900;     // fade back to reveal the new scene
+
+    const particles = [];
+    function spawnBurst(cx, cy, hue) {
+      const count = 60 + Math.floor(Math.random() * 30);
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 * i) / count + Math.random() * 0.2;
+        const speed = 2.5 + Math.random() * 3.5;
+        particles.push({
+          x: cx, y: cy,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          hue, born: performance.now(), life: 900 + Math.random() * 500,
+        });
+      }
+    }
+
+    // Stagger several bursts across the build window.
+    const burstPlan = [
+      { t: 0,    x: 0.5, y: 0.55, hue: 45 },   // gold, center
+      { t: 350,  x: 0.3, y: 0.4,  hue: 280 },  // violet, left
+      { t: 650,  x: 0.7, y: 0.35, hue: 190 },  // cyan, right
+      { t: 1000, x: 0.5, y: 0.3,  hue: 45 },   // gold, center-high
+      { t: 1350, x: 0.4, y: 0.5,  hue: 320 },  // magenta
+      { t: 1600, x: 0.6, y: 0.45, hue: 45 },
+    ];
+    const fired = new Set();
+
+    function frame(now) {
+      const elapsed = now - startTime;
+      fxCtx.fillStyle = "rgba(5, 2, 12, 0.25)"; // trailing fade, not a hard clear
+      fxCtx.fillRect(0, 0, W, H);
+
+      burstPlan.forEach((b, i) => {
+        if (!fired.has(i) && elapsed >= b.t) {
+          fired.add(i);
+          spawnBurst(b.x * W, b.y * H, b.hue);
+        }
+      });
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        const age = now - p.born;
+        if (age > p.life) { particles.splice(i, 1); continue; }
+        p.x += p.vx; p.y += p.vy; p.vy += 0.045; // gravity
+        const t = age / p.life;
+        const alpha = 1 - t;
+        fxCtx.beginPath();
+        fxCtx.fillStyle = `hsla(${p.hue}, 90%, ${60 + t * 20}%, ${alpha})`;
+        fxCtx.arc(p.x, p.y, 2.2, 0, Math.PI * 2);
+        fxCtx.fill();
+      }
+
+      if (elapsed < BUILD_MS) {
+        requestAnimationFrame(frame);
+        return;
+      }
+
+      // Peak: ramp to full white, holding until the texture is ready
+      // AND the minimum peak hold has elapsed.
+      const peakElapsed = elapsed - BUILD_MS;
+      const peakRamp = Math.min(1, peakElapsed / 250);
+      fxCtx.fillStyle = `rgba(255, 255, 255, ${peakRamp})`;
+      fxCtx.fillRect(0, 0, W, H);
+
+      if (peakElapsed < PEAK_MS || !textureReady) {
+        requestAnimationFrame(frame);
+        return;
+      }
+
+      // Swap happens here, fully hidden under solid white.
+      swapSphereTexture(textureReady);
+      fadeReveal(now);
+    }
+
+    function fadeReveal(peakEndTime) {
+      function fadeFrame(now) {
+        const t = Math.min(1, (now - peakEndTime) / FADE_MS);
+        fxCanvas.style.opacity = String(1 - t);
+        fxCtx.fillStyle = "rgba(255, 255, 255, 1)";
+        fxCtx.fillRect(0, 0, W, H);
+        if (t < 1) {
+          requestAnimationFrame(fadeFrame);
+        } else {
+          fxCanvas.style.display = "none";
+          fxCtx.clearRect(0, 0, W, H);
+          if (onRevealed) onRevealed();
+        }
+      }
+      requestAnimationFrame(fadeFrame);
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  // --- Shimmer: door tap -> town scene ---
+  //
+  // A softer, quicker beat than the fireworks -- a golden shimmer
+  // sweep + fade, matching the project's existing gold-neon visual
+  // language (the intercom's "Care for a Tour?" prompt) rather than
+  // reusing the fireworks' bigger, louder effect. Same preload-then-
+  // swap-at-peak mechanism underneath.
+  function runShimmerTransition(nextTextureUrl, onRevealed) {
+    resizeFxCanvas();
+    fxCanvas.style.display = "block";
+    fxCanvas.style.opacity = "1";
+
+    const texturePromise = preloadTexture(nextTextureUrl);
+    let textureReady = null;
+    texturePromise.then((tex) => { textureReady = tex; });
+
+    const W = fxCanvas.width, H = fxCanvas.height;
+    const startTime = performance.now();
+    const BUILD_MS = 900;
+    const PEAK_MS = 300;
+    const FADE_MS = 700;
+
+    function frame(now) {
+      const elapsed = now - startTime;
+      const t = Math.min(1, elapsed / BUILD_MS);
+      fxCtx.clearRect(0, 0, W, H);
+
+      // Diagonal gold shimmer sweep, widening as it builds.
+      const sweepX = -W * 0.3 + t * W * 1.6;
+      const grad = fxCtx.createLinearGradient(sweepX - W * 0.25, 0, sweepX + W * 0.25, H);
+      grad.addColorStop(0, "rgba(212, 175, 55, 0)");
+      grad.addColorStop(0.5, `rgba(255, 223, 130, ${0.15 + t * 0.55})`);
+      grad.addColorStop(1, "rgba(212, 175, 55, 0)");
+      fxCtx.fillStyle = grad;
+      fxCtx.fillRect(0, 0, W, H);
+
+      // Overall warm wash builds alongside the sweep toward full peak.
+      fxCtx.fillStyle = `rgba(255, 244, 214, ${t * t * 0.85})`;
+      fxCtx.fillRect(0, 0, W, H);
+
+      if (elapsed < BUILD_MS) {
+        requestAnimationFrame(frame);
+        return;
+      }
+
+      const peakElapsed = elapsed - BUILD_MS;
+      const peakRamp = Math.min(1, peakElapsed / 200);
+      fxCtx.fillStyle = `rgba(255, 250, 235, ${0.85 + peakRamp * 0.15})`;
+      fxCtx.fillRect(0, 0, W, H);
+
+      if (peakElapsed < PEAK_MS || !textureReady) {
+        requestAnimationFrame(frame);
+        return;
+      }
+
+      swapSphereTexture(textureReady);
+      fadeReveal(now);
+    }
+
+    function fadeReveal(peakEndTime) {
+      function fadeFrame(now) {
+        const t = Math.min(1, (now - peakEndTime) / FADE_MS);
+        fxCanvas.style.opacity = String(1 - t);
+        fxCtx.fillStyle = "rgba(255, 250, 235, 1)";
+        fxCtx.fillRect(0, 0, W, H);
+        if (t < 1) {
+          requestAnimationFrame(fadeFrame);
+        } else {
+          fxCanvas.style.display = "none";
+          fxCtx.clearRect(0, 0, W, H);
+          if (onRevealed) onRevealed();
+        }
+      }
+      requestAnimationFrame(fadeFrame);
+    }
+
+    requestAnimationFrame(frame);
+  }
 
   // --- Intercom interaction ---
   const welcomePanel = document.getElementById("welcome-panel");
@@ -599,69 +870,109 @@
 
   document.getElementById("choice-tour").addEventListener("click", (e) => {
     dissolveAndGo(e.currentTarget, () => {
-      // Door sequence: closed (click to open), PapaDOMO steps through,
-      // his textbox fades in and types out a setup line; if that line
-      // has a punchline, a click reveals it as its own beat; then a
-      // final click (anywhere on screen) proceeds to /tours/.
-      doorImage.src = "door-closed.jpg";
-      doorImage.style.opacity = "1";
-      papadomoTextbox.style.opacity = "0";
-      doorDialogue.textContent = "";
-      doorContinueHint.style.opacity = "0";
-      doorContinueHint.classList.remove("pulsing");
-      pushOverlayState("door");
-      doorPanel.style.display = "flex";
-      doorImage.style.cursor = "pointer";
-      requestAnimationFrame(() => { doorPanel.style.opacity = "1"; });
+      // NOTE: back-button behavior through this whole new sequence
+      // (fireworks -> door -> shimmer -> town -> visitor center) is
+      // genuinely unhandled -- pushOverlayState/closeOverlayUI only
+      // know about the old immediate-door-panel flow. Clearing the
+      // stale "welcome" tracking here so a back-press at least doesn't
+      // wrongly resurrect the welcome panel and old hotspots on top of
+      // whatever new scene is showing, but a real design pass for
+      // back/forward through these stages still needs to happen.
+      currentOverlay = null;
+      welcomePanel.style.display = "none";
 
-      const [setupLine, punchLine] = PAPADOMO_LINES[Math.floor(Math.random() * PAPADOMO_LINES.length)];
-      let phase = "typing"; // "typing" -> "awaiting-punchline" -> "awaiting-proceed"
+      // Committed to the tour now -- retire the base-scene hotspots
+      // rather than leave them tappable underneath what's coming.
+      retireHotspot(telescopeEl);
+      retireHotspot(intercomEl);
+      retireHotspot(balconyEl);
 
-      function showContinueHint() {
-        phase = "awaiting-proceed";
-        doorContinueHint.style.opacity = "1";
-        doorContinueHint.classList.add("pulsing");
-      }
-
-      function proceedToTours() {
-        doorPanel.removeEventListener("click", onPanelClick);
-        doorPanel.style.opacity = "0";
-        setTimeout(() => {
-          window.location.href = "/tours/";
-        }, 800);
-      }
-
-      function onPanelClick() {
-        if (phase === "awaiting-punchline") {
-          phase = "typing";
-          typeText(doorDialogue, punchLine, showContinueHint);
-        } else if (phase === "awaiting-proceed") {
-          proceedToTours();
-        }
-        // While phase === "typing", clicks are ignored -- let the
-        // line finish typing rather than skipping it.
-      }
-
-      function openTheDoor() {
-        doorImage.removeEventListener("click", openTheDoor);
-        doorImage.style.cursor = "default";
-        doorImage.src = "door-open-papadomo.jpg";
-        setTimeout(() => {
-          papadomoTextbox.style.opacity = "1";
-          typeText(doorDialogue, setupLine, () => {
-            if (punchLine) {
-              phase = "awaiting-punchline";
-            } else {
-              showContinueHint();
-            }
+      runFireworksTransition("panorama-door.png", () => {
+        door3dEl.style.display = "block";
+        makeHotspotInteractive(door3dEl, () => {
+          retireHotspot(door3dEl);
+          runShimmerTransition("panorama-town-60.png", () => {
+            visitorCenterEl.style.display = "block";
+            makeHotspotInteractive(visitorCenterEl, () => {
+              // Visitor Center reached -- this is meant to zoom/blur
+              // into a video that doesn't exist yet. Intentionally
+              // inert for now: the hotspot is real and tappable, it
+              // just has nowhere to go until that footage exists.
+              console.log("Visitor Center tapped -- video stage not yet built.");
+            });
           });
-        }, 1200);
-        doorPanel.style.cursor = "pointer";
-        doorPanel.addEventListener("click", onPanelClick);
-      }
-      doorImage.addEventListener("click", openTheDoor);
+        });
+      });
     });
   });
+
+  // --- Retired for now, not deleted ---
+  // The old immediate door-photo/PapaDOMO-textbox sequence (door-
+  // closed.jpg -> door-open-papadomo.jpg -> typewriter dialogue ->
+  // /tours/) that used to fire directly on "Yes". Superseded by the
+  // fireworks/shimmer/town flow above, but left defined and callable
+  // rather than deleted, since whether it's formally retired for good
+  // (and whether its PapaDOMO dialogue lines move somewhere in the new
+  // flow) hasn't been decided yet.
+  function legacyDoorPapadomoSequence() {
+    doorImage.src = "door-closed.jpg";
+    doorImage.style.opacity = "1";
+    papadomoTextbox.style.opacity = "0";
+    doorDialogue.textContent = "";
+    doorContinueHint.style.opacity = "0";
+    doorContinueHint.classList.remove("pulsing");
+    pushOverlayState("door");
+    doorPanel.style.display = "flex";
+    doorImage.style.cursor = "pointer";
+    requestAnimationFrame(() => { doorPanel.style.opacity = "1"; });
+
+    const [setupLine, punchLine] = PAPADOMO_LINES[Math.floor(Math.random() * PAPADOMO_LINES.length)];
+    let phase = "typing"; // "typing" -> "awaiting-punchline" -> "awaiting-proceed"
+
+    function showContinueHint() {
+      phase = "awaiting-proceed";
+      doorContinueHint.style.opacity = "1";
+      doorContinueHint.classList.add("pulsing");
+    }
+
+    function proceedToTours() {
+      doorPanel.removeEventListener("click", onPanelClick);
+      doorPanel.style.opacity = "0";
+      setTimeout(() => {
+        window.location.href = "/tours/";
+      }, 800);
+    }
+
+    function onPanelClick() {
+      if (phase === "awaiting-punchline") {
+        phase = "typing";
+        typeText(doorDialogue, punchLine, showContinueHint);
+      } else if (phase === "awaiting-proceed") {
+        proceedToTours();
+      }
+      // While phase === "typing", clicks are ignored -- let the
+      // line finish typing rather than skipping it.
+    }
+
+    function openTheDoor() {
+      doorImage.removeEventListener("click", openTheDoor);
+      doorImage.style.cursor = "default";
+      doorImage.src = "door-open-papadomo.jpg";
+      setTimeout(() => {
+        papadomoTextbox.style.opacity = "1";
+        typeText(doorDialogue, setupLine, () => {
+          if (punchLine) {
+            phase = "awaiting-punchline";
+          } else {
+            showContinueHint();
+          }
+        });
+      }, 1200);
+      doorPanel.style.cursor = "pointer";
+      doorPanel.addEventListener("click", onPanelClick);
+    }
+    doorImage.addEventListener("click", openTheDoor);
+  }
   document.getElementById("choice-wander").addEventListener("click", (e) => {
     dissolveAndGo(e.currentTarget, () => {
       window.location.href = "/s3";
