@@ -689,7 +689,34 @@
   const ZOOM_MIN = 1, ZOOM_MAX = 5;
   let boatZoom = 1, boatPanX = 0, boatPanY = 0;
 
+  const boatWindowEl = document.getElementById("boat-window");
+
+  // Pan bounds -- the image element is sized to exactly fill the
+  // container (width/height: 100%, object-fit: cover), so at zoom 1
+  // it has zero overhang: ANY pan at all immediately drags its edge
+  // past the container boundary and exposes the opaque black
+  // #boat-panel behind it. The fix is standard "pan within a zoomed
+  // image" math: at a given zoom, the image overhangs the container
+  // by (zoom - 1) * containerSize / 2 on each side (transform-origin
+  // is center by default), so that's the true maximum pan distance
+  // before the edge reaches the container edge.
+  //
+  // PAN_SAFETY pulls the allowed pan in a little further than that
+  // theoretical max -- a small vignette margin so subpixel rounding
+  // during a fast drag/pinch never sneaks a hairline of black past
+  // the edge. The visible circle is effectively a touch smaller than
+  // the image's true bounds at all times.
+  const PAN_SAFETY = 0.94;
+
+  function clampBoatPan() {
+    const containerSize = boatWindowEl.getBoundingClientRect().width;
+    const maxPan = Math.max(0, containerSize * (boatZoom - 1) / 2) * PAN_SAFETY;
+    boatPanX = Math.min(maxPan, Math.max(-maxPan, boatPanX));
+    boatPanY = Math.min(maxPan, Math.max(-maxPan, boatPanY));
+  }
+
   function applyBoatTransform() {
+    clampBoatPan();
     boatImage.style.transform =
       `translate(${boatPanX}px, ${boatPanY}px) scale(${boatZoom})`;
   }
