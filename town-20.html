@@ -98,9 +98,10 @@
   </head>
   <body>
     <div id="loading-overlay">Loading&hellip;</div>
+    <canvas id="reveal-fx" style="position:fixed; inset:0; z-index:41; pointer-events:none;"></canvas>
     <canvas id="town-canvas"></canvas>
 
-    <div id="visitor-center-hotspot" class="hotspot-marker pulsing" style="display:none;"></div>
+    <div id="visitor-center-hotspot" class="hotspot-marker" style="display:none;"></div>
 
     <!-- Kept but no longer the default path -- see VC_VIDEO_POOL below. -->
     <div id="construction-panel">
@@ -159,29 +160,107 @@
 
   const loader = new THREE.TextureLoader();
   let sphere = null;
+
+  // --- Shimmer-in reveal ---
+  //
+  // Same gold-neon shimmer sweep as the HOLOSPHERE's door->town
+  // transition, adapted for a first reveal rather than a scene swap:
+  // no texture to preload-and-swap invisibly, just a stylized cover
+  // while the initial texture loads, holding at peak brightness until
+  // it's actually ready, then fading to reveal -- replacing what was
+  // a flat opacity fade on a plain loading screen.
+  const fxCanvas = document.getElementById("reveal-fx");
+  const fxCtx = fxCanvas.getContext("2d");
+  let textureReady = null;
+
+  function runShimmerReveal() {
+    fxCanvas.width = window.innerWidth;
+    fxCanvas.height = window.innerHeight;
+    const W = fxCanvas.width, H = fxCanvas.height;
+    const startTime = performance.now();
+    const BUILD_MS = 900;
+    const PEAK_MS = 300;
+    const FADE_MS = 700;
+
+    function frame(now) {
+      const elapsed = now - startTime;
+      const t = Math.min(1, elapsed / BUILD_MS);
+      fxCtx.clearRect(0, 0, W, H);
+      fxCtx.fillStyle = "#000";
+      fxCtx.fillRect(0, 0, W, H);
+
+      const sweepX = -W * 0.3 + t * W * 1.6;
+      const grad = fxCtx.createLinearGradient(sweepX - W * 0.25, 0, sweepX + W * 0.25, H);
+      grad.addColorStop(0, "rgba(212, 175, 55, 0)");
+      grad.addColorStop(0.5, `rgba(255, 223, 130, ${0.15 + t * 0.55})`);
+      grad.addColorStop(1, "rgba(212, 175, 55, 0)");
+      fxCtx.fillStyle = grad;
+      fxCtx.fillRect(0, 0, W, H);
+
+      fxCtx.fillStyle = `rgba(20, 16, 8, ${1 - t * t * 0.4})`;
+      fxCtx.fillRect(0, 0, W, H);
+
+      if (elapsed < BUILD_MS) {
+        requestAnimationFrame(frame);
+        return;
+      }
+
+      const peakElapsed = elapsed - BUILD_MS;
+      if (peakElapsed < PEAK_MS || !textureReady) {
+        requestAnimationFrame(frame);
+        return;
+      }
+
+      // Texture's ready and the minimum peak hold has elapsed --
+      // build the actual scene now, hidden under the shimmer, then
+      // fade to reveal it.
+      const material = new THREE.MeshBasicMaterial({ map: textureReady });
+      sphere = new THREE.Mesh(geometry, material);
+      scene.add(sphere);
+      visitorCenterEl.style.display = "block";
+      loadingOverlay.style.display = "none";
+      fadeReveal(now);
+    }
+
+    function fadeReveal(peakEndTime) {
+      function fadeFrame(now) {
+        const t = Math.min(1, (now - peakEndTime) / FADE_MS);
+        fxCanvas.style.opacity = String(1 - t);
+        if (t < 1) {
+          requestAnimationFrame(fadeFrame);
+        } else {
+          fxCanvas.style.display = "none";
+        }
+      }
+      requestAnimationFrame(fadeFrame);
+    }
+
+    requestAnimationFrame(frame);
+  }
+
   loader.load(
     "holosphere/panorama-town-20.png",
     function (texture) {
-      const material = new THREE.MeshBasicMaterial({ map: texture });
-      sphere = new THREE.Mesh(geometry, material);
-      scene.add(sphere);
-      loadingOverlay.style.opacity = "0";
-      setTimeout(() => { loadingOverlay.style.display = "none"; }, 800);
-      visitorCenterEl.style.display = "block";
+      textureReady = texture;
     },
     undefined,
     function (err) {
+      fxCanvas.style.display = "none";
       loadingOverlay.textContent = "Couldn't load the scene. Please refresh.";
+      loadingOverlay.style.opacity = "1";
       console.error(err);
     }
   );
+  runShimmerReveal();
 
   // --- Drag-to-look-around -- identical pattern to the HOLOSPHERE's
   // own camera control, copied deliberately rather than reinvented,
   // since that implementation is already proven working. ---
-  let lon = -219, lat = 2; // starting view -- roughly the Visitor Center
-                           // sign itself, pixel-estimated (see hotspot
-                           // note below), not crosshair-confirmed yet.
+  let lon = -165, lat = -2; // starting view -- looking down the main
+                            // street toward the town's depth, rather
+                            // than straight at the Visitor Center sign.
+                            // Pixel-estimated like everything else here,
+                            // not crosshair-confirmed.
   let isDragging = false;
   let prevX = 0, prevY = 0;
 
