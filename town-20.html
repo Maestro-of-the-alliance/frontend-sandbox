@@ -76,6 +76,24 @@
         max-width: 80vw; max-height: 80vh;
         object-fit: contain;
       }
+
+      /* Visitor Center video pool -- same full-screen black-background
+         approach as the construction panel, playing actual footage
+         instead. Structured as a pool (even with one entry today)
+         since more variants are planned, same shape as the HOLOSPHERE
+         boat pool. */
+      #vc-video-panel {
+        position: fixed; inset: 0; z-index: 80;
+        background: #000;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.6s ease;
+      }
+      #vc-video-panel.showing { opacity: 1; }
+      #vc-video-panel video {
+        max-width: 100vw; max-height: 100vh;
+        width: auto; height: auto;
+      }
     </style>
   </head>
   <body>
@@ -84,8 +102,13 @@
 
     <div id="visitor-center-hotspot" class="hotspot-marker pulsing" style="display:none;"></div>
 
+    <!-- Kept but no longer the default path -- see VC_VIDEO_POOL below. -->
     <div id="construction-panel">
       <img src="papadomo-under-construction.png" alt="Sequence under construction" />
+    </div>
+
+    <div id="vc-video-panel">
+      <video id="vc-video" playsinline></video>
     </div>
 
     <button id="skip-btn" title="Skip">skip</button>
@@ -100,6 +123,16 @@
   const skipBtn = document.getElementById("skip-btn");
   const visitorCenterEl = document.getElementById("visitor-center-hotspot");
   const constructionPanel = document.getElementById("construction-panel");
+  const vcVideoPanel = document.getElementById("vc-video-panel");
+  const vcVideo = document.getElementById("vc-video");
+
+  // Visitor Center video pool -- "one of a number of videos" per the
+  // original plan, structured as a pool from the start even with a
+  // single entry so more variants drop in cleanly later (same pattern
+  // as the HOLOSPHERE boat pool). Picked randomly each time.
+  const VC_VIDEO_POOL = [
+    "town-20-visitor-center.mp4",
+  ];
 
   function goNext() {
     window.location.replace("/foundation.html");
@@ -226,11 +259,23 @@
   makeHotspotInteractive(visitorCenterEl, () => {
     if (visitorCenterRetired) return;
     visitorCenterRetired = true;
-    constructionPanel.classList.add("showing");
-    setTimeout(() => {
-      constructionPanel.classList.remove("showing");
-      setTimeout(goNext, 700); // let the fade-out finish before navigating
-    }, 4000);
+
+    const choice = VC_VIDEO_POOL[Math.floor(Math.random() * VC_VIDEO_POOL.length)];
+    vcVideo.src = choice;
+    vcVideo.currentTime = 0;
+    vcVideoPanel.classList.add("showing");
+    // Direct in-gesture play() call -- same pattern already proven
+    // working for audio-bearing video elsewhere in the project
+    // (welcome.mp4, office.mp4) -- satisfies the browser autoplay
+    // policy since it's called synchronously within the tap handler.
+    const playPromise = vcVideo.play();
+    if (playPromise !== undefined) {
+      playPromise.catch((err) => console.warn("Visitor Center video play was blocked:", err));
+    }
+    vcVideo.addEventListener("ended", () => {
+      vcVideoPanel.classList.remove("showing");
+      setTimeout(goNext, 700);
+    }, { once: true });
   });
 
   function animate() {
