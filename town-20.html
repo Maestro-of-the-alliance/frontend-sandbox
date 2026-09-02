@@ -30,6 +30,18 @@
         pointer-events: auto;
         z-index: 20;
       }
+      /* The generic 70x70 circle undersizes this one badly -- the
+         actual sign is a wide rectangle, and at typical viewport/FOV
+         combinations the rendered sign is considerably bigger than a
+         70px circle, making it feel like you have to hit an exact
+         pixel. Sized and shaped to roughly match the sign itself
+         instead, generously rather than tightly given the position
+         is still a pixel estimate, not crosshair-confirmed. */
+      #visitor-center-hotspot {
+        width: clamp(200px, 42vw, 420px);
+        height: clamp(110px, 22vh, 220px);
+        border-radius: 12%;
+      }
       .hotspot-marker.pulsing::before {
         content: "";
         position: absolute; inset: 0;
