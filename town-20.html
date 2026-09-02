@@ -388,8 +388,18 @@
       playPromise.catch((err) => console.warn("Visitor Center video play was blocked:", err));
     }
     vcVideo.addEventListener("ended", () => {
-      vcVideoPanel.classList.remove("showing");
-      setTimeout(goNext, 700);
+      // Deliberately NOT removing "showing" here -- that was fading
+      // the video panel's opacity down, which revealed the still-live
+      // town panorama underneath for a beat before navigation actually
+      // happened (reported directly, screenshot confirmed: the
+      // Visitor Center sign scene reappearing after the video ends,
+      // before foundation.html loads). Since the page is about to
+      // unload anyway, there's nothing to gain from fading the panel
+      // out first -- keeping the video's last frame on screen right up
+      // until goNext() actually navigates away closes that gap
+      // entirely. Short pause just lets the ending frame register as
+      // a deliberate beat rather than an instant cut.
+      setTimeout(goNext, 400);
     }, { once: true });
 
     runShimmer(
