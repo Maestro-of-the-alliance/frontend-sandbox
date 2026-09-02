@@ -129,9 +129,14 @@
   // Visitor Center video pool -- "one of a number of videos" per the
   // original plan, structured as a pool from the start even with a
   // single entry so more variants drop in cleanly later (same pattern
-  // as the HOLOSPHERE boat pool). Picked randomly each time.
+  // as the HOLOSPHERE boat pool). Hosted on R2 (nce-media bucket),
+  // not committed to git -- at ~27.5MB this is over Cloudflare Pages'
+  // hard 25 MiB per-file deploy limit, which is exactly why the boat
+  // pool videos live on R2 in the first place. Picked randomly each
+  // time the Visitor Center is tapped.
+  const R2_BASE = "https://pub-bb8a474a69904ed98a408132316f149b.r2.dev";
   const VC_VIDEO_POOL = [
-    "town-20-visitor-center.mp4",
+    `${R2_BASE}/town-20-visitor-center.mp4`,
   ];
 
   function goNext() {
