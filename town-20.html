@@ -147,9 +147,16 @@
   // hard 25 MiB per-file deploy limit, which is exactly why the boat
   // pool videos live on R2 in the first place. Picked randomly each
   // time the Visitor Center is tapped.
+  //
+  // Each entry can carry a separate mobile-cropped version -- footage
+  // deliberately framed so it survives a portrait crop, edited by
+  // hand rather than an automatic CSS object-fit crop, since a real
+  // edit knows what to keep in frame and a blind aspect-ratio crop
+  // doesn't. Falls back to landscape if no mobile variant exists yet
+  // for a given entry.
   const R2_BASE = "https://pub-bb8a474a69904ed98a408132316f149b.r2.dev";
   const VC_VIDEO_POOL = [
-    `${R2_BASE}/20-town.mp4`,
+    { landscape: `${R2_BASE}/20-town.mp4`, mobile: `${R2_BASE}/mobile-20.mp4` },
   ];
 
   function goNext() {
@@ -173,21 +180,22 @@
   const loader = new THREE.TextureLoader();
   let sphere = null;
 
-  // --- Shimmer-in reveal ---
+  // --- Shimmer transition (reusable) ---
   //
   // Same gold-neon shimmer sweep as the HOLOSPHERE's door->town
-  // transition, adapted for a first reveal rather than a scene swap:
-  // no texture to preload-and-swap invisibly, just a stylized cover
-  // while the initial texture loads, holding at peak brightness until
-  // it's actually ready, then fading to reveal -- replacing what was
-  // a flat opacity fade on a plain loading screen.
+  // transition. Builds to peak brightness, holds until isReady()
+  // returns true, calls onReveal() at that hidden peak moment (for
+  // whatever needs to happen invisibly -- building the sphere, or
+  // revealing an already-playing video), then fades out. Reused for
+  // both the initial scene reveal and the Visitor Center video.
   const fxCanvas = document.getElementById("reveal-fx");
   const fxCtx = fxCanvas.getContext("2d");
-  let textureReady = null;
 
-  function runShimmerReveal() {
+  function runShimmer(isReady, onReveal) {
     fxCanvas.width = window.innerWidth;
     fxCanvas.height = window.innerHeight;
+    fxCanvas.style.display = "block";
+    fxCanvas.style.opacity = "1";
     const W = fxCanvas.width, H = fxCanvas.height;
     const startTime = performance.now();
     const BUILD_MS = 900;
@@ -218,23 +226,16 @@
       }
 
       const peakElapsed = elapsed - BUILD_MS;
-      if (peakElapsed < PEAK_MS || !textureReady) {
+      if (peakElapsed < PEAK_MS || !isReady()) {
         requestAnimationFrame(frame);
         return;
       }
 
-      // Texture's ready and the minimum peak hold has elapsed --
-      // build the actual scene now, hidden under the shimmer, then
-      // fade to reveal it.
-      const material = new THREE.MeshBasicMaterial({ map: textureReady });
-      sphere = new THREE.Mesh(geometry, material);
-      scene.add(sphere);
-      visitorCenterEl.style.display = "block";
-      loadingOverlay.style.display = "none";
-      fadeReveal(now);
+      onReveal();
+      fadeOut(now);
     }
 
-    function fadeReveal(peakEndTime) {
+    function fadeOut(peakEndTime) {
       function fadeFrame(now) {
         const t = Math.min(1, (now - peakEndTime) / FADE_MS);
         fxCanvas.style.opacity = String(1 - t);
@@ -250,6 +251,7 @@
     requestAnimationFrame(frame);
   }
 
+  let textureReady = null;
   loader.load(
     "holosphere/panorama-town-20.png",
     function (texture) {
@@ -263,7 +265,16 @@
       console.error(err);
     }
   );
-  runShimmerReveal();
+  runShimmer(
+    () => textureReady !== null,
+    () => {
+      const material = new THREE.MeshBasicMaterial({ map: textureReady });
+      sphere = new THREE.Mesh(geometry, material);
+      scene.add(sphere);
+      visitorCenterEl.style.display = "block";
+      loadingOverlay.style.display = "none";
+    }
+  );
 
   // --- Drag-to-look-around -- identical pattern to the HOLOSPHERE's
   // own camera control, copied deliberately rather than reinvented,
@@ -356,14 +367,22 @@
     if (visitorCenterRetired) return;
     visitorCenterRetired = true;
 
-    const choice = VC_VIDEO_POOL[Math.floor(Math.random() * VC_VIDEO_POOL.length)];
-    vcVideo.src = choice;
+    const isPortrait = window.innerWidth < window.innerHeight;
+    const entry = VC_VIDEO_POOL[Math.floor(Math.random() * VC_VIDEO_POOL.length)];
+    const src = (isPortrait && entry.mobile) ? entry.mobile : entry.landscape;
+    vcVideo.src = src;
     vcVideo.currentTime = 0;
-    vcVideoPanel.classList.add("showing");
+
     // Direct in-gesture play() call -- same pattern already proven
     // working for audio-bearing video elsewhere in the project
-    // (welcome.mp4, office.mp4) -- satisfies the browser autoplay
-    // policy since it's called synchronously within the tap handler.
+    // (welcome.mp4, office.mp4). Called immediately here, NOT delayed
+    // until after the shimmer -- browsers tie autoplay-with-audio
+    // permission to the gesture's call stack, and the shimmer's
+    // ~1.2s build+peak would likely break that association if play()
+    // waited for it. #vc-video-panel is opacity:0 by default (CSS),
+    // so the video plays invisibly underneath the shimmer; toggling
+    // "showing" at the shimmer's peak crossfades into a video that's
+    // already flowing rather than starting fresh at reveal time.
     const playPromise = vcVideo.play();
     if (playPromise !== undefined) {
       playPromise.catch((err) => console.warn("Visitor Center video play was blocked:", err));
@@ -372,6 +391,11 @@
       vcVideoPanel.classList.remove("showing");
       setTimeout(goNext, 700);
     }, { once: true });
+
+    runShimmer(
+      () => true, // nothing to wait on -- play() already kicked off above
+      () => { vcVideoPanel.classList.add("showing"); }
+    );
   });
 
   function animate() {
