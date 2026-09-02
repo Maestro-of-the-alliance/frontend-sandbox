@@ -25,6 +25,26 @@
     background: rgba(0,0,0,0.6); padding: 6px 10px; border-radius: 4px;
     pointer-events: none;
   }
+  /* Same skip escape hatch as town-20.html, same style, since the
+     HOLOSPHERE's multi-stage tour sequence (intercom -> door -> town
+     -> visitor center) has no way out otherwise once started. z-index
+     kept above every overlay in that sequence (fx-canvas 70,
+     construction-panel/door-panel/boat-panel 60-80) so it's always
+     reachable regardless of which stage is showing. */
+  #tour-skip-btn {
+    position: fixed; top: 20px; right: 20px; z-index: 100;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1.5px solid #00e5ff; color: #00e5ff;
+    font-family: "Courier New", monospace; font-size: 11px;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 7px 12px; border-radius: 3px; cursor: pointer;
+    box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+  }
+  #tour-skip-btn:hover, #tour-skip-btn:focus-visible {
+    background: rgba(0, 229, 255, 0.18);
+    box-shadow: 0 0 14px rgba(0, 229, 255, 0.7);
+  }
   #center-crosshair {
     display: none;
     position: fixed; top: 50%; left: 50%; width: 24px; height: 24px;
@@ -298,6 +318,7 @@
 
 <div id="loading-overlay">ENTERING THE HOLOSPHERE&hellip;</div>
 <div id="debug-readout">lon: 0 &nbsp; lat: 0</div>
+<button id="tour-skip-btn" title="Skip to tours">skip</button>
 <div id="center-crosshair"></div>
 <canvas id="holosphere-canvas"></canvas>
 
@@ -357,6 +378,9 @@
   const canvas = document.getElementById("holosphere-canvas");
   const loadingOverlay = document.getElementById("loading-overlay");
   const debugEl = document.getElementById("debug-readout");
+  document.getElementById("tour-skip-btn").addEventListener("click", () => {
+    window.location.href = "/tours/";
+  });
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(
