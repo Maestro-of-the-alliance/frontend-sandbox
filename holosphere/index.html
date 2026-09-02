@@ -405,11 +405,12 @@
   let prevX = 0, prevY = 0;
 
   function onPointerDown(x, y) {
+    if (cameraLocked) return;
     isDragging = true;
     prevX = x; prevY = y;
   }
   function onPointerMove(x, y) {
-    if (!isDragging) return;
+    if (!isDragging || cameraLocked) return;
     const dx = x - prevX;
     const dy = y - prevY;
     lon -= dx * 0.15;
@@ -418,6 +419,44 @@
     prevX = x; prevY = y;
   }
   function onPointerUp() { isDragging = false; }
+
+  // --- Camera zoom/pan animation (intercom close-up, door reveal) ---
+  //
+  // A sphere-interior camera can't literally dolly toward an object --
+  // it always sits at the sphere's center -- so "zooming in" here
+  // means narrowing the FOV while precisely aiming lon/lat at the
+  // target, together reading as a real camera push-in. Used for: the
+  // intercom close-up before the tour prompt, and panning back out
+  // toward the door afterward rather than just returning to a neutral
+  // wide view.
+  let cameraLocked = false;
+  function animateCameraTo(targetLon, targetLat, targetFov, durationMs, onComplete) {
+    cameraLocked = true;
+    const startLon = lon, startLat = lat, startFov = camera.fov;
+    const startTime = performance.now();
+    // Shortest-path interpolation on lon -- without this, animating
+    // from e.g. -10 to -350 would spin the long way around (340
+    // degrees) instead of the short way (20 degrees).
+    let deltaLon = targetLon - startLon;
+    while (deltaLon > 180) deltaLon -= 360;
+    while (deltaLon < -180) deltaLon += 360;
+
+    function step(now) {
+      const t = Math.min(1, (now - startTime) / durationMs);
+      const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      lon = startLon + deltaLon * eased;
+      lat = startLat + (targetLat - startLat) * eased;
+      camera.fov = startFov + (targetFov - startFov) * eased;
+      camera.updateProjectionMatrix();
+      if (t < 1) {
+        requestAnimationFrame(step);
+      } else {
+        cameraLocked = false;
+        if (onComplete) onComplete();
+      }
+    }
+    requestAnimationFrame(step);
+  }
 
   canvas.addEventListener("mousedown", (e) => onPointerDown(e.clientX, e.clientY));
   window.addEventListener("mousemove", (e) => onPointerMove(e.clientX, e.clientY));
@@ -815,10 +854,17 @@
     pushOverlayState("welcome");
     telescopeEl.style.display = "none";
     intercomEl.style.display = "none";
-    welcomePanel.style.display = "flex";
-    requestAnimationFrame(() => {
-      welcomeText.style.opacity = "1";
-      setTimeout(() => { welcomeChoices.style.opacity = "1"; }, 900);
+    // Zoom in tight on the intercom itself before the prompt appears,
+    // rather than showing it over whatever direction the camera
+    // happened to be facing. Also sets up the door-reveal trick below:
+    // zoomed in this close, the door (55 degrees away in lon) is
+    // completely outside the frustum.
+    animateCameraTo(-138.5, -35.4, 30, 900, () => {
+      welcomePanel.style.display = "flex";
+      requestAnimationFrame(() => {
+        welcomeText.style.opacity = "1";
+        setTimeout(() => { welcomeChoices.style.opacity = "1"; }, 900);
+      });
     });
   });
 
@@ -911,27 +957,41 @@
       retireHotspot(intercomEl);
       retireHotspot(balconyEl);
 
-      runFireworksTransition("panorama-door.png", () => {
-        door3dEl.style.display = "block";
-        makeHotspotInteractive(door3dEl, () => {
-          retireHotspot(door3dEl);
-          runShimmerTransition("panorama-town-60.png", () => {
-            visitorCenterEl.style.display = "block";
-            makeHotspotInteractive(visitorCenterEl, () => {
-              // Visitor Center reached -- same placard/hold/handoff
-              // pattern as town-20.html's own Visitor Center hotspot,
-              // landing at /tours/ (the tour-choice card index)
-              // instead of foundation.html, since this is the
-              // returning-visitor path, not the first-time onboarding
-              // path.
-              const constructionPanel = document.getElementById("construction-panel");
-              constructionPanel.style.opacity = "1";
-              setTimeout(() => {
-                constructionPanel.style.opacity = "0";
+      // Still zoomed in tight on the intercom right now (see the tap
+      // handler above) -- the door sits ~55 degrees away in lon, well
+      // outside this narrow FOV, and panorama-door.png is otherwise
+      // pixel-identical to panorama.png (same room, only the door
+      // added). That's the whole trick: swap the texture right now,
+      // invisibly, then zoom back out while panning toward the door
+      // itself so the visitor lands looking straight at it rather
+      // than having to hunt for it right after the moment that should
+      // feel most rewarding. No fireworks needed -- the geometry does
+      // the hiding. (runFireworksTransition is kept, unused, below in
+      // case a bigger effect is wanted here again later.)
+      preloadTexture("panorama-door.png").then((tex) => {
+        swapSphereTexture(tex);
+        animateCameraTo(-83, -4.5, 75, 1400, () => {
+          door3dEl.style.display = "block";
+          makeHotspotInteractive(door3dEl, () => {
+            retireHotspot(door3dEl);
+            runShimmerTransition("panorama-town-60.png", () => {
+              visitorCenterEl.style.display = "block";
+              makeHotspotInteractive(visitorCenterEl, () => {
+                // Visitor Center reached -- same placard/hold/handoff
+                // pattern as town-20.html's own Visitor Center hotspot,
+                // landing at /tours/ (the tour-choice card index)
+                // instead of foundation.html, since this is the
+                // returning-visitor path, not the first-time onboarding
+                // path.
+                const constructionPanel = document.getElementById("construction-panel");
+                constructionPanel.style.opacity = "1";
                 setTimeout(() => {
-                  window.location.href = "/tours/";
-                }, 700);
-              }, 4000);
+                  constructionPanel.style.opacity = "0";
+                  setTimeout(() => {
+                    window.location.href = "/tours/";
+                  }, 700);
+                }, 4000);
+              });
             });
           });
         });
