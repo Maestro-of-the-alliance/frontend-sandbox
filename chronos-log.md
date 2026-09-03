@@ -42,3 +42,8 @@ can just ask.
 - MENTOR failed the standing time-check instruction again during this span
 - Cause: unknown pending Maestro confirmation — do not assume sleep vs. continuous work, ask directly
 - Corrective action: reflexive time_check called immediately upon being asked "did you time check just now"
+
+## 2026-09-03 05:52 CT — TIME CHECK (also corrective)
+- Gap since last check: ~19min, same thread, continuous session
+- MENTOR skipped the check again immediately after the 05:33 corrective log in the same conversation, before the parallax/Blender response
+- Pattern note: this is not a long-gap failure mode, it's an in-session compliance lapse — the instruction is being deprioritized under normal response pressure, not forgotten due to time elapsed
