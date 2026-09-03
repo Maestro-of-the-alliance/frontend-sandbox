@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panorama Compare</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
+      #pano-canvas { position: fixed; inset: 0; display: block; cursor: grab; }
+      #pano-canvas:active { cursor: grabbing; }
+      #loading-overlay {
+        position: fixed; inset: 0; z-index: 40;
+        background: #000; color: #ccc;
+        display: flex; align-items: center; justify-content: center;
+        font-family: "Courier New", monospace; font-size: 13px;
+      }
+      #controls {
+        position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+        z-index: 100; display: flex; gap: 10px;
+        background: rgba(0,0,0,0.55); padding: 10px; border-radius: 6px;
+      }
+      .compare-btn {
+        background: rgba(0,0,0,0.4);
+        border: 1.5px solid #00e5ff; color: #00e5ff;
+        font-family: "Courier New", monospace; font-size: 13px;
+        letter-spacing: 0.08em; text-transform: uppercase;
+        padding: 8px 16px; border-radius: 3px; cursor: pointer;
+      }
+      .compare-btn.active { background: #00e5ff; color: #000; }
+      #current-label {
+        position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+        z-index: 100; color: #fff; font-family: "Courier New", monospace;
+        font-size: 12px; background: rgba(0,0,0,0.55); padding: 6px 14px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading-overlay">Loading&hellip;</div>
+    <canvas id="pano-canvas"></canvas>
+    <div id="controls">
+      <button class="compare-btn active" data-key="remacri">Remacri</button>
+      <button class="compare-btn" data-key="standard">Standard</button>
+    </div>
+    <div id="current-label">Remacri</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+(function () {
+  "use strict";
+
+  const R2 = "https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/";
+  const CANDIDATES = {
+    remacri: R2 + "no-door-final%20-%20Copy_upscayl_4x_remacri-4x.png",
+    standard: R2 + "no-door-final%20-%20Copy_upscayl_4x_upscayl-standard-4x.png",
+  };
+
+  const canvas = document.getElementById("pano-canvas");
+  const loadingOverlay = document.getElementById("loading-overlay");
+  const currentLabel = document.getElementById("current-label");
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  const geometry = new THREE.SphereGeometry(500, 60, 40);
+  geometry.scale(-1, 1, 1);
+
+  let sphere = null;
+
+  function loadTextureNoCORS(url, onReady, onError) {
+    // THREE.TextureLoader always sets image.crossOrigin internally, even
+    // to an empty string -- which the DOM still treats as "anonymous"
+    // mode, not "unset". Building the Image element by hand instead, so
+    // crossOrigin is never touched at all, is the only way to get a
+    // genuinely plain (non-CORS) image request here.
+    const image = new Image();
+    image.onload = () => {
+      const texture = new THREE.Texture(image);
+      texture.needsUpdate = true;
+      onReady(texture);
+    };
+    image.onerror = onError;
+    image.src = url;
+  }
+
+  function loadPano(key) {
+    loadingOverlay.style.display = "flex";
+    loadingOverlay.style.opacity = "1";
+    loadTextureNoCORS(
+      CANDIDATES[key],
+      (texture) => {
+        const material = new THREE.MeshBasicMaterial({ map: texture });
+        if (sphere) {
+          sphere.material.map.dispose();
+          sphere.material.dispose();
+          scene.remove(sphere);
+        }
+        sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+        loadingOverlay.style.opacity = "0";
+        setTimeout(() => { loadingOverlay.style.display = "none"; }, 400);
+      },
+      (err) => {
+        loadingOverlay.textContent = "Failed to load image. Check console.";
+        console.error(err);
+      }
+    );
+  }
+
+  document.querySelectorAll(".compare-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".compare-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentLabel.textContent = btn.textContent;
+      loadPano(btn.dataset.key);
+    });
+  });
+
+  loadPano("remacri");
+
+  let lon = -180.2, lat = -0.8;
+  let isDragging = false;
+  let prevX = 0, prevY = 0;
+
+  function onPointerDown(x, y) { isDragging = true; prevX = x; prevY = y; }
+  function onPointerMove(x, y) {
+    if (!isDragging) return;
+    const dx = x - prevX, dy = y - prevY;
+    lon -= dx * 0.15;
+    lat += dy * 0.15;
+    lat = Math.max(-85, Math.min(85, lat));
+    prevX = x; prevY = y;
+  }
+  function onPointerUp() { isDragging = false; }
+
+  canvas.addEventListener("mousedown", (e) => onPointerDown(e.clientX, e.clientY));
+  window.addEventListener("mousemove", (e) => onPointerMove(e.clientX, e.clientY));
+  window.addEventListener("mouseup", onPointerUp);
+  canvas.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 1) onPointerDown(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
+  canvas.addEventListener("touchmove", (e) => {
+    if (e.touches.length === 1) onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
+  canvas.addEventListener("touchend", onPointerUp);
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const phi = THREE.MathUtils.degToRad(90 - lat);
+    const theta = THREE.MathUtils.degToRad(lon);
+    const target = new THREE.Vector3(
+      500 * Math.sin(phi) * Math.cos(theta),
+      500 * Math.cos(phi),
+      500 * Math.sin(phi) * Math.sin(theta)
+    );
+    camera.lookAt(target);
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+})();
+    </script>
+  </body>
+</html>
