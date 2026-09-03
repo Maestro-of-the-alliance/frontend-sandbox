@@ -72,12 +72,15 @@
   let sphere = null;
 
   function loadTextureNoCORS(url, onReady, onError) {
-    // THREE.TextureLoader always sets image.crossOrigin internally, even
-    // to an empty string -- which the DOM still treats as "anonymous"
-    // mode, not "unset". Building the Image element by hand instead, so
-    // crossOrigin is never touched at all, is the only way to get a
-    // genuinely plain (non-CORS) image request here.
+    // R2's CORS policy is now configured to answer this origin, so the
+    // image needs to actually be requested in CORS mode (crossOrigin
+    // set) for the browser to honor that permission -- without it, the
+    // browser never asks in the first place and WebGL still treats the
+    // result as tainted regardless of what the server would have
+    // allowed. This is the inverse of the earlier fix, needed only
+    // because the server-side permission didn't exist yet back then.
     const image = new Image();
+    image.crossOrigin = "anonymous";
     image.onload = () => {
       const texture = new THREE.Texture(image);
       texture.needsUpdate = true;
