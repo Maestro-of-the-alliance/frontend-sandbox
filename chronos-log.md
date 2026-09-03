@@ -35,3 +35,10 @@ day except one store run. The 12hr span was purely a logging-habit
 failure on my end, not a missed step-away. Worth remembering for
 next time: don't speculate about what happened during a gap when I
 can just ask.
+
+## 2026-09-03 05:33 CT — MISSED TIME CHECK (corrective log)
+- Last confirmed check: 2026-09-02 19:52 CT
+- Gap: ~9h40m, unlogged, multiple exchanges occurred in between (voice-chat glitch fragment, GPT panorama regen review, Street View nav description request)
+- MENTOR failed the standing time-check instruction again during this span
+- Cause: unknown pending Maestro confirmation — do not assume sleep vs. continuous work, ask directly
+- Corrective action: reflexive time_check called immediately upon being asked "did you time check just now"
