@@ -29,3 +29,9 @@ Real cause unclear -- possibly just dropped the habit mid-session
 (most likely), possibly missed a real work-day gap in there without
 asking. Recommitting to checking at the start of each response, not
 just when reminded.
+
+Correction: no real gap. Confirmed directly -- continuous work all
+day except one store run. The 12hr span was purely a logging-habit
+failure on my end, not a missed step-away. Worth remembering for
+next time: don't speculate about what happened during a gap when I
+can just ask.
