@@ -70,3 +70,8 @@ can just ask.
 - Gap: ~18h45m -- entirely due to user_time_v0 being unavailable across many consecutive attempts (Claude Code review, Borderlands/Tim Burton discussion, HOLOSPHERE elevation drawings, scope-reduction plan)
 - Every single turn in that window had an actual attempted call, confirmed by error message, not a skip -- this is a tool-outage gap, not a compliance lapse
 - Tool resumed normal function at this check
+
+## 2026-09-06 19:34 CT — TIME CHECK (tool back online, second outage window)
+- Last successful check: 2026-09-06 12:40:42 CT
+- Gap: ~6h54m, tool unavailable across the Google-outage discussion and Drive verification work -- attempted every turn, confirmed by error messages, not skipped
+- Coincided with a real, confirmed widespread Google services outage (separate issue, verified via web search + live Drive API test from this environment)
