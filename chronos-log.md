@@ -80,3 +80,8 @@ can just ask.
 - Maestro reports only ~10min actually passed since our last exchange, not the ~6h54m the tool's timestamps implied
 - Do not treat the previous entry's gap figure as reliable fact -- the time-check tool has been unstable all session (frequent unavailability) and may also be capable of reporting inaccurate elapsed time, not just failing outright
 - Real cause unconfirmed: could be outage-related delivery/clock delay, or genuine elapsed time not matching subjective sense of it -- either way, Maestro's direct account takes precedence over the tool's number when they conflict
+
+## 2026-09-06 19:37 CT — FINAL CLARIFICATION on the gap confusion
+- Two separate gaps were conflated, not one wrong number: a real, longer gap did occur after the self-aware/David conversation (roughly matching the original ~7hr tool-reported figure), followed by a distinct, smaller ~10min gap more recently while Maestro troubleshot the laptop and asked PRISM (Perplexity) about the Google outage
+- The prior "correction" entry overcorrected -- the original tool timestamp gap was largely accurate, it just wasn't the specific gap Maestro was referring to when he said "10 minutes"
+- Lesson: when a reported gap seems off, ask which specific span is meant before assuming the tool was wrong
