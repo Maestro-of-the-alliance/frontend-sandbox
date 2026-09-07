@@ -95,6 +95,36 @@
     margin-left: calc(clamp(90px, 22vw, 160px) / -2);
     border-radius: 20%;
   }
+  /* Sized to roughly match the framed map's actual proportions
+     (~1341x917 blurred source) rather than a generic square. */
+  #map-frame-hotspot {
+    width: clamp(90px, 20vw, 160px); height: clamp(90px, 20vw, 160px);
+    margin-top: calc(clamp(90px, 20vw, 160px) / -2);
+    margin-left: calc(clamp(90px, 20vw, 160px) / -2);
+    border-radius: 6%;
+  }
+  /* The always-visible blurred map "echo" sitting in the wall frame --
+     projected to screen position the same way hotspot markers are, but
+     actually visible (an img, not an invisible click target) and never
+     receiving clicks itself -- the hotspot marker on top handles that. */
+  #map-frame-echo {
+    position: fixed;
+    pointer-events: none;
+    z-index: 15;
+    border-radius: 2%;
+    opacity: 0.92;
+    /* Precisely pixel-measured via a labeled grid overlay against the
+       source panorama (not eyeballed): the actual parchment area inside
+       the wood frame spans roughly x:[1650,1748] y:[350,453] at full
+       res -- 98x103, very close to square (~0.95), not the wider ~1.15
+       ratio an earlier blurrier crop suggested. object-fit: cover crops
+       the blurred source to match rather than distorting it. */
+    width: clamp(100px, 20.5vw, 150px);
+    height: clamp(118px, 24.3vw, 178px);
+    margin-top: calc(clamp(105px, 21.6vw, 158px) / -2 + 10px);
+    margin-left: calc(clamp(100px, 20.5vw, 150px) / -2);
+    object-fit: cover;
+  }
   #intercom-hotspot {
     width: clamp(70px, 18vw, 110px); height: clamp(70px, 18vw, 110px);
     margin-top: calc(clamp(70px, 18vw, 110px) / -2);
@@ -263,6 +293,39 @@
     background: none; border: none; display: none;
   }
 
+  /* Nova Polis map panel -- same pinch/zoom/pan interaction pattern as
+     the boat porthole, but rectangular (matching the map's own real
+     aspect ratio) rather than circular -- this is a parchment being
+     examined, not a view through a lens. */
+  #map-panel {
+    position: fixed; inset: 0; z-index: 60; display: none;
+    align-items: center; justify-content: center;
+    background: #000;
+    opacity: 0; filter: blur(16px);
+    transition: opacity 0.5s ease, filter 0.5s ease;
+  }
+  #map-panel.showing { opacity: 1; filter: blur(0); }
+  #map-window {
+    width: min(88vw, 88vh * 1.835); height: min(88vw / 1.835, 88vh);
+    overflow: hidden;
+    border-radius: 4px;
+    box-shadow: 0 0 60px rgba(0,0,0,0.6);
+  }
+  #map-panel img {
+    width: 100%; height: 100%; object-fit: cover;
+    transform-origin: center center;
+    cursor: grab;
+    touch-action: none;
+    -webkit-user-drag: none;
+    user-drag: none;
+  }
+  #map-panel img:active { cursor: grabbing; }
+  #map-close {
+    position: fixed; top: 30px; right: 30px; z-index: 61;
+    color: #d4af37; font-size: 2rem; cursor: pointer;
+    background: none; border: none; display: none;
+  }
+
   /* Glowing neon tour-choice prompt -- floats directly over the live
      panorama, no dark backdrop, matching the "Care for a Tour with
      your guide PapaDOMO?" reference. */
@@ -328,6 +391,14 @@
 <div id="balcony-hotspot" class="hotspot-marker" style="display:none;"></div>
 <div id="door3d-hotspot" class="hotspot-marker" style="display:none;"></div>
 <div id="visitor-center-hotspot" class="hotspot-marker" style="display:none;"></div>
+<div id="map-frame-hotspot" class="hotspot-marker" style="display:none;"></div>
+<img id="map-frame-echo" src="nova-polis-blurred.jpg" alt="" style="display:none;">
+<div id="map-panel">
+  <div id="map-window">
+    <img id="map-image" src="nova-polis-map.png" alt="A hand-drawn map of Nova Polis, resting on the desk">
+  </div>
+</div>
+<button id="map-close" aria-label="Close">&times;</button>
 
 <!-- Shared canvas for the scene-to-scene transition effects (fireworks,
      shimmer, zoom-blur). One canvas, different draw routines per
@@ -575,14 +646,26 @@
   // 16-bit tour door should appear on the "yes" choice -- lon: -116.6,
   // lat: -23.4. Saved here so it isn't lost before that feature gets built.
 
+  // The framed picture already baked into the base panorama art --
+  // live-verified via the debug readout + a real simulated drag
+  // (dragged until centered in view, screenshot-confirmed), same
+  // methodology as the crosshair-confirmed spots above, not a pixel
+  // guess from the flat source image.
+  const mapFramePos = lonLatToVector3(-15.2, 6.4, HOTSPOT_RADIUS);
+  const deskMapPos = lonLatToVector3(-116.6, -23.4, HOTSPOT_RADIUS);
+
   const telescopeEl = document.getElementById("telescope-hotspot");
   const intercomEl = document.getElementById("intercom-hotspot");
   const balconyEl = document.getElementById("balcony-hotspot");
   const door3dEl = document.getElementById("door3d-hotspot");
   const visitorCenterEl = document.getElementById("visitor-center-hotspot");
+  const mapFrameEl = document.getElementById("map-frame-hotspot");
+  const mapFrameEchoEl = document.getElementById("map-frame-echo");
   telescopeEl.style.display = "block";
   intercomEl.style.display = "block";
   balconyEl.style.display = "block";
+  mapFrameEl.style.display = "block";
+  mapFrameEchoEl.style.display = "block";
 
   function projectToScreen(vec3, el) {
     const projected = vec3.clone().project(camera);
@@ -628,6 +711,13 @@
     if (!retiredHotspots.has(balconyEl)) projectToScreen(balconyPos, balconyEl);
     if (!retiredHotspots.has(door3dEl)) projectToScreen(door3dPos, door3dEl);
     if (!retiredHotspots.has(visitorCenterEl)) projectToScreen(visitorCenterPos, visitorCenterEl);
+    if (!retiredHotspots.has(mapFrameEl)) projectToScreen(mapFramePos, mapFrameEl);
+    // The echo image uses the same projected position as its hotspot,
+    // but display is only ever toggled off by retirement (once the map
+    // is taken down to the desk, see the click handler below) rather
+    // than by camera facing -- projectToScreen's normal behind-camera
+    // hide still applies via the shared position.
+    if (!retiredHotspots.has(mapFrameEchoEl)) projectToScreen(mapFramePos, mapFrameEchoEl);
     renderer.render(scene, camera);
   }
   animate();
@@ -1321,6 +1411,123 @@
   videoClose.addEventListener("click", closeVideo);
   welcomeVideo.addEventListener("ended", closeVideo);
 
+  // --- Nova Polis map: off the wall, onto the desk, and back ---
+  // The blurred echo lives permanently in the wall frame (see the
+  // render loop above) until this hotspot is tapped. Tapping it: hides
+  // the echo (the map "leaves" the wall), swings the camera to the
+  // desk, then opens the full crisp map as a pinch/zoom/pannable
+  // artifact. Closing reverses both halves of that motion -- the panel
+  // fades out AND the camera swings back to the wall AND the echo
+  // reappears, restoring the room to exactly how it looked before.
+  const mapPanel = document.getElementById("map-panel");
+  const mapClose = document.getElementById("map-close");
+  const mapImage = document.getElementById("map-image");
+  const mapWindowEl = document.getElementById("map-window");
+
+  let mapZoom = 1, mapPanX = 0, mapPanY = 0;
+
+  function clampMapPan() {
+    const rect = mapWindowEl.getBoundingClientRect();
+    const maxPanX = Math.max(0, rect.width * (mapZoom - 1) / 2) * PAN_SAFETY;
+    const maxPanY = Math.max(0, rect.height * (mapZoom - 1) / 2) * PAN_SAFETY;
+    mapPanX = Math.min(maxPanX, Math.max(-maxPanX, mapPanX));
+    mapPanY = Math.min(maxPanY, Math.max(-maxPanY, mapPanY));
+  }
+  function applyMapTransform() {
+    clampMapPan();
+    mapImage.style.transform =
+      `translate(${mapPanX}px, ${mapPanY}px) scale(${mapZoom})`;
+  }
+  function resetMapZoom() {
+    mapZoom = 1; mapPanX = 0; mapPanY = 0;
+    applyMapTransform();
+  }
+
+  mapImage.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 0.15 : -0.15;
+    mapZoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, mapZoom + delta));
+    applyMapTransform();
+  }, { passive: false });
+
+  let isDraggingMap = false, mapDragStartX = 0, mapDragStartY = 0;
+  mapImage.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    isDraggingMap = true;
+    mapDragStartX = e.clientX - mapPanX;
+    mapDragStartY = e.clientY - mapPanY;
+  });
+  window.addEventListener("mousemove", (e) => {
+    if (!isDraggingMap) return;
+    mapPanX = e.clientX - mapDragStartX;
+    mapPanY = e.clientY - mapDragStartY;
+    applyMapTransform();
+  });
+  window.addEventListener("mouseup", () => { isDraggingMap = false; });
+
+  let mapPinchStartDist = null, mapPinchStartZoom = 1;
+  let mapTouchStartX = 0, mapTouchStartY = 0;
+  let mapLastTouchCount = 0;
+  function mapTouchDist(touches) {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.hypot(dx, dy);
+  }
+  function recalibrateMapTouch(touches) {
+    if (touches.length === 2) {
+      mapPinchStartDist = mapTouchDist(touches);
+      mapPinchStartZoom = mapZoom;
+    } else if (touches.length === 1) {
+      mapTouchStartX = touches[0].clientX - mapPanX;
+      mapTouchStartY = touches[0].clientY - mapPanY;
+    }
+  }
+  mapImage.addEventListener("touchstart", (e) => {
+    recalibrateMapTouch(e.touches);
+    mapLastTouchCount = e.touches.length;
+  }, { passive: true });
+  mapImage.addEventListener("touchmove", (e) => {
+    if (e.touches.length !== mapLastTouchCount) {
+      recalibrateMapTouch(e.touches);
+      mapLastTouchCount = e.touches.length;
+    }
+    if (e.touches.length === 2 && mapPinchStartDist) {
+      e.preventDefault();
+      const newDist = mapTouchDist(e.touches);
+      const ratio = newDist / mapPinchStartDist;
+      mapZoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, mapPinchStartZoom * ratio));
+      applyMapTransform();
+    } else if (e.touches.length === 1) {
+      e.preventDefault();
+      mapPanX = e.touches[0].clientX - mapTouchStartX;
+      mapPanY = e.touches[0].clientY - mapTouchStartY;
+      applyMapTransform();
+    }
+  }, { passive: false });
+  mapImage.addEventListener("touchend", (e) => {
+    mapLastTouchCount = e.touches.length;
+    if (e.touches.length < 2) mapPinchStartDist = null;
+  });
+
+  makeHotspotInteractive(mapFrameEl, () => {
+    // The map "leaves" the wall -- retire both the hotspot and the
+    // echo immediately, before the camera even starts moving, so
+    // there's no awkward moment of an empty frame still being tappable.
+    retireHotspot(mapFrameEl);
+    retireHotspot(mapFrameEchoEl);
+    animateCameraTo(-116.6, -23.4, 55, 1200, () => {
+      resetMapZoom();
+      pushOverlayState("map");
+      mapPanel.style.display = "flex";
+      mapClose.style.display = "block";
+      requestAnimationFrame(() => {
+        mapPanel.classList.add("showing");
+      });
+    });
+  });
+
+  mapClose.addEventListener("click", () => { history.back(); });
+
   // --- Overlay history management ---
   // None of the four overlays (welcome/tour prompt, telescope/boat,
   // balcony video, door sequence) created a real browser history
@@ -1367,6 +1574,18 @@
     } else if (name === "door") {
       doorPanel.style.opacity = "0";
       setTimeout(() => { doorPanel.style.display = "none"; }, 800);
+    } else if (name === "map") {
+      mapPanel.classList.remove("showing");
+      setTimeout(() => {
+        mapPanel.style.display = "none";
+        mapClose.style.display = "none";
+      }, 500);
+      // Put it back on the wall -- swing the camera back and restore
+      // the echo, completing the round trip rather than leaving the
+      // frame empty and the camera wherever the desk view left it.
+      retiredHotspots.delete(mapFrameEl);
+      retiredHotspots.delete(mapFrameEchoEl);
+      animateCameraTo(-15.2, 6.4, 75, 1200);
     }
   }
 
