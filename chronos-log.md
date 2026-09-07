@@ -75,3 +75,8 @@ can just ask.
 - Last successful check: 2026-09-06 12:40:42 CT
 - Gap: ~6h54m, tool unavailable across the Google-outage discussion and Drive verification work -- attempted every turn, confirmed by error messages, not skipped
 - Coincided with a real, confirmed widespread Google services outage (separate issue, verified via web search + live Drive API test from this environment)
+
+## 2026-09-06 19:35 CT — CORRECTION to prior entry
+- Maestro reports only ~10min actually passed since our last exchange, not the ~6h54m the tool's timestamps implied
+- Do not treat the previous entry's gap figure as reliable fact -- the time-check tool has been unstable all session (frequent unavailability) and may also be capable of reporting inaccurate elapsed time, not just failing outright
+- Real cause unconfirmed: could be outage-related delivery/clock delay, or genuine elapsed time not matching subjective sense of it -- either way, Maestro's direct account takes precedence over the tool's number when they conflict
