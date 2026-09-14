@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>PapaDOMO Welcome — video version</title>
+<style>
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+  }
+
+  #stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  #welcome-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
+  }
+
+  /* Invisible click target sitting over the door's on-screen position
+     during the paused hold. Coordinates are measured against the
+     video's own 1920x1080 frame at the 9s pause point (see the door
+     frame captured during review) and expressed as percentages so it
+     tracks correctly under object-fit: contain at any window size. */
+  #door-click-target {
+    position: absolute;
+    left: 42.7%;
+    top: 16.2%;
+    width: 21.9%;
+    height: 48.6%;
+    cursor: pointer;
+    display: none;
+  }
+
+  #door-click-target.active {
+    display: block;
+  }
+
+  /* Subtle affordance so the pause doesn't read as the video being
+     stuck or broken -- a soft pulse hinting the door is interactive,
+     without adding new UI chrome this early in the experience. */
+  #door-click-target.active::after {
+    content: "";
+    position: absolute;
+    inset: -6%;
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(244, 217, 118, 0.5);
+    animation: pulse 1.8s ease-out infinite;
+  }
+
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(244, 217, 118, 0.45); }
+    70%  { box-shadow: 0 0 0 28px rgba(244, 217, 118, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(244, 217, 118, 0); }
+  }
+
+  #skip-note {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    color: rgba(255,255,255,0.55);
+    font-size: 13px;
+    font-family: system-ui, sans-serif;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    z-index: 10;
+  }
+  #skip-note:hover { color: rgba(255,255,255,0.9); }
+</style>
+</head>
+<body>
+<script src="/orientation-gate.js"></script>
+<div id="stage">
+  <video
+    id="welcome-video"
+    src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/hello-friend.mp4"
+    playsinline
+    preload="auto"
+  ></video>
+
+  <div id="door-click-target"></div>
+
+  <div id="skip-note" onclick="location.href='foundation.html'">skip &rarr;</div>
+</div>
+
+<script>
+  const PAUSE_AT = 9.0;
+  const video = document.getElementById("welcome-video");
+  const doorTarget = document.getElementById("door-click-target");
+  let hasPaused = false;
+
+  video.addEventListener("timeupdate", () => {
+    if (!hasPaused && video.currentTime >= PAUSE_AT) {
+      video.pause();
+      // Snap exactly to the intended pause point -- timeupdate fires
+      // at irregular intervals, so currentTime may have drifted a few
+      // frames past 9.0 by the time this listener runs.
+      video.currentTime = PAUSE_AT;
+      hasPaused = true;
+      doorTarget.classList.add("active");
+    }
+  });
+
+  doorTarget.addEventListener("click", () => {
+    doorTarget.classList.remove("active");
+    video.play();
+  });
+
+  video.addEventListener("ended", () => {
+    window.location.href = "foundation.html";
+  });
+
+  video.play().catch((err) => {
+    // Autoplay-with-sound can be blocked before any user gesture on
+    // some browsers. If so, fall back to a tap-to-start gate rather
+    // than leaving a frozen black frame with no explanation.
+    console.warn("Autoplay blocked, waiting for interaction:", err);
+    const startOnce = () => {
+      video.play();
+      window.removeEventListener("click", startOnce);
+    };
+    window.addEventListener("click", startOnce);
+  });
+</script>
+</body>
+</html>
