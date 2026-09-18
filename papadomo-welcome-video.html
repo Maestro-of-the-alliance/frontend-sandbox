@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>PapaDOMO Welcome — video version</title>
+<title>PapaDOMO Welcome</title>
 <style>
   * { box-sizing: border-box; }
 
@@ -28,17 +28,16 @@
     background: #000;
   }
 
-  /* Invisible click target sitting over the door's on-screen position
-     during the paused hold. Coordinates are measured against the
-     video's own 1920x1080 frame at the 9s pause point (see the door
-     frame captured during review) and expressed as percentages so it
-     tracks correctly under object-fit: contain at any window size. */
+  /* Coordinates measured against well-hello.mp4's own 1920x1080 frame
+     at the 3.10s pause point (the fully-resolved closed door, before
+     it begins to open), expressed as percentages so the target tracks
+     correctly under object-fit: contain at any window size. */
   #door-click-target {
     position: absolute;
-    left: 42.7%;
-    top: 16.2%;
-    width: 21.9%;
-    height: 48.6%;
+    left: 37.0%;
+    top: 11.5%;
+    width: 25.9%;
+    height: 72.3%;
     cursor: pointer;
     display: none;
   }
@@ -84,7 +83,7 @@
 <div id="stage">
   <video
     id="welcome-video"
-    src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/hello-friend.mp4"
+    src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/well-hello.mp4"
     playsinline
     preload="auto"
   ></video>
@@ -95,7 +94,7 @@
 </div>
 
 <script>
-  const PAUSE_AT = 9.0;
+  const PAUSE_AT = 3.10;
   const video = document.getElementById("welcome-video");
   const doorTarget = document.getElementById("door-click-target");
   let hasPaused = false;
