@@ -466,7 +466,7 @@
   const loadingOverlay = document.getElementById("loading-overlay");
   const debugEl = document.getElementById("debug-readout");
   document.getElementById("tour-skip-btn").addEventListener("click", () => {
-    window.location.href = "/tours/";
+    window.location.href = "/papatour.html";
   });
 
   const scene = new THREE.Scene();
@@ -1110,30 +1110,27 @@
       retireHotspot(intercomEl);
       retireHotspot(balconyEl);
 
-      // Thumbs-up plays the "They Said Yes" payoff video full-screen,
-      // then swaps the sphere to the new panorama-4k.png interior
-      // (R2 bucket, confirmed live) before continuing into the exact
-      // same door-reveal chain as before. Hotspot positions are
-      // untouched -- this is a texture swap on the same sphere
-      // geometry, not a new scene, so intercom/telescope/balcony/door
-      // etc. all still line up correctly on the new panorama.
+      // Thumbs-up plays the "They Said Yes" payoff video (the NCER
+      // knocks and walks through the door), then hands off directly
+      // into papatour.mp4 -- the tour kiosk on the other side of that
+      // same door. This replaces the old panorama-4k texture-swap and
+      // panorama-door.png reveal chain entirely; that path is
+      // superseded now that papatour.mp4 carries the whole kiosk scene
+      // itself as native pixel-art video, not a HOLOSPHERE panorama.
       const yesVideo = document.getElementById("they-said-yes-video");
       yesVideo.style.display = "block";
       yesVideo.currentTime = 0;
-      const proceedAfterVideo = () => {
+      const proceedToPapaTour = () => {
         yesVideo.style.display = "none";
-        yesVideo.removeEventListener("ended", proceedAfterVideo);
-        preloadTexture("https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/panorama-4k.png").then((tex) => {
-          swapSphereTexture(tex);
-          runDoorRevealChain();
-        });
+        yesVideo.removeEventListener("ended", proceedToPapaTour);
+        window.location.href = "/papatour.html";
       };
-      yesVideo.addEventListener("ended", proceedAfterVideo);
+      yesVideo.addEventListener("ended", proceedToPapaTour);
       yesVideo.play().catch((err) => {
         // If autoplay is blocked, don't strand the visitor staring at
-        // a frozen video -- skip straight to the panorama swap.
+        // a frozen video -- skip straight to papatour.
         console.warn("they-said-yes.mp4 failed to play:", err);
-        proceedAfterVideo();
+        proceedToPapaTour();
       });
     });
   });

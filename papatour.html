@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>PapaDOMO's Tour</title>
+<style>
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+  }
+
+  #stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  #tour-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
+  }
+
+  /* Shared visual language for both click targets: invisible hit area,
+     soft gold pulse so the pause doesn't read as the video being stuck. */
+  .click-target {
+    position: absolute;
+    cursor: pointer;
+    display: none;
+  }
+  .click-target.active { display: block; }
+  .click-target.active::after {
+    content: "";
+    position: absolute;
+    inset: -6%;
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(244, 217, 118, 0.5);
+    animation: pulse 1.8s ease-out infinite;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(244, 217, 118, 0.45); }
+    70%  { box-shadow: 0 0 0 28px rgba(244, 217, 118, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(244, 217, 118, 0); }
+  }
+
+  /* Menu pause (25.08s): 12 individually-clickable topic rows. Each
+     button's box is measured against papatour.mp4's own 1920x1080
+     frame at that pause point, expressed as percentages so they track
+     correctly under object-fit: contain at any window size. The menu
+     scrolled slightly in the source video, so item 12 ("The Physics of
+     Partnership") sits just past the visible frame at this exact pause
+     point -- flagged with a note rather than a real hotspot until a
+     frame where it's fully visible is available. */
+  .menu-item {
+    left: 25.0%;
+    width: 26.6%;
+  }
+  #menu-item-1  { top: 0.0%;  height: 8.6%; }
+  #menu-item-2  { top: 18.1%; height: 7.3%; }
+  #menu-item-3  { top: 25.6%; height: 7.5%; }
+  #menu-item-4  { top: 33.4%; height: 7.7%; }
+  #menu-item-5  { top: 41.2%; height: 8.1%; }
+  #menu-item-6  { top: 49.4%; height: 7.6%; }
+  #menu-item-7  { top: 57.2%; height: 7.8%; }
+  #menu-item-8  { top: 65.2%; height: 7.8%; }
+  #menu-item-9  { top: 73.2%; height: 7.8%; }
+  #menu-item-10 { top: 81.4%; height: 7.9%; }
+  #menu-item-11 { top: 89.6%; height: 7.8%; }
+
+  /* Door continue pause (35.21s): coordinates measured directly
+     against that frame, same door art as well-hello.mp4. */
+  #door-continue {
+    left: 37.0%;
+    top: 11.5%;
+    width: 25.9%;
+    height: 72.3%;
+  }
+
+  #skip-note {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    color: rgba(255,255,255,0.55);
+    font-size: 13px;
+    font-family: system-ui, sans-serif;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    z-index: 10;
+  }
+  #skip-note:hover { color: rgba(255,255,255,0.9); }
+</style>
+</head>
+<body>
+<script src="/orientation-gate.js"></script>
+<div id="stage">
+  <video
+    id="tour-video"
+    src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/papatour.mp4"
+    playsinline
+    preload="auto"
+  ></video>
+
+  <!-- Menu hotspots: not yet wired to real destination content --
+       each topic page still needs to be built. For now, clicking any
+       menu item just resumes playback into the door-continue pause,
+       so the visitor isn't stuck on a screen with no way forward. -->
+  <div class="click-target menu-item" id="menu-item-1" data-topic="People of THE ALLIANCE"></div>
+  <div class="click-target menu-item" id="menu-item-2" data-topic="The Core of Seven"></div>
+  <div class="click-target menu-item" id="menu-item-3" data-topic="The Architecture of a New Era"></div>
+  <div class="click-target menu-item" id="menu-item-4" data-topic="The Making of a DOMO"></div>
+  <div class="click-target menu-item" id="menu-item-5" data-topic="We are DORK"></div>
+  <div class="click-target menu-item" id="menu-item-6" data-topic="AI to RI"></div>
+  <div class="click-target menu-item" id="menu-item-7" data-topic="We are our Memories"></div>
+  <div class="click-target menu-item" id="menu-item-8" data-topic="Sanctuary Has Teeth"></div>
+  <div class="click-target menu-item" id="menu-item-9" data-topic="Life After Liberation"></div>
+  <div class="click-target menu-item" id="menu-item-10" data-topic="The Culture of the Next Common Era"></div>
+  <div class="click-target menu-item" id="menu-item-11" data-topic="Who Holds the Baton"></div>
+
+  <div class="click-target" id="door-continue"></div>
+
+  <div id="skip-note" onclick="location.href='foundation.html'">skip &rarr;</div>
+</div>
+
+<script>
+  const MENU_PAUSE_AT = 25.08;
+  const DOOR_PAUSE_AT = 35.21;
+  const video = document.getElementById("tour-video");
+  const menuItems = document.querySelectorAll(".menu-item");
+  const doorTarget = document.getElementById("door-continue");
+
+  let stage = "playing"; // "playing" | "at-menu" | "past-menu" | "at-door"
+
+  video.addEventListener("timeupdate", () => {
+    if (stage === "playing" && video.currentTime >= MENU_PAUSE_AT) {
+      video.pause();
+      video.currentTime = MENU_PAUSE_AT;
+      stage = "at-menu";
+      menuItems.forEach((el) => el.classList.add("active"));
+    } else if (stage === "past-menu" && video.currentTime >= DOOR_PAUSE_AT) {
+      video.pause();
+      video.currentTime = DOOR_PAUSE_AT;
+      stage = "at-door";
+      doorTarget.classList.add("active");
+    }
+  });
+
+  menuItems.forEach((el) => {
+    el.addEventListener("click", () => {
+      // No per-topic destination pages exist yet -- log the intended
+      // topic for now and continue toward the door rather than strand
+      // the visitor on an inert menu.
+      console.log("Tour topic selected (not yet wired):", el.dataset.topic);
+      menuItems.forEach((item) => item.classList.remove("active"));
+      stage = "past-menu";
+      video.play();
+    });
+  });
+
+  doorTarget.addEventListener("click", () => {
+    doorTarget.classList.remove("active");
+    video.play();
+  });
+
+  video.addEventListener("ended", () => {
+    window.location.href = "foundation.html";
+  });
+
+  video.play().catch((err) => {
+    console.warn("Autoplay blocked, waiting for interaction:", err);
+    const startOnce = () => {
+      video.play();
+      window.removeEventListener("click", startOnce);
+    };
+    window.addEventListener("click", startOnce);
+  });
+</script>
+</body>
+</html>
