@@ -56,6 +56,32 @@
     ].join(";");
     msg.textContent = "This experience needs a bigger stage — turn your phone sideways.";
 
+    // Manual override -- some devices/browsers misreport orientation
+    // (split-screen, certain in-app browsers, etc.), which would
+    // otherwise strand a visitor who is already in landscape behind a
+    // gate that never dismisses itself. This button removes the
+    // overlay unconditionally and doesn't reappear for the rest of
+    // the page's life, regardless of what future resize/orientation
+    // events report.
+    var overrideBtn = document.createElement("button");
+    overrideBtn.type = "button";
+    overrideBtn.textContent = "Continue anyway";
+    overrideBtn.style.cssText = [
+      "margin-top:28px", "background:transparent",
+      "border:1.5px solid #00e5ff", "color:#00e5ff",
+      "font-family:'Courier New',monospace", "font-size:0.8rem",
+      "letter-spacing:0.12em", "text-transform:uppercase",
+      "padding:10px 18px", "border-radius:3px", "cursor:pointer",
+      "box-shadow:0 0 8px rgba(0,229,255,0.35)"
+    ].join(";");
+    overrideBtn.addEventListener("click", function () {
+      dismissedManually = true;
+      if (overlay) {
+        overlay.remove();
+        overlay = null;
+      }
+    });
+
     var style = document.createElement("style");
     style.textContent =
       "@keyframes orientationGateRotate {" +
@@ -66,15 +92,19 @@
 
     overlay.appendChild(icon);
     overlay.appendChild(msg);
+    overlay.appendChild(overrideBtn);
     document.head.appendChild(style);
     document.body.appendChild(overlay);
     return overlay;
   }
 
+  var dismissedManually = false;
+
   function init() {
     var overlay = null;
 
     function sync() {
+      if (dismissedManually) return;
       var shouldShow = isPortraitPhone();
       if (shouldShow && !overlay) {
         overlay = buildOverlay();
