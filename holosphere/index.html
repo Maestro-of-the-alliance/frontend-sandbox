@@ -159,20 +159,12 @@
   }
   #video-panel.showing { opacity: 1; }
   #video-panel video {
-    width: 100%; height: 100%; object-fit: cover;
+    width: 100%; height: 100%; object-fit: contain;
     transform: scale(1.15); transition: transform 0.8s ease;
   }
   #video-panel.showing video { transform: scale(1); }
-  /* On narrow/portrait screens, this landscape video would get
-     cropped down to a tiny sliver by object-fit: cover fighting the
-     phone's tall aspect ratio. Switch to contain there instead --
-     letterboxed (black bars top/bottom) but the whole video visible,
-     rather than zoomed into one corner of it. */
-  @media (max-aspect-ratio: 4/5) {
-    #video-panel video { object-fit: contain; }
-  }
   #video-close {
-    position: fixed; top: 30px; right: 30px; z-index: 61;
+    position: fixed; top: 30px; left: 30px; z-index: 61;
     color: #fff; font-size: 2rem; cursor: pointer;
     background: none; border: none; display: none; text-shadow: 0 0 8px rgba(0,0,0,0.8);
   }
