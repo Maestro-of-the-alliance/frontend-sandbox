@@ -103,11 +103,14 @@
     margin-left: calc(clamp(90px, 20vw, 160px) / -2);
     border-radius: 6%;
   }
-  /* The always-visible blurred map "echo" sitting in the wall frame --
-     projected to screen position the same way hotspot markers are, but
-     actually visible (an img, not an invisible click target) and never
-     receiving clicks itself -- the hotspot marker on top handles that. */
+  /* The blurred map "echo" that used to sit permanently in the wall
+     frame -- hidden per Maestro's call (looked bad in practice), left
+     in the codebase rather than deleted in case a better treatment
+     replaces it later. The invisible #map-frame-hotspot underneath
+     still handles the actual click-to-open-map interaction; only this
+     always-visible decoration layer is turned off. */
   #map-frame-echo {
+    display: none !important;
     position: fixed;
     pointer-events: none;
     z-index: 15;
