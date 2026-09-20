@@ -1126,6 +1126,13 @@
       const yesVideo = document.getElementById("they-said-yes-video");
       yesVideo.style.display = "block";
       yesVideo.currentTime = 0;
+      // Warm papatour's page while the video plays so the handoff is quick.
+      try {
+        const pf = document.createElement("link");
+        pf.rel = "prefetch";
+        pf.href = "/papatour.html";
+        document.head.appendChild(pf);
+      } catch (e) {}
       // The v2 video freezes at the door just before the knock, then
       // waits for one tap (no visible hotspot or cue, on purpose) and
       // carries on through the knock and into papatour.
@@ -1134,12 +1141,22 @@
       const knockTap = document.createElement("div");
       knockTap.style.cssText = "position:fixed; inset:0; z-index:61; display:none; cursor:pointer; background:transparent; -webkit-tap-highlight-color:transparent;";
       document.body.appendChild(knockTap);
+      // Hand off a beat before the video's own tail. The video stays on
+      // screen (never hidden) until papatour paints, so the HOLOSPHERE
+      // intercom close-up underneath can't flash through the gap.
+      const HANDOFF_BEFORE_END = 1.4;
+      let handedOff = false;
       const onYesTime = () => {
         if (!knockPaused && yesVideo.currentTime >= KNOCK_PAUSE_AT) {
           knockPaused = true;
           yesVideo.pause();
           yesVideo.currentTime = KNOCK_PAUSE_AT;
           knockTap.style.display = "block";
+          return;
+        }
+        if (knockPaused && !handedOff && yesVideo.duration &&
+            yesVideo.currentTime >= yesVideo.duration - HANDOFF_BEFORE_END) {
+          proceedToPapaTour();
         }
       };
       const onKnockTap = () => {
@@ -1147,7 +1164,10 @@
         yesVideo.play();
       };
       const proceedToPapaTour = () => {
-        yesVideo.style.display = "none";
+        if (handedOff) return;
+        handedOff = true;
+        // Deliberately NOT hiding the video here: hiding it exposed the
+        // panorama's intercom view for the second papatour takes to load.
         yesVideo.removeEventListener("ended", proceedToPapaTour);
         yesVideo.removeEventListener("timeupdate", onYesTime);
         knockTap.removeEventListener("click", onKnockTap);

@@ -261,7 +261,25 @@ try {
   if (openId && TOURS.some((t) => t.id === openId)) expandedId = openId;
 } catch (e) {}
 
+// Deep link from the big board (/tours/?start=<tour-id>): go straight into
+// that tour -- PapaDOMO's intro, then the first stop -- instead of showing
+// the Choose a Tour list. If the visitor is coming back from a stop, the
+// normal return flow wins and the list shows as usual.
+let startTour = null;
+try {
+  const startId = new URLSearchParams(window.location.search).get("start");
+  if (startId) startTour = TOURS.find((t) => t.id === startId && t.stops) || null;
+} catch (e) {}
+const hadPendingVisit = !!getPendingVisit();
+if (startTour && !hadPendingVisit) document.documentElement.classList.add("direct-start");
+
 handleReturn();
+
+if (startTour) {
+  // Drop ?start so a refresh or a Back press doesn't restart the tour.
+  try { history.replaceState(null, "", "/tours/"); } catch (e) {}
+  if (!hadPendingVisit) startOrContinue(startTour);
+}
 
 // Belt-and-suspenders for bfcache: a browser can restore this page from
 // cache (e.g. after pressing back) without re-running the script the

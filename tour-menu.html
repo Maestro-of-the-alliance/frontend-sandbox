@@ -76,6 +76,7 @@
     cursor: pointer;
     border-radius: calc(var(--u) * 1.7);
     outline: none;
+    touch-action: none;               /* the board never scrolls; keeps holds from being stolen as a pan */
   }
   .row::after {                       /* selected glow */
     content: "";
@@ -136,6 +137,74 @@
   }
   body.paused .glint { animation-play-state: paused; }
 
+  /* ---- Old-Vegas marquee: chaser bulbs, LED ticker, whole-sign flash ---- */
+  #lights, #marquee { position: absolute; inset: 0; pointer-events: none; }
+  .bulb {
+    position: absolute;
+    width: calc(var(--u) * 1.15);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle at 40% 38%, #ffffff 0%, #fff0b8 38%, #ffc933 100%);
+    box-shadow: 0 0 calc(var(--u) * 0.9) rgba(255, 205, 80, 0.95), 0 0 calc(var(--u) * 2) rgba(255, 170, 30, 0.45);
+    opacity: 0.22;
+    animation: chase 0.96s steps(1, end) var(--bd, 0s) infinite;
+  }
+  @keyframes chase { 0% { opacity: 1; } 33.34%, 100% { opacity: 0.22; } }
+  #marquee.flash .bulb { animation: bulbflash 0.36s steps(1, end) 5; }
+  @keyframes bulbflash { 0% { opacity: 1; } 50% { opacity: 0.12; } }
+  #signglow {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 52% 11% at 50% 14%, rgba(255, 214, 102, 0.6), rgba(255, 214, 102, 0) 100%),
+                radial-gradient(ellipse 46% 5% at 50% 92%, rgba(255, 214, 102, 0.4), rgba(255, 214, 102, 0) 100%);
+    mix-blend-mode: screen;
+    opacity: 0;
+  }
+  #marquee.flash ~ #signglow, #stage.flash #signglow { animation: bulbflash 0.36s steps(1, end) 5; }
+  #ticker {
+    position: absolute;
+    left: 21.68%; width: 56.05%;
+    top: 91.54%; height: 2.66%;
+    overflow: hidden;
+    pointer-events: none;
+    border-radius: calc(var(--u) * 0.6);
+    background:
+      radial-gradient(circle, rgba(0, 0, 0, 0.42) 34%, rgba(0, 0, 0, 0) 38%) 0 0 / calc(var(--u) * 0.5) calc(var(--u) * 0.5),
+      linear-gradient(180deg, #03082a, #001a5d);
+    box-shadow: inset 0 0 calc(var(--u) * 1.2) rgba(0, 0, 0, 0.7);
+    font-family: var(--font);
+    font-weight: 700;
+    font-size: calc(var(--u) * 3.3);
+    line-height: 1;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: #ffe08a;
+    text-shadow: 0 0 calc(var(--u) * 0.9) rgba(255, 190, 60, 0.9);
+  }
+  #tk-track, #tk-spell {
+    position: absolute; left: 0; top: 0; height: 100%;
+    display: flex; align-items: center;
+  }
+  #tk-track { animation: tkscroll var(--tk-dur, 30s) linear infinite; will-change: transform; }
+  @keyframes tkscroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  #tk-track span { display: inline-flex; align-items: center; }
+  .dia {
+    display: inline-block;
+    width: calc(var(--u) * 1.5); height: calc(var(--u) * 1.5);
+    margin: 0 calc(var(--u) * 2.4);
+    background: #35e6ff;
+    transform: rotate(45deg) scale(0.8);
+    box-shadow: 0 0 calc(var(--u) * 0.9) #35e6ff;
+  }
+  #tk-spell { width: 100%; justify-content: center; opacity: 0; }
+  #tk-spell i { font-style: normal; opacity: 0.14; transition: opacity 0.05s; }
+  #tk-spell i.on { opacity: 1; color: #fff3c4; }
+  #ticker.spelling #tk-track { visibility: hidden; }
+  #ticker.spelling #tk-spell { opacity: 1; }
+  #ticker.flash { animation: bulbflash 0.36s steps(1, end) 5; }
+  body.paused #tk-track { animation-play-state: paused; }
+
   /* Quiet hint under the kiosk. */
   #hint {
     position: fixed;
@@ -158,8 +227,8 @@
   @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
   #card {
     position: relative;
-    width: min(92vw, 460px);
-    max-height: calc(var(--vh) * 88);
+    width: min(94vw, 480px);
+    max-height: calc(var(--vh) * 92);
     margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
     padding: 18px 20px 20px;
     overflow: auto;
@@ -182,7 +251,7 @@
   #k-num { margin: 0 0 4px; font-size: 14px; letter-spacing: 0.22em; color: var(--gold); font-weight: 600; }
   #sheet-title { margin: 0 34px 10px; font-size: 30px; line-height: 1.05; font-weight: 700; text-shadow: 0 0 12px rgba(53, 230, 255, 0.6); }
   #sprite-wrap {
-    height: calc(var(--vh) * 24); max-height: 210px; min-height: 120px;
+    height: clamp(150px, calc(var(--vh) * 46), 460px);
     margin: 6px 0 8px;
     display: grid; place-items: center;
   }
@@ -203,7 +272,27 @@
     transform-origin: center;
   }
   @keyframes play { to { background-position: calc(var(--fw) * var(--frames) * -1px) 0; } }
-  #k-meta { margin: 0 0 8px; font-size: 15px; letter-spacing: 0.16em; color: #8fd2ff; font-weight: 600; }
+  #k-stops {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin: 0 0 8px; padding: 8px 16px; min-height: 40px;
+    font: 600 16px/1 var(--font); letter-spacing: 0.16em; color: #8fd2ff;
+    background: rgba(53, 230, 255, 0.10);
+    border: 2px solid rgba(143, 210, 255, 0.55); border-radius: 999px;
+    cursor: pointer;
+  }
+  #k-stops::after { content: "\25BE"; font-size: 14px; transition: transform 0.15s; }
+  #k-stops[aria-expanded="true"]::after { transform: rotate(180deg); }
+  #k-stops:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  #stops-list {
+    list-style: none; margin: 0 0 12px; padding: 0;
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
+  }
+  #stops-list[hidden] { display: none; }
+  #stops-list li {
+    padding: 5px 10px; font: 600 15px/1.1 var(--font); letter-spacing: 0.06em;
+    color: #eaf3ff; background: #0a2470; border: 1px solid rgba(143, 210, 255, 0.5); border-radius: 8px;
+  }
+  #stops-list li b { color: var(--gold); margin-right: 6px; font-weight: 700; }
   #k-text {
     margin: 0 4px 16px; font-size: 18px; line-height: 1.3; color: #eaf3ff;
     display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
@@ -227,7 +316,11 @@
 
   @media (prefers-reduced-motion: reduce) {
     #stage, #card, #scrim { animation: none; }
-    .glint { display: none; }
+    /* Gentle, slow, non-flashing versions instead of turning the lights off. */
+    .glint { animation-timing-function: ease-in-out !important; animation-duration: 7s !important; }
+    .bulb { animation: softchase 3.2s ease-in-out var(--bd, 0s) infinite; }
+    @keyframes softchase { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.85; } }
+    #tk-track { animation: none; }
     #sprite { animation: none; }
     .row.charging::before { animation: none; transform: scaleX(1); }
   }
@@ -240,6 +333,9 @@
     <img id="art" src="/imagebank/papadomo-tour-kiosk.png" alt="" draggable="false">
     <nav id="rows" aria-label="Guided tours"></nav>
     <div id="lights" aria-hidden="true"></div>
+    <div id="marquee" aria-hidden="true"></div>
+    <div id="signglow" aria-hidden="true"></div>
+    <div id="ticker" aria-hidden="true"><div id="tk-track"></div><div id="tk-spell"></div></div>
   </div>
 
   <div id="hint">Hold to preview &bull; Double-tap to enter</div>
@@ -251,7 +347,8 @@
       <p id="k-num"></p>
       <h2 id="sheet-title"></h2>
       <div id="sprite-wrap" aria-hidden="true"><div id="sprite"></div></div>
-      <p id="k-meta"></p>
+      <button id="k-stops" type="button" aria-expanded="false" aria-controls="stops-list"></button>
+      <ol id="stops-list" hidden></ol>
       <p id="k-text"></p>
       <button id="enter" type="button">Enter this tour</button>
     </section>
@@ -289,13 +386,18 @@
     return (line || list[0] || { text: "" }).text;
   }
   var tours = TOURS.map(function (t) {
-    return { id: t.id, title: t.title, stops: t.stops.length, preview: previewFor(t.id) };
+    return {
+      id: t.id, title: t.title, stops: t.stops.length, preview: previewFor(t.id),
+      labels: t.stops.map(function (s) { return s.label; })
+    };
   });
 
   var host = window.TourMenuHost || {};
   function enterTour(id) {
     if (host.onEnter) { host.onEnter(id); return; }
-    var url = "/tours/?open=" + encodeURIComponent(id);
+    // ?start goes straight into the tour (PapaDOMO's intro, then the first stop)
+    // instead of landing on the Choose a Tour list.
+    var url = "/tours/?start=" + encodeURIComponent(id);
     try { (window.top || window).location.href = url; } catch (e) { window.location.href = url; }
   }
 
@@ -340,12 +442,24 @@
     openedAt = Date.now();
     document.getElementById("k-num").textContent = "TOUR " + (i + 1) + " OF " + tours.length;
     document.getElementById("sheet-title").textContent = t.title;
-    document.getElementById("k-meta").textContent = t.stops + " STOPS";
+    var stopsBtn = document.getElementById("k-stops");
+    var stopsList = document.getElementById("stops-list");
+    stopsBtn.textContent = t.stops + (t.stops === 1 ? " STOP" : " STOPS");
+    stopsBtn.setAttribute("aria-expanded", "false");
+    stopsList.hidden = true;
+    stopsList.innerHTML = "";
+    t.labels.forEach(function (label, n) {
+      var li = document.createElement("li");
+      var num = document.createElement("b");
+      num.textContent = String(n + 1);
+      li.appendChild(num);
+      li.appendChild(document.createTextNode(label));
+      stopsList.appendChild(li);
+    });
     document.getElementById("k-text").textContent = t.preview;
     setSprite(t);
     sheet.hidden = false;
     document.body.classList.add("paused");
-    try { history.pushState({ tourMenu: 1 }, ""); } catch (e) {}
     document.getElementById("enter").focus({ preventScroll: true });
     quietHint();
     if (host.onPreview) host.onPreview(t.id);
@@ -361,10 +475,16 @@
   }
   function closeSheet() {
     if (sheet.hidden) return;
-    if (history.state && history.state.tourMenu) history.back(); // popstate hides it
-    else hideSheet();
+    hideSheet();
   }
-  window.addEventListener("popstate", hideSheet);
+  document.getElementById("k-stops").addEventListener("click", function () {
+    var btn = document.getElementById("k-stops");
+    var list = document.getElementById("stops-list");
+    var open = list.hidden;                       // hidden now -> about to open
+    list.hidden = !open;
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+    if (open) { try { list.scrollIntoView({ block: "nearest", behavior: "smooth" }); } catch (e) {} }
+  });
   document.getElementById("close").addEventListener("click", closeSheet);
   document.getElementById("scrim").addEventListener("click", function () {
     if (Date.now() - openedAt > 400) closeSheet();
@@ -394,19 +514,23 @@
       b.classList.remove("charging");
       down = null;
     }
+    function fireLong() {
+      if (timer) { clearTimeout(timer); timer = null; }
+      if (longFired) return;
+      longFired = true;
+      down = null;
+      b.classList.remove("charging");
+      select(i);
+      if (navigator.vibrate) { try { navigator.vibrate(15); } catch (er) {} }
+      openSheet(i);
+    }
     b.addEventListener("pointerdown", function (e) {
       if (e.button > 0) return;
-      longFired = false;
+      longFired = false;                       // every new press starts clean
+      if (timer) { clearTimeout(timer); timer = null; }
       down = { x: e.clientX, y: e.clientY };
       b.classList.add("charging");
-      timer = setTimeout(function () {
-        timer = null;
-        longFired = true;
-        b.classList.remove("charging");
-        select(i);
-        if (navigator.vibrate) { try { navigator.vibrate(15); } catch (er) {} }
-        openSheet(i);
-      }, 500);
+      timer = setTimeout(fireLong, 450);
     });
     b.addEventListener("pointermove", function (e) {
       if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 12) cancel();
@@ -414,10 +538,11 @@
     b.addEventListener("pointerup", cancel);
     b.addEventListener("pointercancel", cancel);
     b.addEventListener("pointerleave", cancel);
-    b.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+    // Some phones announce a long press as a context menu; treat that the same.
+    b.addEventListener("contextmenu", function (e) { e.preventDefault(); if (!sheet.hidden) return; fireLong(); });
 
     b.addEventListener("click", function (e) {
-      if (longFired) { longFired = false; e.preventDefault(); return; }
+      if (longFired) { longFired = false; e.preventDefault(); lastTap = { i: -1, t: 0 }; return; }
       var now = performance.now();
       quietHint();
       if (lastTap.i === i && now - lastTap.t < 350) {   // double tap / double click
@@ -477,6 +602,94 @@
   document.addEventListener("visibilitychange", function () {
     document.body.classList.toggle("paused", document.hidden || !sheet.hidden);
   });
+
+  // ---------- old-Vegas marquee ----------
+  // Bulbs ride along the sign's own outlines. Points are art pixels (1024 x 1536).
+  var marquee = document.getElementById("marquee");
+  function mirror(pts) { return pts.map(function (p) { return [1024 - p[0], p[1]]; }).reverse(); }
+  var ARCH_L = [[172,262],[166,232],[176,194],[196,162],[226,122],[262,100],[300,92],[345,97],[395,93],[440,84],[470,74]];
+  var RUNS = [
+    { pts: ARCH_L.concat(mirror(ARCH_L)), step: 40 },                          // title sign
+    { pts: [[195,410],[195,1100]], step: 58 },                                 // left rail
+    { pts: [[829,410],[829,1100]], step: 58 },                                 // right rail
+    { pts: [[214,1214],[812,1214],[812,1312],[214,1312],[214,1214]], step: 44 }, // "no wrong choice" plaque
+    { pts: [[202,1392],[824,1392],[824,1464],[202,1464],[202,1392]], step: 46 }  // ticker band
+  ];
+  RUNS.forEach(function (run) {
+    var k = 0;
+    for (var s = 0; s < run.pts.length - 1; s++) {
+      var a = run.pts[s], b2 = run.pts[s + 1];
+      var len = Math.hypot(b2[0] - a[0], b2[1] - a[1]);
+      var n = Math.max(1, Math.round(len / run.step));
+      for (var q = 0; q < n; q++) {
+        var f = q / n;
+        var el = document.createElement("i");
+        el.className = "bulb";
+        el.style.left = ((a[0] + (b2[0] - a[0]) * f) / 1024 * 100) + "%";
+        el.style.top = ((a[1] + (b2[1] - a[1]) * f) / 1536 * 100) + "%";
+        el.style.setProperty("--bd", ((k % 3) * 0.32).toFixed(2) + "s");
+        marquee.appendChild(el);
+        k++;
+      }
+    }
+  });
+
+  // Ticker: only words the art already carries.
+  var PHRASES = ["PapaDOMO's Free Tours", "Guided Paths Ahead", "Learn", "Play", "Belong",
+                 "There's No Wrong Choice", "People", "Brighter", "Tomorrow"];
+  var tkTrack = document.getElementById("tk-track");
+  var tkSpell = document.getElementById("tk-spell");
+  var ticker = document.getElementById("ticker");
+  function trackHTML() {
+    var h = "";
+    PHRASES.forEach(function (ph) { h += "<span>" + ph.replace(/&/g, "&amp;") + "</span><b class=\"dia\"></b>"; });
+    return h;
+  }
+  tkTrack.innerHTML = "<div style=\"display:flex;align-items:center\">" + trackHTML() + "</div><div style=\"display:flex;align-items:center\">" + trackHTML() + "</div>";
+  var SPELL = "PapaDOMO's Free Tours".toUpperCase();
+  SPELL.split("").forEach(function (ch) {
+    var i2 = document.createElement("i");
+    i2.textContent = ch === " " ? "\u00A0" : ch;
+    tkSpell.appendChild(i2);
+  });
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  requestAnimationFrame(function () {
+    var w = tkTrack.firstElementChild.getBoundingClientRect().width;
+    var uPx = document.getElementById("stage").getBoundingClientRect().width / 100;
+    // about 14 units of art width per second
+    tkTrack.style.setProperty("--tk-dur", Math.max(12, (w / (uPx * 14))).toFixed(1) + "s");
+  });
+  function showStaticTitle() {
+    ticker.classList.add("spelling");
+    Array.prototype.forEach.call(tkSpell.children, function (c) { c.classList.add("on"); });
+  }
+  var loopTimers = [];
+  function later(fn, ms) { loopTimers.push(setTimeout(fn, ms)); }
+  function flashSign() {
+    marquee.classList.remove("flash"); ticker.classList.remove("flash");
+    document.getElementById("stage").classList.remove("flash");
+    void marquee.offsetWidth;
+    marquee.classList.add("flash"); ticker.classList.add("flash");
+    document.getElementById("stage").classList.add("flash");
+    later(function () {
+      marquee.classList.remove("flash"); ticker.classList.remove("flash");
+      document.getElementById("stage").classList.remove("flash");
+    }, 1900);
+  }
+  function spellOut(done) {
+    Array.prototype.forEach.call(tkSpell.children, function (c) { c.classList.remove("on"); });
+    ticker.classList.add("spelling");
+    var kids = Array.prototype.slice.call(tkSpell.children), n = 0;
+    (function step() {
+      if (n < kids.length) { kids[n++].classList.add("on"); later(step, 110); }
+      else later(function () { flashSign(); later(function () { ticker.classList.remove("spelling"); done(); }, 2300); }, 500);
+    })();
+  }
+  function cycle() {
+    // scroll for a while, then spell out the name and flash the whole sign
+    later(function () { spellOut(cycle); }, 16000);
+  }
+  if (reduced) { showStaticTitle(); } else { cycle(); later(flashSign, 900); }
 
   // ---------- hint only when there is room under the kiosk ----------
   function fitHint() {
