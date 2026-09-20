@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PapaDOMO's Free Tours</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050a1f">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #050a1f;
+    --gold: #ffb81c;
+    --cyan: #35e6ff;
+    --vh: 1vh;
+    /* One unit = 1% of the kiosk art's width. Everything inside the stage
+       is sized in these units so it scales exactly with the picture. */
+    --u: calc(min(100vw, calc(var(--vh) * 100 * 1024 / 1536)) / 100);
+    --font: "Barlow Condensed", "Rajdhani", "Roboto Condensed", "Arial Narrow", system-ui, sans-serif;
+  }
+  @supports (height: 100dvh) { :root { --vh: 1dvh; } }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+    background: var(--navy);
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  body {
+    display: grid;
+    place-items: center;
+    font-family: var(--font);
+    background:
+      radial-gradient(ellipse at 50% 38%, #0b1c55 0%, #071236 45%, #050a1f 80%);
+  }
+
+  /* The kiosk: the art is the picture, real buttons sit exactly on its rows. */
+  #stage {
+    position: relative;
+    width: calc(var(--u) * 100);
+    aspect-ratio: 1024 / 1536;
+    animation: arrive 0.6s ease-out both;
+  }
+  @keyframes arrive {
+    from { opacity: 0; transform: scale(0.965); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  #art {
+    display: block;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    -webkit-user-drag: none;
+  }
+
+  /* Rows: real buttons, invisible on purpose. The art shows the row; the
+     button only adds the selected glow, focus ring, and hold-to-preview cue. */
+  .row {
+    position: absolute;
+    left: 23.54%;
+    width: 52.83%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: transparent;
+    font: inherit;
+    cursor: pointer;
+    border-radius: calc(var(--u) * 1.7);
+    outline: none;
+  }
+  .row::after {                       /* selected glow */
+    content: "";
+    position: absolute;
+    inset: calc(var(--u) * -0.25);
+    border-radius: inherit;
+    border: calc(var(--u) * 0.75) solid var(--cyan);
+    box-shadow:
+      0 0 calc(var(--u) * 2.2) var(--cyan),
+      0 0 calc(var(--u) * 4.5) rgba(20, 160, 255, 0.55),
+      inset 0 0 calc(var(--u) * 1.8) rgba(53, 230, 255, 0.55);
+    opacity: 0;
+    transition: opacity 0.12s;
+    pointer-events: none;
+  }
+  .row.selected::after { opacity: 1; }
+  .row:focus-visible { outline: 2px solid #fff; outline-offset: calc(var(--u) * 0.6); }
+  .row:focus-visible::after { opacity: 1; }
+  .row::before {                      /* press-and-hold charging cue */
+    content: "";
+    position: absolute;
+    left: 5%; right: 5%; bottom: calc(var(--u) * 0.15);
+    height: calc(var(--u) * 0.8);
+    background: linear-gradient(90deg, var(--cyan), #ffffff);
+    box-shadow: 0 0 calc(var(--u) * 1.2) var(--cyan);
+    transform: scaleX(0);
+    transform-origin: left;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .row.charging::before { opacity: 1; animation: charge 0.4s linear 0.1s forwards; }
+  @keyframes charge { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  /* Twinkling lights: pixel-stepped glints laid over the art's own lights. */
+  .glint {
+    position: absolute;
+    width: calc(var(--u) * var(--s, 1.1));
+    aspect-ratio: 1;
+    color: #ffd86b;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0);
+    background:
+      linear-gradient(currentColor, currentColor) center / 16% 100% no-repeat,
+      linear-gradient(currentColor, currentColor) center / 100% 16% no-repeat,
+      linear-gradient(currentColor, currentColor) center / 44% 44% no-repeat;
+    filter: drop-shadow(0 0 calc(var(--u) * 0.6) currentColor);
+    animation: twinkle var(--d, 3.6s) steps(3, end) var(--dl, 0s) infinite;
+    will-change: transform, opacity;
+  }
+  .glint.blue { color: #bff6ff; }
+  @keyframes twinkle {
+    0%   { transform: translate(-50%, -50%) scale(0);    opacity: 0; }
+    8%   { transform: translate(-50%, -50%) scale(0.55); opacity: 1; }
+    16%  { transform: translate(-50%, -50%) scale(1);    opacity: 1; }
+    24%  { transform: translate(-50%, -50%) scale(0.55); opacity: 1; }
+    32%, 100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+  }
+  body.paused .glint { animation-play-state: paused; }
+
+  /* Quiet hint under the kiosk. */
+  #hint {
+    position: fixed;
+    left: 0; right: 0;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+    text-align: center;
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    color: #8fd2ff;
+    opacity: 0.8;
+    transition: opacity 0.6s;
+    pointer-events: none;
+  }
+  #hint.gone { opacity: 0; }
+
+  /* Breakout card. */
+  #sheet[hidden] { display: none; }
+  #sheet { position: fixed; inset: 0; z-index: 50; display: grid; place-items: end center; }
+  #scrim { position: absolute; inset: 0; background: rgba(2, 6, 20, 0.72); animation: fade 0.18s ease-out; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  #card {
+    position: relative;
+    width: min(92vw, 460px);
+    max-height: calc(var(--vh) * 88);
+    margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+    padding: 18px 20px 20px;
+    overflow: auto;
+    text-align: center;
+    color: #fff;
+    background: linear-gradient(180deg, #0c2a7a 0%, #08194f 100%);
+    border: 3px solid var(--gold);
+    border-radius: 16px;
+    box-shadow: 0 0 0 3px #0a1440, 0 0 26px rgba(53, 230, 255, 0.55), inset 0 0 22px rgba(53, 230, 255, 0.18);
+    animation: rise 0.22s ease-out;
+  }
+  @keyframes rise { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+  #close {
+    position: absolute; top: 8px; right: 10px;
+    width: 40px; height: 40px;
+    border: 2px solid var(--gold); border-radius: 10px;
+    background: #071a4a; color: var(--gold);
+    font: 700 20px/1 var(--font); cursor: pointer;
+  }
+  #k-num { margin: 0 0 4px; font-size: 14px; letter-spacing: 0.22em; color: var(--gold); font-weight: 600; }
+  #sheet-title { margin: 0 34px 10px; font-size: 30px; line-height: 1.05; font-weight: 700; text-shadow: 0 0 12px rgba(53, 230, 255, 0.6); }
+  #sprite-wrap {
+    height: calc(var(--vh) * 24); max-height: 210px; min-height: 120px;
+    margin: 6px 0 8px;
+    display: grid; place-items: center;
+  }
+  /* PapaDOMO's routine lives here. Until the pixel sprite sheet arrives this
+     shows his welcoming pose with a stepped bob. To swap in the real sprite:
+     set --sheet, --frames, --fw, --fh on #sprite (see setSprite in the script). */
+  #sprite {
+    width: 100%; height: 100%;
+    background: var(--art, none) center / contain no-repeat;
+    animation: bob 0.9s steps(2, jump-none) infinite;
+  }
+  @keyframes bob { 0% { transform: translateY(0); } 100% { transform: translateY(-4px); } }
+  #sprite.sheet {
+    width: calc(var(--fw) * 1px); height: calc(var(--fh) * 1px);
+    background: var(--art) 0 0 / auto 100% no-repeat;
+    image-rendering: pixelated;
+    animation: play var(--dur, 0.9s) steps(var(--frames)) infinite;
+    transform-origin: center;
+  }
+  @keyframes play { to { background-position: calc(var(--fw) * var(--frames) * -1px) 0; } }
+  #k-meta { margin: 0 0 8px; font-size: 15px; letter-spacing: 0.16em; color: #8fd2ff; font-weight: 600; }
+  #k-text {
+    margin: 0 4px 16px; font-size: 18px; line-height: 1.3; color: #eaf3ff;
+    display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  #enter {
+    width: 100%; min-height: 52px;
+    border: 3px solid #fff3c4; border-radius: 12px;
+    background: linear-gradient(180deg, #ffc93a, #ee9a08);
+    color: #1a1204;
+    font: 700 22px/1 var(--font); letter-spacing: 0.1em; text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 0 16px rgba(255, 184, 28, 0.55);
+  }
+  #enter:active { transform: translateY(1px); }
+  #close:focus-visible, #enter:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #stage, #card, #scrim { animation: none; }
+    .glint { display: none; }
+    #sprite { animation: none; }
+    .row.charging::before { animation: none; transform: scaleX(1); }
+  }
+</style>
+</head>
+<body>
+  <h1 class="sr-only">PapaDOMO's Free Tours</h1>
+
+  <div id="stage">
+    <img id="art" src="/imagebank/papadomo-tour-kiosk.png" alt="" draggable="false">
+    <nav id="rows" aria-label="Guided tours"></nav>
+    <div id="lights" aria-hidden="true"></div>
+  </div>
+
+  <div id="hint">Hold to preview &bull; Double-tap to enter</div>
+
+  <div id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <div id="scrim"></div>
+    <section id="card">
+      <button id="close" type="button" aria-label="Close preview">&#x2715;</button>
+      <p id="k-num"></p>
+      <h2 id="sheet-title"></h2>
+      <div id="sprite-wrap" aria-hidden="true"><div id="sprite"></div></div>
+      <p id="k-meta"></p>
+      <p id="k-text"></p>
+      <button id="enter" type="button">Enter this tour</button>
+    </section>
+  </div>
+
+<script src="/tours/tours-data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // Row hit areas, as percentages of the kiosk art (1024 x 1536). Measured
+  // from the art itself; the buttons sit on top of the rows the picture shows.
+  var ROWS = [
+    [24.023, 4.036], [28.385, 4.036], [32.747, 4.036], [37.109, 4.102],
+    [41.536, 4.102], [45.898, 4.102], [50.326, 4.036], [54.688, 4.036],
+    [59.049, 4.102], [63.477, 4.232], [68.034, 4.297], [72.591, 4.297]
+  ];
+
+  // Optional per-tour PapaDOMO sprite sheets: { "tour-id": { src, frames, w, h, dur } }.
+  // Empty until the pixel routine frames are ready; the card falls back gracefully.
+  var SPRITES = {};
+  var FALLBACK_ART = "/imagebank/papadomo-welcoming.png";
+
+  // Tour data comes straight from the site's real tour data. Nothing invented.
+  function previewFor(id) {
+    var list = (typeof TOUR_INTROS !== "undefined" && TOUR_INTROS[id]) || [];
+    var line = null;
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].text && list[i].text.length >= 60) { line = list[i]; break; }
+    }
+    return (line || list[0] || { text: "" }).text;
+  }
+  var tours = TOURS.map(function (t) {
+    return { id: t.id, title: t.title, stops: t.stops.length, preview: previewFor(t.id) };
+  });
+
+  var host = window.TourMenuHost || {};
+  function enterTour(id) {
+    if (host.onEnter) { host.onEnter(id); return; }
+    window.location.href = "/tours/?open=" + encodeURIComponent(id);
+  }
+
+  var rowsEl = document.getElementById("rows");
+  var hint = document.getElementById("hint");
+  var sheet = document.getElementById("sheet");
+  var buttons = [];
+  var selected = -1;
+  var lastTap = { i: -1, t: 0 };
+  var openIndex = -1;
+  var openedAt = 0;
+
+  function quietHint() { hint.classList.add("gone"); }
+
+  function select(i) {
+    if (selected >= 0) buttons[selected].classList.remove("selected");
+    selected = i;
+    if (i >= 0) { buttons[i].classList.add("selected"); buttons[i].setAttribute("aria-current", "true"); }
+    buttons.forEach(function (b, k) { if (k !== i) b.removeAttribute("aria-current"); });
+  }
+
+  // ---------- breakout ----------
+  function setSprite(t) {
+    var el = document.getElementById("sprite");
+    var s = SPRITES[t.id];
+    el.className = "";
+    el.removeAttribute("style");
+    if (s) {
+      el.classList.add("sheet");
+      el.style.setProperty("--art", "url(" + s.src + ")");
+      el.style.setProperty("--frames", s.frames);
+      el.style.setProperty("--fw", s.w);
+      el.style.setProperty("--fh", s.h);
+      el.style.setProperty("--dur", (s.dur || 0.9) + "s");
+    } else {
+      el.style.setProperty("--art", "url(" + FALLBACK_ART + ")");
+    }
+  }
+  function openSheet(i) {
+    var t = tours[i];
+    openIndex = i;
+    openedAt = Date.now();
+    document.getElementById("k-num").textContent = "TOUR " + (i + 1) + " OF " + tours.length;
+    document.getElementById("sheet-title").textContent = t.title;
+    document.getElementById("k-meta").textContent = t.stops + " STOPS";
+    document.getElementById("k-text").textContent = t.preview;
+    setSprite(t);
+    sheet.hidden = false;
+    document.body.classList.add("paused");
+    try { history.pushState({ tourMenu: 1 }, ""); } catch (e) {}
+    document.getElementById("enter").focus({ preventScroll: true });
+    quietHint();
+    if (host.onPreview) host.onPreview(t.id);
+  }
+  function hideSheet() {
+    if (sheet.hidden) return;
+    sheet.hidden = true;
+    document.body.classList.remove("paused");
+    var b = buttons[openIndex];
+    openIndex = -1;
+    if (b) b.focus({ preventScroll: true });
+    if (host.onClose) host.onClose();
+  }
+  function closeSheet() {
+    if (sheet.hidden) return;
+    if (history.state && history.state.tourMenu) history.back(); // popstate hides it
+    else hideSheet();
+  }
+  window.addEventListener("popstate", hideSheet);
+  document.getElementById("close").addEventListener("click", closeSheet);
+  document.getElementById("scrim").addEventListener("click", function () {
+    if (Date.now() - openedAt > 400) closeSheet();
+  });
+  document.getElementById("enter").addEventListener("click", function () {
+    if (openIndex >= 0) enterTour(tours[openIndex].id);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !sheet.hidden) { e.preventDefault(); closeSheet(); }
+  });
+
+  // ---------- rows ----------
+  tours.forEach(function (t, i) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "row";
+    b.style.top = ROWS[i][0] + "%";
+    b.style.height = ROWS[i][1] + "%";
+    b.setAttribute("data-tour", t.id);
+    b.setAttribute("aria-label", "Tour " + (i + 1) + " of " + tours.length + ", " + t.title + ", " + t.stops + " stops");
+    rowsEl.appendChild(b);
+    buttons.push(b);
+
+    var timer = null, down = null, longFired = false;
+    function cancel() {
+      if (timer) { clearTimeout(timer); timer = null; }
+      b.classList.remove("charging");
+      down = null;
+    }
+    b.addEventListener("pointerdown", function (e) {
+      if (e.button > 0) return;
+      longFired = false;
+      down = { x: e.clientX, y: e.clientY };
+      b.classList.add("charging");
+      timer = setTimeout(function () {
+        timer = null;
+        longFired = true;
+        b.classList.remove("charging");
+        select(i);
+        if (navigator.vibrate) { try { navigator.vibrate(15); } catch (er) {} }
+        openSheet(i);
+      }, 500);
+    });
+    b.addEventListener("pointermove", function (e) {
+      if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 12) cancel();
+    });
+    b.addEventListener("pointerup", cancel);
+    b.addEventListener("pointercancel", cancel);
+    b.addEventListener("pointerleave", cancel);
+    b.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+
+    b.addEventListener("click", function (e) {
+      if (longFired) { longFired = false; e.preventDefault(); return; }
+      var now = performance.now();
+      quietHint();
+      if (lastTap.i === i && now - lastTap.t < 350) {   // double tap / double click
+        lastTap = { i: -1, t: 0 };
+        enterTour(t.id);
+        return;
+      }
+      select(i);
+      lastTap = { i: i, t: now };
+    });
+
+    b.addEventListener("keydown", function (e) {
+      var k = e.key;
+      if (k === "ArrowDown" || k === "ArrowUp") {
+        e.preventDefault();
+        var n = (i + (k === "ArrowDown" ? 1 : -1) + tours.length) % tours.length;
+        buttons[n].focus(); select(n);
+      } else if (k === "Enter" && e.shiftKey) {
+        e.preventDefault(); select(i); openSheet(i);
+      } else if (k === "Enter") {
+        e.preventDefault(); enterTour(t.id);
+      } else if (k === " ") {
+        e.preventDefault(); select(i); quietHint();
+      } else if (k === "i" || k === "I") {
+        e.preventDefault(); select(i); openSheet(i);
+      }
+    });
+  });
+
+  // ---------- twinkling lights ----------
+  // [x, y, kind, size] in art pixels (1024 x 1536). Decoration only.
+  var LIGHTS = [
+    [510, 45, "g", 2.6], [110, 100, "g", 2.2], [908, 100, "g", 2.2],
+    [225, 205, "g", 2.0], [268, 270, "g", 1.5], [750, 285, "g", 1.5], [730, 125, "b", 1.0],
+    [188, 330, "b", 1.5], [835, 325, "b", 1.5],
+    [97, 265, "g", 1.6], [97, 460, "g", 1.6], [927, 265, "g", 1.6], [927, 460, "g", 1.6],
+    [168, 660, "b", 1.1], [168, 835, "b", 1.1], [830, 490, "b", 1.1], [830, 690, "b", 1.1],
+    [142, 1188, "b", 1.5], [883, 1188, "b", 1.5], [68, 1280, "g", 1.5], [957, 1280, "g", 1.5],
+    [140, 1410, "b", 1.5], [885, 1410, "b", 1.5],
+    [240, 1260, "g", 1.6], [770, 1262, "g", 1.6],
+    [356, 1430, "g", 1.5], [494, 1430, "g", 1.5]
+  ];
+  var seed = 7;
+  function rand() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+  var lights = document.getElementById("lights");
+  LIGHTS.forEach(function (L) {
+    var g = document.createElement("i");
+    g.className = "glint" + (L[2] === "b" ? " blue" : "");
+    g.style.left = (L[0] / 1024 * 100) + "%";
+    g.style.top = (L[1] / 1536 * 100) + "%";
+    var dur = 2.6 + rand() * 2.8;
+    g.style.setProperty("--s", L[3]);
+    g.style.setProperty("--d", dur.toFixed(2) + "s");
+    g.style.setProperty("--dl", (-rand() * dur).toFixed(2) + "s");
+    lights.appendChild(g);
+  });
+  document.addEventListener("visibilitychange", function () {
+    document.body.classList.toggle("paused", document.hidden || !sheet.hidden);
+  });
+
+  // ---------- hint only when there is room under the kiosk ----------
+  function fitHint() {
+    var r = document.getElementById("stage").getBoundingClientRect();
+    var free = window.innerHeight - r.bottom;
+    hint.style.display = free > 40 ? "" : "none";
+  }
+  window.addEventListener("resize", fitHint);
+  fitHint();
+
+  // Simple host API, so another page can embed this and take over navigation.
+  window.TourMenu = {
+    tours: tours,
+    select: select,
+    preview: openSheet,
+    enter: function (id) { enterTour(id); },
+    setSprites: function (map) { for (var k in map) SPRITES[k] = map[k]; }
+  };
+})();
+</script>
+</body>
+</html>
