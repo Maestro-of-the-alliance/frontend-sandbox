@@ -460,7 +460,7 @@
   </div>
 </div>
 
-<video id="they-said-yes-video" src="../they-said-yes.mp4" playsinline webkit-playsinline
+<video id="they-said-yes-video" src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/they-said-yesv2.mp4" preload="auto" playsinline webkit-playsinline
   style="display:none; position:fixed; inset:0; width:100vw; height:100vh; object-fit:cover; z-index:60; background:#000;"></video>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -1126,16 +1126,41 @@
       const yesVideo = document.getElementById("they-said-yes-video");
       yesVideo.style.display = "block";
       yesVideo.currentTime = 0;
+      // The v2 video freezes at the door just before the knock, then
+      // waits for one tap (no visible hotspot or cue, on purpose) and
+      // carries on through the knock and into papatour.
+      const KNOCK_PAUSE_AT = 9.11;
+      let knockPaused = false;
+      const knockTap = document.createElement("div");
+      knockTap.style.cssText = "position:fixed; inset:0; z-index:61; display:none; cursor:pointer; background:transparent; -webkit-tap-highlight-color:transparent;";
+      document.body.appendChild(knockTap);
+      const onYesTime = () => {
+        if (!knockPaused && yesVideo.currentTime >= KNOCK_PAUSE_AT) {
+          knockPaused = true;
+          yesVideo.pause();
+          yesVideo.currentTime = KNOCK_PAUSE_AT;
+          knockTap.style.display = "block";
+        }
+      };
+      const onKnockTap = () => {
+        knockTap.style.display = "none";
+        yesVideo.play();
+      };
       const proceedToPapaTour = () => {
         yesVideo.style.display = "none";
         yesVideo.removeEventListener("ended", proceedToPapaTour);
+        yesVideo.removeEventListener("timeupdate", onYesTime);
+        knockTap.removeEventListener("click", onKnockTap);
+        knockTap.remove();
         window.location.href = "/papatour.html";
       };
+      yesVideo.addEventListener("timeupdate", onYesTime);
+      knockTap.addEventListener("click", onKnockTap);
       yesVideo.addEventListener("ended", proceedToPapaTour);
       yesVideo.play().catch((err) => {
         // If autoplay is blocked, don't strand the visitor staring at
         // a frozen video -- skip straight to papatour.
-        console.warn("they-said-yes.mp4 failed to play:", err);
+        console.warn("they-said-yesv2.mp4 failed to play:", err);
         proceedToPapaTour();
       });
     });
