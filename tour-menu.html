@@ -48,6 +48,7 @@
     aspect-ratio: 1024 / 1536;
     animation: arrive 0.6s ease-out both;
   }
+  html.embedded #stage { animation: none; }
   @keyframes arrive {
     from { opacity: 0; transform: scale(0.965); }
     to   { opacity: 1; transform: scale(1); }
@@ -256,6 +257,10 @@
     </section>
   </div>
 
+<script>
+  // When papatour.html shows this page in its frame, the host does the fade-in.
+  if (window.parent !== window) document.documentElement.classList.add("embedded");
+</script>
 <script src="/tours/tours-data.js"></script>
 <script>
 (function () {
@@ -290,7 +295,8 @@
   var host = window.TourMenuHost || {};
   function enterTour(id) {
     if (host.onEnter) { host.onEnter(id); return; }
-    window.location.href = "/tours/?open=" + encodeURIComponent(id);
+    var url = "/tours/?open=" + encodeURIComponent(id);
+    try { (window.top || window).location.href = url; } catch (e) { window.location.href = url; }
   }
 
   var rowsEl = document.getElementById("rows");

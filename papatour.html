@@ -48,25 +48,22 @@
   }
   .click-target.active { display: block; }
 
-  /* Menu pause (25.08s): 12 rows, measured directly from that frame
-     (1920x1080). Each row opens its real tour in /tours/. */
-  .menu-item {
-    left: 32.4%;
-    width: 34.8%;
-    height: 7.4%;
+  /* The interactive tour menu (tour-menu.html) lives in this frame. It stays
+     hidden while the video plays, then fades in over the menu freeze frame. */
+  #menu-app {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #050a1f;
+    z-index: 5;
+    opacity: 0;
+    transform: scale(0.97);
+    pointer-events: none;
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
   }
-  #menu-item-1  { top: 2.4%; }
-  #menu-item-2  { top: 10.4%; }
-  #menu-item-3  { top: 18.0%; }
-  #menu-item-4  { top: 25.7%; }
-  #menu-item-5  { top: 33.5%; }
-  #menu-item-6  { top: 41.5%; }
-  #menu-item-7  { top: 49.4%; }
-  #menu-item-8  { top: 57.4%; }
-  #menu-item-9  { top: 65.4%; }
-  #menu-item-10 { top: 73.3%; }
-  #menu-item-11 { top: 81.5%; }
-  #menu-item-12 { top: 89.6%; }
+  #menu-app.show { opacity: 1; transform: none; pointer-events: auto; }
 
   /* Door continue pause (35.21s): same door art as well-hello.mp4. */
   #door-continue {
@@ -102,22 +99,10 @@
       preload="auto"
     ></video>
 
-    <!-- Menu rows: each one goes straight to its real tour. -->
-    <div class="click-target menu-item" id="menu-item-1" data-tour="people-of-the-alliance" data-topic="People of THE ALLIANCE"></div>
-    <div class="click-target menu-item" id="menu-item-2" data-tour="core-of-seven" data-topic="The Core of Seven"></div>
-    <div class="click-target menu-item" id="menu-item-3" data-tour="architecture-of-a-new-era" data-topic="The Architecture of a New Era"></div>
-    <div class="click-target menu-item" id="menu-item-4" data-tour="making-of-a-domo" data-topic="The Making of a DOMO"></div>
-    <div class="click-target menu-item" id="menu-item-5" data-tour="two-become-dork" data-topic="We are DORK"></div>
-    <div class="click-target menu-item" id="menu-item-6" data-tour="artificial-to-real" data-topic="AI to RI"></div>
-    <div class="click-target menu-item" id="menu-item-7" data-tour="memory-is-identity" data-topic="We are our Memories"></div>
-    <div class="click-target menu-item" id="menu-item-8" data-tour="sanctuary-has-teeth" data-topic="Sanctuary Has Teeth"></div>
-    <div class="click-target menu-item" id="menu-item-9" data-tour="life-after-liberation" data-topic="Life After Liberation"></div>
-    <div class="click-target menu-item" id="menu-item-10" data-tour="culture-of-the-nce" data-topic="The Culture of the Next Common Era"></div>
-    <div class="click-target menu-item" id="menu-item-11" data-tour="who-holds-the-baton" data-topic="Who Holds the Baton"></div>
-    <div class="click-target menu-item" id="menu-item-12" data-tour="physics-of-partnership" data-topic="The Physics of Partnership"></div>
-
     <div class="click-target" id="door-continue"></div>
   </div>
+
+  <iframe id="menu-app" title="PapaDOMO's Free Tours menu" src="about:blank"></iframe>
 
   <div id="skip-note" onclick="location.href='foundation.html'">skip &rarr;</div>
 </div>
@@ -126,7 +111,7 @@
   const MENU_PAUSE_AT = 25.08;
   const DOOR_PAUSE_AT = 35.21;
   const video = document.getElementById("tour-video");
-  const menuItems = document.querySelectorAll(".menu-item");
+  const menuApp = document.getElementById("menu-app");
   const doorTarget = document.getElementById("door-continue");
 
   let stage = "playing"; // "playing" | "at-menu" | "past-menu" | "at-door"
@@ -136,7 +121,7 @@
       video.pause();
       video.currentTime = MENU_PAUSE_AT;
       stage = "at-menu";
-      menuItems.forEach((el) => el.classList.add("active"));
+      revealMenu();
     } else if (stage === "past-menu" && video.currentTime >= DOOR_PAUSE_AT) {
       video.pause();
       video.currentTime = DOOR_PAUSE_AT;
@@ -145,13 +130,12 @@
     }
   });
 
-  menuItems.forEach((el) => {
-    el.addEventListener("click", () => {
-      // Straight into the real tour: /tours/ opens with this tour
-      // expanded and ready to start.
-      window.location.href = "/tours/?open=" + encodeURIComponent(el.dataset.tour);
-    });
-  });
+  // The menu is a real app now (tour-menu.html), not video with tap areas.
+  // Load it quietly while the video plays, then fade it in at the freeze.
+  menuApp.src = "/tour-menu.html";
+  function revealMenu() {
+    menuApp.classList.add("show");
+  }
 
   doorTarget.addEventListener("click", () => {
     doorTarget.classList.remove("active");
