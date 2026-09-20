@@ -254,6 +254,13 @@ function handleReturn() {
   });
 }
 
+// Deep link from the PapaDOMO tour menu (/tours/?open=<tour-id>): land
+// with that tour already expanded, so one more tap on its title starts it.
+try {
+  const openId = new URLSearchParams(window.location.search).get("open");
+  if (openId && TOURS.some((t) => t.id === openId)) expandedId = openId;
+} catch (e) {}
+
 handleReturn();
 
 // Belt-and-suspenders for bfcache: a browser can restore this page from

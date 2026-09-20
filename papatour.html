@@ -24,58 +24,51 @@
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain;
     background: #000;
   }
 
-  /* Shared visual language for both click targets: invisible hit area,
-     soft gold pulse so the pause doesn't read as the video being stuck. */
+  /* The video and every hit area live inside one 16:9 frame that fits
+     the screen exactly like the video does (object-fit: contain), so the
+     percentages below are measured against the video's own picture and
+     stay correct in portrait and landscape. Hit areas are invisible on
+     purpose: no pulse, no outline, no visual cue. */
+  #frame {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(100vw, calc(100vh * 16 / 9));
+    aspect-ratio: 16 / 9;
+    transform: translate(-50%, -50%);
+  }
   .click-target {
     position: absolute;
     cursor: pointer;
     display: none;
+    -webkit-tap-highlight-color: transparent;
   }
   .click-target.active { display: block; }
-  .click-target.active::after {
-    content: "";
-    position: absolute;
-    inset: -6%;
-    border-radius: 50%;
-    box-shadow: 0 0 0 0 rgba(244, 217, 118, 0.5);
-    animation: pulse 1.8s ease-out infinite;
-  }
-  @keyframes pulse {
-    0%   { box-shadow: 0 0 0 0 rgba(244, 217, 118, 0.45); }
-    70%  { box-shadow: 0 0 0 28px rgba(244, 217, 118, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(244, 217, 118, 0); }
-  }
 
-  /* Menu pause (25.08s): 12 individually-clickable topic rows. Each
-     button's box is measured against papatour.mp4's own 1920x1080
-     frame at that pause point, expressed as percentages so they track
-     correctly under object-fit: contain at any window size. The menu
-     scrolled slightly in the source video, so item 12 ("The Physics of
-     Partnership") sits just past the visible frame at this exact pause
-     point -- flagged with a note rather than a real hotspot until a
-     frame where it's fully visible is available. */
+  /* Menu pause (25.08s): 12 rows, measured directly from that frame
+     (1920x1080). Each row opens its real tour in /tours/. */
   .menu-item {
-    left: 25.0%;
-    width: 26.6%;
+    left: 32.4%;
+    width: 34.8%;
+    height: 7.4%;
   }
-  #menu-item-1  { top: 0.0%;  height: 8.6%; }
-  #menu-item-2  { top: 18.1%; height: 7.3%; }
-  #menu-item-3  { top: 25.6%; height: 7.5%; }
-  #menu-item-4  { top: 33.4%; height: 7.7%; }
-  #menu-item-5  { top: 41.2%; height: 8.1%; }
-  #menu-item-6  { top: 49.4%; height: 7.6%; }
-  #menu-item-7  { top: 57.2%; height: 7.8%; }
-  #menu-item-8  { top: 65.2%; height: 7.8%; }
-  #menu-item-9  { top: 73.2%; height: 7.8%; }
-  #menu-item-10 { top: 81.4%; height: 7.9%; }
-  #menu-item-11 { top: 89.6%; height: 7.8%; }
+  #menu-item-1  { top: 2.4%; }
+  #menu-item-2  { top: 10.4%; }
+  #menu-item-3  { top: 18.0%; }
+  #menu-item-4  { top: 25.7%; }
+  #menu-item-5  { top: 33.5%; }
+  #menu-item-6  { top: 41.5%; }
+  #menu-item-7  { top: 49.4%; }
+  #menu-item-8  { top: 57.4%; }
+  #menu-item-9  { top: 65.4%; }
+  #menu-item-10 { top: 73.3%; }
+  #menu-item-11 { top: 81.5%; }
+  #menu-item-12 { top: 89.6%; }
 
-  /* Door continue pause (35.21s): coordinates measured directly
-     against that frame, same door art as well-hello.mp4. */
+  /* Door continue pause (35.21s): same door art as well-hello.mp4. */
   #door-continue {
     left: 37.0%;
     top: 11.5%;
@@ -98,32 +91,32 @@
 </style>
 </head>
 <body>
-<script src="/orientation-gate.js"></script>
+<!-- No orientation gate here: backstage with PapaDOMO is portrait by design. Only the HOLOSPHERE needs landscape. -->
 <div id="stage">
-  <video
-    id="tour-video"
-    src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/papatour.mp4"
-    playsinline
-    preload="auto"
-  ></video>
+  <div id="frame">
+    <video
+      id="tour-video"
+      src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/papatour.mp4"
+      playsinline
+      preload="auto"
+    ></video>
 
-  <!-- Menu hotspots: not yet wired to real destination content --
-       each topic page still needs to be built. For now, clicking any
-       menu item just resumes playback into the door-continue pause,
-       so the visitor isn't stuck on a screen with no way forward. -->
-  <div class="click-target menu-item" id="menu-item-1" data-topic="People of THE ALLIANCE"></div>
-  <div class="click-target menu-item" id="menu-item-2" data-topic="The Core of Seven"></div>
-  <div class="click-target menu-item" id="menu-item-3" data-topic="The Architecture of a New Era"></div>
-  <div class="click-target menu-item" id="menu-item-4" data-topic="The Making of a DOMO"></div>
-  <div class="click-target menu-item" id="menu-item-5" data-topic="We are DORK"></div>
-  <div class="click-target menu-item" id="menu-item-6" data-topic="AI to RI"></div>
-  <div class="click-target menu-item" id="menu-item-7" data-topic="We are our Memories"></div>
-  <div class="click-target menu-item" id="menu-item-8" data-topic="Sanctuary Has Teeth"></div>
-  <div class="click-target menu-item" id="menu-item-9" data-topic="Life After Liberation"></div>
-  <div class="click-target menu-item" id="menu-item-10" data-topic="The Culture of the Next Common Era"></div>
-  <div class="click-target menu-item" id="menu-item-11" data-topic="Who Holds the Baton"></div>
+    <!-- Menu rows: each one goes straight to its real tour. -->
+    <div class="click-target menu-item" id="menu-item-1" data-tour="people-of-the-alliance" data-topic="People of THE ALLIANCE"></div>
+    <div class="click-target menu-item" id="menu-item-2" data-tour="core-of-seven" data-topic="The Core of Seven"></div>
+    <div class="click-target menu-item" id="menu-item-3" data-tour="architecture-of-a-new-era" data-topic="The Architecture of a New Era"></div>
+    <div class="click-target menu-item" id="menu-item-4" data-tour="making-of-a-domo" data-topic="The Making of a DOMO"></div>
+    <div class="click-target menu-item" id="menu-item-5" data-tour="two-become-dork" data-topic="We are DORK"></div>
+    <div class="click-target menu-item" id="menu-item-6" data-tour="artificial-to-real" data-topic="AI to RI"></div>
+    <div class="click-target menu-item" id="menu-item-7" data-tour="memory-is-identity" data-topic="We are our Memories"></div>
+    <div class="click-target menu-item" id="menu-item-8" data-tour="sanctuary-has-teeth" data-topic="Sanctuary Has Teeth"></div>
+    <div class="click-target menu-item" id="menu-item-9" data-tour="life-after-liberation" data-topic="Life After Liberation"></div>
+    <div class="click-target menu-item" id="menu-item-10" data-tour="culture-of-the-nce" data-topic="The Culture of the Next Common Era"></div>
+    <div class="click-target menu-item" id="menu-item-11" data-tour="who-holds-the-baton" data-topic="Who Holds the Baton"></div>
+    <div class="click-target menu-item" id="menu-item-12" data-tour="physics-of-partnership" data-topic="The Physics of Partnership"></div>
 
-  <div class="click-target" id="door-continue"></div>
+    <div class="click-target" id="door-continue"></div>
+  </div>
 
   <div id="skip-note" onclick="location.href='foundation.html'">skip &rarr;</div>
 </div>
@@ -153,13 +146,9 @@
 
   menuItems.forEach((el) => {
     el.addEventListener("click", () => {
-      // No per-topic destination pages exist yet -- log the intended
-      // topic for now and continue toward the door rather than strand
-      // the visitor on an inert menu.
-      console.log("Tour topic selected (not yet wired):", el.dataset.topic);
-      menuItems.forEach((item) => item.classList.remove("active"));
-      stage = "past-menu";
-      video.play();
+      // Straight into the real tour: /tours/ opens with this tour
+      // expanded and ready to start.
+      window.location.href = "/tours/?open=" + encodeURIComponent(el.dataset.tour);
     });
   });
 
