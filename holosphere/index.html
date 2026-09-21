@@ -614,16 +614,27 @@
       onPointerUp();
       if (!moved) activate();
     }
-    el.addEventListener("mousedown", (e) => { e.stopPropagation(); start(e.clientX, e.clientY); });
-    el.addEventListener("mousemove", (e) => { if (isDragging) move(e.clientX, e.clientY); });
-    el.addEventListener("mouseup", (e) => { e.stopPropagation(); end(); });
+    // A phone tap fires touch events AND then a synthesized set of mouse
+    // events. Without this guard every tap activated the hotspot twice
+    // (two intercom voices at once, two camera moves, two history entries).
+    let lastTouchAt = 0;
+    const fromTouch = () => Date.now() - lastTouchAt < 800;
+    el.addEventListener("mousedown", (e) => { e.stopPropagation(); if (fromTouch()) return; start(e.clientX, e.clientY); });
+    el.addEventListener("mousemove", (e) => { if (isDragging && !fromTouch()) move(e.clientX, e.clientY); });
+    el.addEventListener("mouseup", (e) => { e.stopPropagation(); if (fromTouch()) return; end(); });
     el.addEventListener("touchstart", (e) => {
+      lastTouchAt = Date.now();
       if (e.touches.length === 1) start(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: true });
     el.addEventListener("touchmove", (e) => {
+      lastTouchAt = Date.now();
       if (e.touches.length === 1) move(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: true });
-    el.addEventListener("touchend", end);
+    el.addEventListener("touchend", (e) => {
+      lastTouchAt = Date.now();
+      if (e.cancelable) e.preventDefault();   // also stops the synthesized mouse events
+      end();
+    });
   }
 
   // --- 3D hotspot markers ---
@@ -1002,7 +1013,20 @@
     "../audiobank/intercom-8.mp3",
   ];
 
+  let intercomAudio = null;
+  function stopIntercomAudio() {
+    if (intercomAudio) { try { intercomAudio.pause(); } catch (e) {} intercomAudio = null; }
+  }
+  // Leaving the page (or coming back to it from the browser's back gesture)
+  // must never leave an old line playing under a new one.
+  window.addEventListener("pagehide", stopIntercomAudio);
+  let lastIntercomTap = 0;
+
   makeHotspotInteractive(intercomEl, () => {
+    // Belt and suspenders: ignore a repeat activation from the same tap.
+    const now = Date.now();
+    if (now - lastIntercomTap < 1500) return;
+    lastIntercomTap = now;
     pushOverlayState("welcome");
     telescopeEl.style.display = "none";
     intercomEl.style.display = "none";
@@ -1014,7 +1038,9 @@
     animateCameraTo(-138.5, -35.4, 30, 900, () => {
       welcomePanel.style.display = "flex";
       const line = INTERCOM_LINES[Math.floor(Math.random() * INTERCOM_LINES.length)];
-      const intercomAudio = new Audio(line);
+      // One voice at a time: stop any line still playing before starting this one.
+      stopIntercomAudio();
+      intercomAudio = new Audio(line);
       intercomAudio.play().catch((err) => {
         // Autoplay can be blocked pre-gesture in some browsers; the
         // hotspot tap itself is a user gesture so this should succeed
