@@ -151,6 +151,15 @@
     animation: chase 0.96s steps(1, end) var(--bd, 0s) infinite;
   }
   @keyframes chase { 0% { opacity: 1; } 33.34%, 100% { opacity: 0.22; } }
+  /* Old marquee letters: a tighter, quicker two-step alternation that hugs
+     PapaDOMO's and Free Tours directly, smaller so they read as trim bulbs
+     against the letters instead of the bigger sign-border lights. */
+  .bulb-word {
+    width: calc(var(--u) * 0.85);
+    box-shadow: 0 0 calc(var(--u) * 0.7) rgba(255, 205, 80, 0.95), 0 0 calc(var(--u) * 1.5) rgba(255, 170, 30, 0.5);
+    animation: chase-word 0.56s steps(1, end) var(--bd, 0s) infinite;
+  }
+  @keyframes chase-word { 0% { opacity: 1; } 50%, 100% { opacity: 0.18; } }
   #marquee.flash .bulb { animation: bulbflash 0.36s steps(1, end) 5; }
   @keyframes bulbflash { 0% { opacity: 1; } 50% { opacity: 0.12; } }
   #signglow {
@@ -608,8 +617,19 @@
   var marquee = document.getElementById("marquee");
   function mirror(pts) { return pts.map(function (p) { return [1024 - p[0], p[1]]; }).reverse(); }
   var ARCH_L = [[172,262],[166,232],[176,194],[196,162],[226,122],[262,100],[300,92],[345,97],[395,93],[440,84],[470,74]];
+  // Traces the top and bottom of the letters themselves (not just the sign's
+  // outer border), measured against the art's own 1024 x 1536 pixels, so the
+  // title reads as a proper old marquee: PapaDOMO's on top, Free Tours below.
+  var TITLE_TOP    = [[208,150],[260,98],[330,90],[410,96],[480,92],[560,98],[630,92],[700,110]];
+  var TITLE_BOTTOM = [[208,158],[280,162],[350,158],[420,164],[490,160],[560,166],[630,160],[700,150]];
+  var SUB_TOP      = [[196,172],[260,168],[330,174],[400,168],[470,174],[540,168],[610,174],[680,168],[726,176]];
+  var SUB_BOTTOM   = [[196,222],[260,228],[330,222],[400,228],[470,222],[540,228],[610,222],[680,228],[726,220]];
   var RUNS = [
-    { pts: ARCH_L.concat(mirror(ARCH_L)), step: 40 },                          // title sign
+    { pts: ARCH_L.concat(mirror(ARCH_L)), step: 40 },                          // title sign border
+    { pts: TITLE_TOP,    step: 20, group: "word" },                           // "PapaDOMO's" top edge
+    { pts: TITLE_BOTTOM, step: 20, group: "word" },                           // "PapaDOMO's" bottom edge
+    { pts: SUB_TOP,    step: 18, group: "word" },                             // "Free Tours" top edge
+    { pts: SUB_BOTTOM, step: 18, group: "word" },                             // "Free Tours" bottom edge
     { pts: [[195,410],[195,1100]], step: 58 },                                 // left rail
     { pts: [[829,410],[829,1100]], step: 58 },                                 // right rail
     { pts: [[214,1214],[812,1214],[812,1312],[214,1312],[214,1214]], step: 44 }, // "no wrong choice" plaque
@@ -624,10 +644,12 @@
       for (var q = 0; q < n; q++) {
         var f = q / n;
         var el = document.createElement("i");
-        el.className = "bulb";
+        el.className = run.group === "word" ? "bulb bulb-word" : "bulb";
         el.style.left = ((a[0] + (b2[0] - a[0]) * f) / 1024 * 100) + "%";
         el.style.top = ((a[1] + (b2[1] - a[1]) * f) / 1536 * 100) + "%";
-        el.style.setProperty("--bd", ((k % 3) * 0.32).toFixed(2) + "s");
+        // The word bulbs run their own faster, tighter chase (classic
+        // marquee letters) instead of following the slow border sequence.
+        el.style.setProperty("--bd", (run.group === "word" ? (k % 2) * 0.28 : (k % 3) * 0.32).toFixed(2) + "s");
         marquee.appendChild(el);
         k++;
       }
