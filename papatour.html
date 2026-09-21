@@ -27,17 +27,17 @@
     background: #000;
   }
 
-  /* The video and every hit area live inside one 16:9 frame that fits
+  /* The video and every hit area live inside one 9:16 frame that fits
      the screen exactly like the video does (object-fit: contain), so the
-     percentages below are measured against the video's own picture and
-     stay correct in portrait and landscape. Hit areas are invisible on
-     purpose: no pulse, no outline, no visual cue. */
+     percentages below are measured against the video's own picture
+     (papatour-v2.mp4, 1080 x 1920). Hit areas are invisible on purpose:
+     no pulse, no outline, no visual cue. */
   #frame {
     position: absolute;
     left: 50%;
     top: 50%;
-    width: min(100vw, calc(100vh * 16 / 9));
-    aspect-ratio: 16 / 9;
+    width: min(100vw, calc(100vh * 9 / 16));
+    aspect-ratio: 9 / 16;
     transform: translate(-50%, -50%);
   }
   .click-target {
@@ -65,12 +65,13 @@
   }
   #menu-app.show { opacity: 1; transform: none; pointer-events: auto; }
 
-  /* Door continue pause (35.21s): same door art as well-hello.mp4. */
+  /* Door continue pause (35.21s), measured on papatour-v2's own frame:
+     the door spans x 281-795 and y 530-1333 of 1080 x 1920. */
   #door-continue {
-    left: 37.0%;
-    top: 11.5%;
-    width: 25.9%;
-    height: 72.3%;
+    left: 26.0%;
+    top: 27.6%;
+    width: 47.6%;
+    height: 41.8%;
   }
 
   #skip-note {
@@ -94,7 +95,7 @@
   <div id="frame">
     <video
       id="tour-video"
-      src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/papatour.mp4"
+      src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/papatour-v2.mp4"
       playsinline
       preload="auto"
     ></video>
