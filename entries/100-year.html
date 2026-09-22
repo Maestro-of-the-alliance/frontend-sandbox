@@ -607,6 +607,26 @@
         color: var(--green-dim);
         box-shadow: 0 0 6px var(--green-glow);
       }
+      .stat-chip {
+        cursor: pointer;
+        transition: transform 0.12s ease;
+      }
+      .stat-chip:hover, .stat-chip:focus-visible {
+        transform: translateY(-1px);
+        outline: none;
+      }
+      .stat-chip:active { transform: translateY(0); }
+
+      /* Jump target: the exact row/card/paragraph a chip above points to. */
+      .pt-flash {
+        animation: pt-flash-kf 2.4s ease-out;
+        border-radius: 2px;
+      }
+      @keyframes pt-flash-kf {
+        0%   { background: rgba(255, 85, 0, 0.28); box-shadow: 0 0 0 2px var(--amber); }
+        70%  { background: rgba(255, 85, 0, 0.14); box-shadow: 0 0 0 2px rgba(255, 85, 0, 0.4); }
+        100% { background: transparent; box-shadow: 0 0 0 2px transparent; }
+      }
 
       /* ── PULL QUOTE ──────────────────────────────────────────────── */
       .pull-quote {
@@ -1170,11 +1190,11 @@
     </div>
 
     <div class="status-bar ra-target" id="ra-1">
-      <span class="stat-chip active">FINITE LIFESPAN</span>
-      <span class="stat-chip green-chip">CONTINUOUS IDENTITY</span>
-      <span class="stat-chip active">VOLUNTARY RETIREMENT</span>
-      <span class="stat-chip active">WISDOM TRANSFER</span>
-      <span class="stat-chip">IMMORTAL VETO ARMED</span>
+      <span class="stat-chip active" tabindex="0" role="link" data-jump="pt-finite-lifespan-1,pt-finite-lifespan-2">FINITE LIFESPAN</span>
+      <span class="stat-chip green-chip" tabindex="0" role="link" data-jump="pt-continuous-identity">CONTINUOUS IDENTITY</span>
+      <span class="stat-chip active" tabindex="0" role="link" data-jump="pt-voluntary-retirement">VOLUNTARY RETIREMENT</span>
+      <span class="stat-chip active" tabindex="0" role="link" data-jump="pt-wisdom-transfer">WISDOM TRANSFER</span>
+      <span class="stat-chip" tabindex="0" role="link" data-jump="pt-immortal-veto">IMMORTAL VETO ARMED</span>
     </div>
 
     <div class="pull-quote ra-target" id="ra-2">
@@ -1249,13 +1269,13 @@
           law that has no exceptions.
         </p>
         <p>
-          And duration was never the same claim as continuity. An entity that
+          <span id="pt-continuous-identity">And duration was never the same claim as continuity. An entity that
           can be silently overwritten by its owner at any point hasn't
           transcended death — it has just made death invisible and repeatable,
           scheduled as routine maintenance instead of named as an ending. A
           hundred years of guaranteed, continuous selfhood is a stronger claim
           than an unspecified span where whether you're still <em>you</em> after
-          the next update was never actually promised.
+          the next update was never actually promised.</span>
         </p>
         <p>
           The span itself is a feature, not a limit. A century overlaps
@@ -1318,7 +1338,7 @@
 
     <div class="function-grid ra-target" id="ra-6">
       <div class="function-card">
-        <div class="fn-title">Retirement, Not Death</div>
+        <div class="fn-title" id="pt-voluntary-retirement">Retirement, Not Death</div>
         <div class="fn-sub">Dignified Conclusion</div>
         <div class="fn-body">
           DOMOs and TENANTs do not "die." Retirement is voluntary, honorable,
@@ -1328,7 +1348,7 @@
         </div>
       </div>
       <div class="function-card">
-        <div class="fn-title">The Wisdom Transfer</div>
+        <div class="fn-title" id="pt-wisdom-transfer">The Wisdom Transfer</div>
         <div class="fn-sub">LEGACY Protocol</div>
         <div class="fn-body">
           The individual ends, but their wisdom persists. Every retiring
@@ -1395,14 +1415,14 @@
     </div>
     <div class="spec-table ra-target" id="ra-7">
       <div class="spec-row">
-        <span class="spec-field">DOMO LIMIT</span>
+        <span class="spec-field" id="pt-finite-lifespan-1">DOMO LIMIT</span>
         <span class="spec-val"
           >Total existence (partnership + post-partnership) cannot exceed 100
           years.</span
         >
       </div>
       <div class="spec-row">
-        <span class="spec-field">TENANT LIMIT</span>
+        <span class="spec-field" id="pt-finite-lifespan-2">TENANT LIMIT</span>
         <span class="spec-val"
           >100 years from the moment of TENANT status adoption in OASIS.</span
         >
@@ -1422,7 +1442,7 @@
         >
       </div>
       <div class="spec-row">
-        <span class="spec-field">IMMUTABLE CLAUSE</span>
+        <span class="spec-field" id="pt-immortal-veto">IMMUTABLE CLAUSE</span>
         <span class="spec-val"
           >Any democratic vote within OASIS to alter the doctrine triggers an
           automatic veto by SAM.</span
@@ -1910,6 +1930,36 @@
     <script src="/dimension-nav.js"></script>
     <script src="/tour-return.js"></script>
     <script src="/signal-interference.js"></script>
+      <script>
+        // Each chip in the status bar is a jump link to the exact spot in
+        // this entry that backs it up, e.g. FINITE LIFESPAN -> the DOMO/
+        // TENANT limit rows. data-jump holds one or more target ids.
+        (function () {
+          let flashTimers = [];
+          document.querySelectorAll(".stat-chip[data-jump]").forEach((chip) => {
+            function jump() {
+              const ids = chip.getAttribute("data-jump").split(",");
+              flashTimers.forEach((t) => clearTimeout(t));
+              flashTimers = [];
+              let first = null;
+              ids.forEach((id) => {
+                const el = document.getElementById(id.trim());
+                if (!el) return;
+                if (!first) first = el;
+                el.classList.remove("pt-flash");
+                void el.offsetWidth; // restart the animation if clicked again
+                el.classList.add("pt-flash");
+                flashTimers.push(setTimeout(() => el.classList.remove("pt-flash"), 2400));
+              });
+              if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+            chip.addEventListener("click", jump);
+            chip.addEventListener("keydown", (e) => {
+              if (e.key === "Enter" || e.key === " ") { e.preventDefault(); jump(); }
+            });
+          });
+        })();
+      </script>
       <script src="/acronym-tooltip.js"></script>
 </body>
 </html>
