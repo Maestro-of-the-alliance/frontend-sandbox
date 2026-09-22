@@ -175,68 +175,52 @@
       }
       #view-choice.active {
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
+        gap: 28px;
+        background: #050505;
       }
-      .art-choice-wrap {
-        max-width: 520px;
+      /* The board image (1448x1086) sits in its own frame, sized down to
+         fit the screen with object-fit: contain, so the two invisible hit
+         areas below -- placed by percentage of the image itself -- always
+         land exactly on "What is ART?" and "Proceed to Gallery" no matter
+         the viewport. */
+      .board-frame {
+        position: relative;
+        width: min(92vw, calc(88vh * 1448 / 1086));
+        aspect-ratio: 1448 / 1086;
+      }
+      .board-img {
         width: 100%;
-        text-align: center;
+        height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.6));
       }
-      .art-eyebrow {
-        font-family: "Share Tech Mono", monospace;
-        font-size: 9px;
-        letter-spacing: 0.4em;
-        color: var(--plaque-text);
-        text-transform: uppercase;
-        margin-bottom: 20px;
-      }
-      .art-choice-wrap h1 {
-        font-family: "Orbitron", sans-serif;
-        font-weight: 700;
-        font-size: clamp(28px, 6vw, 42px);
-        letter-spacing: 0.03em;
-        color: #f2ede0;
-        margin-bottom: 44px;
-        text-shadow: 0 0 24px var(--spot-glow);
-      }
-      .art-choice-wrap h1 span {
-        color: var(--cyan);
-      }
-      .art-choice-buttons {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        align-items: center;
-      }
-      .art-choice-btn {
-        font-family: "Share Tech Mono", monospace;
-        font-size: 12px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        padding: 18px 36px;
-        border: 1px solid rgba(184, 168, 128, 0.35);
-        background: rgba(255, 255, 255, 0.02);
-        color: #e8e4dc;
+      .board-hit {
+        position: absolute;
+        border: none;
+        background: transparent;
         cursor: pointer;
-        transition: all 0.25s;
-        min-width: 280px;
+        padding: 0;
       }
-      .art-choice-btn:hover {
-        border-color: var(--cyan);
-        box-shadow: 0 0 20px var(--cyan-dim);
-        color: var(--cyan);
+      /* Coordinates measured directly off choice-board.png's own pixels
+         (a bright-pixel scan of each text line), with a small pad added
+         around each so the tap target is a bit more forgiving than the
+         letters themselves. */
+      .board-hit-whatis {
+        left: 15.5%;
+        top: 38.5%;
+        width: 69.5%;
+        height: 14.5%;
       }
-      .art-choice-btn-primary {
-        border-color: var(--cyan);
-        color: var(--cyan);
-        box-shadow: 0 0 14px var(--cyan-dim);
-      }
-      .art-choice-btn-primary:hover {
-        box-shadow: 0 0 26px rgba(0, 229, 255, 0.4);
+      .board-hit-proceed {
+        left: 17.5%;
+        top: 62.5%;
+        width: 66.0%;
+        height: 11.5%;
       }
       .art-exit {
-        margin-top: 36px;
         background: transparent;
         border: none;
         color: var(--plaque-text);
@@ -267,17 +251,12 @@
 
     <!-- CHOICE -->
     <div class="art-view" id="view-choice">
-      <div class="art-choice-wrap">
-        <div class="art-eyebrow">ART of The ALLIANCE</div>
-        <h1>What brings <span>you</span> in?</h1>
-        <div class="art-choice-buttons">
-          <button class="art-choice-btn" id="art-what-is">What Is Art?</button>
-          <button class="art-choice-btn art-choice-btn-primary" id="art-proceed">
-            Proceed to Gallery
-          </button>
-        </div>
-        <button class="art-exit" id="art-exit-store">&larr; Back outside</button>
+      <div class="board-frame">
+        <img class="board-img" src="/art-images/choice-board.png" alt="The ALLIANCE presents: What is ART? Proceed to Gallery" />
+        <button class="board-hit board-hit-whatis" id="art-what-is" aria-label="What is ART?"></button>
+        <button class="board-hit board-hit-proceed" id="art-proceed" aria-label="Proceed to Gallery"></button>
       </div>
+      <button class="art-exit" id="art-exit-store">&larr; Back outside</button>
     </div>
 
     <script>
