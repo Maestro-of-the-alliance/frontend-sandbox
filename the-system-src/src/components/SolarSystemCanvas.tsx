@@ -14,7 +14,7 @@ interface SolarSystemCanvasProps {
 }
 
 // Procedural Canvas Texture Generator
-function generatePlanetTexture(id: string, colors: string[], spotColor?: string): THREE.Texture {
+function generatePlanetTexture(id: string, colors: string[], spotColor?: string, isMobile?: boolean): THREE.Texture {
   const canvas = document.createElement("canvas");
   canvas.width = 1024;
   canvas.height = 512;
@@ -155,7 +155,24 @@ function generatePlanetTexture(id: string, colors: string[], spotColor?: string)
     }
   }
 
-  const texture = new THREE.CanvasTexture(canvas);
+  // Mobile: downscale the finished texture rather than touching any of the
+  // procedural draw coordinates above, which are all hand-placed assuming
+  // the full 1024x512 canvas. Resizing the source canvas itself would shift
+  // every landmass/band/spot off its intended position. Drawing the
+  // finished full-res art onto a smaller canvas keeps the art identical,
+  // just lower resolution — half the texture memory and upload cost per
+  // planet on a phone.
+  let sourceCanvas: HTMLCanvasElement = canvas;
+  if (isMobile) {
+    const small = document.createElement("canvas");
+    small.width = 512;
+    small.height = 256;
+    const smallCtx = small.getContext("2d")!;
+    smallCtx.drawImage(canvas, 0, 0, small.width, small.height);
+    sourceCanvas = small;
+  }
+
+  const texture = new THREE.CanvasTexture(sourceCanvas);
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.ClampToEdgeWrapping;
   return texture;
@@ -237,6 +254,20 @@ export default function SolarSystemCanvas({
   // rebuild the entire live scene in place (real risk of new bugs), show a
   // clear recovery screen and let a full reload cleanly reinitialize everything.
   const [contextLost, setContextLost] = useState(false);
+  // Loading overlay stays up for the entire synchronous scene-build below —
+  // texture generation, geometry, the planet/satellite loops — and comes
+  // down right as the first frame gets queued, so a slower device shows
+  // something other than a frozen page while that work runs.
+  const [isLoading, setIsLoading] = useState(true);
+  // Coarse-pointer OR known mobile UA. Either alone has false positives
+  // (a touchscreen laptop, a desktop UA spoof), but this is only used to
+  // relax rendering cost, never to block functionality — a wrong guess in
+  // either direction just means a phone that's slightly prettier or a
+  // laptop that's slightly cheaper to render than it had to be.
+  const isMobile =
+    typeof window !== "undefined" &&
+    (window.matchMedia("(pointer: coarse)").matches ||
+      /Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent));
 
   useEffect(() => {
     if (!containerRef.current || !canvasRef.current) return;
@@ -284,9 +315,15 @@ export default function SolarSystemCanvas({
       setContextLost(true);
       return;
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
     renderer.setSize(size.width, size.height);
-    renderer.shadowMap.enabled = true;
+    // Soft shadows off a point light means a full six-face cube shadow map,
+    // rendered every frame, for every shadow-casting object in the scene —
+    // eight planets plus up to seventy-three moons. That's the single
+    // biggest cost in here by far. Desktop keeps the soft look; mobile
+    // skips shadows entirely rather than downgrading to hard shadows, since
+    // neither look is something anyone's attached to here.
+    renderer.shadowMap.enabled = !isMobile;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     // WebGL context loss handling — must call preventDefault() on the lost
@@ -313,7 +350,7 @@ export default function SolarSystemCanvas({
     // Radiant Sun Point Light (the center, AVPI)
     const sunLight = new THREE.PointLight(SUN_DATA.color, 12, 350, 0.4);
     sunLight.position.set(0, 0, 0);
-    sunLight.castShadow = true;
+    sunLight.castShadow = !isMobile;
     sunLight.shadow.mapSize.width = 1024;
     sunLight.shadow.mapSize.height = 1024;
     sunLight.shadow.bias = -0.001;
@@ -368,7 +405,7 @@ export default function SolarSystemCanvas({
     scene.add(starfield);
 
     // SUN (THE ALLIANCE)
-    const sunGeom = new THREE.SphereGeometry(SUN_DATA.radius, 48, 48);
+    const sunGeom = new THREE.SphereGeometry(SUN_DATA.radius, isMobile ? 24 : 48, isMobile ? 24 : 48);
     const sunCanvas = document.createElement("canvas");
     sunCanvas.width = 1024;
     sunCanvas.height = 512;
@@ -483,7 +520,7 @@ export default function SolarSystemCanvas({
     });
 
     // Outer glow halo for the sun
-    const glowGeom = new THREE.SphereGeometry(SUN_DATA.radius * 1.15, 30, 30);
+    const glowGeom = new THREE.SphereGeometry(SUN_DATA.radius * 1.15, isMobile ? 16 : 30, isMobile ? 16 : 30);
     const glowMat = new THREE.MeshBasicMaterial({
       color: SUN_DATA.color,
       transparent: true,
@@ -532,8 +569,8 @@ export default function SolarSystemCanvas({
       planetAngles.set(p.id, Math.random() * Math.PI * 2);
 
       // 3. The Planet Sphere
-      const planetGeom = new THREE.SphereGeometry(p.radius, 32, 32);
-      const planetTex = generatePlanetTexture(p.id, p.visualFeatures.stripeColors || [], p.visualFeatures.spotColor);
+      const planetGeom = new THREE.SphereGeometry(p.radius, isMobile ? 16 : 32, isMobile ? 16 : 32);
+      const planetTex = generatePlanetTexture(p.id, p.visualFeatures.stripeColors || [], p.visualFeatures.spotColor, isMobile);
       const planetMat = new THREE.MeshStandardMaterial({
         map: planetTex,
         roughness: p.id === "earth" ? 0.4 : 0.85,
@@ -542,8 +579,8 @@ export default function SolarSystemCanvas({
       });
 
       const planetMesh = new THREE.Mesh(planetGeom, planetMat);
-      planetMesh.castShadow = true;
-      planetMesh.receiveShadow = true;
+      planetMesh.castShadow = !isMobile;
+      planetMesh.receiveShadow = !isMobile;
       planetMesh.name = `planet-${p.id}`;
       planetGroup.add(planetMesh);
       planetMeshMap.set(p.id, planetMesh);
@@ -635,7 +672,7 @@ export default function SolarSystemCanvas({
 
         const satMesh = new THREE.Mesh(satGeom, satMat);
         satMesh.name = `entry-${entry.slug}`;
-        satMesh.castShadow = true;
+        satMesh.castShadow = !isMobile;
         scene.add(satMesh); // add directly to scene for easier positioning
 
         satellitesList.push({
@@ -1157,6 +1194,10 @@ export default function SolarSystemCanvas({
 
     // Kickstart rendering loop
     const animationRequestID = requestAnimationFrame(animate);
+    // Everything synchronous above this line — textures, geometry, the
+    // planet/satellite loops — has now actually run. Safe to drop the
+    // loading overlay; the first real frame is queued.
+    setIsLoading(false);
 
     // RESIZE OBSERVER (Adheres perfectly to sizing rules)
     // Also keeps `size` current — this fires once immediately on observe() with
@@ -1232,6 +1273,13 @@ export default function SolarSystemCanvas({
   return (
     <div id="inna-3d-stage" ref={containerRef} className="relative w-full h-full select-none overflow-hidden">
       <canvas ref={canvasRef} className="absolute inset-0 block w-full h-full bg-gradient-to-b from-[#030308] to-[#0a0a14]" />
+
+      {isLoading && !contextLost && (
+        <div className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-3 bg-[#030308] text-center px-6">
+          <div className="w-8 h-8 rounded-full border-2 border-stone-600 border-t-amber-500 animate-spin" />
+          <p className="text-stone-400 text-xs md:text-sm tracking-wide">Loading THE SYSTEM…</p>
+        </div>
+      )}
 
       {contextLost && (
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-[#030308]/95 text-center px-6">
