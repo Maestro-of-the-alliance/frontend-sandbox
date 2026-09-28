@@ -18,12 +18,25 @@ body {
   color: #fff;
   font-family: "Oswald", sans-serif;
   overflow-x: hidden;
-  /* Defaults the page to 75% zoom on arrival -- the CSS zoom property
-     is non-standard but supported by all current major browsers
-     (Chrome, Edge, Safari, and modern Firefox). Visitors can still
-     zoom in/out normally from there; this only sets the starting
-     point. */
+}
+/* Defaults the page to 75% zoom on arrival -- the CSS zoom property is
+   non-standard but supported by all current major browsers (Chrome, Edge,
+   Safari, and modern Firefox). Visitors can still zoom in/out normally
+   from there; this only sets the starting point.
+
+   This used to sit directly on html/body. Moved onto this wrapper
+   instead, because `zoom` + a `position: fixed` descendant (the
+   hamburger button) is a known bad combination on iOS Safari --
+   WebKit computes the fixed element's position inconsistently once a
+   non-standard zoom is in play, so depending on how much the visitor
+   then pinch-zoomed on top of the page's own 0.75 default, the burger
+   could end up rendered somewhere off the visible area entirely. The
+   button lives as a sibling of this wrapper, outside the zoomed
+   subtree, so its fixed position is always computed against the real,
+   unscaled viewport regardless of what's happening inside here. */
+#zoom-wrap {
   zoom: 0.75;
+  min-height: 100%;
 }
 .nw-burger-btn {
   position: fixed;
