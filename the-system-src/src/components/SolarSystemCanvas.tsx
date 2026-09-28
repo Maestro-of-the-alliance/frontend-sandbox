@@ -13,6 +13,13 @@ interface SolarSystemCanvasProps {
   activeEntrySlug: string | null;
 }
 
+// The one satellite in encyclopedia.ts that never opens a normal entry page.
+// Tapped twice like any other satellite, but the second tap is intercepted
+// in handleSelect below and shows the discovery overlay instead of calling
+// onEntrySelect. No label anywhere hints at what it is -- it's meant to be
+// found, not announced.
+const HIDDEN_DISCOVERY_SLUG = "unmarked-threshold";
+
 // Procedural Canvas Texture Generator
 function generatePlanetTexture(id: string, colors: string[], spotColor?: string, isMobile?: boolean): THREE.Texture {
   const canvas = document.createElement("canvas");
@@ -259,6 +266,7 @@ export default function SolarSystemCanvas({
   // down right as the first frame gets queued, so a slower device shows
   // something other than a frozen page while that work runs.
   const [isLoading, setIsLoading] = useState(true);
+  const [showDiscovery, setShowDiscovery] = useState(false);
   // Coarse-pointer OR known mobile UA. Either alone has false positives
   // (a touchscreen laptop, a desktop UA spoof), but this is only used to
   // relax rendering cost, never to block functionality — a wrong guess in
@@ -800,6 +808,8 @@ export default function SolarSystemCanvas({
             // First tap: reveal the label only, don't navigate yet.
             tappedSatelliteSlug = slug;
             tappedPlanetId = null;
+          } else if (slug === HIDDEN_DISCOVERY_SLUG) {
+            setShowDiscovery(true);
           } else {
             propsRef.current.onEntrySelect(slug);
           }
@@ -1278,6 +1288,37 @@ export default function SolarSystemCanvas({
         <div className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-3 bg-[#030308] text-center px-6">
           <div className="w-8 h-8 rounded-full border-2 border-stone-600 border-t-amber-500 animate-spin" />
           <p className="text-stone-400 text-xs md:text-sm tracking-wide">Loading THE SYSTEM…</p>
+        </div>
+      )}
+
+      {showDiscovery && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-black/90 backdrop-blur-sm text-center px-6">
+          <div className="text-4xl text-amber-500 tracking-widest">Ω</div>
+          <p className="max-w-md text-stone-200 text-base md:text-lg leading-relaxed tracking-wide">
+            You have found the hidden planet.
+            <br />
+            Proceed?
+          </p>
+          <div className="flex gap-4">
+            <button
+              type="button"
+              onClick={() => setShowDiscovery(false)}
+              className="px-5 py-2 border border-stone-600 text-stone-400 text-sm tracking-wide hover:border-stone-400 hover:text-stone-200 transition-colors"
+            >
+              Not yet
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                // TEMPORARY destination -- swap this for wherever the real
+                // bridge/payphone scene ends up living once it's built.
+                window.location.href = "https://allianceftf.org/bridgekeeper/";
+              }}
+              className="px-5 py-2 border border-amber-600 text-amber-500 text-sm tracking-wide hover:bg-amber-600 hover:text-black transition-colors"
+            >
+              Proceed
+            </button>
+          </div>
         </div>
       )}
 

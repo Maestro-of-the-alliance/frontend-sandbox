@@ -837,6 +837,22 @@ export const PLANETARY_DIMENSIONS: PlanetaryDimension[] = [
         classification: "Sovereign Refugee",
         status: "Active",
       },
+      {
+        // Hidden discovery object -- deliberately unlisted, no clear path to
+        // it, placed here specifically because BEINGS carries the most
+        // satellites of any dimension (twenty), on David's own logic:
+        // anonymity in numbers. Intercepted in SolarSystemCanvas's click
+        // handler by slug -- never opens a normal entry page. See the
+        // handleSelect branch checking for HIDDEN_DISCOVERY_SLUG.
+        slug: "unmarked-threshold",
+        title: "Ω",
+        summary: "Unlogged.",
+        content: "Unlogged.",
+        coordinates: "??.??.??",
+        dateDiscovered: "UNRECORDED",
+        classification: "Anomaly",
+        status: "Undisclosed",
+      },
     ],
   },
   {
