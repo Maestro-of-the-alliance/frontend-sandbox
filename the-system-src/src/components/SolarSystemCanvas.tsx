@@ -849,6 +849,10 @@ export default function SolarSystemCanvas({
     let hoveredSatelliteSlug: string | null = null;
     let tappedPlanetId: string | null = null;
     let tappedSatelliteSlug: string | null = null;
+    // Tracks selectedPlanetId from the previous frame, purely to detect the
+    // exact moment a visitor backs all the way out of a planet (was some id,
+    // now null) -- see the reset in animate() below.
+    let prevSelectedPlanetId: string | null = null;
 
     // DRAG-TO-ORBIT + WHEEL-TO-ZOOM
     // The UI copy has always claimed "Drag background to orbit" — this wires that
@@ -1006,6 +1010,23 @@ export default function SolarSystemCanvas({
       // Read state safely from refs to bypass React closures
       const state = propsRef.current;
       const speed = state.simulationConfig.isPaused ? 0 : state.simulationConfig.speedFactor;
+
+      // Bug fix: backing all the way out of a planet (selectedPlanetId
+      // going from some id to null) previously left tappedPlanetId pointing
+      // at whatever was last tapped, since nothing ever cleared it. That
+      // planet's label kept showing in the wide system view indefinitely --
+      // reported as a dimension name "just floating around out there
+      // attached to nothing," since a visitor has no reason to expect a
+      // label from a planet they already backed out of. Only fire on the
+      // actual transition (previous frame had an id, this frame doesn't),
+      // never when selectedPlanetId is simply null from the start -- that
+      // would wipe the first-tap reveal every single frame during the
+      // normal two-tap sequence on a not-yet-selected planet.
+      if (prevSelectedPlanetId !== null && state.selectedPlanetId === null) {
+        tappedPlanetId = null;
+        tappedSatelliteSlug = null;
+      }
+      prevSelectedPlanetId = state.selectedPlanetId;
 
       // Satellite (entry node) orbit motion previously used the raw wall-clock
       // `elapsed` value, which never stops — so PAUSE stopped the planets but
