@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Bridge — N.C.E.ncyclopedia</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      background: #000;
+      color: #fff;
+      font-family: "Georgia", "Times New Roman", serif;
+      overflow: hidden;
+    }
+    #stage {
+      position: fixed;
+      inset: 0;
+      background: #000;
+    }
+    #intro-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    #still-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      display: none;
+    }
+    #overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.85) 100%);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 6vh 5vw;
+    }
+    #skip-intro {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      z-index: 20;
+      background: rgba(0,0,0,0.5);
+      color: #d6c9a3;
+      border: 1px solid rgba(214,201,163,0.4);
+      padding: 8px 14px;
+      font-family: sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 2px;
+    }
+    #skip-intro:hover { background: rgba(0,0,0,0.75); }
+
+    .card {
+      width: 100%;
+      max-width: 640px;
+      background: rgba(10,8,4,0.72);
+      border: 1px solid rgba(214,201,163,0.35);
+      border-radius: 6px;
+      padding: 28px 26px 22px;
+      backdrop-filter: blur(3px);
+    }
+    .progress {
+      font-family: sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #d6c9a3;
+      opacity: 0.75;
+      margin-bottom: 10px;
+    }
+    .question {
+      font-size: 1.15rem;
+      line-height: 1.5;
+      color: #f3ead8;
+      margin-bottom: 20px;
+    }
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .choice-btn {
+      text-align: left;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(214,201,163,0.3);
+      color: #f3ead8;
+      padding: 12px 16px;
+      font-family: "Georgia", serif;
+      font-size: 0.98rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .choice-btn:hover {
+      background: rgba(214,201,163,0.14);
+      border-color: rgba(214,201,163,0.7);
+    }
+    .choice-btn:disabled { cursor: default; opacity: 0.6; }
+
+    #result-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 18px;
+      max-width: 560px;
+    }
+    #result-title {
+      font-size: 1.6rem;
+      color: #f3ead8;
+      letter-spacing: 0.04em;
+    }
+    #result-sub {
+      font-size: 1rem;
+      color: #d6c9a3;
+      line-height: 1.6;
+    }
+    .fail #result-title { color: #c1121f; }
+  </style>
+</head>
+<body>
+  <div id="stage">
+    <video id="intro-video" src="/bridgekeeper/3-questions.mp4" muted playsinline autoplay></video>
+    <img id="still-bg" src="/bridgekeeper/papadomo-bridge-still.jpg" alt="" />
+    <button id="skip-intro" type="button">Skip</button>
+    <div id="overlay">
+      <div class="card" id="question-card">
+        <div class="progress" id="progress-label">Question 1 of 3</div>
+        <div class="question" id="question-text"></div>
+        <div class="choices" id="choices-list"></div>
+      </div>
+      <div class="card" id="result-screen">
+        <div id="result-title"></div>
+        <div id="result-sub"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/bridgekeeper/questions.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      var video = document.getElementById("intro-video");
+      var stillBg = document.getElementById("still-bg");
+      var overlay = document.getElementById("overlay");
+      var skipBtn = document.getElementById("skip-intro");
+      var questionCard = document.getElementById("question-card");
+      var resultScreen = document.getElementById("result-screen");
+      var progressLabel = document.getElementById("progress-label");
+      var questionText = document.getElementById("question-text");
+      var choicesList = document.getElementById("choices-list");
+      var resultTitle = document.getElementById("result-title");
+      var resultSub = document.getElementById("result-sub");
+
+      // TEMPORARY destinations -- update these once the real pages exist.
+      var HOLOSPHERE_URL = "/holosphere/";
+      var SUCCESS_NEXT_URL = null; // e.g. the payphone scene, once built
+
+      function shuffle(arr) {
+        var a = arr.slice();
+        for (var i = a.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+        }
+        return a;
+      }
+
+      function pickThreeQuestions() {
+        var pool = window.BRIDGEKEEPER_QUESTIONS || [];
+        return shuffle(pool).slice(0, 3);
+      }
+
+      function startQuestions() {
+        video.pause();
+        video.style.display = "none";
+        stillBg.style.display = "block";
+        skipBtn.style.display = "none";
+        overlay.style.display = "flex";
+
+        var questions = pickThreeQuestions();
+        var current = 0;
+
+        function renderQuestion() {
+          var qObj = questions[current];
+          progressLabel.textContent = "Question " + (current + 1) + " of " + questions.length;
+          questionText.textContent = qObj.q;
+          choicesList.innerHTML = "";
+
+          // Shuffle displayed choice order, tracking which shuffled index
+          // is the correct one.
+          var order = shuffle(qObj.choices.map(function (_, i) { return i; }));
+
+          order.forEach(function (originalIndex) {
+            var btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "choice-btn";
+            btn.textContent = qObj.choices[originalIndex];
+            btn.addEventListener("click", function () {
+              Array.prototype.forEach.call(
+                choicesList.querySelectorAll(".choice-btn"),
+                function (b) { b.disabled = true; }
+              );
+              if (originalIndex === qObj.correct) {
+                current += 1;
+                if (current >= questions.length) {
+                  showSuccess();
+                } else {
+                  setTimeout(renderQuestion, 250);
+                }
+              } else {
+                showFailure();
+              }
+            });
+            choicesList.appendChild(btn);
+          });
+        }
+
+        function showFailure() {
+          questionCard.style.display = "none";
+          resultScreen.style.display = "flex";
+          resultScreen.classList.add("fail");
+          resultTitle.textContent = "Cast into the HoloSphere.";
+          resultSub.textContent = "Wrong answer. Go read more. Come back when you know it.";
+          setTimeout(function () {
+            window.location.href = HOLOSPHERE_URL;
+          }, 2400);
+        }
+
+        function showSuccess() {
+          questionCard.style.display = "none";
+          resultScreen.style.display = "flex";
+          resultTitle.textContent = "You may cross.";
+          resultSub.textContent = SUCCESS_NEXT_URL
+            ? "Proceeding..."
+            : "The far side of the bridge isn't built yet. Come back soon.";
+          if (SUCCESS_NEXT_URL) {
+            setTimeout(function () {
+              window.location.href = SUCCESS_NEXT_URL;
+            }, 1600);
+          }
+        }
+
+        renderQuestion();
+      }
+
+      skipBtn.addEventListener("click", startQuestions);
+      video.addEventListener("ended", startQuestions);
+      // If the video can't load for any reason, don't strand the visitor.
+      video.addEventListener("error", startQuestions);
+    })();
+  </script>
+</body>
+</html>
