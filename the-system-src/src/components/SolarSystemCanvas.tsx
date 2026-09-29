@@ -267,6 +267,17 @@ export default function SolarSystemCanvas({
   // something other than a frozen page while that work runs.
   const [isLoading, setIsLoading] = useState(true);
   const [showDiscovery, setShowDiscovery] = useState(false);
+
+  // Debug preview only: ?reveal=unmarked-threshold force-opens the
+  // discovery overlay on load, for checking wording/art without hunting
+  // the actual satellite down in the scene. Never advertised, never
+  // linked from anywhere -- just a shortcut for testing.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("reveal") === HIDDEN_DISCOVERY_SLUG) {
+      setShowDiscovery(true);
+    }
+  }, []);
   // Coarse-pointer OR known mobile UA. Either alone has false positives
   // (a touchscreen laptop, a desktop UA spoof), but this is only used to
   // relax rendering cost, never to block functionality — a wrong guess in
