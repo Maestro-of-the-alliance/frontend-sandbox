@@ -1159,6 +1159,23 @@ export default function SolarSystemCanvas({
       cameraCurrentLook.lerp(cameraTargetLook, 0.08);
       camera.lookAt(cameraCurrentLook);
 
+      // camera.position.lerp() and camera.lookAt() above only update the
+      // camera's local position/quaternion -- its matrixWorld (what
+      // vecProj.project(camera) actually reads) doesn't get recomputed
+      // until Three.js walks the scene graph, which normally only happens
+      // inside renderer.render() a few lines down. Every projection below
+      // would therefore use the PREVIOUS frame's camera matrix -- the
+      // camera as it stood before this frame's lerp/lookAt, not after.
+      // Invisible when the camera is holding still (frame N looks the same
+      // as frame N-1), but during the zoom transition into or out of a
+      // planet -- exactly when the camera is moving fastest -- that
+      // one-frame lag becomes large enough to see: a label rendered at
+      // where its planet was a frame ago while the planet itself, drawn
+      // fresh by renderer.render() moments later, has already moved well
+      // past it. Forcing the recompute here, right after this frame's
+      // camera changes and before anything reads them, closes that gap.
+      camera.updateMatrixWorld();
+
       // 5. PROJECT 3D COORDINATES TO 2D SCREEN LABELS
       // Written directly to DOM refs (see planetLabelRefs/satLabelRefs above) —
       // no React state involved, so there's no render-commit lag between this
