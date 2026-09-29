@@ -803,22 +803,19 @@ export default function SolarSystemCanvas({
             },
           });
         } else if (hit.name.startsWith("planet-")) {
+          // Single tap now that every planet's neon sign is always up --
+          // the old first-tap-reveals-the-name step only made sense when
+          // labels were hidden until touched. With a persistent label
+          // there's nothing left for a first tap to reveal, so it just
+          // navigates straight in.
           const pid = hit.name.replace("planet-", "");
-          if (tappedPlanetId !== pid) {
-            // First tap: reveal the label only, don't transit yet. Replaces
-            // whatever was previously tapped-but-not-confirmed, rather than
-            // adding to a growing pile of revealed labels.
-            tappedPlanetId = pid;
-            tappedSatelliteSlug = null;
-          } else {
-            propsRef.current.onPlanetSelect(pid);
-          }
+          tappedSatelliteSlug = null;
+          propsRef.current.onPlanetSelect(pid);
         } else if (hit.name.startsWith("entry-")) {
           const slug = hit.name.replace("entry-", "");
           if (tappedSatelliteSlug !== slug) {
             // First tap: reveal the label only, don't navigate yet.
             tappedSatelliteSlug = slug;
-            tappedPlanetId = null;
           } else if (slug === HIDDEN_DISCOVERY_SLUG) {
             setShowDiscovery(true);
           } else {
@@ -827,6 +824,7 @@ export default function SolarSystemCanvas({
         }
       }
     };
+
 
     // Planet/satellite labels are hidden until interacted with, then need a
     // second tap to actually commit to selecting/navigating -- per request,
@@ -842,12 +840,14 @@ export default function SolarSystemCanvas({
     // which is exactly what piled up into unreadable overlapping text
     // the longer someone explored. A hovered id here always replaces
     // whatever was previously hovered, and clears on hover-out; a tapped
-    // id (the no-hover mobile equivalent) replaces the previous tapped id
-    // the moment a different target is tapped. At most one extra label
-    // beyond the actively selected planet's own is ever showing.
+    // slug (the no-hover mobile equivalent) replaces the previous tapped
+    // slug the moment a different target is tapped. Planets no longer have
+    // an equivalent -- their labels are persistent now (always drawn, see
+    // the neon-arc label section below), so there's nothing left for a tap
+    // to "reveal." Only satellites still use reveal-then-confirm, since
+    // their labels stay intentionally hidden until touched.
     let hoveredPlanetId: string | null = null;
     let hoveredSatelliteSlug: string | null = null;
-    let tappedPlanetId: string | null = null;
     let tappedSatelliteSlug: string | null = null;
     // Tracks selectedPlanetId from the previous frame, purely to detect the
     // exact moment a visitor backs all the way out of a planet (was some id,
@@ -1011,19 +1011,19 @@ export default function SolarSystemCanvas({
       const state = propsRef.current;
       const speed = state.simulationConfig.isPaused ? 0 : state.simulationConfig.speedFactor;
 
-      // Bug fix: backing all the way out of a planet (selectedPlanetId
-      // going from some id to null) previously left tappedPlanetId pointing
-      // at whatever was last tapped, since nothing ever cleared it. That
-      // planet's label kept showing in the wide system view indefinitely --
-      // reported as a dimension name "just floating around out there
-      // attached to nothing," since a visitor has no reason to expect a
-      // label from a planet they already backed out of. Only fire on the
-      // actual transition (previous frame had an id, this frame doesn't),
-      // never when selectedPlanetId is simply null from the start -- that
-      // would wipe the first-tap reveal every single frame during the
-      // normal two-tap sequence on a not-yet-selected planet.
+      // Backing all the way out of a planet (selectedPlanetId going from
+      // some id to null) should also drop any satellite that was
+      // tentatively tapped-but-not-confirmed inside it -- otherwise that
+      // moon's label could keep showing after leaving the planet it
+      // belongs to. This used to also guard a stale tappedPlanetId for
+      // planet labels; that entire mechanism is gone now that planet
+      // labels are persistent (always drawn, never tap-revealed), so
+      // there's no planet-side staleness left to clean up here. Only
+      // fire on the actual transition (previous frame had an id, this
+      // frame doesn't), never when selectedPlanetId is simply null from
+      // the start -- that would wipe a satellite's tentative reveal every
+      // single frame before a visitor got a second tap in.
       if (prevSelectedPlanetId !== null && state.selectedPlanetId === null) {
-        tappedPlanetId = null;
         tappedSatelliteSlug = null;
       }
       prevSelectedPlanetId = state.selectedPlanetId;
@@ -1179,25 +1179,36 @@ export default function SolarSystemCanvas({
         const sx = (vecProj.x * .5 + .5) * size.width;
         const sy = (-(vecProj.y * .5) + .5) * size.height;
 
-        // Labels are hidden until the visitor has actually interacted with
-        // that specific planet (hover preview on desktop, first tap on
-        // touch) -- previously every planet's label showed at once by
-        // default, which is what this replaces. Still shown while that
-        // planet is the actively selected/zoomed one even if hover/tap
-        // state has since moved elsewhere, so a selected planet never
-        // loses its own label out from under the visitor. hoveredPlanetId
-        // and tappedPlanetId each track only the single most-recent id
-        // (see their declaration above), so at most one extra label is
-        // ever showing beyond the selected planet's own.
-        const showLabel =
-          state.selectedPlanetId === p.id ||
-          hoveredPlanetId === p.id ||
-          tappedPlanetId === p.id;
-        const visible = isVisible && showLabel && state.simulationConfig.showLabels;
+        // Labels are persistent now -- always drawn, not revealed by hover
+        // or tap -- as a neon arc-sign that visually rings the planet's own
+        // top hemisphere (see the SVG label markup below), rather than a
+        // small floating badge with a thin connector line. Sized every
+        // frame from the planet's actual apparent screen radius, worked out
+        // via the standard perspective-projection relationship between its
+        // real (world-unit) radius, its distance from the camera, and the
+        // camera's vertical field of view -- the same way any 3D engine
+        // turns a world-space size into an on-screen one. This guarantees
+        // the sign's size and position track the planet exactly, at any
+        // zoom level, every single frame -- there's no separate "did it
+        // move" bookkeeping left to fall out of sync.
+        const distance = camera.position.distanceTo(group.position);
+        const fovRad = (camera.fov * Math.PI) / 180;
+        const apparentRadius =
+          (p.radius * size.height) / (2 * distance * Math.tan(fovRad / 2));
+
+        const visible = isVisible && state.simulationConfig.showLabels;
 
         el.style.display = visible ? "" : "none";
         if (visible) {
-          el.style.transform = `translate3d(${sx}px, ${sy - p.radius * 6 - 20}px, 0) translate(-50%, -100%)`;
+          // (120, 140) in the label's own 240x150 viewBox is where the arc's
+          // curvature is centered -- landing that exact point on the
+          // planet's own screen center (sx, sy) is what makes the arc hug
+          // the sphere as a halo instead of floating above it. -50%/-93.33%
+          // is that point's position as a fraction of the container's own
+          // box, which is what CSS translate() percentages are relative to.
+          el.style.width = `${apparentRadius * 2.4}px`;
+          el.style.height = `${apparentRadius * 1.5}px`;
+          el.style.transform = `translate3d(${sx}px, ${sy}px, 0) translate(-50%, -93.333%)`;
         }
       });
 
@@ -1379,8 +1390,15 @@ export default function SolarSystemCanvas({
 
       {/* HTML SCREEN LABELS (PROJECTED OVER 3D CANVAS) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden font-sans">
-        {/* Planet Labels — always rendered, position/visibility set imperatively
-            each frame via planetLabelRefs (see animate loop above) */}
+        {/* Planet Labels — persistent neon arc signs, always up, not
+            revealed by hover or tap. Position/size set imperatively each
+            frame via planetLabelRefs (see the animate loop above) using
+            the planet's real apparent screen radius, so the arc's own
+            curvature stays locked to the sphere at every zoom level
+            instead of reading as a separate floating caption. Style
+            replaces the previous glassmorphic badge + thin connector
+            line per Maestro's "Hitchhiker's Guide" reference image
+            (neon sign arcing over a planet, not a tag stuck beside it). */}
         {PLANETARY_DIMENSIONS.map((p) => (
           <div
             key={p.id}
@@ -1390,10 +1408,8 @@ export default function SolarSystemCanvas({
               else planetLabelRefs.current.delete(p.id);
             }}
             style={{ display: "none" }}
-            className={`absolute pointer-events-auto cursor-pointer flex flex-col items-center justify-center transition-all duration-300 ${
-              hoveredPlanetId === p.id || selectedPlanetId === p.id
-                ? "scale-105"
-                : "opacity-85 hover:opacity-100 scale-100"
+            className={`absolute pointer-events-auto cursor-pointer transition-transform duration-300 ${
+              hoveredPlanetId === p.id || selectedPlanetId === p.id ? "scale-105" : "scale-100"
             }`}
             onClick={(e) => {
               e.stopPropagation();
@@ -1402,23 +1418,54 @@ export default function SolarSystemCanvas({
             onMouseEnter={() => onPlanetHover(p.id)}
             onMouseLeave={() => onPlanetHover(null)}
           >
-            {/* Visual anchor line */}
-            <div className={`w-[1px] h-8 bg-gradient-to-t from-white/30 to-transparent mb-1 transition-all ${
-              hoveredPlanetId === p.id || selectedPlanetId === p.id ? "from-white/60" : ""
-            }`} />
-
-            {/* Glassmorphic Indicator — category/dimension only, no planet name */}
-            <div className={`flex flex-col items-center px-2.5 py-1 rounded border shadow-lg backdrop-blur-md transition-all duration-300 ${
-              selectedPlanetId === p.id
-                ? "bg-amber-500/10 border-amber-400 text-amber-300"
-                : hoveredPlanetId === p.id
-                ? "bg-white/10 border-white/35 text-white"
-                : "bg-black/40 border-white/15 text-white/90"
-            }`}>
-              <span className="text-xs font-semibold tracking-[0.18em] uppercase font-sans">
-                {p.dimension}
-              </span>
-            </div>
+            <svg viewBox="0 0 240 150" style={{ width: "100%", height: "100%", overflow: "visible" }}>
+              <defs>
+                <path id={`arc-path-${p.id}`} d="M 20 140 A 100 100 0 0 1 220 140" fill="none" />
+                {/* Layered blur + source pass -- a true SVG bloom filter
+                    rather than CSS text-shadow, which WebKit renders
+                    unreliably on SVG <text>. Mobile gets a lighter blur;
+                    same reasoning as the shadow/pixel-ratio cuts made for
+                    THE SYSTEM's mobile pass -- glow radius costs fill-rate,
+                    and eight of these run every frame. */}
+                <filter id={`neon-glow-${p.id}`} x="-60%" y="-60%" width="220%" height="220%">
+                  <feGaussianBlur stdDeviation={isMobile ? 2 : 3} result="blur1" />
+                  <feGaussianBlur stdDeviation={isMobile ? 5 : 9} result="blur2" />
+                  <feMerge>
+                    <feMergeNode in="blur2" />
+                    <feMergeNode in="blur1" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+              <text
+                fill={p.color}
+                filter={`url(#neon-glow-${p.id})`}
+                fontSize="26"
+                fontWeight="800"
+                letterSpacing="1"
+                style={{ fontFamily: "inherit" }}
+              >
+                {/* textLength forces every glyph to stretch to fill exactly
+                    that width -- correct for squeezing a long name like
+                    INFRASTRUCTURE down to fit the arc, but disastrous on a
+                    short one like BEINGS, which would get stretched to the
+                    same span and come out as smeared, overlapping letters.
+                    Only apply it when the name's estimated natural width
+                    (a rough per-character average for this weight/size)
+                    would actually overrun the arc -- short names render at
+                    their own natural width instead, still centered. */}
+                <textPath
+                  href={`#arc-path-${p.id}`}
+                  startOffset="50%"
+                  textAnchor="middle"
+                  {...(p.dimension.length * 15.5 > 185
+                    ? { textLength: "185", lengthAdjust: "spacingAndGlyphs" }
+                    : {})}
+                >
+                  {p.dimension}
+                </textPath>
+              </text>
+            </svg>
           </div>
         ))}
 
