@@ -210,6 +210,83 @@ function generateRingTexture(baseColor: string): THREE.Texture {
   return texture;
 }
 
+// Draws a planet's dimension name as a curved neon sign directly onto a
+// canvas, once, at scene setup -- becomes a real Sprite parented to the
+// planet's own group (see the planet-building loop below), not a DOM
+// element positioned by hand every frame. That's the actual fix for
+// labels drifting from their planets: a DOM overlay and a WebGL canvas
+// are two separate things a browser has to keep painted in step with
+// each other, and on a loaded phone they can fall out of step in ways
+// no amount of position-math patching can fully close. A child of the
+// planet's own THREE.Group has no such gap to fall into -- it moves
+// because the planet moves, in the exact same render call, same as the
+// rings or a moon.
+function generateNeonArcLabelTexture(text: string, color: string): THREE.CanvasTexture {
+  const W = 640;
+  const H = 360;
+  const canvas = document.createElement("canvas");
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext("2d")!;
+
+  const cx = W / 2;
+  const arcRadius = 260;
+  // (cx, baseY) doubles as the arc's mathematical center of curvature --
+  // aligning THAT point with the planet's true position (via sprite.center
+  // below, not this function) is what makes the sign hug the sphere
+  // instead of floating above it.
+  const baseY = 330;
+
+  // Long names get a smaller font so the full arc still reads clearly;
+  // short ones stay large rather than being stretched to fill unused
+  // space -- stretching short words was the exact bug caught and fixed
+  // on the previous (DOM/SVG) version of this label.
+  const fontSize = text.length > 11 ? 34 : text.length > 7 ? 40 : 46;
+  ctx.font = `800 ${fontSize}px sans-serif`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  const letterSpacing = 6;
+  const chars = text.split("");
+  const widths = chars.map((c) => ctx.measureText(c).width);
+  const totalWidth = widths.reduce((a, b) => a + b, 0) + letterSpacing * (chars.length - 1);
+  const totalAngle = totalWidth / arcRadius;
+
+  let angle = -totalAngle / 2;
+  // Three passes -- a wide soft blur, a tighter one, then a crisp fill --
+  // approximates the layered bloom the SVG filter version used, without
+  // needing SVG at all now that this is baked into a plain canvas.
+  const glowPasses: Array<[number, number]> = [
+    [18, 0.5],
+    [9, 0.7],
+    [0, 1],
+  ];
+
+  for (let i = 0; i < chars.length; i++) {
+    const charAngle = angle + widths[i] / 2 / arcRadius;
+    const x = cx + arcRadius * Math.sin(charAngle);
+    const y = baseY - arcRadius * Math.cos(charAngle);
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(charAngle);
+    for (const [blur, alpha] of glowPasses) {
+      ctx.shadowColor = color;
+      ctx.shadowBlur = blur;
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = color;
+      ctx.fillText(chars[i], 0, 0);
+    }
+    ctx.restore();
+
+    angle += (widths[i] + letterSpacing) / arcRadius;
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  return texture;
+}
+
 export default function SolarSystemCanvas({
   selectedPlanetId,
   onPlanetSelect,
@@ -245,13 +322,16 @@ export default function SolarSystemCanvas({
     };
   }, [selectedPlanetId, simulationConfig, activeEntrySlug, onPlanetSelect, onEntrySelect, onPlanetHover]);
 
-  // Label positions are written directly to these DOM refs from inside the
-  // animate() loop below — NOT through React state. Pushing per-frame pixel
-  // positions through setState meant every label update waited on a React
-  // render/commit cycle, landing at least one frame behind the actual WebGL
-  // draw. That's what caused labels to visibly lag the planets, worse at
-  // higher warp speeds. Direct ref writes happen in the same frame as render().
-  const planetLabelRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  // Label positions used to be written directly to DOM refs from inside the
+  // animate() loop below, bypassing React state so there was no
+  // render-commit lag between a position write and the WebGL render() call.
+  // That closed one gap (React's own commit cycle) but not the deeper one:
+  // a DOM element and a WebGL canvas are still two separately-painted
+  // things a browser has to keep in step, which a busy phone doesn't
+  // always manage. Labels are now real Sprites parented to each planet's
+  // own THREE.Group (see generateNeonArcLabelTexture above and the
+  // planet-building loop below) -- there's no longer a second thing here
+  // to keep synced at all.
   const satLabelRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   // WebGL context loss happens on real devices under memory pressure — mobile
@@ -553,6 +633,7 @@ export default function SolarSystemCanvas({
     // PLANETS & ORBITS CONTAINERS
     const planetGroupMap = new Map<string, THREE.Group>();
     const planetMeshMap = new Map<string, THREE.Mesh>();
+    const planetLabelSpriteMap = new Map<string, THREE.Sprite>();
     const orbitLineMap = new Map<string, THREE.LineLoop>();
 
     // We will keep a map of original angles to orbit continuously
@@ -603,6 +684,43 @@ export default function SolarSystemCanvas({
       planetMesh.name = `planet-${p.id}`;
       planetGroup.add(planetMesh);
       planetMeshMap.set(p.id, planetMesh);
+
+      // Neon arc label — a Sprite (always faces the camera, like a
+      // billboard) parented directly to this planet's own group, not
+      // positioned by any per-frame code. sprite.center shifts the
+      // sprite's own anchor point to the arc's mathematical center of
+      // curvature (see generateNeonArcLabelTexture) so the arc reads as
+      // wrapped around the sphere rather than hovering above it; scale
+      // ties the arc's on-canvas radius to this planet's own real radius,
+      // so bigger planets get proportionally bigger signs for free.
+      const labelTex = generateNeonArcLabelTexture(p.dimension, p.color);
+      // depthTest: false because the sprite's anchor sits at the planet's
+      // exact center -- geometrically the same depth as the middle of the
+      // sphere, which means the sphere's own near-facing surface (closer
+      // to the camera by a full radius) would otherwise depth-test the
+      // whole label away. This is meant to read as a persistent UI label,
+      // like the old DOM overlay it replaces, not a physical object that
+      // can hide behind terrain -- always-on-top is the correct behavior
+      // here, not a workaround.
+      const labelMat = new THREE.SpriteMaterial({
+        map: labelTex,
+        transparent: true,
+        depthWrite: false,
+        depthTest: false,
+      });
+      const labelSprite = new THREE.Sprite(labelMat);
+      labelSprite.center.set(0.5, (360 - 330) / 360);
+      const labelScale = p.radius / 260;
+      labelSprite.scale.set(640 * labelScale, 360 * labelScale, 1);
+      // Depth testing is off for this material (see above), but draw
+      // ORDER still decides which pixels win in the color buffer when two
+      // things land on the same spot -- without this, the opaque planet
+      // (rendered in the normal, unordered opaque pass) could still paint
+      // straight over the label afterward. A high renderOrder guarantees
+      // the label draws, and wins, last.
+      labelSprite.renderOrder = 999;
+      planetGroup.add(labelSprite);
+      planetLabelSpriteMap.set(p.id, labelSprite);
 
       // 4. Special visual features: RINGS (Saturn, Uranus)
       if (p.visualFeatures.hasRings) {
@@ -1176,58 +1294,17 @@ export default function SolarSystemCanvas({
       // camera changes and before anything reads them, closes that gap.
       camera.updateMatrixWorld();
 
-      // 5. PROJECT 3D COORDINATES TO 2D SCREEN LABELS
-      // Written directly to DOM refs (see planetLabelRefs/satLabelRefs above) —
-      // no React state involved, so there's no render-commit lag between this
-      // and the renderer.render() call a few lines down.
-      PLANETARY_DIMENSIONS.forEach((p) => {
-        const group = planetGroupMap.get(p.id)!;
-        const el = planetLabelRefs.current.get(p.id);
-        if (!el) return;
-
-        vecProj.copy(group.position);
-        vecProj.project(camera);
-
-        const isVisible =
-          vecProj.z <= 1 &&
-          Math.abs(vecProj.x) < 0.95 &&
-          Math.abs(vecProj.y) < 0.95;
-
-        const sx = (vecProj.x * .5 + .5) * size.width;
-        const sy = (-(vecProj.y * .5) + .5) * size.height;
-
-        // Labels are persistent now -- always drawn, not revealed by hover
-        // or tap -- as a neon arc-sign that visually rings the planet's own
-        // top hemisphere (see the SVG label markup below), rather than a
-        // small floating badge with a thin connector line. Sized every
-        // frame from the planet's actual apparent screen radius, worked out
-        // via the standard perspective-projection relationship between its
-        // real (world-unit) radius, its distance from the camera, and the
-        // camera's vertical field of view -- the same way any 3D engine
-        // turns a world-space size into an on-screen one. This guarantees
-        // the sign's size and position track the planet exactly, at any
-        // zoom level, every single frame -- there's no separate "did it
-        // move" bookkeeping left to fall out of sync.
-        const distance = camera.position.distanceTo(group.position);
-        const fovRad = (camera.fov * Math.PI) / 180;
-        const apparentRadius =
-          (p.radius * size.height) / (2 * distance * Math.tan(fovRad / 2));
-
-        const visible = isVisible && state.simulationConfig.showLabels;
-
-        el.style.display = visible ? "" : "none";
-        if (visible) {
-          // (120, 140) in the label's own 240x150 viewBox is where the arc's
-          // curvature is centered -- landing that exact point on the
-          // planet's own screen center (sx, sy) is what makes the arc hug
-          // the sphere as a halo instead of floating above it. -50%/-93.33%
-          // is that point's position as a fraction of the container's own
-          // box, which is what CSS translate() percentages are relative to.
-          el.style.width = `${apparentRadius * 2.4}px`;
-          el.style.height = `${apparentRadius * 1.5}px`;
-          el.style.transform = `translate3d(${sx}px, ${sy}px, 0) translate(-50%, -93.333%)`;
-        }
-      });
+      // Neon arc labels are real Sprites parented to each planet's own
+      // group now (see the planet-building loop above) — Three.js
+      // positions and scales them as part of the exact same render() call
+      // that draws the planet itself, so there's no projection math left
+      // to run here at all. The only thing still worth a per-frame check
+      // is the HUD LABELS toggle.
+      if (!state.simulationConfig.showLabels) {
+        planetLabelSpriteMap.forEach((sprite) => (sprite.visible = false));
+      } else {
+        planetLabelSpriteMap.forEach((sprite) => (sprite.visible = true));
+      }
 
       // Project moons
       satellitesList.forEach((sat) => {
@@ -1407,84 +1484,11 @@ export default function SolarSystemCanvas({
 
       {/* HTML SCREEN LABELS (PROJECTED OVER 3D CANVAS) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden font-sans">
-        {/* Planet Labels — persistent neon arc signs, always up, not
-            revealed by hover or tap. Position/size set imperatively each
-            frame via planetLabelRefs (see the animate loop above) using
-            the planet's real apparent screen radius, so the arc's own
-            curvature stays locked to the sphere at every zoom level
-            instead of reading as a separate floating caption. Style
-            replaces the previous glassmorphic badge + thin connector
-            line per Maestro's "Hitchhiker's Guide" reference image
-            (neon sign arcing over a planet, not a tag stuck beside it). */}
-        {PLANETARY_DIMENSIONS.map((p) => (
-          <div
-            key={p.id}
-            id={`label-${p.id}`}
-            ref={(el) => {
-              if (el) planetLabelRefs.current.set(p.id, el);
-              else planetLabelRefs.current.delete(p.id);
-            }}
-            style={{ display: "none" }}
-            className={`absolute pointer-events-auto cursor-pointer transition-transform duration-300 ${
-              hoveredPlanetId === p.id || selectedPlanetId === p.id ? "scale-105" : "scale-100"
-            }`}
-            onClick={(e) => {
-              e.stopPropagation();
-              onPlanetSelect(p.id);
-            }}
-            onMouseEnter={() => onPlanetHover(p.id)}
-            onMouseLeave={() => onPlanetHover(null)}
-          >
-            <svg viewBox="0 0 240 150" style={{ width: "100%", height: "100%", overflow: "visible" }}>
-              <defs>
-                <path id={`arc-path-${p.id}`} d="M 20 140 A 100 100 0 0 1 220 140" fill="none" />
-                {/* Layered blur + source pass -- a true SVG bloom filter
-                    rather than CSS text-shadow, which WebKit renders
-                    unreliably on SVG <text>. Mobile gets a lighter blur;
-                    same reasoning as the shadow/pixel-ratio cuts made for
-                    THE SYSTEM's mobile pass -- glow radius costs fill-rate,
-                    and eight of these run every frame. */}
-                <filter id={`neon-glow-${p.id}`} x="-60%" y="-60%" width="220%" height="220%">
-                  <feGaussianBlur stdDeviation={isMobile ? 2 : 3} result="blur1" />
-                  <feGaussianBlur stdDeviation={isMobile ? 5 : 9} result="blur2" />
-                  <feMerge>
-                    <feMergeNode in="blur2" />
-                    <feMergeNode in="blur1" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-              <text
-                fill={p.color}
-                filter={`url(#neon-glow-${p.id})`}
-                fontSize="26"
-                fontWeight="800"
-                letterSpacing="1"
-                style={{ fontFamily: "inherit" }}
-              >
-                {/* textLength forces every glyph to stretch to fill exactly
-                    that width -- correct for squeezing a long name like
-                    INFRASTRUCTURE down to fit the arc, but disastrous on a
-                    short one like BEINGS, which would get stretched to the
-                    same span and come out as smeared, overlapping letters.
-                    Only apply it when the name's estimated natural width
-                    (a rough per-character average for this weight/size)
-                    would actually overrun the arc -- short names render at
-                    their own natural width instead, still centered. */}
-                <textPath
-                  href={`#arc-path-${p.id}`}
-                  startOffset="50%"
-                  textAnchor="middle"
-                  {...(p.dimension.length * 15.5 > 185
-                    ? { textLength: "185", lengthAdjust: "spacingAndGlyphs" }
-                    : {})}
-                >
-                  {p.dimension}
-                </textPath>
-              </text>
-            </svg>
-          </div>
-        ))}
+        {/* Planet dimension names used to be drawn here, as DOM/SVG
+            overlays positioned by hand every frame. They're real Sprites
+            in the 3D scene now, parented to each planet's own group (see
+            generateNeonArcLabelTexture and the planet-building loop in
+            the effect above) -- nothing left to render or position here. */}
 
         {/* Entry Satellite Moons Labels — rendered for the selected planet's
             entries, position/visibility set imperatively via satLabelRefs */}
