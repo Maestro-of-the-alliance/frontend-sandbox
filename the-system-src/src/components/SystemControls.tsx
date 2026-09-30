@@ -39,12 +39,13 @@ export default function SystemControls({
   onChange,
   selectedPlanetId,
 }: SystemControlsProps) {
-  // Used to default to collapsed on narrow viewports (a small round icon
-  // needing its own tap to expand before you could even see Pause). Maestro
-  // asked for the pause control specifically to be front and center and
-  // easy to find, not one tap further away than the site's own hamburger
-  // menu -- starting expanded everywhere is what that actually means.
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  // Collapses into a small icon on narrow viewports by default -- this is
+  // the full settings panel (warp speed, orbit grids, HUD labels), which
+  // Maestro was fine with staying tucked away. The dedicated standalone
+  // pause button below is the separate thing he actually asked for.
+  const [isCollapsed, setIsCollapsed] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 768 : false
+  );
   const [pos, setPos] = useState(defaultPosition);
 
   // defaultPosition()'s canvas-top lookup runs as a useState initializer,
@@ -118,6 +119,34 @@ export default function SystemControls({
     onChange({ ...config, isPaused: !config.isPaused });
   };
 
+  // A small standalone pause/play button, icon only, no label, no panel
+  // chrome -- separate from the settings panel above and always visible
+  // regardless of whether that panel is collapsed or expanded. This is
+  // the thing Maestro actually asked for: not the full panel opened by
+  // default, just one dedicated button, off in a corner by itself, doing
+  // one job. Bottom-left keeps it clear of the settings panel (which
+  // anchors top-left/top-right) and off to the side of any planet a
+  // visitor might be trying to tap.
+  const standalonePauseButton = (
+    <button
+      id="btn-standalone-pause"
+      onClick={togglePlay}
+      style={{ position: "fixed", left: MARGIN, bottom: MARGIN }}
+      className={`p-3.5 rounded-full border backdrop-blur-2xl transition-all cursor-pointer shadow-[0_0_20px_rgba(0,0,0,0.5)] z-30 flex items-center justify-center ${
+        config.isPaused
+          ? "bg-amber-500 border-amber-400 text-black hover:bg-amber-400"
+          : "bg-[#0d0e15]/95 border-[#1a1c25]/80 text-amber-500 hover:text-amber-400 hover:bg-[#151824]/95"
+      }`}
+      title={config.isPaused ? "Resume" : "Pause"}
+    >
+      {config.isPaused ? (
+        <Play className="w-5 h-5 fill-current" />
+      ) : (
+        <Pause className="w-5 h-5 fill-current" />
+      )}
+    </button>
+  );
+
   const toggleOrbits = () => {
     onChange({ ...config, showOrbits: !config.showOrbits });
   };
@@ -132,20 +161,25 @@ export default function SystemControls({
 
   if (isCollapsed) {
     return (
-      <button
-        id="btn-expand-controls"
-        onClick={() => setIsCollapsed(false)}
-        style={{ position: "fixed", left: pos.x, top: pos.y }}
-        className="p-4 rounded-full border border-[#1a1c25]/80 bg-[#0d0e15]/95 hover:bg-[#151824]/95 text-amber-500 hover:text-amber-400 backdrop-blur-2xl transition-all cursor-pointer shadow-[0_0_20px_rgba(0,0,0,0.5)] z-30 flex items-center justify-center group"
-        title="Expand Simulation Controls"
-      >
-        <Sliders className="w-5 h-5 group-hover:scale-110 transition-transform" />
-      </button>
+      <>
+        {standalonePauseButton}
+        <button
+          id="btn-expand-controls"
+          onClick={() => setIsCollapsed(false)}
+          style={{ position: "fixed", left: pos.x, top: pos.y }}
+          className="p-4 rounded-full border border-[#1a1c25]/80 bg-[#0d0e15]/95 hover:bg-[#151824]/95 text-amber-500 hover:text-amber-400 backdrop-blur-2xl transition-all cursor-pointer shadow-[0_0_20px_rgba(0,0,0,0.5)] z-30 flex items-center justify-center group"
+          title="Expand Simulation Controls"
+        >
+          <Sliders className="w-5 h-5 group-hover:scale-110 transition-transform" />
+        </button>
+      </>
     );
   }
 
   return (
-    <div
+    <>
+      {standalonePauseButton}
+      <div
       id="system-controls-hud"
       style={{
         position: "fixed",
@@ -270,5 +304,6 @@ export default function SystemControls({
         )}
       </div>
     </div>
+    </>
   );
 }
