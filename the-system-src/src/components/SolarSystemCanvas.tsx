@@ -240,8 +240,12 @@ function generateNeonArcLabelTexture(text: string, color: string): THREE.CanvasT
   // Long names get a smaller font so the full arc still reads clearly;
   // short ones stay large rather than being stretched to fill unused
   // space -- stretching short words was the exact bug caught and fixed
-  // on the previous (DOM/SVG) version of this label.
-  const fontSize = text.length > 11 ? 34 : text.length > 7 ? 40 : 46;
+  // on the previous (DOM/SVG) version of this label. Bumped up a tier
+  // across the board (was 34/40/46) -- Maestro's own phone screenshots
+  // showed some names (COVENANT, INFRASTRUCTURE) reading thin and small
+  // at ordinary viewing distance, legible only on the one planet that
+  // happened to be close to camera at the time.
+  const fontSize = text.length > 11 ? 42 : text.length > 7 ? 50 : 58;
   ctx.font = `800 ${fontSize}px sans-serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
@@ -255,10 +259,13 @@ function generateNeonArcLabelTexture(text: string, color: string): THREE.CanvasT
   let angle = -totalAngle / 2;
   // Three passes -- a wide soft blur, a tighter one, then a crisp fill --
   // approximates the layered bloom the SVG filter version used, without
-  // needing SVG at all now that this is baked into a plain canvas.
+  // needing SVG at all now that this is baked into a plain canvas. Outer
+  // blur eased back some (was 18) -- at small render sizes the wide glow
+  // was bleeding into the letterforms themselves and reading as thin/
+  // fuzzy rather than bold, which was part of the legibility complaint.
   const glowPasses: Array<[number, number]> = [
-    [18, 0.5],
-    [9, 0.7],
+    [13, 0.45],
+    [7, 0.65],
     [0, 1],
   ];
 
@@ -710,7 +717,7 @@ export default function SolarSystemCanvas({
       });
       const labelSprite = new THREE.Sprite(labelMat);
       labelSprite.center.set(0.5, (360 - 330) / 360);
-      const labelScale = p.radius / 260;
+      const labelScale = p.radius / 220;
       labelSprite.scale.set(640 * labelScale, 360 * labelScale, 1);
       // Depth testing is off for this material (see above), but draw
       // ORDER still decides which pixels win in the color buffer when two
@@ -926,9 +933,19 @@ export default function SolarSystemCanvas({
           // labels were hidden until touched. With a persistent label
           // there's nothing left for a first tap to reveal, so it just
           // navigates straight in.
+          //
+          // Tapping the ALREADY-selected planet again backs out to the
+          // wide view instead of just re-selecting the same thing --
+          // otherwise the only way out was scrolling the sidebar all the
+          // way down to a "return to solar system" button, which is a bad
+          // trade for something that should be as quick as getting in.
           const pid = hit.name.replace("planet-", "");
           tappedSatelliteSlug = null;
-          propsRef.current.onPlanetSelect(pid);
+          if (propsRef.current.selectedPlanetId === pid) {
+            propsRef.current.onPlanetSelect(null);
+          } else {
+            propsRef.current.onPlanetSelect(pid);
+          }
         } else if (hit.name.startsWith("entry-")) {
           const slug = hit.name.replace("entry-", "");
           if (tappedSatelliteSlug !== slug) {

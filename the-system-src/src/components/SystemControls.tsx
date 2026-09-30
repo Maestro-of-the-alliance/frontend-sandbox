@@ -20,7 +20,17 @@ function defaultPosition() {
   // scene tends to be emptiest — bottom placement collided with planet/orbit
   // labels on mobile, especially in portrait.
   const x = vw < 768 ? MARGIN : Math.max(MARGIN, vw - PANEL_WIDTH - MARGIN);
-  const y = 120;
+  // On mobile the sidebar stacks ABOVE the canvas (flex-col), and this
+  // panel is fixed-positioned relative to the whole viewport, not to the
+  // canvas it visually belongs to -- a hardcoded y here was landing right
+  // inside the sidebar's own header block, underneath its text, which is
+  // exactly why Maestro never found a pause control at all on his phone.
+  // Anchoring to the actual rendered top of #threejs-container (App.tsx's
+  // canvas wrapper) keeps this correct regardless of how tall the sidebar
+  // ends up being, rather than guessing a pixel value that only matches
+  // today's layout.
+  const canvasTop = document.getElementById("threejs-container")?.getBoundingClientRect().top;
+  const y = vw < 768 && canvasTop != null ? canvasTop + MARGIN : 120;
   return { x, y: Math.min(y, Math.max(MARGIN, vh - 200)) };
 }
 
@@ -29,10 +39,28 @@ export default function SystemControls({
   onChange,
   selectedPlanetId,
 }: SystemControlsProps) {
-  const [isCollapsed, setIsCollapsed] = useState(() =>
-    typeof window !== "undefined" ? window.innerWidth < 768 : false
-  );
+  // Used to default to collapsed on narrow viewports (a small round icon
+  // needing its own tap to expand before you could even see Pause). Maestro
+  // asked for the pause control specifically to be front and center and
+  // easy to find, not one tap further away than the site's own hamburger
+  // menu -- starting expanded everywhere is what that actually means.
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [pos, setPos] = useState(defaultPosition);
+
+  // defaultPosition()'s canvas-top lookup runs as a useState initializer,
+  // which fires during render -- before #threejs-container has actually
+  // been committed to the real DOM, so document.getElementById always
+  // came back null there and silently fell back to the hardcoded guess
+  // that caused the sidebar overlap in the first place. Correcting it
+  // here, in an effect that runs once after mount, is what actually gets
+  // the real measured position.
+  useEffect(() => {
+    if (window.innerWidth >= 768) return;
+    const canvasTop = document.getElementById("threejs-container")?.getBoundingClientRect().top;
+    if (canvasTop == null) return;
+    setPos((p) => ({ ...p, y: Math.min(canvasTop + MARGIN, Math.max(MARGIN, window.innerHeight - 200)) }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const dragRef = useRef<{ dragging: boolean; startX: number; startY: number; origX: number; origY: number }>({
     dragging: false,
     startX: 0,
@@ -237,7 +265,7 @@ export default function SystemControls({
           </p>
         ) : (
           <p>
-            ★ Tap a planet to reveal it, tap again to transit in. Drag background to orbit.
+            ★ Tap a planet to transit in, tap it again to return. Drag background to orbit.
           </p>
         )}
       </div>
