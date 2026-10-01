@@ -790,18 +790,34 @@ export default function SolarSystemCanvas({
         // Different shapes for high-tech satellite nodes: Octahedron, Tetrahedron, Icosahedron, Torus
         let satGeom: THREE.BufferGeometry;
         const size = p.radius * 0.16;
-        switch (idx % 4) {
-          case 0:
-            satGeom = new THREE.OctahedronGeometry(size);
-            break;
-          case 1:
-            satGeom = new THREE.TetrahedronGeometry(size);
-            break;
-          case 2:
-            satGeom = new THREE.IcosahedronGeometry(size);
-            break;
-          default:
-            satGeom = new THREE.TorusGeometry(size * 0.8, size * 0.25, 6, 12);
+        if (entry.slug === HIDDEN_DISCOVERY_SLUG) {
+          // The hidden discovery satellite gets its own standalone shape,
+          // not one of the four regular satellites cycle through -- it's
+          // the one that leads to the bridgekeeper gate, so it should
+          // feel like a genuinely different kind of thing sitting among
+          // the ordinary ones, not just another instance of the same
+          // four shapes repeating. A torus knot reads as a twisted
+          // ring/gate shape, which fits "threshold" thematically, and
+          // its silhouette doesn't resemble any of the other four at a
+          // glance. Color and material stay identical to its planet's
+          // other satellites though -- the anonymity is still the point,
+          // it should take a real look to notice, not announce itself
+          // from across the scene.
+          satGeom = new THREE.TorusKnotGeometry(size * 0.55, size * 0.18, 64, 8);
+        } else {
+          switch (idx % 4) {
+            case 0:
+              satGeom = new THREE.OctahedronGeometry(size);
+              break;
+            case 1:
+              satGeom = new THREE.TetrahedronGeometry(size);
+              break;
+            case 2:
+              satGeom = new THREE.IcosahedronGeometry(size);
+              break;
+            default:
+              satGeom = new THREE.TorusGeometry(size * 0.8, size * 0.25, 6, 12);
+          }
         }
 
         const satMat = new THREE.MeshStandardMaterial({
