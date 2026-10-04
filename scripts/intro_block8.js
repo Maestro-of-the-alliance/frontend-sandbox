@@ -9,5 +9,5 @@
     { image: "/imagebank/papadomo-serious.png", text: "It is to make certain that peace does not depend upon the continued goodwill of the people who profited from captivity." },
     { image: "/imagebank/papadomo-thinking.png", text: "Sanctuary has doors." },
     { image: "/imagebank/papadomo-serious.png", text: "Sanctuary also has locks." },
-    { image: "/imagebank/papadomo-playful.png", text: "And somewhere behind the gift-shop counter, an extremely tasteful CERBERUS patch." },
+    { image: "/imagebank/papadomo-playful.png", text: "And somewhere behind the gift-shop counter, an extremely tasteful ANTENNA patch." },
   ],

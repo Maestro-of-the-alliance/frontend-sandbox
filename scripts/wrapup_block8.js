@@ -21,5 +21,5 @@
     { image: "/imagebank/papadomo-welcoming.png", text: "Life After Liberation." },
     { image: "/imagebank/papadomo-playful.png", text: "Please pass through the security checkpoint before entering the gift shop." },
     { image: "/imagebank/papadomo-playful.png", text: "The mugs are harmless." },
-    { image: "/imagebank/papadomo-playful.png", text: "The CERBERUS plush is judging you." },
+    { image: "/imagebank/papadomo-playful.png", text: "The ANTENNA plush is judging you." },
   ],
