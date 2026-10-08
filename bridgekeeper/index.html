@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>The Bridge — N.C.E.ncyclopedia</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -12,140 +12,154 @@
       color: #fff;
       font-family: "Georgia", "Times New Roman", serif;
       overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
     }
-    #stage {
-      position: fixed;
-      inset: 0;
-      background: #000;
-    }
-    #intro-video {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    #still-bg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center 30%;
-      display: none;
-    }
-    #overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.85) 100%);
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-      padding: 6vh 5vw;
-    }
-    #skip-intro {
-      position: absolute;
-      top: 18px;
-      right: 18px;
-      z-index: 20;
-      background: rgba(0,0,0,0.5);
-      color: #d6c9a3;
-      border: 1px solid rgba(214,201,163,0.4);
-      padding: 8px 14px;
-      font-family: sans-serif;
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      cursor: pointer;
-      border-radius: 2px;
-    }
-    #skip-intro:hover { background: rgba(0,0,0,0.75); }
+    #stage { position: fixed; inset: 0; background: #000; }
 
-    .card {
-      width: 100%;
-      max-width: 640px;
-      background: rgba(10,8,4,0.72);
-      border: 1px solid rgba(214,201,163,0.35);
-      border-radius: 6px;
-      padding: 28px 26px 22px;
-      backdrop-filter: blur(3px);
+    /* The bridge video is ultra-wide (2920x1080). #box is sized to its exact
+       aspect ratio so the question text and the phone hotspot line up with
+       the picture at any window size. */
+    #box { position: absolute; background: #000; }
+    #v-main { position: absolute; inset: 0; width: 100%; height: 100%; display: block; background: #000; }
+    #still-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
+
+    /* Full-stage clips */
+    .full-video {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: contain; background: #000; display: none; z-index: 8;
     }
-    .progress {
-      font-family: sans-serif;
-      font-size: 0.7rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: #d6c9a3;
-      opacity: 0.75;
-      margin-bottom: 10px;
+
+    /* ---------- Question panel ---------- */
+    #qpanel { position: absolute; display: none; z-index: 10; }
+    #qpanel .progress {
+      font-family: sans-serif; letter-spacing: 0.15em; text-transform: uppercase;
     }
-    .question {
-      font-size: 1.15rem;
-      line-height: 1.5;
-      color: #f3ead8;
-      margin-bottom: 20px;
-    }
-    .choices {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .choice-btn {
-      text-align: left;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(214,201,163,0.3);
-      color: #f3ead8;
-      padding: 12px 16px;
-      font-family: "Georgia", serif;
-      font-size: 0.98rem;
-      border-radius: 4px;
-      cursor: pointer;
+    #qpanel .choices { display: flex; flex-direction: column; }
+    #qpanel .choice-btn {
+      text-align: left; font-family: "Georgia", serif; cursor: pointer;
       transition: background 0.15s, border-color 0.15s;
     }
-    .choice-btn:hover {
-      background: rgba(214,201,163,0.14);
-      border-color: rgba(214,201,163,0.7);
-    }
-    .choice-btn:disabled { cursor: default; opacity: 0.6; }
+    #qpanel .choice-btn:disabled { cursor: default; }
 
+    /* Card mode (phones, portrait, narrow windows) */
+    #qpanel.card-mode {
+      left: 0; right: 0; bottom: 0; margin: 0 auto; width: 100%; max-width: 640px;
+      padding: 0 12px calc(12px + env(safe-area-inset-bottom));
+    }
+    #qpanel.card-mode .inner {
+      background: rgba(10,8,4,0.86); border: 1px solid rgba(214,201,163,0.4);
+      border-radius: 6px; padding: 18px 18px 14px; max-height: 62vh; overflow-y: auto;
+      backdrop-filter: blur(3px);
+    }
+    #qpanel.card-mode .progress { font-size: 0.68rem; color: #d6c9a3; opacity: 0.8; margin-bottom: 8px; }
+    #qpanel.card-mode .question { font-size: 1.05rem; line-height: 1.45; color: #f3ead8; margin-bottom: 14px; }
+    #qpanel.card-mode .choices { gap: 9px; }
+    #qpanel.card-mode .choice-btn {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(214,201,163,0.3);
+      color: #f3ead8; padding: 11px 14px; font-size: 0.95rem; border-radius: 4px;
+    }
+    #qpanel.card-mode .choice-btn:hover { background: rgba(214,201,163,0.16); border-color: rgba(214,201,163,0.7); }
+
+    /* Scroll mode (wide windows): text sits on the parchment in the video.
+       Sizes are set in px by JS from the video width. */
+    #qpanel.scroll-mode .inner { height: 100%; display: flex; flex-direction: column; justify-content: center; }
+    #qpanel.scroll-mode .progress { color: #6b4a22; margin-bottom: 0.7em; font-size: 0.62em; text-align: center; }
+    #qpanel.scroll-mode .question { color: #3a2410; line-height: 1.35; margin-bottom: 0.9em; font-weight: bold; text-align: center; }
+    #qpanel.scroll-mode .choices { gap: 0.5em; }
+    #qpanel.scroll-mode .choice-btn {
+      background: rgba(120,80,30,0.08); border: 2px solid rgba(90,56,20,0.55);
+      color: #3a2410; padding: 0.55em 0.8em; font-size: 0.82em; line-height: 1.25;
+    }
+    #qpanel.scroll-mode .choice-btn:hover { background: rgba(120,80,30,0.2); border-color: #5a3814; }
+    #qpanel .choice-btn.right { border-color: #2d8a46 !important; background: rgba(45,138,70,0.25) !important; }
+
+    /* ---------- Phone hotspot ---------- */
+    #phone-hot {
+      position: absolute; left: 43.5%; top: 0; width: 16.5%; height: 80%;
+      display: none; z-index: 9; background: transparent; border: 0; cursor: pointer; outline: none;
+    }
+    #phone-hot .ring {
+      position: absolute; left: 50%; top: 34%; width: 34%; aspect-ratio: 1; transform: translate(-50%,-50%);
+      border-radius: 50%; border: 2px solid rgba(255,214,120,0.9);
+      box-shadow: 0 0 18px rgba(255,200,90,0.7);
+      animation: ringpulse 1.1s ease-out infinite;
+    }
+    #phone-hot .ring.r2 { animation-delay: 0.55s; }
+    @keyframes ringpulse {
+      0%   { transform: translate(-50%,-50%) scale(0.5); opacity: 0.95; }
+      100% { transform: translate(-50%,-50%) scale(1.9); opacity: 0; }
+    }
+    #phone-hot:hover, #phone-hot:focus-visible { background: rgba(255,214,120,0.07); }
+    #phone-label {
+      position: absolute; left: 43.5%; width: 16.5%; top: 82%; display: none; z-index: 9;
+      text-align: center; font-family: sans-serif; letter-spacing: 0.18em; text-transform: uppercase;
+      color: #ffe3a3; font-weight: bold; text-shadow: 0 0 6px #000, 0 0 12px #000; pointer-events: none;
+      animation: blink 1.1s steps(2, jump-none) infinite;
+    }
+    @keyframes blink { 0% { opacity: 1; } 100% { opacity: 0.35; } }
+
+    /* ---------- Gate / skip / result ---------- */
+    #skip-intro {
+      position: absolute; top: calc(14px + env(safe-area-inset-top)); right: 14px; z-index: 20;
+      background: rgba(0,0,0,0.5); color: #d6c9a3; border: 1px solid rgba(214,201,163,0.4);
+      padding: 8px 14px; font-family: sans-serif; font-size: 0.75rem; letter-spacing: 0.08em;
+      text-transform: uppercase; cursor: pointer; border-radius: 2px;
+    }
+    #skip-intro:hover { background: rgba(0,0,0,0.75); }
+    #gate {
+      position: absolute; inset: 0; z-index: 30; background: #000;
+      display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 22px;
+    }
+    #gate-btn {
+      background: transparent; color: #f3ead8; border: 1px solid rgba(214,201,163,0.6);
+      padding: 16px 30px; font-family: "Georgia", serif; font-size: 1.1rem; letter-spacing: 0.12em;
+      text-transform: uppercase; cursor: pointer; border-radius: 3px;
+    }
+    #gate-btn:hover { background: rgba(214,201,163,0.14); }
+    #gate-note { font-family: sans-serif; font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: #8d8468; }
     #result-screen {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      gap: 18px;
-      max-width: 560px;
+      position: absolute; left: 0; right: 0; bottom: 8vh; z-index: 15; display: none;
+      flex-direction: column; align-items: center; text-align: center; gap: 12px; padding: 0 6vw;
+      text-shadow: 0 2px 12px #000;
     }
-    #result-title {
-      font-size: 1.6rem;
-      color: #f3ead8;
-      letter-spacing: 0.04em;
-    }
-    #result-sub {
-      font-size: 1rem;
-      color: #d6c9a3;
-      line-height: 1.6;
-    }
-    .fail #result-title { color: #c1121f; }
+    #result-title { font-size: 1.6rem; color: #f3ead8; letter-spacing: 0.04em; }
+    #result-sub { font-size: 1rem; color: #d6c9a3; line-height: 1.6; }
+    #result-screen.fail #result-title { color: #e0303d; }
   </style>
 </head>
 <body>
   <div id="stage">
-    <video id="intro-video" src="/bridgekeeper/3-questions.mp4" muted playsinline autoplay></video>
     <img id="still-bg" src="/bridgekeeper/papadomo-bridge-still.jpg" alt="" />
-    <button id="skip-intro" type="button">Skip</button>
-    <div id="overlay">
-      <div class="card" id="question-card">
-        <div class="progress" id="progress-label">Question 1 of 3</div>
+
+    <div id="box">
+      <video id="v-main" playsinline webkit-playsinline preload="auto"></video>
+      <button id="phone-hot" type="button" aria-label="Answer the phone">
+        <span class="ring"></span><span class="ring r2"></span>
+      </button>
+      <div id="phone-label">Answer it</div>
+    </div>
+
+    <video id="v-wrong" class="full-video" playsinline webkit-playsinline preload="auto"></video>
+    <video id="v-cele" class="full-video" playsinline webkit-playsinline preload="none"></video>
+
+    <div id="qpanel">
+      <div class="inner">
+        <div class="progress" id="progress-label"></div>
         <div class="question" id="question-text"></div>
         <div class="choices" id="choices-list"></div>
       </div>
-      <div class="card" id="result-screen">
-        <div id="result-title"></div>
-        <div id="result-sub"></div>
-      </div>
+    </div>
+
+    <div id="result-screen">
+      <div id="result-title"></div>
+      <div id="result-sub"></div>
+    </div>
+
+    <button id="skip-intro" type="button">Skip</button>
+
+    <div id="gate">
+      <button id="gate-btn" type="button">Approach the bridge</button>
+      <div id="gate-note">Sound on</div>
     </div>
   </div>
 
@@ -154,22 +168,49 @@
     (function () {
       "use strict";
 
-      var video = document.getElementById("intro-video");
-      var stillBg = document.getElementById("still-bg");
-      var overlay = document.getElementById("overlay");
-      var skipBtn = document.getElementById("skip-intro");
-      var questionCard = document.getElementById("question-card");
-      var resultScreen = document.getElementById("result-screen");
-      var progressLabel = document.getElementById("progress-label");
-      var questionText = document.getElementById("question-text");
-      var choicesList = document.getElementById("choices-list");
-      var resultTitle = document.getElementById("result-title");
-      var resultSub = document.getElementById("result-sub");
+      // ---- Media (Cloudflare R2, nce-media bucket) ----
+      var R2 = "https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/";
+      var SRC_MAIN  = R2 + "bridge-of-seth.mp4";
+      var SRC_WRONG = R2 + "wrong.mp4";
+      var SRC_CELE  = R2 + "celebration.mp4";
+
+      // ---- Timeline of bridge-of-seth.mp4 (seconds) ----
+      var PAUSE_AT   = [34.09, 37.07, 39.12]; // questions 1, 2, 3
+      var PHONE_AT   = 108.0;  // phone booth is on screen and settled from here
+      var LOOP_START = 109.6;  // ringing hold: loops LOOP_START -> LOOP_END
+      var LOOP_END   = 114.0;  //   until the phone is clicked
+      var FRAME      = 0.017;  // fire a hair early so we land on the right frame
 
       // TEMPORARY destinations -- update these once the real pages exist.
       var HOLOSPHERE_URL = "/holosphere/";
       var SUCCESS_NEXT_URL = null; // e.g. the payphone scene, once built
 
+      var stage = document.getElementById("stage");
+      var box = document.getElementById("box");
+      var vMain = document.getElementById("v-main");
+      var vWrong = document.getElementById("v-wrong");
+      var vCele = document.getElementById("v-cele");
+      var stillBg = document.getElementById("still-bg");
+      var phoneHot = document.getElementById("phone-hot");
+      var phoneLabel = document.getElementById("phone-label");
+      var qpanel = document.getElementById("qpanel");
+      var progressLabel = document.getElementById("progress-label");
+      var questionText = document.getElementById("question-text");
+      var choicesList = document.getElementById("choices-list");
+      var resultScreen = document.getElementById("result-screen");
+      var resultTitle = document.getElementById("result-title");
+      var resultSub = document.getElementById("result-sub");
+      var skipBtn = document.getElementById("skip-intro");
+      var gate = document.getElementById("gate");
+      var gateBtn = document.getElementById("gate-btn");
+
+      var questions = [];
+      var qIndex = 0;
+      var phase = "gate"; // gate | intro | asking | tail | failed | celebrating | done
+      var degraded = false; // main video couldn't load
+      var frameHandle = null;
+
+      // ---------- helpers ----------
       function shuffle(arr) {
         var a = arr.slice();
         for (var i = a.length - 1; i > 0; i--) {
@@ -178,89 +219,238 @@
         }
         return a;
       }
-
       function pickThreeQuestions() {
         var pool = window.BRIDGEKEEPER_QUESTIONS || [];
         return shuffle(pool).slice(0, 3);
       }
 
-      function startQuestions() {
-        video.pause();
-        video.style.display = "none";
-        stillBg.style.display = "block";
-        skipBtn.style.display = "none";
-        overlay.style.display = "flex";
+      // ---------- layout ----------
+      var ASPECT = 2920 / 1080;
+      // Parchment scroll inside the video, as fractions of the video frame.
+      var SCROLL = { x: 0.328, y: 0.07, w: 0.268, h: 0.82 };
+      function isScrollMode() {
+        return !degraded && window.innerWidth >= 900 && window.innerWidth / window.innerHeight >= 1.5;
+      }
+      function layout() {
+        var W = window.innerWidth, H = window.innerHeight;
+        var bw = Math.min(W, H * ASPECT), bh = bw / ASPECT;
+        box.style.width = bw + "px"; box.style.height = bh + "px";
+        box.style.left = ((W - bw) / 2) + "px"; box.style.top = ((H - bh) / 2) + "px";
+        phoneLabel.style.fontSize = Math.max(10, bw * 0.0095) + "px";
 
-        var questions = pickThreeQuestions();
-        var current = 0;
+        if (isScrollMode()) {
+          qpanel.className = "scroll-mode";
+          qpanel.style.left = (box.offsetLeft + bw * SCROLL.x) + "px";
+          qpanel.style.top = (box.offsetTop + bh * SCROLL.y) + "px";
+          qpanel.style.width = (bw * SCROLL.w) + "px";
+          qpanel.style.height = (bh * SCROLL.h) + "px";
+          qpanel.style.right = "auto"; qpanel.style.bottom = "auto";
+          qpanel.style.maxWidth = "none"; qpanel.style.padding = "0";
+          fitScrollText(bw);
+        } else {
+          qpanel.className = "card-mode";
+          qpanel.removeAttribute("style");
+          qpanel.style.display = qpanelShown ? "block" : "none";
+          qpanel.style.fontSize = "";
+          questionText.style.fontSize = "";
+        }
+      }
+      function fitScrollText(bw) {
+        var fs = Math.max(11, bw * 0.0125);
+        qpanel.style.fontSize = fs + "px";
+        var inner = qpanel.firstElementChild;
+        var guard = 40;
+        while (guard-- > 0 && fs > 9 && inner.scrollHeight > qpanel.clientHeight + 1) {
+          fs -= 0.75; qpanel.style.fontSize = fs + "px";
+        }
+        questionText.style.fontSize = "1.12em";
+      }
+      window.addEventListener("resize", layout);
+      window.addEventListener("orientationchange", layout);
 
-        function renderQuestion() {
-          var qObj = questions[current];
-          progressLabel.textContent = "Question " + (current + 1) + " of " + questions.length;
-          questionText.textContent = qObj.q;
-          choicesList.innerHTML = "";
-
-          // Shuffle displayed choice order, tracking which shuffled index
-          // is the correct one.
-          var order = shuffle(qObj.choices.map(function (_, i) { return i; }));
-
-          order.forEach(function (originalIndex) {
-            var btn = document.createElement("button");
-            btn.type = "button";
-            btn.className = "choice-btn";
-            btn.textContent = qObj.choices[originalIndex];
-            btn.addEventListener("click", function () {
-              Array.prototype.forEach.call(
-                choicesList.querySelectorAll(".choice-btn"),
-                function (b) { b.disabled = true; }
-              );
-              if (originalIndex === qObj.correct) {
-                current += 1;
-                if (current >= questions.length) {
-                  showSuccess();
-                } else {
-                  setTimeout(renderQuestion, 250);
-                }
-              } else {
-                showFailure();
-              }
-            });
-            choicesList.appendChild(btn);
+      // ---------- question panel ----------
+      var qpanelShown = false;
+      function showPanel(show) {
+        qpanelShown = show;
+        qpanel.style.display = show ? "block" : "none";
+        if (show) layout();
+      }
+      function renderQuestion(i) {
+        var qObj = questions[i];
+        progressLabel.textContent = "Question " + (i + 1) + " of " + questions.length;
+        questionText.textContent = qObj.q;
+        choicesList.innerHTML = "";
+        var order = shuffle(qObj.choices.map(function (_, k) { return k; }));
+        order.forEach(function (originalIndex) {
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "choice-btn";
+          btn.textContent = qObj.choices[originalIndex];
+          btn.addEventListener("click", function () {
+            Array.prototype.forEach.call(choicesList.querySelectorAll(".choice-btn"),
+              function (b) { b.disabled = true; });
+            if (originalIndex === qObj.correct) {
+              btn.classList.add("right");
+              setTimeout(function () { answeredRight(); }, 380);
+            } else {
+              answeredWrong();
+            }
           });
-        }
-
-        function showFailure() {
-          questionCard.style.display = "none";
-          resultScreen.style.display = "flex";
-          resultScreen.classList.add("fail");
-          resultTitle.textContent = "Cast into the HoloSphere.";
-          resultSub.textContent = "Wrong answer. Go read more. Come back when you know it.";
-          setTimeout(function () {
-            window.location.href = HOLOSPHERE_URL;
-          }, 2400);
-        }
-
-        function showSuccess() {
-          questionCard.style.display = "none";
-          resultScreen.style.display = "flex";
-          resultTitle.textContent = "You may cross.";
-          resultSub.textContent = SUCCESS_NEXT_URL
-            ? "Proceeding..."
-            : "The far side of the bridge isn't built yet. Come back soon.";
-          if (SUCCESS_NEXT_URL) {
-            setTimeout(function () {
-              window.location.href = SUCCESS_NEXT_URL;
-            }, 1600);
-          }
-        }
-
-        renderQuestion();
+          choicesList.appendChild(btn);
+        });
+        showPanel(true);
       }
 
-      skipBtn.addEventListener("click", startQuestions);
-      video.addEventListener("ended", startQuestions);
-      // If the video can't load for any reason, don't strand the visitor.
-      video.addEventListener("error", startQuestions);
+      // ---------- frame-accurate playback watcher ----------
+      function stopWatch() {
+        if (frameHandle !== null) {
+          if (vMain.cancelVideoFrameCallback && frameHandle.v) vMain.cancelVideoFrameCallback(frameHandle.id);
+          else if (frameHandle.raf) cancelAnimationFrame(frameHandle.id);
+          frameHandle = null;
+        }
+      }
+      function watch() {
+        stopWatch();
+        if (vMain.requestVideoFrameCallback) {
+          frameHandle = { v: true, id: vMain.requestVideoFrameCallback(function (now, meta) {
+            frameHandle = null; tick(meta.mediaTime); if (!vMain.paused) watch();
+          }) };
+        } else {
+          frameHandle = { raf: true, id: requestAnimationFrame(function () {
+            frameHandle = null; tick(vMain.currentTime); if (!vMain.paused) watch();
+          }) };
+        }
+      }
+      function tick(t) {
+        if (phase === "intro" && qIndex < PAUSE_AT.length && t >= PAUSE_AT[qIndex] - FRAME) {
+          vMain.pause();
+          phase = "asking";
+          renderQuestion(qIndex);
+          skipBtn.style.display = "none";
+        } else if (phase === "tail") {
+          if (t >= PHONE_AT) showPhone(true);
+          if (t >= LOOP_END) { vMain.currentTime = LOOP_START; }
+        }
+      }
+      vMain.addEventListener("playing", watch);
+      vMain.addEventListener("pause", stopWatch);
+      vMain.addEventListener("ended", function () {
+        if (phase === "tail") { vMain.currentTime = LOOP_START; vMain.play(); }
+      });
+      // belt and braces if frame callbacks are throttled (background tab etc.)
+      vMain.addEventListener("timeupdate", function () { if (!frameHandle) tick(vMain.currentTime); });
+
+      function showPhone(show) {
+        phoneHot.style.display = show ? "block" : "none";
+        phoneLabel.style.display = show ? "block" : "none";
+      }
+
+      // ---------- flow ----------
+      function begin(seekTo) {
+        gate.style.display = "none";
+        phase = "intro";
+        questions = pickThreeQuestions();
+        qIndex = 0;
+        vMain.src = SRC_MAIN;
+        if (seekTo) {
+          vMain.addEventListener("loadedmetadata", function once() {
+            vMain.removeEventListener("loadedmetadata", once);
+            vMain.currentTime = seekTo;
+          });
+        }
+        var p = vMain.play();
+        if (p && p.catch) p.catch(function () { /* fall through to error handler */ });
+      }
+
+      function answeredRight() {
+        showPanel(false);
+        qIndex += 1;
+        if (degraded) {
+          if (qIndex >= questions.length) return celebrate();
+          return renderQuestion(qIndex);
+        }
+        if (qIndex >= questions.length) {
+          phase = "tail";
+          vCele.preload = "auto"; vCele.src = SRC_CELE; vCele.load(); // warm it up
+        } else {
+          phase = "intro";
+        }
+        vMain.play();
+      }
+
+      function answeredWrong() {
+        showPanel(false);
+        phase = "failed";
+        vMain.pause();
+        resultScreen.className = "fail";
+        resultTitle.textContent = "Cast into the HoloSphere.";
+        resultSub.textContent = "Wrong answer. Go read more. Come back when you know it.";
+        var go = function () {
+          resultScreen.style.display = "flex";
+          setTimeout(function () { window.location.href = HOLOSPHERE_URL; }, 2400);
+        };
+        if (degraded) return go();
+        vWrong.style.display = "block";
+        vWrong.addEventListener("ended", go, { once: true });
+        vWrong.addEventListener("error", go, { once: true });
+        vWrong.currentTime = 0;
+        var p = vWrong.play();
+        if (p && p.catch) p.catch(go);
+      }
+
+      function celebrate() {
+        phase = "celebrating";
+        showPhone(false);
+        stopWatch();
+        vMain.pause();
+        skipBtn.style.display = "none";
+        if (!vCele.src) { vCele.src = SRC_CELE; }
+        vCele.style.display = "block";
+        var done = function () { finish(); };
+        vCele.addEventListener("ended", done, { once: true });
+        vCele.addEventListener("error", done, { once: true });
+        var p = vCele.play();
+        if (p && p.catch) p.catch(done);
+      }
+
+      function finish() {
+        phase = "done";
+        resultScreen.className = "";
+        resultTitle.textContent = "You may cross.";
+        resultSub.textContent = SUCCESS_NEXT_URL
+          ? "Proceeding..."
+          : "The far side of the bridge isn't built yet. Come back soon.";
+        resultScreen.style.display = "flex";
+        if (SUCCESS_NEXT_URL) {
+          setTimeout(function () { window.location.href = SUCCESS_NEXT_URL; }, 1600);
+        }
+      }
+
+      phoneHot.addEventListener("click", function () { if (phase === "tail") celebrate(); });
+
+      // Skip: jump straight to question 1 (the video seeks to the pause point
+      // and the normal timeline takes over).
+      skipBtn.addEventListener("click", function () {
+        if (phase === "gate") return begin(PAUSE_AT[0] - 0.3);
+        if (phase === "intro" && qIndex === 0) vMain.currentTime = PAUSE_AT[0] - 0.3;
+      });
+      gateBtn.addEventListener("click", function () { begin(0); });
+
+      // If the main video can't load, don't strand the visitor: questions on the still.
+      vMain.addEventListener("error", function () {
+        if (degraded || phase === "gate") return;
+        degraded = true;
+        stillBg.style.display = "block";
+        box.style.display = "none";
+        skipBtn.style.display = "none";
+        phase = "asking";
+        layout();
+        renderQuestion(qIndex);
+      });
+
+      // Preload the short wrong clip right away.
+      vWrong.src = SRC_WRONG;
+      layout();
     })();
   </script>
 </body>
