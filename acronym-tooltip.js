@@ -93,17 +93,22 @@
   function injectStyles() {
     var css = [
       ".acr-term{font-weight:700;border-bottom:1px dotted currentColor;cursor:help;position:relative;}",
-      ".acr-term .acr-tooltip{position:absolute;left:50%;bottom:100%;transform:translate(-50%,4px);",
+      ".acr-term{--arrow-shift:0px;}",
+      ".acr-term .acr-tooltip{position:absolute;left:50%;bottom:100%;",
+      "transform:translateY(4px);margin-left:-120px;",
       "margin-bottom:8px;background:#1a1208;color:#f4e9d8;padding:8px 12px;border-radius:8px;",
       "font-size:13px;font-weight:400;line-height:1.4;width:max-content;max-width:min(240px,85vw);",
       "text-align:left;opacity:0;pointer-events:none;transition:opacity .15s ease, transform .15s ease;",
       "box-shadow:0 4px 14px rgba(0,0,0,.35);z-index:9999;border:1px solid rgba(212,175,55,.4);}",
-      ".acr-term .acr-tooltip::after{content:'';position:absolute;top:100%;left:50%;",
+      ".acr-term .acr-tooltip::after{content:'';position:absolute;top:100%;",
+      "left:calc(50% - var(--arrow-shift));",
       "transform:translateX(-50%);border:5px solid transparent;border-top-color:#1a1208;}",
       "@media (hover:hover) and (pointer:fine){",
-      ".acr-term:hover .acr-tooltip,.acr-term:focus .acr-tooltip{opacity:1;transform:translate(-50%,0);pointer-events:auto;}",
+      ".acr-term:hover .acr-tooltip,.acr-term:focus .acr-tooltip{opacity:1;",
+      "transform:translateY(0);pointer-events:auto;}",
       "}",
-      ".acr-term.acr-active .acr-tooltip{opacity:1;transform:translate(-50%,0);pointer-events:auto;}"
+      ".acr-term.acr-active .acr-tooltip{opacity:1;",
+      "transform:translateY(0);pointer-events:auto;}"
     ].join("");
     var style = document.createElement("style");
     style.setAttribute("data-acr-tooltip", "1");
@@ -208,6 +213,65 @@
     });
   }
 
+  // The tooltip is CSS-centered on the term by default (--tip-shift: 0).
+  // Right before it actually becomes visible, measure where it would land
+  // and, if centering would push either edge past the viewport, shift it
+  // sideways just enough to stay fully on screen. The little pointing
+  // arrow gets the opposite shift applied to its own position so it
+  // keeps pointing at the real term instead of drifting off with the body.
+  var EDGE_MARGIN = 10;
+
+  function repositionTooltip(term) {
+    var tip = term.querySelector(".acr-tooltip");
+    if (!tip) return;
+    // Horizontal position is set directly as a plain left/margin-left pixel
+    // value rather than through transform, specifically because transform
+    // has a CSS transition on it for the fade/slide-in effect -- changing
+    // a value that feeds transform via calc() got caught in that 150ms
+    // transition instead of applying instantly, so a freshly computed
+    // correction was still mid-animation (showing something close to the
+    // old, wrong position) whenever anything measured it shortly after.
+    // left/margin-left aren't transitioned, so this takes effect at once.
+    var tipWidth = tip.offsetWidth; // layout width, unaffected by any transform
+    var termRect = term.getBoundingClientRect();
+    var naturalCenter = termRect.left + termRect.width / 2;
+    var desiredLeft = naturalCenter - tipWidth / 2;
+    var desiredRight = desiredLeft + tipWidth;
+    if (desiredLeft < EDGE_MARGIN) {
+      desiredLeft = EDGE_MARGIN;
+    } else if (desiredRight > window.innerWidth - EDGE_MARGIN) {
+      desiredLeft = window.innerWidth - EDGE_MARGIN - tipWidth;
+    }
+    // tip is positioned absolute relative to term (term has position:relative),
+    // so convert the desired viewport position into term-relative coordinates.
+    var relativeLeft = desiredLeft - termRect.left;
+    tip.style.left = relativeLeft + "px";
+    tip.style.marginLeft = "0px";
+    // Keep the little arrow pointing at the actual term center regardless
+    // of how far the tooltip body itself had to shift to stay on screen.
+    var arrowShift = naturalCenter - (termRect.left + relativeLeft + tipWidth / 2);
+    term.style.setProperty("--arrow-shift", arrowShift + "px");
+  }
+
+  function wireReposition() {
+    document.addEventListener(
+      "mouseenter",
+      function (e) {
+        var el = e.target.closest && e.target.closest(".acr-term");
+        if (el) repositionTooltip(el);
+      },
+      true,
+    );
+    document.addEventListener(
+      "focus",
+      function (e) {
+        var el = e.target.closest && e.target.closest(".acr-term");
+        if (el) repositionTooltip(el);
+      },
+      true,
+    );
+  }
+
   function wireTapToggle() {
     document.addEventListener("click", function (e) {
       var hit = e.target.closest && e.target.closest(".acr-term");
@@ -215,6 +279,7 @@
         if (el !== hit) el.classList.remove("acr-active");
       });
       if (hit) {
+        repositionTooltip(hit);
         hit.classList.toggle("acr-active");
       }
     });
@@ -247,6 +312,7 @@
     var matches = collectMatches(patterns);
     var selected = pickSelected(matches);
     applyWraps(matches, selected);
+    wireReposition();
     wireTapToggle();
   }
 

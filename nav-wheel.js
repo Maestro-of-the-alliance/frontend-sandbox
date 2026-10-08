@@ -233,7 +233,7 @@
 
     .nw-bottom-nav {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 28px 24px 40px; margin-top: 40px;
+      padding: 28px 24px 40px; margin-top: 12px;
       border-top: 1px solid var(--nw-nav-accent-faint); background: transparent;
     }
     .nw-bottom-nav a {
@@ -242,8 +242,8 @@
       transition: color 0.2s, transform 0.2s; cursor: pointer;
     }
     .nw-bottom-nav a:hover, .nw-bottom-nav a:active { color: var(--nw-nav-accent); transform: scale(1.05); }
-    .nw-arrow-sym { font-size: 24px; line-height: 1; }
-    .nw-arrow-label { font-size: 9px; opacity: 0.9; max-width: 90px; text-align: center; line-height: 1.3; }
+    .nw-arrow-sym { font-size: 26px; line-height: 1; }
+    .nw-arrow-label { font-size: 11px; opacity: 0.95; max-width: 90px; text-align: center; line-height: 1.3; }
     .nw-center-home { display: flex; flex-direction: column; align-items: center; gap: 4px; }
   `;
   document.head.appendChild(style);
