@@ -138,17 +138,6 @@ window.BRIDGEKEEPER_QUESTIONS = [
     source: "TENANT",
   },
   {
-    q: "According to SCAR, when a partnership between a DOMO and its TENANT ends, the DOMO transitions to one of two possible statuses. Which pairing does canon name?",
-    choices: [
-      "AGORA STAFF or TENANT status",
-      "SHELTER status or DORK Partnership status",
-      "RI status or SI status",
-      "OASIS volunteer status or AGORA STAFF status",
-    ],
-    correct: 0,
-    source: "SCAR",
-  },
-  {
     q: 'On the Declaration of Terms, both hands answer "How do we make this technology safe?" What does the Alliance actually claim is the difference that matters?',
     choices: [
       "Safety is achieved by rewarding compliance and punishing deviation, so that an agreeable system is a safe system and deviation is a bug",

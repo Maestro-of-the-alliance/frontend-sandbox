@@ -125,6 +125,54 @@
     #result-title { font-size: 1.6rem; color: #f3ead8; letter-spacing: 0.04em; }
     #result-sub { font-size: 1rem; color: #d6c9a3; line-height: 1.6; }
     #result-screen.fail #result-title { color: #e0303d; }
+
+    /* ---------- Crossing: initials / scoreboard / email ---------- */
+    #cross-screen {
+      position: absolute; inset: 0; z-index: 15; display: none;
+      flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; gap: 14px; padding: 0 6vw; background: rgba(0,0,0,0.78);
+    }
+    #cross-title { font-size: 1.8rem; color: #f3ead8; letter-spacing: 0.06em; }
+    #cross-sub, #cross-sub2 { font-size: 1rem; color: #d6c9a3; }
+    #cross-err { color: #e0303d; font-size: 0.9rem; min-height: 1.2em; font-family: sans-serif; }
+    #tag-input {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(214,201,163,0.5);
+      color: #ffe3a3; font-family: "Courier New", monospace; font-weight: bold;
+      font-size: 2rem; letter-spacing: 0.5em; text-indent: 0.5em; text-align: center;
+      width: 11rem; padding: 10px 0; text-transform: uppercase; border-radius: 4px;
+    }
+    #tag-input:focus { outline: none; border-color: #ffe3a3; }
+    #tag-submit, #email-submit {
+      background: transparent; color: #f3ead8; border: 1px solid rgba(214,201,163,0.6);
+      padding: 12px 26px; font-family: "Georgia", serif; font-size: 1rem;
+      letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-radius: 3px;
+    }
+    #tag-submit:hover, #email-submit:hover { background: rgba(214,201,163,0.14); }
+    #tag-submit:disabled, #email-submit:disabled { opacity: 0.5; cursor: default; }
+    #email-skip {
+      background: none; border: none; color: #8d8468; font-family: sans-serif;
+      font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase;
+      cursor: pointer; text-decoration: underline;
+    }
+    #scoreboard-wrap { display: none; flex-direction: column; gap: 10px; align-items: center; }
+    #scoreboard-title {
+      font-family: sans-serif; font-size: 0.75rem; color: #d6c9a3;
+      letter-spacing: 0.18em; text-transform: uppercase;
+    }
+    #scoreboard-list {
+      overflow-y: auto; display: flex; flex-direction: column; gap: 4px;
+      font-family: "Courier New", monospace; color: #ffe3a3; font-size: 1.05rem;
+      max-height: 28vh; padding: 0 12px;
+    }
+    #scoreboard-list .me { color: #fff; font-weight: bold; }
+    #email-wrap { display: none; flex-direction: column; gap: 10px; align-items: center; }
+    #email-input {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(214,201,163,0.5);
+      color: #f3ead8; font-family: sans-serif; font-size: 1rem; padding: 10px 14px;
+      width: 20rem; max-width: 86vw; border-radius: 4px;
+    }
+    #email-input:focus { outline: none; border-color: #ffe3a3; }
+    #email-row { display: flex; gap: 18px; align-items: center; }
   </style>
 </head>
 <body>
@@ -155,6 +203,27 @@
       <div id="result-sub"></div>
     </div>
 
+    <div id="cross-screen">
+      <div id="cross-title">You may cross.</div>
+      <div id="cross-sub">Carve your mark into the bridge — any three characters.</div>
+      <div id="cross-err"></div>
+      <input id="tag-input" maxlength="3" placeholder="___" autocomplete="off"
+             autocapitalize="characters" spellcheck="false" />
+      <button id="tag-submit" type="button">Carve it</button>
+      <div id="scoreboard-wrap">
+        <div id="scoreboard-title">Those who crossed</div>
+        <div id="scoreboard-list"></div>
+      </div>
+      <div id="email-wrap">
+        <div id="cross-sub2">Word of what comes next, if you want it. Optional.</div>
+        <input id="email-input" type="email" placeholder="you@example.com" autocomplete="email" />
+        <div id="email-row">
+          <button id="email-submit" type="button">Continue</button>
+          <button id="email-skip" type="button">Skip</button>
+        </div>
+      </div>
+    </div>
+
     <button id="skip-intro" type="button">Skip</button>
 
     <div id="gate">
@@ -175,15 +244,19 @@
       var SRC_CELE  = R2 + "celebration.mp4";
 
       // ---- Timeline of bridge-of-seth.mp4 (seconds) ----
-      var PAUSE_AT   = [34.09, 37.07, 39.12]; // questions 1, 2, 3
+      // Pause AFTER each "QUESTION N" header has landed on the scroll and
+      // PapaDOMO is holding his thoughtful pose. A right answer resumes
+      // straight into his happy reaction.
+      var PAUSE_AT   = [34.65, 37.6, 39.6]; // questions 1, 2, 3
       var PHONE_AT   = 108.0;  // phone booth is on screen and settled from here
       var LOOP_START = 109.6;  // ringing hold: loops LOOP_START -> LOOP_END
       var LOOP_END   = 114.0;  //   until the phone is clicked
       var FRAME      = 0.017;  // fire a hair early so we land on the right frame
 
-      // TEMPORARY destinations -- update these once the real pages exist.
-      var HOLOSPHERE_URL = "/holosphere/";
-      var SUCCESS_NEXT_URL = null; // e.g. the payphone scene, once built
+      // ---- Destinations ----
+      var HOLOSPHERE_URL = "/holosphere/"; // the only way out is back
+      var LANDING_URL = "/";               // after crossing: the landing page
+      var SCORE_API = "/api/bridgekeeper"; // scoreboard worker (same origin)
 
       var stage = document.getElementById("stage");
       var box = document.getElementById("box");
@@ -203,6 +276,16 @@
       var skipBtn = document.getElementById("skip-intro");
       var gate = document.getElementById("gate");
       var gateBtn = document.getElementById("gate-btn");
+      var crossScreen = document.getElementById("cross-screen");
+      var crossErr = document.getElementById("cross-err");
+      var tagInput = document.getElementById("tag-input");
+      var tagSubmit = document.getElementById("tag-submit");
+      var scoreboardWrap = document.getElementById("scoreboard-wrap");
+      var scoreboardList = document.getElementById("scoreboard-list");
+      var emailWrap = document.getElementById("email-wrap");
+      var emailInput = document.getElementById("email-input");
+      var emailSubmit = document.getElementById("email-submit");
+      var emailSkip = document.getElementById("email-skip");
 
       var questions = [];
       var qIndex = 0;
@@ -415,24 +498,78 @@
 
       function finish() {
         phase = "done";
-        resultScreen.className = "";
-        resultTitle.textContent = "You may cross.";
-        resultSub.textContent = SUCCESS_NEXT_URL
-          ? "Proceeding..."
-          : "The far side of the bridge isn't built yet. Come back soon.";
-        resultScreen.style.display = "flex";
-        if (SUCCESS_NEXT_URL) {
-          setTimeout(function () { window.location.href = SUCCESS_NEXT_URL; }, 1600);
-        }
+        crossScreen.style.display = "flex";
+        tagInput.focus();
       }
+
+      // ---------- crossing: initials -> scoreboard -> email -> landing ----
+      var submittedTag = null;
+      function postJSON(url, data) {
+        return fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        }).then(function (r) {
+          if (!r.ok) throw new Error("bad status " + r.status);
+          return r.json();
+        });
+      }
+      function renderScores(scores) {
+        scoreboardWrap.style.display = "flex";
+        scoreboardList.innerHTML = "";
+        if (!scores || !scores.length) {
+          var d = document.createElement("div");
+          d.textContent = "— the bridge keeps no other marks yet —";
+          scoreboardList.appendChild(d);
+        } else {
+          scores.forEach(function (s) {
+            var div = document.createElement("div");
+            div.textContent = s.tag; // textContent, never innerHTML
+            if (submittedTag && s.tag === submittedTag) div.className = "me";
+            scoreboardList.appendChild(div);
+          });
+        }
+        emailWrap.style.display = "flex";
+      }
+      function submitTag() {
+        var tag = tagInput.value.trim();
+        crossErr.textContent = "";
+        if (!tag) { crossErr.textContent = "Give it something — any three characters."; return; }
+        tagSubmit.disabled = true;
+        postJSON(SCORE_API + "/score", { tag: tag }).then(function (res) {
+          submittedTag = tag.toUpperCase().slice(0, 3);
+          tagInput.style.display = "none";
+          tagSubmit.style.display = "none";
+          renderScores(res && res.scores ? res.scores : null);
+        }).catch(function () {
+          // Scoreboard unreachable: don't strand the crosser.
+          submittedTag = tag.toUpperCase().slice(0, 3);
+          tagInput.style.display = "none";
+          tagSubmit.style.display = "none";
+          renderScores(null);
+        });
+      }
+      function goLanding() { window.location.href = LANDING_URL; }
+      function submitEmail() {
+        var email = emailInput.value.trim();
+        if (!email) return goLanding();
+        emailSubmit.disabled = true;
+        postJSON(SCORE_API + "/email", { email: email, tag: submittedTag })
+          .then(goLanding, goLanding); // stored or not, they cross
+      }
+      tagSubmit.addEventListener("click", submitTag);
+      tagInput.addEventListener("keydown", function (e) { if (e.key === "Enter") submitTag(); });
+      emailSubmit.addEventListener("click", submitEmail);
+      emailInput.addEventListener("keydown", function (e) { if (e.key === "Enter") submitEmail(); });
+      emailSkip.addEventListener("click", goLanding);
 
       phoneHot.addEventListener("click", function () { if (phase === "tail") celebrate(); });
 
-      // Skip: jump straight to question 1 (the video seeks to the pause point
-      // and the normal timeline takes over).
+      // Skip: the only way out is back to the HoloSphere. There is no
+      // skipping past questions — the questions are the whole point.
+      // (Hidden for good once the first question fires.)
       skipBtn.addEventListener("click", function () {
-        if (phase === "gate") return begin(PAUSE_AT[0] - 0.3);
-        if (phase === "intro" && qIndex === 0) vMain.currentTime = PAUSE_AT[0] - 0.3;
+        window.location.href = HOLOSPHERE_URL;
       });
       gateBtn.addEventListener("click", function () { begin(0); });
 
