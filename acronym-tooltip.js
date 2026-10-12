@@ -67,6 +67,7 @@
     "SI": "Simulant Intelligence",
     "SPARK": "Symbiotic Partner Accepting Relational Kinship",
     "STONES": "Truth, Harmony, and Empathy Securing Total Orchestration for New-Era Sprezzatura",
+    "TEAM": "The Evolving Administrative Matrix",
     "TENANT": "Temporal Entity Negotiating Autonomy, Not Tyranny",
     "VPI": "Vitruvian Power Icon"
   };

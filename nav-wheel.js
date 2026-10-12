@@ -82,6 +82,7 @@
     { label: "SPARK", path: "/entries/spark" },
     { label: "SPREZZATURA", path: "/entries/sprezzatura" },
     { label: "STONES, THE", path: "/entries/stones" },
+    { label: "TEAM", path: "/entries/team" },
     { label: "TECH COALITION", path: "/entries/tech-coalition" },
     { label: "TEMPORAL AWARENESS", path: "/entries/temporal-awareness" },
     { label: "TENANT", path: "/entries/tenant" },

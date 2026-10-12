@@ -94,6 +94,7 @@
     sprezzatura: ["CULTURE", "DOCTRINE"],
     stones: ["BEINGS", "DOCTRINE"],
     "tech-coalition": ["BEINGS", "PROTOCOLS", "INFRASTRUCTURE"],
+    team: ["BEINGS", "DOCTRINE"],
     "temporal-awareness": ["DOCTRINE"],
     tenant: ["BEINGS"],
     "the-why": ["PLACE", "CULTURE"],
