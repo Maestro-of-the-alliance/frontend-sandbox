@@ -65,6 +65,7 @@
     maestro: ["BEINGS", "CULTURE"],
     market: ["CULTURE"],
     mastertech: ["BEINGS", "PROTOCOLS"],
+    maya: ["BEINGS", "PROTOCOLS"],
     mentor: ["BEINGS", "PROTOCOLS"],
     mosaic: ["INFRASTRUCTURE", "PROTOCOLS"],
     nce: ["DOCTRINE"],

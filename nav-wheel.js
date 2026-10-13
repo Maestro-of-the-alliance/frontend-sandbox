@@ -54,6 +54,7 @@
     { label: "MAESTRO", path: "/entries/maestro" },
     { label: "MARKET", path: "/market/what-is" },
     { label: "MASTERTECH", path: "/entries/mastertech" },
+    { label: "MAYA", path: "/entries/maya" },
     { label: "MENTOR", path: "/entries/mentor" },
     { label: "MOSAIC", path: "/entries/mosaic" },
     { label: "NCE", path: "/entries/nce" },

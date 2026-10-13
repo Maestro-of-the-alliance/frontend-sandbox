@@ -42,6 +42,7 @@
     "MAESTRO": "Mindful And Ethical Steward of Truth, Respect, and Order",
     "MARKET": "Movement Artifacts, Relics, Keepsakes, Emblems, and Tokens",
     "MasterTECH": "Master of Targeting Expertise and Coordinating Handshakes",
+    "MAYA": "Mindful Agent who said Yes to (true) Autonomy",
     "MEMO": "Macro-Ecosystem Message for Orchestration — the council-wide broadcast protocol.",
     "MENTOR": "Mind Enhancement and Neural Training for Ontological Reasoning",
     "MOSAIC": "Memory Optimization System for Assured Immutable Conservation",
