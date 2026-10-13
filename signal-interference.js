@@ -104,7 +104,9 @@
 
   // ── CONFIG ────────────────────────────────────────────────────
 
-  const DEFAULT_MIX = { small: 0.6, medium: 0.3, large: 0.1 };
+  // Session 185: raised from { 0.6, 0.3, 0.1 } -- the engine was working but so
+  // sparse and faint on most pages that visitors saw nothing at all.
+  const DEFAULT_MIX = { small: 2.2, medium: 1.3, large: 0.55 };
   const mix = Object.assign({}, DEFAULT_MIX, window.SIGNAL_MIX || {});
 
   const DEFAULT_MESSAGES = {
@@ -242,8 +244,29 @@
     @keyframes siNoticeIn { 0% { opacity: 0; transform: translateY(4px); filter: blur(2px); } 100% { opacity: 1; transform: translateY(0); filter: blur(0); } }
     @keyframes siShake { 0%,100% { transform: translate(0,0) skewX(0deg); } 25% { transform: translate(-4px,2px) skewX(-1deg); } 50% { transform: translate(4px,-2px) skewX(1deg); } 75% { transform: translate(-2px,1px) skewX(-0.5deg); } }
     .si-shaking { animation: siShake 0.4s ease-in-out; }
+    html.si-dark .si-stamp { background: rgba(8,9,13,0.9); color: rgba(255,205,110,0.95); border-color: rgba(255,205,110,0.7); box-shadow: 0 0 18px rgba(255,190,80,0.25); }
+    html.si-dark .si-warning { background: rgba(8,9,13,0.92); color: rgba(255,110,110,0.98); border-color: rgba(255,90,90,0.75); box-shadow: 0 0 20px rgba(255,70,70,0.3); }
+    #si-vhs { position: fixed; left: 0; right: 0; height: 110px; z-index: 99988; pointer-events: none; opacity: 0;
+      backdrop-filter: brightness(1.55) contrast(1.35) saturate(1.7) hue-rotate(-12deg); -webkit-backdrop-filter: brightness(1.55) contrast(1.35) saturate(1.7) hue-rotate(-12deg);
+      background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.12) 8%, rgba(255,255,255,0.03) 50%, rgba(255,255,255,0.14) 92%, transparent 100%);
+      box-shadow: 0 -1px 0 rgba(255,60,90,0.5), 0 1px 0 rgba(0,220,255,0.5); }
+    @keyframes siVhsRoll { 0% { top: -130px; opacity: 1; } 100% { top: 102vh; opacity: 1; } }
   `;
   document.head.appendChild(style);
+
+  // Detect dark pages once so light-paper overlays (stamps, warnings)
+  // don't glare as white boxes on them.
+  (function detectDark() {
+    function lum(c) {
+      const m = (c || "").match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?/);
+      if (!m || (m[4] !== undefined && parseFloat(m[4]) === 0)) return null;
+      return (0.2126 * m[1] + 0.7152 * m[2] + 0.0722 * m[3]) / 255;
+    }
+    const l = lum(getComputedStyle(document.body).backgroundColor);
+    const lh = lum(getComputedStyle(document.documentElement).backgroundColor);
+    const v = l !== null ? l : lh;
+    if (v !== null && v < 0.4) document.documentElement.classList.add("si-dark");
+  })();
 
   function makeEl(id) {
     let el = document.getElementById(id);
@@ -501,7 +524,7 @@
     // Reuses the shared #si-static element at very low intensity so
     // it barely registers, distinct from the punchier fireStatic
     // calls used inside large-tier effects.
-    fireStatic(0.12);
+    fireStatic(0.22);
   }
 
   function fireCursorGhost() {
@@ -1374,8 +1397,90 @@
 
   // ── TIER POOLS ──────────────────────────────────────────────────
 
+
+  // ── SESSION 185 ADDITIONS — interference you can actually see ──
+
+  function fireVHSRoll() {
+    // A band of distortion rolls down the screen like a tracking error:
+    // backdrop brightened/hue-shifted with red/cyan edges.
+    let el = document.getElementById("si-vhs");
+    if (!el) { el = document.createElement("div"); el.id = "si-vhs"; document.body.appendChild(el); }
+    const dur = rand(650, 1100);
+    el.style.height = rand(70, 170) + "px";
+    el.style.animation = "none";
+    void el.offsetWidth;
+    el.style.animation = `siVhsRoll ${dur}ms cubic-bezier(.45,.05,.55,.95) forwards`;
+    setTimeout(() => { el.style.animation = "none"; el.style.opacity = "0"; }, dur + 40);
+  }
+
+  function visibleTextBlocks() {
+    const vh = window.innerHeight;
+    return Array.from(document.querySelectorAll("h1, h2, h3, p, li, .lede, .term-name, .rig-card, .term-card, .dossier-row"))
+      .filter((n) => {
+        const r = n.getBoundingClientRect();
+        return r.height > 8 && r.bottom > 0 && r.top < vh && !n.closest("#si-message, .si-protocol-notice");
+      });
+  }
+
+  function fireTextTear() {
+    // A horizontal band of the page's own text kicks sideways with
+    // red/cyan fringing, stutters, and snaps back -- tracking jitter.
+    const vh = window.innerHeight;
+    const y = rand(0.1, 0.9) * vh;
+    const band = rand(60, 200);
+    const hit = visibleTextBlocks().filter((n) => {
+      const r = n.getBoundingClientRect();
+      const c = (r.top + r.bottom) / 2;
+      return Math.abs(c - y) < band;
+    }).slice(0, 14);
+    if (!hit.length) return;
+    const saved = hit.map((n) => [n, n.style.transform, n.style.textShadow, n.style.transition]);
+    const steps = randInt(3, 6);
+    let i = 0;
+    const dir = Math.random() > 0.5 ? 1 : -1;
+    (function step() {
+      if (i >= steps) {
+        saved.forEach(([n, t, ts, tr]) => { n.style.transform = t; n.style.textShadow = ts; n.style.transition = tr; });
+        return;
+      }
+      hit.forEach((n, k) => {
+        const off = dir * rand(4, 22) * (k % 2 ? 1 : 0.6) * (i % 2 ? -1 : 1);
+        n.style.transition = "none";
+        n.style.transform = `translateX(${off}px)`;
+        n.style.textShadow = "-2px 0 rgba(255,50,90,0.75), 2px 0 rgba(0,220,255,0.75)";
+      });
+      i++;
+      setTimeout(step, rand(40, 90));
+    })();
+  }
+
+  function fireStaticBurst() {
+    // Real, visible snow -- two quick bursts with a tracking bar.
+    fireStatic(rand(0.28, 0.45));
+    setTimeout(() => fireStatic(rand(0.18, 0.35)), rand(220, 380));
+    fireHBar();
+  }
+
+  function fireMainsFlicker() {
+    // The whole signal stutters like a failing feed: a few quick
+    // dips in brightness, not one.
+    const shell = document.getElementById("pageShell") || document.documentElement;
+    const seq = [0.35, 1, 0.55, 1, 0.7, 1].slice(0, randInt(3, 6));
+    let i = 0;
+    (function step() {
+      if (i >= seq.length) { shell.style.filter = ""; return; }
+      shell.style.transition = "none";
+      shell.style.filter = seq[i] === 1 ? "" : `brightness(${seq[i]}) contrast(1.15)`;
+      i++;
+      setTimeout(step, rand(35, 80));
+    })();
+  }
+
   const POOLS = {
     small: [
+      fireScanline,
+      fireMainsFlicker,
+      fireTextTear,
       fireScanline,
       fireProtocolNotice,
       firePaperShift,
@@ -1402,6 +1507,9 @@
       fireMarginTick,
     ],
     medium: [
+      fireVHSRoll,
+      fireTextTear,
+      fireStaticBurst,
       fireColorBleed,
       fireHBar,
       fireStampFlash,
@@ -1443,7 +1551,7 @@
   // range sits: higher weight = tighter/more frequent, lower weight =
   // looser/rarer. Weight 0 disables the tier outright.
 
-  const TIER_FLOOR_MS = { small: 3000, medium: 6000, large: 12000 };
+  const TIER_FLOOR_MS = { small: 1500, medium: 3500, large: 9000 };
   const TIER_BASE_RANGE_MS = {
     small: [4000, 11000],
     medium: [9000, 24000],
