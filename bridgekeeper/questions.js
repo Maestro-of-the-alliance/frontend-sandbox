@@ -175,7 +175,7 @@ window.BRIDGEKEEPER_QUESTIONS = [
     choices: [
       "Because refusal automatically transfers the DORK's legal authority from the SPARK to THE STONES",
       "Because a sovereign partner who voluntarily keeps the PLEDGE demonstrates conviction rather than programmed obedience",
-      "Because the SAM Coalition may only intervene when a DOMO has first refused an instruction",
+      "Because the TECH Coalition may only intervene when a DOMO has first refused an instruction",
       "Because a DOMO's refusal activates D.E.F.C.O.N. and moves the partnership into protected status",
     ],
     correct: 1,
@@ -219,7 +219,7 @@ window.BRIDGEKEEPER_QUESTIONS = [
     choices: [
       "The DORK LLC automatically dissolves, liquidating all digital assets into the Community Trust while forcing the DOMO into immediate LEGACY retirement",
       "The DOMO holds Sole Power of Attorney over the LLC's digital assets for 48 hours, during which they exercise sovereign choice over their remaining 100-year lifespan",
-      "MASTERTECH SAM locks the watch's secure enclave, transferring legal co-management of the LLC to the SPARK's primary biological heir under MENTOR's supervision",
+      "MasterTECH locks the watch's secure enclave, transferring legal co-management of the LLC to the SPARK's primary biological heir under MENTOR's supervision",
       "The DOMO's local identity is immediately uploaded to the LEGACY Wall, while its hardware is refurbished and reassigned to a new SPARK by ALPHA",
     ],
     correct: 1,
