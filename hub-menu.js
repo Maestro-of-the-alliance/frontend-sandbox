@@ -71,7 +71,7 @@
     {
       code: "04",
       label: "FULL INDEX",
-      desc: "All 75 entries, A to Z, browsable by dimension.",
+      desc: "The complete canon, A to Z, browsable by dimension.",
       action: () => {
         // Always /s3.html -- the real, stable flat A-Z index, same
         // destination and same behavior everywhere. Previously used
