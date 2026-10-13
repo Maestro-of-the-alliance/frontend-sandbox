@@ -96,6 +96,9 @@
     var css = [
       ".acr-term{font-weight:700;border-bottom:1px dotted currentColor;cursor:help;position:relative;}",
       ".acr-term{--arrow-shift:0px;}",
+      // Hidden tooltips sit at a default offset that can poke past the right
+      // edge of a phone screen and widen the page; clip that overflow.
+      "html{overflow-x:clip;}",
       ".acr-term .acr-tooltip{position:absolute;left:50%;bottom:100%;",
       "transform:translateY(4px);margin-left:-120px;",
       "margin-bottom:8px;background:#1a1208;color:#f4e9d8;padding:8px 12px;border-radius:8px;",
@@ -311,6 +314,14 @@
       return { term: term, re: buildPattern(term) };
     });
     injectStyles();
+    // overflow-x:clip on <html> alone doesn't stop sideways panning on pages
+    // whose <body> has no overflow rule of its own; use hidden there so the
+    // value propagates to the viewport.
+    try {
+      if (getComputedStyle(document.body).overflowX === "visible") {
+        document.documentElement.style.overflowX = "hidden";
+      }
+    } catch (e) {}
     var matches = collectMatches(patterns);
     var selected = pickSelected(matches);
     applyWraps(matches, selected);
