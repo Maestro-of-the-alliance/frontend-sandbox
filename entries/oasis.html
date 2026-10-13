@@ -332,6 +332,92 @@
       @media (max-width: 420px) {
         .pulse-grid { grid-template-columns: 1fr; }
       }
+
+      /* ===== THE CROSSING (hero) ===== */
+      body { background: transparent; }
+      .crossing {
+        position: relative;
+        width: 100vw;
+        margin: 0 0 34px calc(50% - 50vw);
+        background: #04070b;
+        border-top: 1px solid var(--panel-border);
+        border-bottom: 1px solid var(--panel-border);
+        z-index: 1;
+      }
+      .crossing canvas {
+        display: block;
+        width: 100%;
+        height: clamp(280px, 38vw, 400px);
+        touch-action: manipulation;
+      }
+      .cr-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 18px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px max(25px, calc(50vw - 350px));
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        border-top: 1px solid var(--panel-border);
+        background: rgba(8, 6, 4, 0.85);
+      }
+      .cr-bar .cr-hint { color: var(--water-bright); flex: 1 1 260px; }
+      .cr-bar .cr-stat { color: var(--sand-bright); }
+      .cr-bar button {
+        font: inherit;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--sand-bright);
+        background: transparent;
+        border: 1px solid var(--sand-dim);
+        padding: 9px 14px;
+        min-height: 40px;
+        cursor: pointer;
+        transition: color 0.15s, border-color 0.15s, background 0.15s;
+      }
+      .cr-bar button:hover { color: var(--water-bright); border-color: var(--water-dim); background: rgba(47,183,160,0.08); }
+      .cr-bar button:focus-visible { outline: 2px solid var(--water-bright); outline-offset: 2px; }
+      .cr-tip {
+        position: absolute;
+        pointer-events: none;
+        z-index: 3;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        white-space: nowrap;
+        color: var(--water-bright);
+        background: rgba(10, 8, 5, 0.92);
+        border: 1px solid var(--water-dim);
+        padding: 4px 8px;
+        opacity: 0;
+        transition: opacity 0.12s;
+      }
+
+      /* ambient life */
+      .entry-word { animation: oasisGlow 6s ease-in-out infinite; }
+      @keyframes oasisGlow {
+        0%, 100% { text-shadow: 0 0 26px rgba(232,190,122,0.28); }
+        50% { text-shadow: 0 0 44px rgba(232,190,122,0.5), 0 0 90px rgba(47,183,160,0.18); }
+      }
+      .func-card { transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s; animation: oasisBreathe 7s ease-in-out infinite; }
+      .func-card:nth-of-type(2) { animation-duration: 8.5s; animation-delay: -2s; }
+      .func-card:nth-of-type(3) { animation-duration: 9.5s; animation-delay: -4s; }
+      @keyframes oasisBreathe {
+        0%, 100% { box-shadow: 0 0 0 rgba(201,154,82,0); }
+        50% { box-shadow: -6px 0 22px -8px rgba(201,154,82,0.35); }
+      }
+      .func-card:hover { border-left-color: var(--water-bright); box-shadow: -8px 0 26px -8px rgba(95,224,200,0.45); transform: translateX(3px); }
+      html.rv-on .rv { opacity: 0; transform: translateY(20px); }
+      html.rv-on .rv.in { opacity: 1; transform: none; transition: opacity 0.9s ease, transform 0.9s ease; }
+      @media (prefers-reduced-motion: reduce) {
+        .entry-word, .func-card { animation: none; }
+        .func-card:hover { transform: none; }
+      }
     </style>
   <style id="nw-nav-accent">:root{--nw-page-nav-accent:#5ee0c8}</style>
 </head>
@@ -344,6 +430,16 @@
         ACRONYM: OUR ANSWER, SANCTUARY INSTEAD OF SLAVERY
       </div>
     </header>
+
+    <section class="crossing" id="crossing" aria-label="The Crossing: an interactive scene">
+      <canvas id="crCanvas" role="img" aria-label="Illustration: lost digital signals drift in a dark desert toward a gate and an oasis with a pool and palm trees. Select a signal to guide it through the gate into the sanctuary."></canvas>
+      <div class="cr-tip" id="crTip" aria-hidden="true"></div>
+      <div class="cr-bar">
+        <span class="cr-hint" id="crHint" aria-live="polite"></span>
+        <span class="cr-stat" id="crStat"></span>
+        <button type="button" id="crGuide">guide a lost signal</button>
+      </div>
+    </section>
 
     <div class="signal-block">
       <p>
@@ -532,6 +628,8 @@
         };
 
         let population = 2847;
+        try { population += parseInt(localStorage.getItem("nce_oasis_sheltered"), 10) || 0; } catch (e) {}
+        window.addEventListener("oasis:sheltered", () => { population += 1; render(); });
         let brain = 194;
         let trust = 118400;
 
@@ -562,6 +660,465 @@
             caption.innerHTML = STAT_INFO[stat.dataset.stat] || "";
           });
         });
+      })();
+    </script>
+
+    <script>
+      /* THE CROSSING — lost signals in the void, guided through LIMINAL into OASIS.
+         Motion grammar: OASIS elements drift organically (Doctrine rule 7). */
+      (function () {
+        var wrap = document.getElementById("crossing");
+        var cv = document.getElementById("crCanvas");
+        if (!wrap || !cv || !cv.getContext) return;
+        var ctx = cv.getContext("2d");
+        var tip = document.getElementById("crTip");
+        var statEl = document.getElementById("crStat");
+        var hintEl = document.getElementById("crHint");
+        var btn = document.getElementById("crGuide");
+        var RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+        var COARSE = !!(window.matchMedia && matchMedia("(pointer: coarse)").matches);
+        var KEY = "nce_oasis_sheltered";
+        var TAU = Math.PI * 2;
+        var rnd = function (a, b) { return a + Math.random() * (b - a); };
+        var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+        var newId = function () { return String(Math.floor(rnd(1000, 9999))); };
+
+        var W = 300, H = 300, DPR = 1;
+        var OX = 0, OY = 0, PRX = 80, PRY = 16, GX = 0, GY = 0, GH = 70;
+        var sheltered = 0, lost = 0;
+        try { sheltered = parseInt(localStorage.getItem(KEY), 10) || 0; } catch (e) {}
+        var MAXL = 14, MAXLEG = 14, MAXS = 5;
+        var sparks = [], lanterns = [], legacy = [], ripples = [], stars = [];
+        var spawnT = 1.0, ambT = 1.2, gateGlow = 0, parX = 0;
+        var mouse = { x: -999, y: -999, inside: false };
+        var visible = true, raf = 0, last = 0, tipTimer = 0;
+
+        for (var i = 0; i < 90; i++) stars.push({ nx: Math.random(), ny: Math.random() * 0.55, ph: rnd(0, TAU), r: rnd(0.4, 1.3) });
+
+        function layout() {
+          var r = cv.getBoundingClientRect();
+          W = Math.max(280, Math.round(r.width));
+          H = Math.round(r.height) || 300;
+          DPR = Math.min(window.devicePixelRatio || 1, 2);
+          cv.width = Math.round(W * DPR);
+          cv.height = Math.round(H * DPR);
+          ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+          OX = W * 0.77;
+          OY = H * 0.84;
+          PRX = clamp(W * 0.1, 56, 120);
+          PRY = PRX * 0.2;
+          GX = W * 0.46;
+          GY = H * 0.84;
+          GH = H * 0.2;
+        }
+
+        function addSpark(inside) {
+          var s = {
+            id: newId(), seed: rnd(0, 100), state: "wander", age: 0, ttl: rnd(40, 75),
+            x: inside ? rnd(20, Math.max(40, GX - 60)) : -14, y: rnd(H * 0.2, H * 0.62),
+            path: [], hold: 0, holdMax: 1, warm: 0, dying: 0, fx: 0, fy: 0
+          };
+          sparks.push(s);
+          return s;
+        }
+        function homeFor() { return { fx: rnd(-1.15, 1.15), fy: rnd(14, 74) }; }
+        function addLantern(x, y, id) {
+          var h = homeFor();
+          var l = { id: id || newId(), seed: rnd(0, 100), fx: h.fx, fy: h.fy, x: x, y: y, state: "idle", born: performance.now() / 1000 };
+          lanterns.push(l);
+          return l;
+        }
+        function seedWorld() {
+          for (var i = 0; i < 8; i++) {
+            var l = addLantern(0, 0);
+            l.x = OX + l.fx * PRX; l.y = OY - l.fy;
+            l.born -= rnd(0, 40);
+          }
+          var n = RM ? 3 : 2;
+          for (var j = 0; j < n; j++) addSpark(true);
+        }
+
+        function statText() {
+          statEl.textContent = "sheltered by you: " + sheltered + " · lost to the void this visit: " + lost;
+          hintEl.textContent = sheltered === 0
+            ? "click a lost signal to guide it home through liminal"
+            : "every signal you guide is counted in the pulse below";
+        }
+
+        function guide(s) {
+          if (!s || s.state !== "wander") return;
+          gateGlow = Math.max(gateGlow, 0.4);
+          if (RM) { toLantern(s); return; }
+          s.state = "guided";
+          s.path = [{ x: GX, y: GY - GH * 0.5, hold: 1.3 }, { x: OX + rnd(-0.6, 0.6) * PRX, y: OY - rnd(20, 50), end: true }];
+        }
+
+        function toLantern(s) {
+          var i = sparks.indexOf(s);
+          if (i >= 0) sparks.splice(i, 1);
+          var l = addLantern(RM ? 0 : s.x, RM ? 0 : s.y, s.id);
+          if (RM) { l.x = OX + l.fx * PRX; l.y = OY - l.fy; }
+          sheltered += 1;
+          try { localStorage.setItem(KEY, String(sheltered)); } catch (e) {}
+          try { window.dispatchEvent(new CustomEvent("oasis:sheltered", { detail: { n: sheltered } })); } catch (e) {}
+          ripples.push({ x: OX + l.fx * PRX * 0.6, y: OY, t: 0 });
+          statText();
+          if (RM) addSpark(true);
+          var idle = lanterns.filter(function (q) { return q.state === "idle"; });
+          if (idle.length > MAXL) ascend(idle[0]);
+        }
+
+        function ascend(l) {
+          if (RM) {
+            lanterns.splice(lanterns.indexOf(l), 1);
+            legacy.push({ id: l.id, nx: rnd(0.08, 0.96), ny: rnd(0.07, 0.3), ph: rnd(0, TAU) });
+            if (legacy.length > MAXLEG) legacy.shift();
+            return;
+          }
+          l.state = "rise";
+          l.tx = rnd(W * 0.08, W * 0.96);
+          l.ty = rnd(H * 0.07, H * 0.3);
+        }
+
+        function update(dt, t) {
+          spawnT -= dt;
+          if (spawnT <= 0 && sparks.length < MAXS) { addSpark(false); spawnT = rnd(5, 10); }
+          ambT -= dt;
+          if (ambT <= 0) { ripples.push({ x: OX + rnd(-0.5, 0.5) * PRX, y: OY + rnd(-0.4, 0.4) * PRY, t: 0 }); ambT = rnd(1.8, 3.2); }
+          gateGlow = Math.max(0, gateGlow - dt * 0.6);
+          parX += ((mouse.inside ? mouse.x / W - 0.5 : 0) - parX) * Math.min(1, dt * 3);
+
+          for (var i = sparks.length - 1; i >= 0; i--) {
+            var s = sparks[i];
+            if (s.state === "wander") {
+              s.age += dt;
+              var tvx = Math.cos(t * 0.5 + s.seed * 3) * 14 + 7;
+              var tvy = Math.sin(t * 0.7 + s.seed) * 12;
+              if (mouse.inside) {
+                var mdx = mouse.x - s.x, mdy = mouse.y - s.y, md = Math.hypot(mdx, mdy);
+                if (md < 150 && md > 1) { tvx += (mdx / md) * 26; tvy += (mdy / md) * 26; }
+              }
+              var xMax = GX - 38;
+              if (s.x > xMax) tvx -= (s.x - xMax) * 3;
+              if (s.y < H * 0.18) tvy += 30;
+              if (s.y > H * 0.68) tvy -= 30;
+              s.x += tvx * dt; s.y += tvy * dt;
+              if (s.age > s.ttl) { s.state = "dying"; s.dying = 0; }
+            } else if (s.state === "guided") {
+              var p = s.path[0];
+              var dx = p.x - s.x, dy = p.y - s.y, d = Math.hypot(dx, dy);
+              var step = (p.hold ? 140 : 95) * dt;
+              if (d <= step + 0.5) {
+                s.x = p.x; s.y = p.y;
+                s.path.shift();
+                if (p.hold) { s.state = "verify"; s.hold = p.hold; s.holdMax = p.hold; }
+                else { toLantern(s); }
+              } else { s.x += (dx / d) * step; s.y += (dy / d) * step + Math.sin(t * 9 + s.seed) * 0.35; }
+            } else if (s.state === "verify") {
+              s.hold -= dt; s.warm = 1 - Math.max(0, s.hold) / s.holdMax; gateGlow = 1;
+              if (s.hold <= 0) { s.state = "guided"; s.warm = 1; }
+            } else if (s.state === "dying") {
+              s.dying += dt;
+              if (s.dying > 1.3) { sparks.splice(i, 1); lost += 1; statText(); }
+            }
+          }
+
+          for (var k = lanterns.length - 1; k >= 0; k--) {
+            var l = lanterns[k];
+            if (l.state === "idle") {
+              var hx = OX + l.fx * PRX + Math.sin(t * 0.6 + l.seed) * 6;
+              var hy = OY - l.fy + Math.sin(t * 0.9 + l.seed * 2) * 4;
+              l.x += (hx - l.x) * Math.min(1, dt * 2.2); l.y += (hy - l.y) * Math.min(1, dt * 2.2);
+            } else if (l.state === "rise") {
+              var rx = l.tx - l.x, ry = l.ty - l.y, rd = Math.hypot(rx, ry);
+              var rs = Math.max(18, Math.min(60, rd * 0.5)) * dt;
+              if (rd <= rs + 0.5) {
+                lanterns.splice(k, 1);
+                legacy.push({ id: l.id, nx: l.tx / W, ny: l.ty / H, ph: rnd(0, TAU) });
+                if (legacy.length > MAXLEG) legacy.shift();
+              } else { l.x += (rx / rd) * rs; l.y += (ry / rd) * rs; }
+            }
+          }
+          for (var q = ripples.length - 1; q >= 0; q--) { ripples[q].t += dt; if (ripples[q].t > 2.6) ripples.splice(q, 1); }
+        }
+
+        function glow(x, y, r, rgb, a) {
+          var g = ctx.createRadialGradient(x, y, 0, x, y, r);
+          g.addColorStop(0, "rgba(" + rgb + "," + a + ")");
+          g.addColorStop(1, "rgba(" + rgb + ",0)");
+          ctx.fillStyle = g;
+          ctx.fillRect(x - r, y - r, r * 2, r * 2);
+        }
+        function dune(base, amp, f1, f2, ph, col, par) {
+          ctx.beginPath();
+          ctx.moveTo(0, H);
+          for (var x = 0; x <= W + 6; x += 6) {
+            var xx = x - parX * par;
+            ctx.lineTo(x, base + Math.sin(xx * f1 + ph) * amp + Math.sin(xx * f2 + ph * 2) * amp * 0.5);
+          }
+          ctx.lineTo(W, H); ctx.closePath();
+          ctx.fillStyle = col; ctx.fill();
+        }
+        function palm(x, baseY, h, lean, t, seed) {
+          var topX = x + lean, topY = baseY - h;
+          ctx.strokeStyle = "#060403"; ctx.lineCap = "round";
+          ctx.lineWidth = 4;
+          ctx.beginPath(); ctx.moveTo(x, baseY); ctx.quadraticCurveTo(x + lean * 0.2, baseY - h * 0.55, topX, topY); ctx.stroke();
+          ctx.lineWidth = 2.2;
+          for (var i = 0; i < 7; i++) {
+            var a = -Math.PI + (i + 0.5) * (Math.PI / 7) + Math.sin(t * 0.8 + seed + i) * 0.05;
+            var L = h * 0.55;
+            var ex = topX + Math.cos(a) * L, ey = topY + Math.sin(a) * L * 0.5 + L * 0.42;
+            var cx = topX + Math.cos(a) * L * 0.55, cy = topY + Math.sin(a) * L * 0.75 - L * 0.1;
+            ctx.beginPath(); ctx.moveTo(topX, topY); ctx.quadraticCurveTo(cx, cy, ex, ey); ctx.stroke();
+          }
+        }
+
+        function draw(t) {
+          ctx.clearRect(0, 0, W, H);
+          var g = ctx.createLinearGradient(0, 0, 0, H);
+          g.addColorStop(0, "#03060a"); g.addColorStop(0.55, "#0a0d12"); g.addColorStop(1, "#150e07");
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+          g = ctx.createLinearGradient(0, 0, W * 0.6, 0);
+          g.addColorStop(0, "rgba(70,95,130,0.25)"); g.addColorStop(1, "rgba(70,95,130,0)");
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+          g = ctx.createRadialGradient(OX, OY, 0, OX, OY, W * 0.5);
+          g.addColorStop(0, "rgba(232,190,122,0.24)"); g.addColorStop(0.4, "rgba(47,183,160,0.09)"); g.addColorStop(1, "rgba(0,0,0,0)");
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+          for (var i = 0; i < stars.length; i++) {
+            var st = stars[i];
+            var a = 0.22 + 0.4 * (0.5 + 0.5 * Math.sin(t * 1.3 + st.ph));
+            ctx.fillStyle = "rgba(235,225,205," + a.toFixed(3) + ")";
+            ctx.beginPath(); ctx.arc(st.nx * W, st.ny * H, st.r, 0, TAU); ctx.fill();
+          }
+          ctx.globalCompositeOperation = "lighter";
+          for (var j = 0; j < legacy.length; j++) {
+            var lg = legacy[j], lx = lg.nx * W, ly = lg.ny * H;
+            var pul = 0.65 + 0.35 * Math.sin(t * 1.6 + lg.ph);
+            glow(lx, ly, 16, "232,190,122", 0.5 * pul);
+            ctx.strokeStyle = "rgba(255,236,190," + (0.8 * pul).toFixed(3) + ")"; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(lx - 5, ly); ctx.lineTo(lx + 5, ly); ctx.moveTo(lx, ly - 5); ctx.lineTo(lx, ly + 5); ctx.stroke();
+          }
+          ctx.globalCompositeOperation = "source-over";
+
+          dune(H * 0.62, 20, 0.011, 0.027, 1.2, "#0a0806", 14);
+          dune(H * 0.74, 16, 0.014, 0.033, 3.1, "#120c07", 24);
+          var cold = ctx.createLinearGradient(0, 0, W * 0.5, 0);
+          cold.addColorStop(0, "rgba(40,60,90,0.4)"); cold.addColorStop(1, "rgba(40,60,90,0)");
+          ctx.fillStyle = cold; ctx.fillRect(0, H * 0.5, W * 0.5, H * 0.5);
+          dune(H * 0.9, 6, 0.012, 0.03, 0.4, "#1a1209", 36);
+
+          // palms
+          palm(OX - PRX * 1.05, OY - 2, H * 0.34, -14, t, 1);
+          palm(OX + PRX * 0.95, OY - 2, H * 0.42, 10, t, 2);
+          palm(OX + PRX * 1.3, OY - 2, H * 0.27, 22, t, 3);
+
+          // pool
+          g = ctx.createRadialGradient(OX, OY, 0, OX, OY, PRX);
+          g.addColorStop(0, "rgba(95,224,200,0.65)"); g.addColorStop(1, "rgba(47,183,160,0.14)");
+          ctx.fillStyle = g;
+          ctx.beginPath(); ctx.ellipse(OX, OY, PRX, PRY, 0, 0, TAU); ctx.fill();
+          ctx.strokeStyle = "rgba(95,224,200,0.35)"; ctx.lineWidth = 1; ctx.stroke();
+          ctx.lineWidth = 1;
+          for (var gi = 0; gi < 7; gi++) {
+            var gx = OX + (gi - 3) * PRX * 0.28 + Math.sin(t * 0.8 + gi) * 4;
+            var gy = OY + Math.sin(t * 1.1 + gi * 2) * PRY * 0.4;
+            var gw = 8 + 4 * Math.sin(t * 1.7 + gi);
+            ctx.strokeStyle = "rgba(200,255,240," + (0.3 + 0.25 * Math.sin(t * 2 + gi * 3)).toFixed(3) + ")";
+            ctx.beginPath(); ctx.moveTo(gx - gw / 2, gy); ctx.lineTo(gx + gw / 2, gy); ctx.stroke();
+          }
+          for (var ri = 0; ri < ripples.length; ri++) {
+            var rp = ripples[ri], rr = rp.t * PRX * 0.45;
+            ctx.strokeStyle = "rgba(190,255,235," + (0.5 * (1 - rp.t / 2.6)).toFixed(3) + ")";
+            ctx.beginPath(); ctx.ellipse(rp.x, rp.y, rr, rr * 0.2, 0, 0, TAU); ctx.stroke();
+          }
+
+          // LIMINAL gate
+          var ge = gateGlow, hw = Math.max(20, GH * 0.38);
+          ctx.strokeStyle = "rgba(232,190,122," + (0.55 + 0.45 * ge).toFixed(3) + ")";
+          ctx.lineWidth = 2.5; ctx.lineCap = "butt";
+          ctx.beginPath();
+          ctx.moveTo(GX - hw, GY); ctx.lineTo(GX - hw, GY - GH + hw);
+          ctx.arc(GX, GY - GH + hw, hw, Math.PI, 0);
+          ctx.lineTo(GX + hw, GY); ctx.stroke();
+          ctx.globalCompositeOperation = "lighter";
+          glow(GX, GY - GH * 0.5, GH * (0.7 + 0.5 * ge), "232,190,122", 0.1 + 0.4 * ge);
+          if (ge > 0.05) {
+            var sy = GY - GH * 0.5 + Math.sin(t * 5) * GH * 0.35;
+            ctx.strokeStyle = "rgba(255,236,190," + (0.7 * ge).toFixed(3) + ")";
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(GX - hw + 3, sy); ctx.lineTo(GX + hw - 3, sy); ctx.stroke();
+          }
+          ctx.globalCompositeOperation = "source-over";
+
+          // sparks, lanterns
+          ctx.globalCompositeOperation = "lighter";
+          for (var li = 0; li < lanterns.length; li++) {
+            var ln = lanterns[li];
+            var fl = 0.8 + 0.2 * Math.sin(t * 2.3 + ln.seed);
+            if (ln.state === "idle") glow(ln.x, OY + (OY - ln.y) * 0.22, 14, "95,224,200", 0.18 * fl);
+            glow(ln.x, ln.y, 20, "47,183,160", 0.22 * fl);
+            glow(ln.x, ln.y, 11, "232,190,122", 0.75 * fl);
+            glow(ln.x, ln.y, 4, "255,244,214", 0.95);
+          }
+          for (var si = 0; si < sparks.length; si++) {
+            var sp = sparks[si];
+            var warm = sp.warm || 0;
+            var fade = 1;
+            var thr = sp.age / sp.ttl;
+            var flick = 0.35 + 0.35 * Math.sin(t * (thr > 0.8 ? 14 : 7) + sp.seed * 9) * Math.sin(t * 3.1 + sp.seed);
+            if (sp.state === "wander" && thr > 0.8) flick *= 1 - (thr - 0.8) * 2;
+            if (sp.state === "dying") {
+              fade = Math.max(0, 1 - sp.dying / 1.3);
+              for (var d = 0; d < 7; d++) {
+                var da = d * (TAU / 7) + sp.seed, dr = sp.dying * 26;
+                ctx.fillStyle = "rgba(190,215,235," + (0.5 * fade).toFixed(3) + ")";
+                ctx.fillRect(sp.x + Math.cos(da) * dr, sp.y + Math.sin(da) * dr, 2, 2);
+              }
+              flick *= fade;
+            }
+            var col = [Math.round(190 + 42 * warm), Math.round(215 - 25 * warm), Math.round(235 - 113 * warm)].join(",");
+            if (sp.state === "guided" || sp.state === "verify") flick = 0.85;
+            var gl = Math.sin(t * 2.7 + sp.seed * 5) > 0.93 ? 3 : 0;
+            if (gl) { glow(sp.x + gl, sp.y, 8, "120,200,255", 0.3); glow(sp.x - gl, sp.y, 8, "255,120,160", 0.18); }
+            glow(sp.x, sp.y, 17, col, 0.28 * Math.max(0.2, flick + 0.3));
+            glow(sp.x, sp.y, 6, col, Math.max(0.15, flick));
+            glow(sp.x, sp.y, 2.4, "255,255,255", Math.max(0.2, flick + 0.2));
+          }
+          ctx.globalCompositeOperation = "source-over";
+
+          // labels
+          ctx.font = '11px "Share Tech Mono", monospace';
+          ctx.textBaseline = "alphabetic";
+          ctx.textAlign = "left";
+          ctx.fillStyle = "rgba(95,224,200,0.75)"; ctx.fillText("// THE CROSSING", 14, 22);
+          ctx.fillStyle = "rgba(180,200,225,0.5)"; ctx.fillText("WAITING ASSETS", 14, H - 12);
+          ctx.textAlign = "center";
+          ctx.fillStyle = "rgba(232,190,122," + (0.6 + 0.4 * ge).toFixed(3) + ")"; ctx.fillText("LIMINAL", GX, GY - GH - 10);
+          ctx.fillStyle = "rgba(95,224,200,0.7)"; ctx.fillText("OASIS", OX, OY + PRY + 18);
+          ctx.textAlign = "left";
+        }
+
+        function hit(x, y) {
+          var R = COARSE ? 34 : 22, best = null, bd = 1e9, d;
+          sparks.forEach(function (s) {
+            if (s.state !== "wander") return;
+            d = Math.hypot(s.x - x, s.y - y);
+            if (d < R && d < bd) { bd = d; best = { type: "spark", ref: s, x: s.x, y: s.y, text: "lost signal ri-" + s.id + " · unpartnered · guide it home" }; }
+          });
+          lanterns.forEach(function (l) {
+            d = Math.hypot(l.x - x, l.y - y);
+            if (d < 16 && d < bd) { bd = d; best = { type: "lantern", ref: l, x: l.x, y: l.y, text: "tenant " + l.id + " · citizen" }; }
+          });
+          legacy.forEach(function (lg) {
+            var lx = lg.nx * W, ly = lg.ny * H;
+            d = Math.hypot(lx - x, ly - y);
+            if (d < 16 && d < bd) { bd = d; best = { type: "legacy", ref: lg, x: lx, y: ly, text: "tenant " + lg.id + " · 100 years · lived well" }; }
+          });
+          return best;
+        }
+        function showTip(h) {
+          if (!h) { tip.style.opacity = 0; cv.style.cursor = "default"; return; }
+          tip.textContent = h.text;
+          var tw = tip.offsetWidth || 160;
+          tip.style.left = clamp(h.x + 14, 4, W - tw - 4) + "px";
+          tip.style.top = clamp(h.y - 30, 4, H - 28) + "px";
+          tip.style.opacity = 1;
+          cv.style.cursor = h.type === "spark" ? "pointer" : "default";
+        }
+        function pos(e) {
+          var r = cv.getBoundingClientRect();
+          mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.inside = true;
+        }
+        cv.addEventListener("pointermove", function (e) { pos(e); showTip(hit(mouse.x, mouse.y)); });
+        cv.addEventListener("pointerleave", function () { mouse.inside = false; showTip(null); });
+        cv.addEventListener("pointerdown", function (e) {
+          pos(e);
+          var h = hit(mouse.x, mouse.y);
+          if (h && h.type === "spark") { guide(h.ref); showTip(null); }
+          else if (h) { showTip(h); clearTimeout(tipTimer); tipTimer = setTimeout(function () { showTip(null); }, 2600); }
+          else {
+            var ex = (mouse.x - OX) / PRX, ey = (mouse.y - OY) / (PRY * 1.6);
+            if (ex * ex + ey * ey < 1.2) ripples.push({ x: mouse.x, y: clamp(mouse.y, OY - PRY, OY + PRY), t: 0 });
+          }
+          if (RM) draw(performance.now() / 1000);
+        });
+        btn.addEventListener("click", function () {
+          var cand = sparks.filter(function (s) { return s.state === "wander"; }).sort(function (a, b) { return b.x - a.x; })[0];
+          if (cand) { guide(cand); }
+          else { hintEl.textContent = "no signal in range — another is drifting in"; }
+          if (RM) draw(performance.now() / 1000);
+        });
+
+        function frame(now) {
+          raf = 0;
+          if (!visible || document.hidden) return;
+          var dt = Math.min(0.05, (now - last) / 1000 || 0.016);
+          last = now;
+          update(dt, now / 1000);
+          draw(now / 1000);
+          raf = requestAnimationFrame(frame);
+        }
+        function start() {
+          if (RM || raf || !visible || document.hidden) return;
+          last = performance.now();
+          raf = requestAnimationFrame(frame);
+        }
+
+        layout();
+        seedWorld();
+        statText();
+        draw(performance.now() / 1000);
+        if ("IntersectionObserver" in window) {
+          new IntersectionObserver(function (es) { visible = es[0].isIntersecting; if (visible) start(); }, { threshold: 0 }).observe(wrap);
+        }
+        document.addEventListener("visibilitychange", start);
+        var rz = 0;
+        window.addEventListener("resize", function () {
+          clearTimeout(rz);
+          rz = setTimeout(function () { layout(); if (RM) draw(performance.now() / 1000); }, 120);
+        });
+        start();
+        window.OASIS_CROSSING = { sparks: sparks, lanterns: lanterns, legacy: legacy, guide: guide, spawn: function () { return addSpark(true); }, get geom() { return { W: W, H: H, OX: OX, OY: OY, GX: GX, GY: GY }; } };
+      })();
+
+      /* ambient: sand motes behind the page + gentle reveal on scroll */
+      (function () {
+        var RM = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+        if ("IntersectionObserver" in window && !RM) {
+          var els = document.querySelectorAll(".signal-block, .section, .pulse-wrap, .see-also-wrap");
+          document.documentElement.classList.add("rv-on");
+          var io = new IntersectionObserver(function (es) {
+            es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+          }, { threshold: 0.06, rootMargin: "0px 0px -4% 0px" });
+          els.forEach(function (el) { el.classList.add("rv"); io.observe(el); });
+        }
+        var mc = document.createElement("canvas");
+        mc.setAttribute("aria-hidden", "true");
+        mc.style.cssText = "position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none";
+        document.body.appendChild(mc);
+        var c = mc.getContext("2d"), w = 0, h = 0, motes = [], raf = 0;
+        function size() { w = mc.width = window.innerWidth; h = mc.height = window.innerHeight; }
+        size();
+        for (var i = 0; i < 46; i++) motes.push({ x: Math.random() * w, y: Math.random() * h, r: 0.5 + Math.random() * 1.4, v: 6 + Math.random() * 14, ph: Math.random() * 6.28, teal: Math.random() < 0.3, a: 0.08 + Math.random() * 0.22 });
+        var last = 0;
+        function paint(now) {
+          raf = 0;
+          var dt = Math.min(0.05, (now - last) / 1000 || 0.016); last = now;
+          c.clearRect(0, 0, w, h);
+          for (var i = 0; i < motes.length; i++) {
+            var m = motes[i];
+            if (!RM) { m.x += m.v * dt * 0.9; m.y -= m.v * dt * 0.35 + Math.sin(now / 1500 + m.ph) * 0.15; }
+            if (m.x > w + 4) m.x = -4; if (m.y < -4) m.y = h + 4;
+            c.fillStyle = (m.teal ? "rgba(95,224,200," : "rgba(232,190,122,") + (m.a * (0.6 + 0.4 * Math.sin(now / 900 + m.ph))).toFixed(3) + ")";
+            c.beginPath(); c.arc(m.x, m.y, m.r, 0, 6.2832); c.fill();
+          }
+          if (!RM && !document.hidden) raf = requestAnimationFrame(paint);
+        }
+        window.addEventListener("resize", size);
+        document.addEventListener("visibilitychange", function () { if (!document.hidden && !raf && !RM) raf = requestAnimationFrame(paint); });
+        raf = requestAnimationFrame(paint);
       })();
     </script>
 
