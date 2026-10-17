@@ -204,7 +204,7 @@ const DOS_LINES = [
 
   "",
 
-  "Volume: THE ALLIANCE",
+  "Volume: The ALLIANCE",
 
   "Directory: N.C.E.ncyclopedia\\*.*",
 

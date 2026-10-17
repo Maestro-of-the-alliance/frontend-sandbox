@@ -355,7 +355,7 @@
     document.getElementById("cmdBody").innerHTML = `
       <div class="cmd-section-label">FIND YOUR PLACE IN THE WORK</div>
       <p style="font-size:16px;color:rgba(184,150,40,0.55);letter-spacing:0.1em;line-height:1.7;margin-bottom:18px;">
-        THE ALLIANCE is built by people who refused to be made brutal.<br>
+        The ALLIANCE is built by people who refused to be made brutal.<br>
         If that sounds like you — we could use your skills.
       </p>
       <div class="cmd-form-group">
@@ -475,7 +475,7 @@
         <span class="cmd-link-icon">◉</span>
         <div class="cmd-link-info">
           <div class="cmd-link-title">THE NEWSLETTER — COMING SOON</div>
-          <div class="cmd-link-desc">Updates from THE CORE · First to know when things move</div>
+          <div class="cmd-link-desc">Updates from The CORE · First to know when things move</div>
         </div>
         <span class="cmd-link-arrow">—</span>
       </div>
