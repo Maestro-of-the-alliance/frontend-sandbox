@@ -15,7 +15,8 @@
     var w = cv.clientWidth || 600, h = cv.clientHeight || 260, dpr = Math.min(window.devicePixelRatio || 1, 2);
     cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
     var c = cv.getContext("2d"); c.setTransform(dpr, 0, 0, dpr, 0, 0);
-    var hz = h * 0.8;
+    var sky = cv.dataset.mode === "sky";
+    var hz = sky ? h : h * 0.8;
 
     var g = c.createLinearGradient(0, 0, 0, hz);
     g.addColorStop(0, "#0a0e2e"); g.addColorStop(0.35, "#2a1c6c"); g.addColorStop(0.68, "#bf3f7e"); g.addColorStop(0.9, "#ff8a2b"); g.addColorStop(1, "#ffd25a");
@@ -32,7 +33,7 @@
     mg.addColorStop(0, "#e9f2ff"); mg.addColorStop(1, "#5f7fc4");
     c.fillStyle = mg; c.beginPath(); c.arc(mx, my, mr, 0, 7); c.fill();
 
-    var sx = w * (0.3 + R() * 0.4), sy = hz - h * 0.04, sr = h * 0.24;
+    var sx = w * (0.3 + R() * 0.4), sy = sky ? h * 0.66 : hz - h * 0.04, sr = h * 0.24;
     var glow = c.createRadialGradient(sx, sy, sr * 0.2, sx, sy, sr * 2.6);
     glow.addColorStop(0, "rgba(255,200,90,.85)"); glow.addColorStop(1, "rgba(255,138,43,0)");
     c.fillStyle = glow; c.fillRect(0, 0, w, h);
@@ -40,6 +41,19 @@
     sg.addColorStop(0, "#fff1b0"); sg.addColorStop(1, "#ff9d3c");
     c.fillStyle = sg; c.beginPath(); c.arc(sx, sy, sr, 0, 7); c.fill();
 
+    if (sky) {
+      for (var q = 0; q < 7; q++) {
+        var cx = R() * w, cy = h * (0.42 + R() * 0.45), cw = w * (0.35 + R() * 0.5), ch = h * (0.03 + R() * 0.04);
+        var cg = c.createRadialGradient(cx, cy, 1, cx, cy, cw / 2);
+        cg.addColorStop(0, "rgba(255,150,120,.3)"); cg.addColorStop(1, "rgba(255,150,120,0)");
+        c.save(); c.translate(cx, cy); c.scale(1, ch / (cw / 2)); c.translate(-cx, -cy);
+        c.fillStyle = cg; c.beginPath(); c.arc(cx, cy, cw / 2, 0, 7); c.fill(); c.restore();
+      }
+      var v0 = c.createRadialGradient(w / 2, h / 2, h * 0.5, w / 2, h / 2, w * 0.75);
+      v0.addColorStop(0, "rgba(10,4,0,0)"); v0.addColorStop(1, "rgba(10,4,0,.45)");
+      c.fillStyle = v0; c.fillRect(0, 0, w, h);
+      return;
+    }
     var x = -10;
     c.fillStyle = "rgba(60,36,120,.55)";
     while (x < w + 10) { var bw = 8 + R() * 22, bh = h * (0.08 + R() * 0.2); c.fillRect(x, hz - bh, bw, bh); x += bw + R() * 4; }
