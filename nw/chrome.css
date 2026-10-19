@@ -1,0 +1,90 @@
+/* Shared site chrome in the daybreak language: burger, hub menu, canon wheel,
+   bottom nav, dimension squares, command panel. Scoped to world pages,
+   s3, search and landing (html[data-world] / html.nwx) so tours and other
+   legacy pages are untouched. Per-page accent comes from --nw-accent. */
+html[data-world],html.nwx{
+  --cx-gold:#ffc24a;--cx-gold-hi:#ffe9a8;--cx-ink:#0a0f2e;--cx-cream:#fff4dc;
+  --cx-sky:linear-gradient(180deg,rgba(6,10,34,.96) 0%,rgba(27,27,92,.95) 55%,rgba(122,44,124,.93) 100%);
+  --cx-a:var(--nw-accent,#ffc24a);--cx-d:"Syne",system-ui,sans-serif;--cx-b:"Figtree",system-ui,sans-serif;
+}
+/* ---------- burger ---------- */
+html[data-world] #nw-burger-fallback,html.nwx #nw-burger-fallback,html.nwx .nw-burger-btn{
+  border-radius:14px;border:0;background:rgba(10,15,46,.88);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--cx-a) 55%,transparent),0 6px 22px rgba(0,0,0,.35);
+  transition:transform .2s,box-shadow .2s}
+html[data-world] #nw-burger-fallback:hover,html.nwx #nw-burger-fallback:hover{transform:scale(1.06);box-shadow:0 0 0 1px var(--cx-a),0 0 26px color-mix(in srgb,var(--cx-a) 55%,transparent)}
+html[data-world] #nw-burger-fallback span,html.nwx #nw-burger-fallback span,html.nwx .nw-burger-btn span{background:var(--cx-cream);border-radius:2px}
+/* ---------- hub menu ---------- */
+html[data-world] #hub-overlay,html.nwx #hub-overlay{background:var(--cx-sky);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+html[data-world] #hub-overlay::before,html.nwx #hub-overlay::before{display:none}
+html[data-world] #hub-panel,html.nwx #hub-panel,
+html[data-world] .hub-eyebrow,html.nwx .hub-eyebrow,html[data-world] .hub-sub,html.nwx .hub-sub,
+html[data-world] .hub-node,html.nwx .hub-node,html[data-world] .hub-node-code,html.nwx .hub-node-code,
+html[data-world] .hub-node-label,html.nwx .hub-node-label,html[data-world] .hub-node-desc,html.nwx .hub-node-desc{font-family:var(--cx-b)}
+html[data-world] .hub-eyebrow,html.nwx .hub-eyebrow{font-weight:600;font-size:14px;letter-spacing:.02em;text-transform:none;color:var(--cx-a)}
+html[data-world] .hub-title,html.nwx .hub-title{font-family:var(--cx-d);font-weight:800;letter-spacing:-.02em;text-transform:none;font-size:clamp(34px,7vw,54px);line-height:1;
+  background:linear-gradient(180deg,#fff,var(--cx-gold-hi) 55%,var(--cx-a));-webkit-background-clip:text;background-clip:text;color:transparent}
+html[data-world] .hub-cursor,html.nwx .hub-cursor{display:none}
+html[data-world] .hub-sub,html.nwx .hub-sub{font-size:15px;letter-spacing:0;text-transform:none;color:rgba(255,244,220,.72);margin-bottom:30px}
+html[data-world] .hub-node,html.nwx .hub-node{border:1px solid rgba(255,233,168,.2);border-radius:16px;margin-bottom:10px;padding:16px 18px;
+  background:rgba(255,255,255,.06);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);transition:background .2s,transform .2s,border-color .2s,box-shadow .2s}
+html[data-world] .hub-node:last-of-type,html.nwx .hub-node:last-of-type{border-bottom:1px solid rgba(255,233,168,.2)}
+html[data-world] .hub-node:hover,html[data-world] .hub-node:focus-visible,html.nwx .hub-node:hover,html.nwx .hub-node:focus-visible{
+  background:color-mix(in srgb,var(--cx-a) 20%,rgba(255,255,255,.06));border-color:var(--cx-a);transform:translateY(-2px);
+  box-shadow:0 10px 30px rgba(0,0,0,.3),0 0 22px color-mix(in srgb,var(--cx-a) 35%,transparent)}
+html[data-world] .hub-node::before,html.nwx .hub-node::before{display:none}
+html[data-world] .hub-node-code,html.nwx .hub-node-code{font-family:var(--cx-d);font-weight:800;font-size:15px;letter-spacing:0;color:var(--cx-a);width:32px}
+html[data-world] .hub-node-label,html.nwx .hub-node-label{font-family:var(--cx-d);font-weight:700;font-size:20px;letter-spacing:0;text-transform:none;color:var(--cx-cream)}
+html[data-world] .hub-node-desc,html.nwx .hub-node-desc{font-size:15px;letter-spacing:0;color:rgba(255,244,220,.78)}
+html[data-world] .hub-node:hover .hub-node-desc,html[data-world] .hub-node:focus-visible .hub-node-desc,html[data-world] .hub-node.hub-previewed .hub-node-desc,
+html.nwx .hub-node:hover .hub-node-desc,html.nwx .hub-node:focus-visible .hub-node-desc,html.nwx .hub-node.hub-previewed .hub-node-desc{max-height:44px}
+html[data-world] .hub-node-arrow,html.nwx .hub-node-arrow{color:var(--cx-cream)}
+html[data-world] .hub-node-prompt-glyph,html.nwx .hub-node-prompt-glyph{font-family:var(--cx-b);color:var(--cx-a);opacity:.8}
+html[data-world] #hub-close,html.nwx #hub-close{border-radius:14px;border:0;background:rgba(10,15,46,.6);color:var(--cx-cream);font-family:var(--cx-b);
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--cx-a) 55%,transparent)}
+/* ---------- canon wheel ---------- */
+html[data-world] #nw-overlay,html.nwx #nw-overlay{background:var(--cx-sky)}
+html[data-world] .nw-wheel-back,html.nwx .nw-wheel-back{font-family:var(--cx-b);font-weight:600;font-size:15px;letter-spacing:0;text-transform:none;color:var(--cx-cream)}
+html[data-world] .nw-wheel-item,html.nwx .nw-wheel-item{font-family:var(--cx-b);font-weight:600;font-size:clamp(16px,3.6vw,19px);letter-spacing:0;text-transform:none}
+html[data-world] .nw-wheel-item.center,html.nwx .nw-wheel-item.center{font-family:var(--cx-d);font-weight:800;font-size:clamp(20px,4.6vw,26px);color:var(--cx-gold-hi)}
+html[data-world] #nw-wheel-viewport .nw-center-bar,html.nwx #nw-wheel-viewport .nw-center-bar{border:0;border-radius:14px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,233,168,.3)}
+html[data-world] #nw-wheel-viewport::before,html.nwx #nw-wheel-viewport::before{background:linear-gradient(to bottom,rgba(27,27,92,.95),transparent)}
+html[data-world] #nw-wheel-viewport::after,html.nwx #nw-wheel-viewport::after{background:linear-gradient(to top,rgba(27,27,92,.95),transparent)}
+/* ---------- bottom prev/next ---------- */
+html[data-world] .nw-bottom-nav a,html.nwx .nw-bottom-nav a{font-family:var(--cx-b);font-weight:600;font-size:15px;letter-spacing:0;text-transform:none;padding:10px 16px;border-radius:14px}
+html[data-world] .nw-bottom-nav a:hover,html.nwx .nw-bottom-nav a:hover{background:color-mix(in srgb,currentColor 10%,transparent)}
+html[data-world] .nw-arrow-label,html.nwx .nw-arrow-label{font-size:14px;max-width:140px}
+/* ---------- dimension squares ---------- */
+html[data-world] #dim-nav .dim-nav-square,html.nwx #dim-nav .dim-nav-square{border-radius:6px;width:16px;height:16px}
+html[data-world] #dim-nav .dim-nav-tooltip,html.nwx #dim-nav .dim-nav-tooltip{font-family:var(--cx-b);font-weight:600;font-size:12px;letter-spacing:.02em;border-radius:8px;padding:5px 9px;background:rgba(10,15,46,.92);top:24px}
+/* ---------- command panel ---------- */
+html[data-world] #cmdPanel,html.nwx #cmdPanel{background:var(--cx-sky);font-family:var(--cx-b)}
+html[data-world] .cmd-topbar,html.nwx .cmd-topbar{background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,233,168,.2)}
+html[data-world] .cmd-prompt-sym,html.nwx .cmd-prompt-sym{font-family:var(--cx-d);font-weight:800;color:var(--cx-gold)}
+html[data-world] .cmd-topbar-label,html.nwx .cmd-topbar-label{font-family:var(--cx-d);font-weight:800;font-size:20px;letter-spacing:0;color:var(--cx-cream)}
+html[data-world] .cmd-close,html.nwx .cmd-close{color:var(--cx-cream)}
+html[data-world] .cmd-tabs,html.nwx .cmd-tabs{border-bottom:1px solid rgba(255,233,168,.15)}
+html[data-world] .cmd-tab,html.nwx .cmd-tab{font-family:var(--cx-b);font-weight:600;font-size:15px;letter-spacing:0;text-transform:none;color:rgba(255,244,220,.7)}
+html[data-world] .cmd-tab.active,html.nwx .cmd-tab.active{color:var(--cx-gold-hi);border-bottom-color:var(--cx-gold)}
+html[data-world] .cmd-section-label,html.nwx .cmd-section-label{font-family:var(--cx-d);font-weight:700;font-size:16px;letter-spacing:0;text-transform:none;color:var(--cx-gold)}
+html[data-world] .cmd-form-label,html.nwx .cmd-form-label{font-family:var(--cx-b);font-size:14px;letter-spacing:0;text-transform:none;color:rgba(255,244,220,.8)}
+html[data-world] .cmd-form-input,html[data-world] .cmd-form-select,html[data-world] .cmd-form-textarea,
+html.nwx .cmd-form-input,html.nwx .cmd-form-select,html.nwx .cmd-form-textarea{font-family:var(--cx-b);font-size:16px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,233,168,.3);color:var(--cx-cream)}
+html[data-world] .cmd-form-submit,html[data-world] .cmd-support-btn,html.nwx .cmd-form-submit,html.nwx .cmd-support-btn{font-family:var(--cx-d);font-weight:800;letter-spacing:.02em;text-transform:none;border-radius:99px;border:0;color:var(--cx-ink);
+  background:linear-gradient(180deg,#fff3c4,var(--cx-gold))}
+html[data-world] .cmd-skill-chip,html.nwx .cmd-skill-chip{font-family:var(--cx-b);font-size:14px;letter-spacing:0;border-radius:99px}
+html[data-world] .cmd-link-card,html.nwx .cmd-link-card{border-radius:16px}
+html[data-world] .cmd-link-title,html[data-world] .cmd-support-headline,html.nwx .cmd-link-title,html.nwx .cmd-support-headline{font-family:var(--cx-d);font-weight:700;letter-spacing:0;text-transform:none}
+html[data-world] .cmd-link-desc,html[data-world] .cmd-support-sub,html.nwx .cmd-link-desc,html.nwx .cmd-support-sub{font-family:var(--cx-b);letter-spacing:0;font-size:15px}
+
+/* accent on dark overlays: light-world accents are dark, so lift them */
+html.w-protocols{--cx-a:#3fd6a0}html.w-doctrine{--cx-a:#ffc24a}
+html[data-world] .hub-title,html.nwx .hub-title{font-size:clamp(28px,5.4vw,42px)}
+
+html[data-world] .hub-node-desc,html.nwx .hub-node-desc{display:none;max-height:none;margin-top:2px}
+html[data-world] .hub-node:hover .hub-node-desc,html[data-world] .hub-node:focus-visible .hub-node-desc,html[data-world] .hub-node.hub-previewed .hub-node-desc,
+html.nwx .hub-node:hover .hub-node-desc,html.nwx .hub-node:focus-visible .hub-node-desc,html.nwx .hub-node.hub-previewed .hub-node-desc{display:block;max-height:none}
+html[data-world] .hub-node-body,html.nwx .hub-node-body{display:flex;flex-direction:column;justify-content:center}
+html[data-world] .hub-node,html.nwx .hub-node{align-items:center}
+html[data-world] .hub-node-code,html.nwx .hub-node-code{align-self:center}

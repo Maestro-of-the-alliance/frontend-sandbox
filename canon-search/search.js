@@ -27,7 +27,7 @@ async function init() {
     
     // Update doc count
     const totalDocs = searchIndex.documents.length;
-    docCountLoading.textContent = `ONLINE [${totalDocs} FILES LOADED]`;
+    docCountLoading.textContent = `${totalDocs} entries ready`;
     docCountLoading.className = 'text-cyberCyan font-bold';
     
     // Wire up events
@@ -62,13 +62,13 @@ function setMode(mode) {
     tabLiteral.className = 'px-4 py-2 font-mono text-sm uppercase flex items-center space-x-2 border border-cyberCyan bg-cyan-950/40 text-cyberCyan glow-cyan transition-all duration-200';
     tabSemantic.className = 'px-4 py-2 font-mono text-sm uppercase flex items-center space-x-2 border border-transparent hover:border-cyan-800 text-cyan-600 hover:text-cyberCyan transition-all duration-200';
     semanticDot.className = 'w-2 h-2 bg-transparent border border-cyan-800 rounded-full';
-    explanationText.textContent = 'EXACT MATCHING: Finds literal words, phrases, or codenames anywhere in canon.';
+    explanationText.textContent = 'Exact matching: finds literal words, phrases, or codenames anywhere in canon.';
     searchInput.placeholder = "ENTER QUERY FOR WORD-FOR-WORD TEXT SEARCH (E.G. 'REDOUT', 'CIPHER')...";
   } else {
     tabSemantic.className = 'px-4 py-2 font-mono text-sm uppercase flex items-center space-x-2 border border-cyberAmber bg-amber-950/40 text-cyberAmber glow-amber-active transition-all duration-200';
     tabLiteral.className = 'px-4 py-2 font-mono text-sm uppercase flex items-center space-x-2 border border-transparent hover:border-cyan-800 text-cyan-600 hover:text-cyberCyan transition-all duration-200';
     semanticDot.className = 'w-2 h-2 bg-cyberAmber rounded-full';
-    explanationText.textContent = 'SEMANTIC CONCEPT: Matches underlying ideas or user questions (e.g. searching "leaving partner" finds REDOUT & Uncounted Sentence).';
+    explanationText.textContent = 'By idea: matches underlying ideas or user questions (e.g. searching "leaving partner" finds REDOUT & Uncounted Sentence).';
     searchInput.placeholder = "ENTER CONCEPT OR PROBLEM STATEMENT (E.G. 'WHAT IF MY PARTNER LEAVES')...";
   }
   
@@ -307,16 +307,16 @@ function renderResults(results, query = "") {
     if (!query) {
       resultsContainer.innerHTML = `
         <div class="text-center py-16 text-cyan-900 border border-dashed border-cyan-950 rounded-lg bg-black/10">
-          <div class="font-mono mb-2 animate-pulse">SYSTEM STANDBY</div>
-          <div class="text-xs font-mono">READY TO ANALYZE INCOMING QUERY STRINGS</div>
+          <div class="font-mono mb-2 animate-pulse">Ready when you are</div>
+          <div class="text-xs font-mono">Type above to search the whole canon</div>
         </div>
       `;
     } else {
       resultsContainer.innerHTML = `
         <div class="text-center py-16 text-cyan-700/60 border border-dashed border-cyan-950 rounded-lg bg-black/20 font-mono">
-          <div class="text-lg mb-2">⚠ NO RECON CORRELATION DETECTED</div>
+          <div class="text-lg mb-2">Nothing found</div>
           <div class="text-xs max-w-md mx-auto">
-            Zero direct or semantic matches found in any canon documents for query: <span class="text-cyberCyan">"${escapeHtml(query)}"</span>.
+            No direct or idea matches in the canon for <span class="text-cyberCyan">"${escapeHtml(query)}"</span>.
           </div>
         </div>
       `;
@@ -326,8 +326,8 @@ function renderResults(results, query = "") {
   
   let html = `
     <div class="font-mono text-xs text-cyan-700 mb-4 uppercase flex justify-between">
-      <span>CORRELATIONS: ${results.length} RECORD(S) RETRIEVED</span>
-      <span>MODE: ${currentMode.toUpperCase()}</span>
+      <span>${results.length} ${results.length===1?'result':'results'}</span>
+      <span>${currentMode==='semantic'?'By idea':'Word for word'}</span>
     </div>
     <div class="space-y-4">
   `;
@@ -393,7 +393,7 @@ function renderResults(results, query = "") {
         <div class="md:w-36 flex md:flex-col items-center justify-between md:justify-center md:text-center md:border-l md:border-cyan-950/50 md:pl-4 shrink-0 gap-3">
           <!-- Matching Index Score -->
           <div class="text-right md:text-center">
-            <span class="text-2xs font-mono text-cyan-600 block uppercase">Match Weight</span>
+            <span class="text-2xs font-mono text-cyan-600 block uppercase">Match</span>
             <span class="text-2xl font-orbitron font-extrabold ${textAccent}">${score}%</span>
             <!-- Progress Bar -->
             <div class="w-20 h-1 bg-cyan-950/60 rounded-full mt-1 overflow-hidden">

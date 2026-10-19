@@ -1,3 +1,4 @@
+(function(){try{var de=document.documentElement;if(de.hasAttribute("data-world")||de.classList.contains("nwx")){var l=document.createElement("link");l.rel="stylesheet";l.href="/nw/chrome.css";document.head.appendChild(l);if(!document.querySelector('link[href*="family=Syne"]')){var f=document.createElement("link");f.rel="stylesheet";f.href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Figtree:wght@500;600&display=swap";document.head.appendChild(f)}}}catch(e){}})();
 // @ts-nocheck
 /*!
  * NAV WHEEL — THE ALLIANCE
