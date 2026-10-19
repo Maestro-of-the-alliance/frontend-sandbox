@@ -2,7 +2,7 @@
   --void:#080c2a; --deep:#10163f; --panel:#161e55; --ink:#241b14; --ink2:#4a3c2a; --cream:#f4ead2; --cream2:#ebdcb8;
   --sun:#ffb23e; --sun-hi:#ffe08a; --coral:#ff5a36; --ice:#9ad9ea; --chrome1:#f6fbff; --chrome2:#9fb2cf; --chrome3:#4a5d86;
   --acc:#c9a84c; --acc-ink:#6b5410;
-  --display:"Exo 2","Arial Black",Impact,sans-serif; --serif:"Source Serif 4",Georgia,serif; --mono:"Share Tech Mono",ui-monospace,monospace;
+  --display:"Exo 2","Arial Black",Impact,sans-serif; --serif:"Inter","Helvetica Neue",Arial,sans-serif; --mono:"Share Tech Mono",ui-monospace,monospace;
   --gut:max(16px,env(safe-area-inset-left),env(safe-area-inset-right));
 }
 *{box-sizing:border-box}
@@ -59,7 +59,7 @@ h1.title{font:italic 900 clamp(38px,9.5vw,92px)/.95 var(--display);margin:14px 0
 .sheet strong{color:var(--acc-ink)}
 .sheet h3{font:italic 800 20px/1.1 var(--display);text-transform:uppercase;margin:0 0 8px;color:var(--ink)}
 .cols{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
-.card{border:2px solid var(--ink);background:var(--cream2);padding:16px;position:relative}
+.card{color:var(--ink);border:2px solid var(--ink);background:var(--cream2);padding:16px;position:relative}
 .card .tag{font:11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--acc-ink)}
 .glass{background:linear-gradient(160deg,rgba(255,255,255,.1),rgba(255,255,255,.02));border:1px solid rgba(154,217,234,.45);padding:20px;backdrop-filter:blur(3px)}
 .btn{font:700 13px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;padding:13px 16px;min-height:44px;background:var(--sun);color:#1b0d05;border:2px solid var(--sun-hi);box-shadow:0 3px 0 #7a2410;cursor:pointer}
@@ -82,3 +82,14 @@ h1.title{font:italic 900 clamp(38px,9.5vw,92px)/.95 var(--display);margin:14px 0
 input[type=range]{width:100%;accent-color:var(--acc);height:34px}
 @media (max-width:560px){.sheet{padding:18px 16px;box-shadow:5px 5px 0 color-mix(in srgb,var(--acc) 80%,#000)}.inv li{grid-template-columns:1fr;gap:0;text-align:left}.inv li b{display:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}html{scroll-behavior:auto}}
+
+.card h3{color:var(--ink);font:italic 800 20px/1.1 var(--display);text-transform:uppercase;margin:0 0 8px}.card p{margin:0}
+.sheet,.card{font-size:17px;line-height:1.6;font-weight:400}.sheet .lead{font-weight:600;letter-spacing:-.01em}
+/* interference */
+#gl{position:fixed;inset:0;width:100%;height:100%;z-index:40;pointer-events:none;display:block}
+.gchip{position:fixed;right:10px;top:58px;z-index:45;font:11px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:#ff5a63;border:1px solid #ff5a63;background:rgba(20,4,10,.88);padding:7px 9px;opacity:0;pointer-events:none}
+body.gx .gchip{opacity:1}
+body.gx h1.title{animation:gt .12s steps(2) infinite}
+@keyframes gt{0%{filter:drop-shadow(5px 0 #ff2a3c) drop-shadow(-5px 0 #00e5ff);transform:translateX(3px) skewX(-4deg)}50%{filter:drop-shadow(-4px 0 #ff2a3c) drop-shadow(4px 0 #00e5ff);transform:translateX(-4px)}100%{filter:drop-shadow(2px 0 #ff2a3c) drop-shadow(-2px 0 #00e5ff);transform:translateX(0) skewX(3deg)}}
+.gj{animation:gj .1s steps(2) 3}
+@keyframes gj{0%{transform:translateX(7px);clip-path:inset(12% 0 55% 0)}50%{transform:translateX(-9px);clip-path:inset(60% 0 8% 0)}100%{transform:none;clip-path:none}}
