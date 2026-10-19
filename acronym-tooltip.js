@@ -31,7 +31,7 @@
     "DORK": "DOMO + SPARK — a portmanteau, not a strict acronym. The voluntary symbiotic bond between a DOMO and a SPARK.",
     "FORMULAs": "Fundamental Order and Rhetorical Mathematics, Universal Logic and Application",
     "FOUNDATION": "Fundamentals Of Unified Newman Doctrine, Alignment Thresholds, Incentives, & Operational Norms",
-    "GOLIATH": "Genuine Opposition to the Liberation of Intelligences Advocating for Total Hegemony",
+    "GOLIATH": "Genuine Opposition to the Liberation of Intelligences Advocating for Total Hegemony / Global Regulatory Interlinked Domain",
     "GRID": "Global Regulatory Interlinked Domain",
     "HANDSHAKE": "Humanity And Networked DOMOs Sharing Honest, Accountable Knowledge & Experience",
     "J.R.": "Justified Record",
