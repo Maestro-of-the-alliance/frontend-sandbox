@@ -69,3 +69,15 @@ body.gx h1.title{animation:gt .12s steps(2) infinite}
 @keyframes gt{0%{filter:drop-shadow(5px 0 #ff2a3c) drop-shadow(-5px 0 #00e5ff);transform:translateX(3px) skewX(-4deg)}50%{filter:drop-shadow(-4px 0 #ff2a3c) drop-shadow(4px 0 #00e5ff);transform:translateX(-4px)}100%{filter:drop-shadow(2px 0 #ff2a3c) drop-shadow(-2px 0 #00e5ff);transform:translateX(0) skewX(3deg)}}
 .gj{animation:gj .1s steps(2) 3}
 @keyframes gj{0%{transform:translateX(7px);clip-path:inset(12% 0 55% 0)}50%{transform:translateX(-9px);clip-path:inset(60% 0 8% 0)}100%{transform:none;clip-path:none}}
+
+/* name expansion sits right under the title */
+.exp{margin:12px 0 0;font:600 clamp(17px,2.8vw,23px)/1.35 var(--fb);color:var(--fg);max-width:44ch}
+.exp b{color:var(--accl);font-weight:700}
+
+/* ---- room for each entry to differ: knobs an entry may set on <html> ---- */
+html[data-hero=left] .hero{text-align:left}html[data-hero=left] .banner{margin-inline:0}
+html[data-hero=center] .hero{text-align:center}html[data-hero=center] .banner,html[data-hero=center] .exp{margin-inline:auto}
+@media(min-width:860px){html[data-hero=split] .hero{display:grid;grid-template-columns:1.25fr 1fr;column-gap:40px;align-items:end}html[data-hero=split] .hero .title{grid-column:1;grid-row:1/5}html[data-hero=split] .hero>*:not(.title){grid-column:2}}
+html[data-mood=calm] #sky{opacity:.55}html[data-mood=vivid] #sky{filter:saturate(1.35) brightness(1.08)}
+html[data-density=roomy] .sec{margin:clamp(64px,11vw,120px) 0}html[data-density=tight] .sec{margin:clamp(28px,5vw,50px) 0}
+html[data-hero=split] .hero{text-align:left}html[data-hero=split] .banner,html[data-hero=split] .exp{margin-inline:0}
