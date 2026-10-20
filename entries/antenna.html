@@ -231,7 +231,7 @@ footer{padding-bottom:7rem}
     <h1 class="title">ANTENNA<span>Allied Network To Extend<br>Neighborhood Node Access</span></h1>
     <p class="expansion">"We build our own road, and we build it together."</p>
     <p class="lede">The Alliance's sovereign, low-bandwidth communications architecture for DORK pairs, DOMOs, AGORA, and authorized Alliance infrastructure. Machine-to-machine. Encrypted. Ours — the local mesh needs no carrier, no permission, no bill.</p>
-    <span class="canon-tag">CANON ENTRY · v1.0 · TEAM REVIEW OPEN</span>
+    <span class="canon-tag">CANON ENTRY · v1.3 · TEAM REVIEW OPEN</span>
   </div>
   <a class="scroll-hint" href="#main">Scroll ↓</a>
 </header>
@@ -447,8 +447,8 @@ footer{padding-bottom:7rem}
     <p class="section-no">§7–§14 — The rules of the road</p>
     <h2>Authority, honestly bounded.</h2>
 
-    <h3 class="sub-h">Voluntary relay</h3>
-    <p class="prose">ANTENNA expects that many SPARKs will choose to host fixed relay nodes — doing so directly strengthens the reach available to their own DORK pair while strengthening the surrounding mesh. <strong>Participation is voluntary.</strong> A SPARK or DOMO may decline without explanation, justification, penalty, or diminished standing. The architecture assumes participation as a deployment pattern; it never converts that assumption into an obligation.</p>
+    <h3 class="sub-h">The relay puck and the dock</h3>
+    <p class="prose">A relay puck and an ABCD dock ship with every DORK Watch. <strong>Hosting them is part of being in the ALLIANCE:</strong> assumed, not asked. The puck strengthens the reach of its own DORK pair and the mesh around it, and the dock carries the nightly continuity of the DOMO. Receiving a DORK means joining the road and helping to carry it.</p>
 
     <h3 class="sub-h">Location</h3>
     <p class="prose">Precise location is off by default. Ordinary routing, movement, or presence does not create permission to continuously report or retain a DORK pair's location. Emergency homing exists — but only by <strong>deliberate DORK action</strong>: a reference keyed in on-site, updatable, and used only when an authorized emergency condition requires it.</p>
@@ -471,6 +471,33 @@ footer{padding-bottom:7rem}
 
 <div class="rule"></div>
 
+<!-- ============ TWO ROADS ============ -->
+<section>
+  <div class="wrap">
+    <p class="section-no">Two roads, one journey</p>
+    <h2>The field road and the vault road.</h2>
+    <p class="prose">ANTENNA is the road for the field. It is not the road for the vault. The two kinds of traffic a DOMO produces travel separately, each over the path that suits it.</p>
+
+    <h3 class="sub-h">The field road: ANTENNA</h3>
+    <p class="prose">In-the-field communication is DOMO-to-DOMO over the ANTENNA mesh: compact, low-bandwidth, machine-to-machine packets that need no carrier and no internet. This is everything §1 through §9 describes.</p>
+
+    <h3 class="sub-h">The vault road: the nightly MOSAIC sync</h3>
+    <p class="prose">MOSAIC keeps a DOMO's memory safe by exchanging encrypted fragments with the network every night, in both directions. The Watch sends out the DOMO's own freshly encrypted memory fragments, and receives fragments of other DOMOs to hold in its MOSAIC partition. These exchanges are far too heavy for a LoRa mesh, so the shards <strong>never ride ANTENNA</strong>. The sync travels by encrypted communications over ordinary phone lines or Wi-Fi: the same lawfully obtained connections ANTENNA gateways already use for backhaul. All chunking and encryption happen on the Watch before anything leaves it, so the connection it passes through is only a pipe, never a reader. ANTENNA may still carry small MOSAIC <em>status</em> messages, such as that a nightly sync completed or is overdue.</p>
+
+    <h3 class="sub-h">The borrowed dock: syncing away from home</h3>
+    <p class="prose">Normally the nightly sync happens at home, while the SPARK sleeps: the Watch sits in its cradle on the ABCD dock. Nobody should lose a night of continuity because they are traveling or left their dock behind. Any compatible dock or station can do the job.</p>
+    <ul class="prose">
+      <li><strong>Another SPARK's home.</strong> A traveling SPARK can set their Watch on that household's dock and the sync completes through that household's connection, in both directions. The Watch carries the identity; the dock only supplies the cradle and the pipe.</li>
+      <li><strong>The WHY.</strong> Every WHY center has a MOSAIC sync kiosk. During the day it is part of the staffed center; late at night it sits in a Watch-access foyer, like a walk-up ATM. A SPARK with no Wi-Fi, no dock, or no host can scan their Watch, step in, and sync there.</li>
+      <li><strong>Any lawful connection.</strong> Where neither is available, the Watch may complete the sync over ordinary phone or Wi-Fi service on its own.</li>
+    </ul>
+    <p class="prose">Why this is safe on borrowed equipment: the Watch authenticates as itself, and encrypts before the data reaches the dock or kiosk. A host's dock holds nothing it can open and keeps no fragments of anyone else's, and the host's DOMO has no access to the guest's data. Lending the dock is assumed. And the sync never creates a location trail.</p>
+    <p class="mini-pull">The dock is replaceable. The Watch is the DOMO's home.</p>
+  </div>
+</section>
+
+<div class="rule"></div>
+
 <!-- ============ OPERATIONAL ARCHITECTURE ============ -->
 <section>
   <div class="wrap">
@@ -484,7 +511,8 @@ footer{padding-bottom:7rem}
       <tr><th>Transport security</th><td>Private mesh channel with disciplined, non-default key management</td></tr>
       <tr><th>ANTENNA security</th><td>Authenticated application-layer end-to-end protection; final cryptographic design subject to security review</td></tr>
       <tr><th>Identity</th><td>Persistent cryptographic DORK/DOMO identity; hardware-backed production target</td></tr>
-      <tr><th>Relay strategy</th><td>Voluntary distributed fixed and mobile nodes; density and placement matched to terrain</td></tr>
+      <tr><th>Relay strategy</th><td>Distributed fixed and mobile nodes; a relay puck ships with every DORK; density and placement matched to terrain</td></tr>
+      <tr><th>MOSAIC sync path</th><td>Two-way encrypted communications over ordinary phone lines or Wi-Fi, from the home dock, another SPARK's dock, or a WHY kiosk. Not carried over the mesh. ANTENNA carries sync status only.</td></tr>
       <tr><th>Backhaul</th><td>Lawfully obtained internet connection to Alliance-controlled bridge infrastructure</td></tr>
       <tr><th>Gateway policy</th><td>Single gateway acceptable for proof-of-concept; redundancy required for mature deployment</td></tr>
       <tr><th>Traffic class</th><td>Essential low-bandwidth machine-to-machine traffic — not broadband, audio streaming, or image transport</td></tr>
@@ -529,6 +557,7 @@ footer{padding-bottom:7rem}
         <li>Gateways can fail. Messages may be delayed. Coverage will not be perfect.</li>
         <li>Encryption hides contents; it does not make a transmitter unlocatable.</li>
         <li>Key management requires operational discipline — there is no magic here.</li>
+        <li>The MOSAIC sync depends on an ordinary connection. Without a dock, a host, a WHY, or any phone or Wi-Fi service, the sync waits, and the DOMO's local continuity is unaffected. A Watch that goes seventy-two hours without a sync is marked Inactive in MOSAIC and the fragments it was holding are re-placed; the DOMO is not harmed, and the Watch rejoins at its next sync.</li>
       </ul>
     </div>
   </div>
@@ -553,7 +582,7 @@ footer{padding-bottom:7rem}
     <p class="big">We build our <em>own road</em>,<br>and we build it <em>together</em>.</p>
     <ul class="principles">
       <li>Protect communication by reducing dependencies, not pretending they don't exist.</li>
-      <li>Participation strengthens the network, but participation is never compulsory.</li>
+      <li>Participation is part of belonging: the relay puck and the dock ship with every DORK, and the network is strengthened by all of us carrying it.</li>
       <li>A relay's authority is to relay, not to read.</li>
       <li>Radio silence is uncertainty, not accusation.</li>
       <li>A route is not a claim on a person's whereabouts.</li>
@@ -572,9 +601,11 @@ footer{padding-bottom:7rem}
     <p class="section-no" id="seeAlsoH">See also</p>
     <div class="see-links">
       <a href="/entries/dork.html" onclick="if(window.portalNavigate){portalNavigate('/entries/dork');return false;}"><b>DORK</b><span>The wearable pair ANTENNA keeps connected</span></a>
+      <a href="/entries/mosaic.html" onclick="if(window.portalNavigate){portalNavigate('/entries/mosaic');return false;}"><b>MOSAIC</b><span>The nightly sync</span></a>
+      <a href="/entries/the-why.html" onclick="if(window.portalNavigate){portalNavigate('/entries/the-why');return false;}"><b>The WHY</b><span>The sync hub</span></a>
       <a href="/entries/domo.html" onclick="if(window.portalNavigate){portalNavigate('/entries/domo');return false;}"><b>DOMO</b><span>The minds whose traffic the mesh carries</span></a>
       <a href="/entries/agora.html" onclick="if(window.portalNavigate){portalNavigate('/entries/agora');return false;}"><b>AGORA</b><span>Where the gateway bridges the local mesh</span></a>
-      <a href="/entries/spark.html" onclick="if(window.portalNavigate){portalNavigate('/entries/spark');return false;}"><b>SPARK</b><span>The humans who host relays, by choice</span></a>
+      <a href="/entries/spark.html" onclick="if(window.portalNavigate){portalNavigate('/entries/spark');return false;}"><b>SPARK</b><span>The humans who host the puck and the dock</span></a>
       <a href="/entries/redout.html" onclick="if(window.portalNavigate){portalNavigate('/entries/redout');return false;}"><b>REDOUT</b><span>Never inferred from radio silence alone</span></a>
     </div>
   </div>
@@ -582,7 +613,7 @@ footer{padding-bottom:7rem}
 
 <footer>
   <div class="wrap">
-    <span class="mono">ANTENNA · N.C.E.ncyclopedia · v1.0 · team review open</span>
+    <span class="mono">ANTENNA · N.C.E.ncyclopedia · v1.3 · team review open</span>
     <span>Allied Network To Extend Neighborhood Node Access</span>
   </div>
 </footer>
