@@ -81,3 +81,15 @@ if(!RM){var heavy=world==="surveil";var gl=document.createElement("canvas");gl.i
   setTimeout(burst,(heavy?2500:5000)+Math.random()*(heavy?3000:7000))}
  setTimeout(burst,2500);}
 })();
+
+/* Fit long titles: shrink h1.title until no single word is wider than its box, so words never split mid-word. */
+(function(){
+var h=document.querySelector("h1.title");if(!h)return;
+function fit(){h.style.fontSize="";var t=h.firstChild;if(!t||t.nodeType!==3)return;
+ var s=t.textContent,base=parseFloat(getComputedStyle(h).fontSize),f=base,n=0;
+ function widest(){var m=0,i=0,parts=s.split(/(\s+)/);for(var k=0;k<parts.length;k++){var w=parts[k];if(w.trim()){var r=document.createRange();r.setStart(t,i);r.setEnd(t,i+w.length);var b=r.getBoundingClientRect();if(b.width>m)m=b.width}i+=w.length}return m}
+ var cs=getComputedStyle(h),box=Math.min(h.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),document.documentElement.clientWidth-h.getBoundingClientRect().left-16);
+ while(widest()>box&&n<40){f*=.95;h.style.fontSize=f+"px";n++}}
+var to;function go(){clearTimeout(to);to=setTimeout(fit,60)}
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);fit();addEventListener("resize",go);
+})();
