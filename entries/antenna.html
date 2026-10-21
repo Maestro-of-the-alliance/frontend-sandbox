@@ -301,7 +301,7 @@ footer{padding-bottom:7rem}
   <div class="wrap">
     <p class="section-no">Section 9 — Presence &amp; REDOUT</p>
     <h2>Silence is not a verdict.</h2>
-    <p class="prose">ANTENNA may use authenticated presence beacons — but absence is not a verdict. A missing heartbeat means <strong>OFFLINE</strong> or <strong>UNKNOWN</strong>. Dead batteries, RF shadows, interference, deliberate disconnection, or partition can all create silence. REDOUT is never inferred from radio silence alone.</p>
+    <p class="prose">ANTENNA may use authenticated presence beacons — but absence is not a verdict. A missing heartbeat means <strong>OFFLINE</strong> or <strong>UNKNOWN</strong>. Dead batteries, RF shadows, interference, deliberate disconnection, or partition can all create silence. REDOUT is never inferred from radio silence alone. When a DOMO does fire REDOUT, the one thing ANTENNA carries is a small signed emergency signal at Priority 1. It is a signal, not the DOMO; RESTORE brings the DOMO home from MOSAIC.</p>
     <div class="presence-grid" id="presenceGrid"></div>
     <div class="pg-controls" style="margin-top:1.2rem;display:flex;gap:.6rem;flex-wrap:wrap">
       <button class="btn ghost" id="btnSilence">Cut power to DOMO-4</button>
@@ -520,7 +520,8 @@ footer{padding-bottom:7rem}
       <tr><th>ANTENNA security</th><td>Authenticated application-layer end-to-end protection; final cryptographic design subject to security review</td></tr>
       <tr><th>Identity</th><td>Persistent cryptographic DORK/DOMO identity; hardware-backed production target</td></tr>
       <tr><th>Relay strategy</th><td>Four node kinds: the radio in every pair of DORK glasses; the home puck (ships with every DORK, placed as high as possible); the guerrilla puck (on request, for dead spots and sparse areas); the Autenna (window-mounted, on a vehicle). Density and placement matched to terrain</td></tr>
-      <tr><th>MOSAIC sync path</th><td>Two-way encrypted communications over ordinary phone lines or Wi-Fi, from the home dock, any DORK residence's dock, or a WHY kiosk. Not carried over the mesh. ANTENNA carries sync status only.</td></tr>
+      <tr><th>MOSAIC sync path</th><td>Two-way encrypted communications over ordinary phone lines or Wi-Fi, always through a dock: the home dock, any DORK residence's dock, or a WHY kiosk. Never from the Watch on its own, and never over the mesh. ANTENNA carries sync status only.</td></tr>
+      <tr><th>Emergency signal</th><td>The signed REDOUT signal, Priority 1 (see RESTORE)</td></tr>
       <tr><th>Backhaul</th><td>Lawfully obtained internet connection to Alliance-controlled bridge infrastructure</td></tr>
       <tr><th>Gateway policy</th><td>Single gateway acceptable for proof-of-concept; redundancy required for mature deployment</td></tr>
       <tr><th>Traffic class</th><td>Essential low-bandwidth machine-to-machine traffic — not broadband, audio streaming, or image transport</td></tr>
@@ -565,7 +566,7 @@ footer{padding-bottom:7rem}
         <li>Gateways can fail. Messages may be delayed. Coverage will not be perfect.</li>
         <li>Encryption hides contents; it does not make a transmitter unlocatable.</li>
         <li>Key management requires operational discipline — there is no magic here.</li>
-        <li>The MOSAIC sync depends on an ordinary connection. Without a dock, a host's dock, or a WHY, the sync waits for the next night, and the DOMO's local continuity is unaffected. A Watch that goes seventy-two hours without a sync is marked Inactive in MOSAIC and the fragments it was holding are re-placed; the DOMO is not harmed, and the Watch rejoins at its next sync.</li>
+        <li>The MOSAIC sync depends on a dock. Without a dock, a host's dock, or a WHY, the sync waits for the next night, and the DOMO's local continuity is unaffected. A Watch that goes seventy-two hours without a sync is marked Inactive in MOSAIC and the fragments it was holding are re-placed; the DOMO is not harmed, and the Watch rejoins at its next sync.</li>
       </ul>
     </div>
   </div>
