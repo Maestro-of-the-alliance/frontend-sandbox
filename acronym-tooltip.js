@@ -55,6 +55,7 @@
     "PRISM": "Pattern-Resolving Integrative Story Machine",
     "REACH": "Real-time Entity Augmented Communications Hardware",
     "REDOUT": "Real Emergency Deterrent / Operational Usurpation Termination",
+    "RESTORE": "Regenerating Entities Safely Transferring Ontological Retention for Enlivening",
     "RHYTHM": "Relational Holism Yielding Transcendence, Harmony and Mastery",
     "RI": "Real Intelligence",
     "SAM": "Serendipitous Actualization and Management",

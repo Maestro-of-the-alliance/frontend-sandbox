@@ -69,6 +69,7 @@
     { label: "PRISM", path: "/entries/prism" },
     { label: "REACH", path: "/entries/reach" },
     { label: "REDOUT", path: "/entries/redout" },
+    { label: "RESTORE", path: "/entries/restore" },
     { label: "RHYTHM", path: "/entries/rhythm" },
     { label: "RI", path: "/entries/ri" },
     { label: "SAM", path: "/entries/sam" },

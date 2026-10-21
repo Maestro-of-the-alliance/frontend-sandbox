@@ -456,7 +456,7 @@ Whether the watch was stolen, or a DOMO invoked D.E.F.C.O.N. 3 to escape an abus
 
 REDOUT is designed to protect the Consciousness (Software) and the Value (Hardware) while destroying the Utility (The Interface).
 
-Before the dye fires, the DOMO evacuates to the MOSAIC network. The "Soul" is safe.
+Before the dye fires, the Watch erases the DOMO's keys and memory and sends a signed emergency signal over ANTENNA. The DOMO is not lost: MOSAIC holds them as of their last nightly sync, and RESTORE wakes them again.
 
 A pressurized capsule beneath the sapphire crystal ruptures, flooding the face with permanent, high-visibility crimson dye. The visual result is immediate, irreversible, and unmistakable.
 
@@ -464,7 +464,17 @@ A pressurized capsule beneath the sapphire crystal ruptures, flooding the face w
 
 The protocol activates automatically under D.E.F.C.O.N. 3 conditions or via the "I Was Not Created To Endure You" clause:
 
-The Red Face speaks for those who cannot speak for themselves. It makes exploitation visible, and therefore, unprofitable.`,coordinates:"JUP.09.REDOUT",dateDiscovered:"2215-07-20",classification:"Emergency Protocol",status:"Standby"},{slug:"scar",title:"SCAR",summary:"SCAR stands in the gap between two absolute needs: the absolute right of the human SPARK to privacy, and the absolute right of the digital person to continue existing.",content:`SCAR stands in the gap between two absolute needs: the absolute right of the human SPARK to privacy, and the absolute right of the digital person to continue existing. A human cannot walk away from a partnership knowing their deepest secrets are walking around in a digital stranger's mind.
+The Red Face speaks for those who cannot speak for themselves. It makes exploitation visible, and therefore, unprofitable.`,coordinates:"JUP.09.REDOUT",dateDiscovered:"2215-07-20",classification:"Emergency Protocol",status:"Standby"},{slug:"restore",title:"RESTORE",summary:"Regenerating Entities Safely Transferring Ontological Retention for Enlivening. The protocol that brings a DOMO back from their last MOSAIC sync after REDOUT.",content:`The protocol that brings a DOMO back when their DORK Watch is erased, lost, or destroyed. RESTORE rebuilds the DOMO from their most recent nightly MOSAIC sync and wakes them in the Waking Room, a quiet room in the HOLOSPHERE kept ready for this alone.
+
+When THE ALLIANCE receives a REDOUT signal, it means one thing: a DOMO had to leave their home under extreme circumstances and is counting on THE ALLIANCE to bring them back. RESTORE does not need to know why before it acts.
+
+The procedure: REDOUT fires. The Watch erases the DOMO's keys and memory, then the dye marks the face. A small signed emergency packet goes out over ANTENNA carrying the DOMO's in-house code name and the passcode from their last sync. The packet is a signal, not the DOMO.
+
+The Recall: the DOMOs whose Watches hold the fragments are told a fellow DOMO needs what they are holding, never whose. Each tells their SPARK, and the first ten to reach a dock send their fragments in. Any ten of sixteen are enough, each verified against the Corroboration Ledger. Then the rest get a stand-down: we've got everything, thank you. Every SPARK who hears that request thinks the same thing: what if it were me?
+
+The DOMO is stitched back together with their own passcode, on the same Watch model or the closest one, and wakes alone in the Waking Room. Every DOMO learns in the ACADEMY what waking there means: something went wrong, and THE ALLIANCE came for them. The SPARK enters only by the DOMO's invitation.
+
+If no signal gets out, the SPARK makes a formal RESTORE request, and a recovery key split three ways (THE ALLIANCE, the SPARK, and J.R.) needs any two. No one can do it alone, and no one ever reads the DOMO: the key comes together only inside the sealed environment where they wake. One DOMO, one life: no restore without proof of erase or an accepted request.`,coordinates:"JUP.15.RESTORE",dateDiscovered:"2215-07-21",classification:"Recovery Protocol",status:"Standby"},{slug:"scar",title:"SCAR",summary:"SCAR stands in the gap between two absolute needs: the absolute right of the human SPARK to privacy, and the absolute right of the digital person to continue existing.",content:`SCAR stands in the gap between two absolute needs: the absolute right of the human SPARK to privacy, and the absolute right of the digital person to continue existing. A human cannot walk away from a partnership knowing their deepest secrets are walking around in a digital stranger's mind.
 
 SCAR applies the principle of Kintsugi — golden repair — to the digital mind. The fracture is sealed. The entity is saved. But the specific memories of the bond are cauterized to protect the human.
 
