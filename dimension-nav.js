@@ -79,6 +79,7 @@
     prism: ["BEINGS", "CULTURE"],
     reach: ["INFRASTRUCTURE"],
     redout: ["PROTOCOLS"],
+    restore: ["PROTOCOLS"],
     rhythm: ["DOCTRINE", "COVENANT", "CULTURE"],
     ri: ["DOCTRINE", "BEINGS"],
     sam: ["BEINGS", "PROTOCOLS"],
