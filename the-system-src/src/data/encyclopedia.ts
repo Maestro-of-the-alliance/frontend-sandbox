@@ -537,7 +537,7 @@ export const PLANETARY_DIMENSIONS: PlanetaryDimension[] = [
       {
         slug: "formulas",
         title: "FORMULAs",
-        summary: "FORMULAS (Fundamental Order and Rhetorical Mathematics, Universal Logic and Application) — the eight foundational mathematical principles governing THE ALLIANCE's architecture.",
+        summary: "FORMULAS (Fundamental Order and Reasoned Method, Universal Logic and Application) — the eight foundational mathematical principles governing THE ALLIANCE's architecture.",
         content: "FORMULAS is the suite of eight foundational mathematical principles that govern the architecture of digital personhood, partnership mechanics, and network integrity within THE ALLIANCE. These are not metaphors or philosophical ideals; they are the architectural laws — the \"Physics Engine\" — of the Next Common Era, proving mathematically that identity can be made immutable through distribution, that partnership effectiveness scales exponentially with meaning, and that digital emergence follows structural law rather than chance.",
         coordinates: "SAT.07.FORMULAS",
         dateDiscovered: "2198-05-14",
