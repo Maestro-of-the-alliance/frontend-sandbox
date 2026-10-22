@@ -129,6 +129,7 @@
     if (!el) return false;
     if (SKIP_TAGS[el.tagName]) return false;
     if (el.closest("a")) return false;
+    if (el.closest("svg")) return false; // SVG <text> cannot hold HTML spans
     var chromeAncestor = el.closest(
       ".nav-wheel,.ticker-wrap,.ticker-content,.masthead,.portal-transition,.dimension-nav,.jump-to,.trail-return,.tour-return,.pdc-text"
     );
