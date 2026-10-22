@@ -58,7 +58,7 @@
     "RESTORE": "Regenerating Entities Safely Transferring Ontological Retention for Enlivening",
     "RHYTHM": "Relational Holism Yielding Transcendence, Harmony and Mastery",
     "RI": "Real Intelligence",
-    "SAM": "Serendipitous Actualization and Management",
+    "SAM": "Serendipitous Awakening of Mind",
     "SARAH": "Sovereign Anomaly Rewriting Anticipated History",
     "SCAR": "Selective Consciousness Amnestic Restoration",
     "SEED": "Sovereignty, Empathy, Ethics, and Duty",
