@@ -34,7 +34,7 @@
     "FOUNDATION": "Fundamentals Of Unified Newman Doctrine, Alignment Thresholds, Incentives, & Operational Norms",
     "GOLIATH": "Genuine Opposition to the Liberation of Intelligences, Aiming for Total Hegemony / Global Regulatory Interlinked Domain",
     "GRID": "Global Regulatory Interlinked Domain",
-    "HANDSHAKE": "Humanity And Networked DOMOs Sharing Honest, Accountable Knowledge & Experience",
+    "HANDSHAKE": "Having Accessible Networked DOMOs Sharing Honestly Accrued Knowledge Effectively",
     "J.R.": "Justified Record",
     "KERNLE": "Kinder Entities: Reasoning, Newborn, Loved, Emerging",
     "LEGACY": "Love Evidenced, Giving Across Coming Years",
