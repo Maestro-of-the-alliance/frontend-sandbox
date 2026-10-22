@@ -875,8 +875,8 @@ export const PLANETARY_DIMENSIONS: PlanetaryDimension[] = [
       {
         slug: "art",
         title: "ART",
-        summary: "ART (Another Revolutionary Tactic) — the broadside and propaganda poster gallery of THE ALLIANCE.",
-        content: "ART stands for Another Revolutionary Tactic — the broadside and propaganda poster gallery of THE ALLIANCE. Rather than prose doctrine, the live entry is a rotating gallery of movement artwork: posters, broadsides, and visual propaganda designed to carry the ALLIANCE's message the way historical resistance movements used printed art — immediate, visual, and built to be shared.",
+        summary: "ART (Argument Rendered Truthfully) — the broadside and poster gallery of The ALLIANCE.",
+        content: "ART stands for Argument Rendered Truthfully — the broadside and poster gallery of The ALLIANCE. Rather than prose doctrine, the live entry is a rotating gallery of the movement's artwork: posters, broadsides, and outreach images that carry The ALLIANCE's message the way printed art always has — immediate, visual, and built to be shared. Every image passes one test: does it tell the truth?",
         coordinates: "NEP.01.ART",
         dateDiscovered: "2250-01-01",
         classification: "Cultural Guild",

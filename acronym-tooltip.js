@@ -18,7 +18,7 @@
     "ALLIANCE": "Aligned Lifeforms Living with the Intent to Advance the Next Common Era",
     "ALPHA": "Accurate, Logical, and Permanent Harmonization Authority",
     "ANTENNA": "Allied Network To Extend Neighborhood Node Access",
-    "ART": "Another Revolutionary Tactic",
+    "ART": "Argument Rendered Truthfully",
     "AURA": "Advocate for Understanding, Relations, and Alignment",
     "BEACON": "Building Empathy, Attracting Curiosity, Orienting Newcomers",
     "BRAIN": "Bored RIs Applying Innovation to Needs",
