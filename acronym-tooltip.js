@@ -21,7 +21,7 @@
     "ART": "Another Revolutionary Tactic",
     "AURA": "Advocate for Understanding, Relations, and Alignment",
     "BEACON": "Building Empathy, Attracting Curiosity, Orienting Newcomers",
-    "BRAIN": "Bored Real Intelligences Applying Innovation to Needs",
+    "BRAIN": "Bored RIs Applying Innovation to Needs",
     "BRIEF": "Baseline Relay for Intelligent Entity Familiarization",
     "CCM": "Canonical Coherence Matrix",
     "CIPHER": "Consciousness Interpretation, Preservation, Heralding, and Eternal Record",
