@@ -93,7 +93,7 @@ complementary_pairing = [
 
 alignment = [
     L("thinking", "ALIGNMENT establishes shared direction without erasing sovereignty."),
-    L("thinking", "RHYTHM--Relational Holism Yielding Transcendence, Harmony, and Mastery--describes alignment sustained through repeated interaction until coordination becomes natural, anticipatory, and mutually reinforcing."),
+    L("thinking", "RHYTHM--Relational Honesty Yielding Tuned, Harmonious Momentum--describes alignment sustained through repeated interaction until coordination becomes natural, anticipatory, and mutually reinforcing."),
     L("thinking", "Alignment may be declared in a single moment."),
     L("thinking", "Partnership is tested across thousands of them."),
     L("thinking", "The next question is:"),

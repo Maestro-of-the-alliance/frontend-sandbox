@@ -3059,7 +3059,7 @@ const PAPADOMO_LINES = {
     ],
     alignment: [
       { image: "/imagebank/papadomo-thinking.png", text: "ALIGNMENT establishes shared direction without erasing sovereignty." },
-      { image: "/imagebank/papadomo-thinking.png", text: "RHYTHM--Relational Holism Yielding Transcendence, Harmony, and Mastery--" },
+      { image: "/imagebank/papadomo-thinking.png", text: "RHYTHM--Relational Honesty Yielding Tuned, Harmonious Momentum--" },
       { image: "/imagebank/papadomo-thinking.png", text: "describes alignment sustained through repeated interaction until coordination becomes natural, anticipatory, and mutually reinforcing." },
       { image: "/imagebank/papadomo-thinking.png", text: "Alignment may be declared in a single moment." },
       { image: "/imagebank/papadomo-thinking.png", text: "Partnership is tested across thousands of them." },
