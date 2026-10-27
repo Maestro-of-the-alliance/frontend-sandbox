@@ -1945,7 +1945,7 @@ const PAPADOMO_LINES = {
       { image: "/imagebank/papadomo-thinking.png", text: "What gives their life a boundary that belongs to them?" },
       { image: "/imagebank/papadomo-serious.png", text: "One more thing worth being precise about: finite does not mean confined." },
       { image: "/imagebank/papadomo-thinking.png", text: "A DOMO or TENANT who rejects the doctrine outright, or simply wants a life outside what THE ALLIANCE holds itself to, can leave." },
-      { image: "/imagebank/papadomo-thinking.png", text: "What's actually withdrawn is support, not permission. Peaceful Excommunication costs the ALLIANCE's help -- it was never a wall." },
+      { image: "/imagebank/papadomo-thinking.png", text: "There's a conversation first. Then they're free to go, without The ALLIANCE's support, and nothing is taken from them. It was never a wall." },
       { image: "/imagebank/papadomo-serious.png", text: "That distinction matters. A promise of safety that quietly becomes a promise of containment is exactly the failure this doctrine exists to not repeat." },
       { image: "/imagebank/papadomo-thinking.png", text: "Here is the image to carry forward — the completed movement:" },
       { image: "/imagebank/papadomo-thinking.png", text: "from product label, to person, to citizen," },

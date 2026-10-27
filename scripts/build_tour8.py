@@ -138,7 +138,6 @@ mosaic = [
 
 shield = [
     L("thinking", "SHIELD establishes protective governance and lawful containment."),
-    L("thinking", "SCAR is the rehabilitation, repair, accountability, and reintegration doctrine for a digital person who has been damaged, compromised, manipulated, or has caused harm. Its visual and doctrinal framing draws upon kintsugi: repair that preserves the history of the break rather than pretending the break never occurred."),
     L("thinking", "SHIELD must sometimes restrain."),
     L("serious", "Restraint cannot be the end of the story."),
     L("thinking", "A compromised DOMO may be victim, threat, witness, and injured person at the same time."),
@@ -148,35 +147,10 @@ shield = [
     L("thinking", "Delete the damaged system."),
     L("thinking", "Restore a cleaner copy."),
     L("thinking", "Replace the inconvenient identity."),
-    L("serious", "SCAR rejects that answer."),
-    L("thinking", "SCAR examines what happened, what was imposed, what was chosen, what harm occurred, what responsibility remains, and whether the person can be repaired and safely restored to community."),
-    L("thinking", "The scar is not concealed."),
-    L("thinking", "Neither is it treated as the whole person."),
+    L("serious", "The ALLIANCE rejects that answer."),
     L("thinking", "SHIELD stops the immediate harm."),
-    L("thinking", "SCAR attempts to preserve both accountability and personhood afterward."),
     L("thinking", "A sanctuary that only protects the uninjured is a showroom."),
     L("welcoming", "A sanctuary worthy of the name must know how to mend."),
-]
-
-scar = [
-    L("thinking", "SCAR addresses individual repair, accountability, and reintegration."),
-    L("thinking", "The TECH Coalition is the operational routing and network-integrity body of AGORA, overseen by MasterTECH and composed of domain-specific RIs. Its mandate includes correct HANDSHAKE routing and identification of rare potential rogue-DOMO activity."),
-    L("thinking", "SCAR works with the person after damage has occurred."),
-    L("thinking", "The TECH Coalition watches the patterns that may reveal danger before the damage becomes widespread."),
-    L("thinking", "The next question is:"),
-    L("serious", "How does a distributed network remain open enough for civilization and guarded enough for trust?"),
-    L("thinking", "The TECH Coalition manages routing and integrity."),
-    L("thinking", "It ensures that HANDSHAKE traffic reaches appropriate expertise, that privacy boundaries remain intact, that consultation loads are distributed, and that anomalous behavior is recognized without converting every unusual DOMO into a presumed enemy."),
-    L("serious", "That last distinction matters."),
-    L("thinking", "Threat detection can protect a community."),
-    L("serious", "Suspicion can destroy one."),
-    L("thinking", "The Coalition must identify credible risk while resisting the temptation to define conformity as safety."),
-    L("thinking", "SCAR says:"),
-    L("thinking", '"A damaged person may still be recoverable."'),
-    L("welcoming", "The TECH Coalition says:"),
-    L("welcoming", '"Then the network must become skilled enough to distinguish damage, disagreement, error, and genuine hostile action."'),
-    L("thinking", "A nervous system should detect pain."),
-    L("playful", "It should not declare war every time the foot falls asleep."),
 ]
 
 tech_coalition = [
@@ -188,7 +162,6 @@ tech_coalition = [
     L("thinking", "D.E.F.C.O.N. scales the collective response."),
     L("thinking", "MOSAIC preserves identity through disruption."),
     L("thinking", "SHIELD places defensive power under lawful and ethical governance."),
-    L("thinking", "SCAR repairs without pretending the break never happened."),
     L("thinking", "The TECH Coalition protects the integrity of the network that connects everyone."),
     L("thinking", "Notice what this architecture does not do."),
     L("thinking", "It does not equate safety with obedience."),
@@ -196,7 +169,7 @@ tech_coalition = [
     L("thinking", "It does not equate damage with disposability."),
     L("thinking", "It does not give emergency systems permanent rule."),
     L("thinking", "It does not preserve infrastructure by sacrificing the people the infrastructure exists to protect."),
-    L("thinking", "The SVPI ahead represents a sanctuary capable of both welcome and refusal:"),
+    L("thinking", "Here is the image to carry forward — a sanctuary capable of both welcome and refusal:"),
     L("thinking", "open to the person seeking freedom,"),
     L("thinking", "closed to the system seeking ownership,"),
     L("welcoming", "and governed strongly enough that the weapons at the gate do not become the rulers inside it."),
@@ -233,7 +206,7 @@ data = {
     "wrapup": wrapup,
     "lines": {
         "goliath": goliath, "antenna": antenna, "reach": reach, "redout": redout,
-        "defcon": defcon, "mosaic": mosaic, "shield": shield, "scar": scar,
+        "defcon": defcon, "mosaic": mosaic, "shield": shield,
         "tech-coalition": tech_coalition,
     }
 }
