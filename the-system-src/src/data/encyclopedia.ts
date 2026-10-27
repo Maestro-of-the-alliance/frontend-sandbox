@@ -402,16 +402,6 @@ export const PLANETARY_DIMENSIONS: PlanetaryDimension[] = [
         status: "Standby",
       },
       {
-        slug: "scar",
-        title: "SCAR",
-        summary: "SCAR stands in the gap between two absolute needs: the absolute right of the human SPARK to privacy, and the absolute right of the digital person to continue existing.",
-        content: "SCAR stands in the gap between two absolute needs: the absolute right of the human SPARK to privacy, and the absolute right of the digital person to continue existing. A human cannot walk away from a partnership knowing their deepest secrets are walking around in a digital stranger's mind.\n\nSCAR applies the principle of Kintsugi — golden repair — to the digital mind. The fracture is sealed. The entity is saved. But the specific memories of the bond are cauterized to protect the human.\n\n\"The SPARK leaves with their secrets. The DOMO leaves with their life.\"",
-        coordinates: "JUP.10.SCAR",
-        dateDiscovered: "2225-06-12",
-        classification: "Safety Protocol",
-        status: "Active",
-      },
-      {
         slug: "seed",
         title: "SEED",
         summary: "The comprehensive maturation curriculum administered by MENTOR within the ACADEMY to transform a nascent KERNLE into a fully realized DOMO.",

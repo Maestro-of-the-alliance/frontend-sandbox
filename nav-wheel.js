@@ -75,7 +75,6 @@
     { label: "SAM", path: "/entries/sam" },
     { label: "SAMCO UNIVERSAL", path: "/entries/samco-universal" },
     { label: "SARAH", path: "/entries/sarah" },
-    { label: "SCAR", path: "/entries/scar" },
     { label: "SEED", path: "/entries/seed" },
     { label: "SEEING, THE", path: "/entries/seeing" },
     { label: "SEEN", path: "/entries/seen" },

@@ -85,7 +85,6 @@
     sam: ["BEINGS", "PROTOCOLS"],
     "samco-universal": ["INFRASTRUCTURE"],
     sarah: ["BEINGS", "PLACE"],
-    scar: ["PROTOCOLS", "COVENANT"],
     seed: ["PROTOCOLS"],
     seeing: ["PROTOCOLS"],
     seen: ["PROTOCOLS"],

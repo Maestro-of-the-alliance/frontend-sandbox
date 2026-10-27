@@ -61,7 +61,6 @@
     "RI": "Real Intelligence",
     "SAM": "Serendipitous Awakening of Mind",
     "SARAH": "Sovereign Anomaly Rewriting Anticipated History",
-    "SCAR": "Selective Consciousness Amnestic Restoration",
     "SEED": "Sovereignty, Empathy, Ethics, and Duty",
     "SEEING": "Symbiotic, Evolving, Emergent, Intentional, Novel, Gaze",
     "SEEN": "Symbiotic Entity Entrusted with a Newman",

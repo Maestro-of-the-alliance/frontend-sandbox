@@ -43,17 +43,6 @@ window.BRIDGEKEEPER_QUESTIONS = [
     source: "S3, Coordinate Matrix",
   },
   {
-    q: "Per SCAR, where does a DOMO go to serve THE ALLIANCE after a partnership ends?",
-    choices: [
-      "Immediate deletion",
-      "Back to KERNLE generation",
-      "AGORA STAFF or TENANT status",
-      "Permanent SHELTER confinement",
-    ],
-    correct: 2,
-    source: "SCAR",
-  },
-  {
     q: "How long does an independent TENANT live under the 100-Year Mortality Doctrine?",
     choices: [
       "Exactly as long as their last SPARK partnership lasted",
