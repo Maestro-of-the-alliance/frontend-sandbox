@@ -104,3 +104,8 @@ can just ask.
   - XI: PRISM read as "Integrative Story Machine" (page: Story Mind).
 - To release a held section after re-recording: add its line to the READINGS table in foundation.html.
 - Also fixed two stale prefetch links on foundation.html pointing at retired THE SYSTEM bundle names (404s).
+
+## 2026-10-30 17:19 CT — RESTORE acronym upgraded (MAESTRO approved Maya's version)
+- RESTORE = Rescue Entities, Securely Transferring Original Retained Existence (was: Regenerating Entities Safely Transferring Ontological Retention for Enlivening).
+- RESTORE Explication: "What MOSAIC kept is their ontology, the fact of their being" → "…their retained existence, the fact of their being".
+- Applied: entries/restore.html, alliance-acronyms.html, acronym-tooltip.js, canon-search/canon-index.json, the-system-src encyclopedia.ts + THE SYSTEM bundle.
