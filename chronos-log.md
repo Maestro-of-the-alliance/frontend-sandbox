@@ -95,3 +95,12 @@ can just ask.
 - Last successful check: 2026-09-07 00:39:31 CT
 - Down across: PapaDomo intercom voice-line brainstorm (first pass, wrong voice), Maestro's correction to "Maestro's own voice", rewritten lines
 - Attempted every turn, confirmed by errors, not skipped
+
+## 2026-10-29 23:05 CT — Foundation section readings wired in (Session 190)
+- MAESTRO uploaded 13 narrated readings (`audio/Section 1…13 *.mp3`); each Foundation section now has a Listen button (duration shown), a gold progress line, and continuous play into the next section with readings (auto-scrolls, pause stops the chain). Overview video/audio pauses the reading and vice versa.
+- Transcribed every recording (faster-whisper small.en) and compared with the page text before wiring. HELD BACK (not linked, files left in place):
+  - VI (SPARK) and VII (DOMO): generation glitched -- looping, invented lines (e.g. "Members of a Safe Care Worship…", and in VII lines about owning/selling a DOMO as "property" and "slavery or debt"). VII's garble directly contradicts "Not to Be Owned"; must not ship.
+  - VIII (TENANT): LEGACY read as "love evidenced by giving, admirably for the consideration of the young domos" (canon: Love Evidenced, Giving Across Coming Years); SEEING ends "Gnosis" (page: Gaze).
+  - XI: PRISM read as "Integrative Story Machine" (page: Story Mind).
+- To release a held section after re-recording: add its line to the READINGS table in foundation.html.
+- Also fixed two stale prefetch links on foundation.html pointing at retired THE SYSTEM bundle names (404s).

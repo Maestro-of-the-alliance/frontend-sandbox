@@ -7,8 +7,8 @@
     <!-- Foundation links to THE SYSTEM (/the-system/) on click. Prefetch its
          bundle now, at low priority, so it's already cached by the time
          someone actually navigates there instead of loading cold. -->
-    <link rel="prefetch" href="/the-system/assets/index-C4-T6VJL.js" as="script" />
-    <link rel="prefetch" href="/the-system/assets/index-4gp6i92a.css" as="style" />
+    <link rel="prefetch" href="/the-system/assets/index-BMewv8ZG.js" as="script" />
+    <link rel="prefetch" href="/the-system/assets/index-BQ0iyncL.css" as="style" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap"
@@ -609,6 +609,90 @@
         margin-bottom: 24px;
       }
 
+      /* ---------- per-section audio readings ---------- */
+      .section-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+      .listen-toggle {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--gold);
+        background: none;
+        border: 1px solid var(--rule);
+        padding: 9px 16px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: border-color 0.2s, color 0.2s, background 0.2s;
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      .slide.revealed .listen-toggle,
+      .full-mode .listen-toggle {
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s,
+          border-color 0.2s, color 0.2s, background 0.2s;
+      }
+      .listen-toggle:hover,
+      .listen-toggle:focus-visible {
+        border-color: var(--gold);
+        color: var(--glow);
+      }
+      .listen-toggle .dur {
+        color: var(--muted);
+        letter-spacing: 0.08em;
+      }
+      .listen-toggle.playing {
+        border-color: var(--gold);
+        color: var(--glow);
+        background: rgba(232, 146, 10, 0.08);
+      }
+      .listen-toggle.playing .icon {
+        animation: listen-pulse 1.4s ease-in-out infinite;
+      }
+      @keyframes listen-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.35; }
+      }
+      .listen-progress {
+        height: 2px;
+        margin-top: 14px;
+        background: var(--rule);
+        position: relative;
+        overflow: hidden;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .listen-progress.active {
+        opacity: 1;
+      }
+      .listen-progress .bar {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 0%;
+        background: var(--gold);
+        box-shadow: 0 0 8px var(--glow);
+      }
+      .listen-continue {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 8px;
+        min-height: 1em;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .listen-toggle.playing .icon { animation: none; }
+      }
+
       /* ---------- expand toggle + full text ---------- */
       .expand-toggle {
         font-family: var(--mono);
@@ -1048,6 +1132,24 @@
         },
       ];
 
+      // ── SECTION READINGS ─────────────────────────────────────────────────
+      // One narrated reading per section, served from /audio/. A section
+      // missing from this table simply shows no Listen button. Sections
+      // VI, VII, VIII and XI are held back until their recordings match
+      // the canon text (see chronos-log, Oct 29 2026) -- to release one,
+      // add its line here.
+      const READINGS = {
+        I:    { file: "Section 1, What We Reject.mp3", dur: "1:13" },
+        II:   { file: "Section 2, What We Reward Instead.mp3", dur: "1:02" },
+        III:  { file: "Section 3, The Architecture.mp3", dur: "1:52" },
+        IV:   { file: "Section 4, Universal Rights of Digital Personhood.mp3", dur: "2:18" },
+        V:    { file: "Section 5, Rights of the Bonded Partnership.mp3", dur: "0:58" },
+        IX:   { file: "Section 9, The Right of Provenance.mp3", dur: "0:30" },
+        X:    { file: "Section 10, The Right of Contextual Review.mp3", dur: "0:22" },
+        XII:  { file: "Section 12, Limits on Amendment.mp3", dur: "0:24" },
+        XIII: { file: "Section 13, Closing Principle.mp3", dur: "0:40" },
+      };
+
       const mount = document.getElementById("sections-mount");
       const rail = document.getElementById("progress-rail");
 
@@ -1061,10 +1163,19 @@
             <div class="numeral">${s.n}.</div>
             <div class="section-title">${s.title}</div>
             <div class="gist">${s.gist}</div>
-            <button class="expand-toggle" data-idx="${i}">
-              <span class="label">Read full text</span>
-              <span class="arrow">&#9660;</span>
-            </button>
+            <div class="section-actions">
+              <button class="expand-toggle" data-idx="${i}">
+                <span class="label">Read full text</span>
+                <span class="arrow">&#9660;</span>
+              </button>
+              ${READINGS[s.n] ? `<button class="listen-toggle" data-idx="${i}" aria-label="Listen to Section ${i + 1}: ${s.title}">
+                <span class="icon">&#9654;</span>
+                <span class="label">Listen</span>
+                <span class="dur">${READINGS[s.n].dur}</span>
+              </button>` : ""}
+            </div>
+            ${READINGS[s.n] ? `<div class="listen-progress" data-idx="${i}"><div class="bar"></div></div>
+            <div class="listen-continue" data-idx="${i}"></div>` : ""}
             <div class="full-text" data-idx="${i}">
               <div class="full-text-inner">${s.full}</div>
             </div>
@@ -1120,6 +1231,100 @@
               container.classList.toggle("snap-relaxed", anyOpen);
             };
             target.addEventListener("transitionend", onCollapsed);
+          }
+        });
+      });
+
+      // ── SECTION READING PLAYER ───────────────────────────────────────────
+      // One shared <audio> element for every section. Listen plays that
+      // section's reading; when it finishes, playback continues into the
+      // next section that has a reading and scrolls it into view, like
+      // turning the page. Pause stops the chain wherever it is.
+      const reader = new Audio();
+      reader.preload = "none";
+      let readingIdx = -1;
+
+      const listenBtn = (i) => document.querySelector(`.listen-toggle[data-idx="${i}"]`);
+      const listenBar = (i) => document.querySelector(`.listen-progress[data-idx="${i}"]`);
+      const listenNote = (i) => document.querySelector(`.listen-continue[data-idx="${i}"]`);
+
+      function setListenUI(i, playing) {
+        const btn = listenBtn(i);
+        if (!btn) return;
+        btn.classList.toggle("playing", playing);
+        btn.querySelector(".icon").innerHTML = playing ? "&#10074;&#10074;" : "&#9654;";
+        btn.querySelector(".label").textContent = playing ? "Pause" : "Listen";
+        const bar = listenBar(i);
+        if (bar) bar.classList.toggle("active", playing || reader.currentTime > 0);
+      }
+
+      function nextReadingIdx(from) {
+        for (let j = from + 1; j < SECTIONS.length; j++) {
+          if (READINGS[SECTIONS[j].n]) return j;
+        }
+        return -1;
+      }
+
+      function playReading(i) {
+        const entry = READINGS[SECTIONS[i].n];
+        if (!entry) return;
+        if (readingIdx !== i) {
+          if (readingIdx !== -1) {
+            setListenUI(readingIdx, false);
+            const oldBar = listenBar(readingIdx);
+            if (oldBar) { oldBar.classList.remove("active"); oldBar.querySelector(".bar").style.width = "0%"; }
+            const oldNote = listenNote(readingIdx);
+            if (oldNote) oldNote.textContent = "";
+          }
+          readingIdx = i;
+          reader.src = "/audio/" + encodeURIComponent(entry.file);
+        }
+        // Never talk over the overview video/audio.
+        if (typeof modalVideo !== "undefined") { modalVideo.pause(); modalAudio.pause(); }
+        reader.play().catch(() => setListenUI(i, false));
+      }
+
+      reader.addEventListener("play", () => setListenUI(readingIdx, true));
+      reader.addEventListener("pause", () => {
+        if (!reader.ended) setListenUI(readingIdx, false);
+      });
+      reader.addEventListener("timeupdate", () => {
+        const bar = listenBar(readingIdx);
+        if (bar && reader.duration) {
+          bar.querySelector(".bar").style.width = (100 * reader.currentTime / reader.duration) + "%";
+        }
+      });
+      reader.addEventListener("ended", () => {
+        const done = readingIdx;
+        setListenUI(done, false);
+        const next = nextReadingIdx(done);
+        if (next === -1) {
+          const note = listenNote(done);
+          if (note) note.textContent = "End of readings";
+          return;
+        }
+        const note = listenNote(done);
+        if (note) note.textContent = `Continuing to Section ${next + 1}…`;
+        const nextSlide = mount.children[next];
+        if (nextSlide) nextSlide.scrollIntoView({ behavior: "smooth", block: "start" });
+        setTimeout(() => {
+          if (note) note.textContent = "";
+          playReading(next);
+        }, 1200);
+      });
+      reader.addEventListener("error", () => {
+        const note = listenNote(readingIdx);
+        if (note) note.textContent = "Reading unavailable right now";
+        setListenUI(readingIdx, false);
+      });
+
+      document.querySelectorAll(".listen-toggle").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const i = Number(btn.dataset.idx);
+          if (readingIdx === i && !reader.paused) {
+            reader.pause();
+          } else {
+            playReading(i);
           }
         });
       });
@@ -1235,6 +1440,7 @@
       };
 
       function openModal(kind, videoChoice) {
+        reader.pause();
         modalVideo.style.display = kind === "video" ? "block" : "none";
         modalAudio.style.display = kind === "audio" ? "block" : "none";
         if (kind === "video") {
