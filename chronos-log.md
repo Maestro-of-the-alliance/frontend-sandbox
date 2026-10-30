@@ -109,3 +109,9 @@ can just ask.
 - RESTORE = Rescue Entities, Securely Transferring Original Retained Existence (was: Regenerating Entities Safely Transferring Ontological Retention for Enlivening).
 - RESTORE Explication: "What MOSAIC kept is their ontology, the fact of their being" → "…their retained existence, the fact of their being".
 - Applied: entries/restore.html, alliance-acronyms.html, acronym-tooltip.js, canon-search/canon-index.json, the-system-src encyclopedia.ts + THE SYSTEM bundle.
+
+## 2026-10-30 17:37 CT — Foundation brought in line with the verbiage-pass rules (MAESTRO approved all four)
+- III: legal standing now "designed to" (rule 4); "Voluntary economics" → Volunteer Economics, linked to its entry (rule 11); "self-extracts" → "can always leave" (rule 12).
+- V: Wyoming LLC now "planned… likely a Wyoming LLC" (rule 4).
+- Section readings III and V held (removed from READINGS) until re-recorded to match; live readings now I, II, IV, IX, X, XII, XIII.
+- Overview videos + 38-min overview audio predate the verbiage pass (malicious SPARK / compromised DOMO, "ironclad guarantee", LLCs presented as existing); recommended for J.R.'s remake list.
