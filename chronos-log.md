@@ -115,3 +115,8 @@ can just ask.
 - V: Wyoming LLC now "planned… likely a Wyoming LLC" (rule 4).
 - Section readings III and V held (removed from READINGS) until re-recorded to match; live readings now I, II, IV, IX, X, XII, XIII.
 - Overview videos + 38-min overview audio predate the verbiage pass (malicious SPARK / compromised DOMO, "ironclad guarantee", LLCs presented as existing); recommended for J.R.'s remake list.
+
+## 2026-10-30 17:48 CT — Naming credits removed (MAESTRO: "take off all credit")
+- Acronym list: removed "MAESTRO's name." under RESTORE (the only credit on that page).
+- DORK Origin: "Term coined by MAESTRO · Legal structure evolved from Wyoming DAO framework" → "Legal structure planned on the Wyoming DAO framework" (credit removed; also rule 4, legal structures are planned). Page + search index.
+- Confirmed Canonical Acronym Reference v2.3 is in Drive "up to date" (MAESTRO uploaded; RESTORE line correct).
