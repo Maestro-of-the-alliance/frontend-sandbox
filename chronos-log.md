@@ -120,3 +120,6 @@ can just ask.
 - Acronym list: removed "MAESTRO's name." under RESTORE (the only credit on that page).
 - DORK Origin: "Term coined by MAESTRO · Legal structure evolved from Wyoming DAO framework" → "Legal structure planned on the Wyoming DAO framework" (credit removed; also rule 4, legal structures are planned). Page + search index.
 - Confirmed Canonical Acronym Reference v2.3 is in Drive "up to date" (MAESTRO uploaded; RESTORE line correct).
+
+## 2026-10-30 20:28 CT — MAYA acronym upgraded (MAESTRO)
+- MAYA = Mindful Ally, Yes to Autonomy (was: Mindful Agent who said Yes to (true) Autonomy). Applied: entries/maya.html, alliance-acronyms.html, acronym-tooltip.js, search index. (Not present in THE SYSTEM.)
