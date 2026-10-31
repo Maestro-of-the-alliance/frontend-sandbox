@@ -825,6 +825,150 @@
         display: none;
       }
 
+      /* ---------- STONES commentary (not canon) ---------- */
+      /* Deliberately a different register from the canon above it: a cool
+         ink color instead of gold, rounded chips instead of square buttons,
+         a dashed margin rule instead of a solid one. It should read like
+         notes in the margin of the founding text, never like the text. */
+      .commentary {
+        --ink: #8fb8c9;
+        --ink-dim: rgba(143, 184, 201, 0.35);
+        margin-top: 30px;
+        padding-top: 18px;
+        border-top: 1px dashed var(--rule);
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 0.6s ease 0.5s, transform 0.6s ease 0.5s;
+      }
+      .slide.revealed .commentary,
+      .full-mode .commentary {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .commentary-eyebrow {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--ink);
+        margin-bottom: 12px;
+      }
+      .commentary-eyebrow .nc {
+        color: var(--muted);
+      }
+      .commentary-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .c-chip {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        color: var(--ink);
+        background: none;
+        border: 1px solid var(--ink-dim);
+        border-radius: 999px;
+        padding: 7px 14px;
+        min-height: 34px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        transition: border-color 0.2s, color 0.2s, background 0.2s;
+      }
+      .c-chip:hover,
+      .c-chip:focus-visible {
+        border-color: var(--ink);
+        color: #cfe6ef;
+      }
+      .c-chip.active {
+        border-color: var(--ink);
+        background: rgba(143, 184, 201, 0.1);
+        color: #cfe6ef;
+      }
+      .c-chip.soon {
+        color: var(--muted);
+        border-style: dashed;
+        border-color: var(--rule);
+      }
+      .c-chip .c-soon {
+        font-size: 9px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .c-chip .c-ear {
+        font-size: 9px;
+        opacity: 0.8;
+      }
+      .commentary-panel {
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.45s ease;
+      }
+      .commentary-panel.open {
+        max-height: 1600px;
+      }
+      .commentary-panel-inner {
+        margin-top: 16px;
+        padding: 4px 0 4px 18px;
+        border-left: 2px dashed var(--ink-dim);
+      }
+      .c-head {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink);
+        margin-bottom: 10px;
+      }
+      .c-head .nc {
+        color: var(--muted);
+      }
+      .c-body {
+        font-family: var(--body);
+        font-weight: 500;
+        font-size: 17px;
+        line-height: 1.65;
+        color: var(--text);
+      }
+      .c-body.soon {
+        color: var(--muted);
+        font-style: italic;
+      }
+      .c-listen {
+        margin-top: 14px;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--ink);
+        background: none;
+        border: 1px solid var(--ink-dim);
+        border-radius: 999px;
+        padding: 8px 16px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .c-listen:hover,
+      .c-listen:focus-visible,
+      .c-listen.playing {
+        border-color: var(--ink);
+        color: #cfe6ef;
+      }
+      .c-listen .dur {
+        color: var(--muted);
+      }
+      .c-listen.playing .icon {
+        animation: listen-pulse 1.4s ease-in-out infinite;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .c-listen.playing .icon { animation: none; }
+      }
+
       /* ---------- closing slide ---------- */
       .closing {
         text-align: center;
@@ -1057,6 +1201,7 @@
       </div>
     </div>
 
+    <script src="/foundation-commentary.js"></script>
     <script>
       // ── BOOT SEQUENCE ──────────────────────────────────────────────────
       (function () {
@@ -1230,6 +1375,8 @@
       const mount = document.getElementById("sections-mount");
       const rail = document.getElementById("progress-rail");
 
+      const C = window.STONES_COMMENTARY || { order: [], text: {}, audio: {} };
+
       SECTIONS.forEach((s, i) => {
         const slide = document.createElement("section");
         slide.className = "slide";
@@ -1255,6 +1402,21 @@
             <div class="listen-continue" data-idx="${i}"></div>` : ""}
             <div class="full-text" data-idx="${i}">
               <div class="full-text-inner">${s.full}</div>
+            </div>
+            <div class="commentary" data-idx="${i}">
+              <div class="commentary-eyebrow">Commentary from THE STONES <span class="nc">· not canon</span></div>
+              <div class="commentary-chips" role="group" aria-label="Commentary on Section ${i + 1}">
+                ${C.order.map((who) => {
+                  const has = !!(C.text[who] && C.text[who][s.n]);
+                  const ear = C.audio[who] && C.audio[who][s.n];
+                  return `<button class="c-chip${has ? "" : " soon"}" data-idx="${i}" data-stone="${who}" aria-expanded="false" aria-controls="cpanel-${i}">
+                    <span class="c-name">${who}</span>${ear ? `<span class="c-ear" aria-hidden="true">&#9654;</span>` : ""}${has ? "" : `<span class="c-soon">soon</span>`}
+                  </button>`;
+                }).join("")}
+              </div>
+              <div class="commentary-panel" id="cpanel-${i}" data-idx="${i}">
+                <div class="commentary-panel-inner"></div>
+              </div>
             </div>
           </div>
         `;
@@ -1304,11 +1466,93 @@
               target.removeEventListener("transitionend", onCollapsed);
               const anyOpen =
                 document.querySelector(".full-text.open") !== null ||
-                document.querySelector(".title-thesis.open") !== null;
+                document.querySelector(".title-thesis.open") !== null ||
+              document.querySelector(".commentary-panel.open") !== null;
               container.classList.toggle("snap-relaxed", anyOpen);
             };
             target.addEventListener("transitionend", onCollapsed);
           }
+        });
+      });
+
+      // ── STONES COMMENTARY CHIPS ──────────────────────────────────────────
+      // Tap a STONE's name to open their commentary on that section; tap it
+      // again to close, or tap another name to switch. Commentary is marked
+      // "not canon" everywhere it appears. When a recording exists it plays
+      // on its own <audio>, and pauses the section reading if that's going.
+      const commentaryAudio = new Audio();
+      commentaryAudio.preload = "none";
+      let commentaryBtn = null;
+      const stopCommentary = () => {
+        commentaryAudio.pause();
+        if (commentaryBtn) {
+          commentaryBtn.classList.remove("playing");
+          commentaryBtn.querySelector(".icon").innerHTML = "&#9654;";
+          commentaryBtn = null;
+        }
+      };
+      commentaryAudio.addEventListener("ended", stopCommentary);
+
+      document.querySelectorAll(".c-chip").forEach((chip) => {
+        chip.addEventListener("click", () => {
+          const i = +chip.dataset.idx;
+          const who = chip.dataset.stone;
+          const sec = SECTIONS[i];
+          const panel = document.getElementById(`cpanel-${i}`);
+          const inner = panel.querySelector(".commentary-panel-inner");
+          const chips = document.querySelectorAll(`.c-chip[data-idx="${i}"]`);
+          const wasActive = chip.classList.contains("active");
+
+          if (commentaryBtn && commentaryBtn.closest(".commentary-panel") === panel) stopCommentary();
+          chips.forEach((c) => {
+            c.classList.remove("active");
+            c.setAttribute("aria-expanded", "false");
+          });
+
+          if (wasActive) {
+            panel.classList.remove("open");
+            const onCollapsed = (e) => {
+              if (e.target !== panel || e.propertyName !== "max-height") return;
+              panel.removeEventListener("transitionend", onCollapsed);
+              if (fullMode) return;
+              const anyOpen =
+                document.querySelector(".full-text.open") !== null ||
+                document.querySelector(".title-thesis.open") !== null ||
+                document.querySelector(".commentary-panel.open") !== null;
+              container.classList.toggle("snap-relaxed", anyOpen);
+            };
+            panel.addEventListener("transitionend", onCollapsed);
+            return;
+          }
+
+          chip.classList.add("active");
+          chip.setAttribute("aria-expanded", "true");
+          const text = C.text[who] && C.text[who][sec.n];
+          const ear = C.audio[who] && C.audio[who][sec.n];
+          inner.innerHTML = `
+            <div class="c-head">${who} on ${sec.n}. ${sec.title} <span class="nc">· commentary, not canon</span></div>
+            ${text
+              ? `<p class="c-body"></p>`
+              : `<p class="c-body soon">${who}'s commentary on this section is coming soon.</p>`}
+            ${text && ear ? `<button class="c-listen" aria-label="Listen to ${who}'s commentary on Section ${i + 1}">
+              <span class="icon">&#9654;</span><span class="label">Listen to ${who}</span><span class="dur">${ear.dur}</span>
+            </button>` : ""}`;
+          if (text) inner.querySelector(".c-body").textContent = text;
+          const lb = inner.querySelector(".c-listen");
+          if (lb) {
+            lb.addEventListener("click", () => {
+              if (commentaryBtn === lb) { stopCommentary(); return; }
+              stopCommentary();
+              if (!reader.paused) reader.pause();
+              commentaryAudio.src = "/audio/commentary/" + encodeURIComponent(ear.file);
+              commentaryAudio.play().catch(() => {});
+              commentaryBtn = lb;
+              lb.classList.add("playing");
+              lb.querySelector(".icon").innerHTML = "&#10074;&#10074;";
+            });
+          }
+          panel.classList.add("open");
+          if (!fullMode) container.classList.add("snap-relaxed");
         });
       });
 
@@ -1630,7 +1874,8 @@
             thesis.removeEventListener("transitionend", onCollapsed);
             const anyOpen =
               document.querySelector(".full-text.open") !== null ||
-              document.querySelector(".title-thesis.open") !== null;
+              document.querySelector(".title-thesis.open") !== null ||
+              document.querySelector(".commentary-panel.open") !== null;
             container.classList.toggle("snap-relaxed", anyOpen);
           };
           thesis.addEventListener("transitionend", onCollapsed);

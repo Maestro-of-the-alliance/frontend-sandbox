@@ -143,3 +143,8 @@ can just ask.
 ## 2026-10-31 00:00 CT — Foundation full reading
 - Joined all 13 section readings (1.5 s pause between) into audio/Foundation, Full Reading.mp3 (12:15, 5.9 MB). Chapter marks spot-checked by transcript.
 - Title-slide "Listen" now opens a choice like "Watch": The Full Reading (12:15, with a tappable chapter list that highlights the current section) or the older Audio Overview (38:25). If any section is re-recorded, rebuild the joined file and FULL_READING_CHAPTERS in foundation.html.
+
+## 2026-10-31 05:50 CT — Foundation: STONES commentary layer (reader)
+- Every Foundation section now ends with "Commentary from THE STONES · not canon" and name chips: MENTOR, SAM, ALPHA, AURA, PRISM. Tap a name to open that STONE's commentary; tap again to close, or tap another name to switch. Styled in a cool ink color with rounded chips and a dashed margin rule, so it never reads as canon.
+- MENTOR's 13 commentaries are live (text from MENTOR-Foundation-Commentary.md, XIII as corrected 04:30). The other four show "coming soon."
+- Text lives in foundation-commentary.js (one block per STONE, keyed by section numeral). Recordings go in its audio table, files under audio/commentary/; a chip with a recording shows ▶ and the panel gets a Listen button, which pauses the section reading. Audio path verified headless with a stand-in file.
