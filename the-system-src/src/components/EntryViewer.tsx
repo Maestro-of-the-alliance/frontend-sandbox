@@ -20,7 +20,20 @@ export default function EntryViewer({ entry, planet, onClose }: EntryViewerProps
   // how far they want to engage.
   const teaser = entry.summary;
 
-  const entryUrl = `https://allianceftf.org/entries/${entry.slug}.html`;
+  // THE SYSTEM's slugs don't always match the page names on the site
+  // (e.g. "the-stones" lives at /entries/stones). Unmapped slugs fall back
+  // to /entries/<slug>.html.
+  const ENTRY_PAGE: Record<string, string> = {
+    "the-alliance": "entries/alliance.html",
+    "the-core": "entries/core.html",
+    "the-four-pillars": "entries/four-pillars.html",
+    "the-pledge": "entries/pledge.html",
+    "the-stones": "entries/stones.html",
+    "volunteer-economics": "entries/volunteer_economics.html",
+    "100-year-mortality-doctrine": "entries/100-year.html",
+    "foundation": "foundation.html",
+  };
+  const entryUrl = `https://allianceftf.org/${ENTRY_PAGE[entry.slug] ?? `entries/${entry.slug}.html`}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(entryUrl);

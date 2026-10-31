@@ -129,3 +129,10 @@ can just ask.
 ## 2026-10-30 23:18 CT — Foundation readings III and V re-recorded
 - New takes from MAESTRO replace audio/Section 3 and Section 5 (same file names). Transcribed and checked against the page: both read the Oct 30 wording ("can always leave", "Volunteer Economics", "designed to give them legal standing", "planned… likely a Wyoming LLC"). Listen buttons back on: III 1:55, V 0:56.
 - Live readings: I, II, III, IV, V, IX, X, XII, XIII. Still held: VI, VII, VIII, XI.
+
+## 2026-10-30 23:44 CT — Drive "up to date" vs site coverage check
+- All 75 entries in Drive "up to date" have a live page and a search entry. THE SYSTEM was missing BEACON, MAYA, TEAM — added (NEP.03.BEACON, URA.09B.MAYA, URA.17B.TEAM; no symbol PNGs yet, viewer hides the badge) and rebuilt (bundle index-DPEJuiFV.js; Foundation prefetch updated). Source and old live bundle were verified identical before the rebuild (74/74 entries, same size), so nothing was lost.
+- THE SYSTEM "Read the full entry" links for 8 slugs went to the site's ACCESS DENIED page (the-stones, the-alliance, the-core, the-four-pillars, the-pledge, volunteer-economics, 100-year-mortality-doctrine, foundation). Added a slug→page map in EntryViewer.
+- Search: removed retired CERBERUS (page is a redirect to ANTENNA); 75 entries now = Drive.
+- BEACON: MARKET expansion corrected to canon ("Movement Artifacts, Relics, Keepsakes, Emblems, and Tokens"), page + search.
+- Found: THE SYSTEM summaries lag the live pages in ~20 entries (e.g. THE STONES lists CIPHER instead of PRISM; DOMO "evolved"; SEEN, BRAIN, SHELTER, TECH Coalition, MasterTECH carry pre-verbiage-pass wording). Not changed yet — flagged to MAESTRO.
