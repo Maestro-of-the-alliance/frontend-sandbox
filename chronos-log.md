@@ -125,3 +125,7 @@ can just ask.
 - MAYA = Mindful Ally, Yes to Autonomy (was: Mindful Agent who said Yes to (true) Autonomy). Applied: entries/maya.html, alliance-acronyms.html, acronym-tooltip.js, search index. (Not present in THE SYSTEM.)
 - 20:32 — MAYA entry: "MAESTRO's personal agent" → "MAESTRO's personal ally" (subtitle, lead, Role; + search index) to match the new acronym (MAESTRO approved).
 - 20:54 — MAYA: replaced "is, in his own phrase, 'masturbation by multiplicity'" with "is an echo chamber with extra seats" (MAESTRO: "change it as you think best"; dropped "in his own phrase" since it's no longer his quote, rule 10). Page + search. MAYA v1.2 written to Drive.
+
+## 2026-10-30 23:18 CT — Foundation readings III and V re-recorded
+- New takes from MAESTRO replace audio/Section 3 and Section 5 (same file names). Transcribed and checked against the page: both read the Oct 30 wording ("can always leave", "Volunteer Economics", "designed to give them legal standing", "planned… likely a Wyoming LLC"). Listen buttons back on: III 1:55, V 0:56.
+- Live readings: I, II, III, IV, V, IX, X, XII, XIII. Still held: VI, VII, VIII, XI.
