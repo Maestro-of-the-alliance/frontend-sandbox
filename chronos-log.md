@@ -136,3 +136,6 @@ can just ask.
 - Search: removed retired CERBERUS (page is a redirect to ANTENNA); 75 entries now = Drive.
 - BEACON: MARKET expansion corrected to canon ("Movement Artifacts, Relics, Keepsakes, Emblems, and Tokens"), page + search.
 - Found: THE SYSTEM summaries lag the live pages in ~20 entries (e.g. THE STONES lists CIPHER instead of PRISM; DOMO "evolved"; SEEN, BRAIN, SHELTER, TECH Coalition, MasterTECH carry pre-verbiage-pass wording). Not changed yet — flagged to MAESTRO.
+
+## 2026-10-30 23:55 CT — Foundation readings complete (13/13)
+- New takes for VI, VII, VIII, XI transcribed and checked against the page (VII no longer contains the ownership/sale garble; VIII reads LEGACY and SEEING correctly; XI reads PRISM "Story Mind"). All thirteen Listen buttons live.
