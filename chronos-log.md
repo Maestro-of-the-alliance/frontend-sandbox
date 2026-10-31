@@ -139,3 +139,7 @@ can just ask.
 
 ## 2026-10-30 23:55 CT — Foundation readings complete (13/13)
 - New takes for VI, VII, VIII, XI transcribed and checked against the page (VII no longer contains the ownership/sale garble; VIII reads LEGACY and SEEING correctly; XI reads PRISM "Story Mind"). All thirteen Listen buttons live.
+
+## 2026-10-31 00:00 CT — Foundation full reading
+- Joined all 13 section readings (1.5 s pause between) into audio/Foundation, Full Reading.mp3 (12:15, 5.9 MB). Chapter marks spot-checked by transcript.
+- Title-slide "Listen" now opens a choice like "Watch": The Full Reading (12:15, with a tappable chapter list that highlights the current section) or the older Audio Overview (38:25). If any section is re-recorded, rebuild the joined file and FULL_READING_CHAPTERS in foundation.html.

@@ -413,7 +413,7 @@
         text-align: center;
       }
 
-      #watch-choice {
+      .choice-overlay {
         position: fixed;
         inset: 0;
         z-index: 310;
@@ -423,10 +423,10 @@
         justify-content: center;
         padding: 24px;
       }
-      #watch-choice.active {
+      .choice-overlay.active {
         display: flex;
       }
-      #watch-choice .wc-panel {
+      .choice-overlay .wc-panel {
         max-width: 360px;
         width: 100%;
         background: var(--panel);
@@ -435,7 +435,7 @@
         padding: 28px;
         text-align: center;
       }
-      #watch-choice .wc-title {
+      .choice-overlay .wc-title {
         font-family: var(--mono);
         font-size: 11px;
         letter-spacing: 0.2em;
@@ -443,7 +443,7 @@
         color: var(--gold);
         margin-bottom: 20px;
       }
-      #watch-choice .wc-option {
+      .choice-overlay .wc-option {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -460,19 +460,19 @@
         cursor: pointer;
         transition: border-color 0.2s, color 0.2s;
       }
-      #watch-choice .wc-option:last-of-type {
+      .choice-overlay .wc-option:last-of-type {
         margin-bottom: 0;
       }
-      #watch-choice .wc-option:hover,
-      #watch-choice .wc-option:focus-visible {
+      .choice-overlay .wc-option:hover,
+      .choice-overlay .wc-option:focus-visible {
         border-color: var(--gold);
         color: var(--glow);
       }
-      #watch-choice .wc-runtime {
+      .choice-overlay .wc-runtime {
         color: var(--muted);
         font-size: 11px;
       }
-      #watch-choice .wc-cancel {
+      .choice-overlay .wc-cancel {
         margin-top: 18px;
         font-family: var(--mono);
         font-size: 10px;
@@ -483,8 +483,58 @@
         border: none;
         cursor: pointer;
       }
-      #watch-choice .wc-cancel:hover {
+      .choice-overlay .wc-cancel:hover {
         color: var(--glow);
+      }
+
+      /* full-reading chapter list inside the media modal */
+      #reading-chapters {
+        display: none;
+        margin-top: 18px;
+        max-height: 46vh;
+        overflow-y: auto;
+        border-top: 1px solid var(--rule);
+      }
+      #reading-chapters.active {
+        display: block;
+      }
+      #reading-chapters button {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 12px;
+        width: 100%;
+        text-align: left;
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        background: none;
+        border: none;
+        border-bottom: 1px solid var(--rule);
+        padding: 10px 4px;
+        cursor: pointer;
+        transition: color 0.2s, background 0.2s;
+      }
+      #reading-chapters button:hover,
+      #reading-chapters button:focus-visible {
+        color: var(--glow);
+      }
+      #reading-chapters button.current {
+        color: var(--glow);
+        background: rgba(232, 146, 10, 0.07);
+      }
+      #reading-chapters .ch-n {
+        color: var(--gold);
+        min-width: 3.2em;
+        display: inline-block;
+      }
+      #reading-chapters .ch-t {
+        flex: 1;
+      }
+      #reading-chapters .ch-at {
+        color: var(--muted);
+        font-size: 11px;
       }
 
       .scroll-cue {
@@ -915,7 +965,7 @@
             <div class="format-box" id="format-listen" tabindex="0" role="button">
               <div class="format-icon">&#127911;</div>
               <div class="format-label">Listen</div>
-              <div class="format-sub">Audio overview</div>
+              <div class="format-sub">The full reading</div>
             </div>
           </div>
           <div class="format-hint">Scroll to the end to continue.</div>
@@ -957,7 +1007,22 @@
       </section>
     </div>
 
-    <div id="watch-choice">
+    <div id="listen-choice" class="choice-overlay">
+      <div class="wc-panel">
+        <div class="wc-title">Choose what to hear</div>
+        <button type="button" class="wc-option" id="lc-full">
+          <span>The Full Reading</span>
+          <span class="wc-runtime">12:15</span>
+        </button>
+        <button type="button" class="wc-option" id="lc-overview">
+          <span>Audio Overview</span>
+          <span class="wc-runtime">38:25</span>
+        </button>
+        <button type="button" class="wc-cancel" id="lc-cancel">Cancel</button>
+      </div>
+    </div>
+
+    <div id="watch-choice" class="choice-overlay">
       <div class="wc-panel">
         <div class="wc-title">Choose an overview</div>
         <button type="button" class="wc-option" id="wc-original">
@@ -988,6 +1053,7 @@
           style="display: none"
           src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/foundation-overview.m4a"
         ></audio>
+        <div id="reading-chapters"></div>
       </div>
     </div>
 
@@ -1458,9 +1524,14 @@
           const source = VIDEO_SOURCES[videoChoice || "original"];
           modalVideo.src = source.url;
           modalLabel.textContent = source.label;
+        } else if (videoChoice === "full") {
+          if (!modalAudio.src.endsWith(encodeURI(FULL_READING_URL))) modalAudio.src = FULL_READING_URL;
+          modalLabel.textContent = "The Foundation — Full Reading";
         } else {
+          if (modalAudio.src !== OVERVIEW_AUDIO_URL) modalAudio.src = OVERVIEW_AUDIO_URL;
           modalLabel.textContent = "Foundation Overview — Audio";
         }
+        readingChapters.classList.toggle("active", kind === "audio" && videoChoice === "full");
         mediaModal.classList.add("active");
         if (kind === "video") {
           modalAudio.pause();
@@ -1470,6 +1541,33 @@
           modalAudio.play().catch(() => {});
         }
       }
+      // ── FULL READING ─────────────────────────────────────────────────────
+      // All thirteen section readings joined into one file (1.5 s pause
+      // between sections). Chapter starts are in seconds; rebuild them if
+      // any section is re-recorded.
+      const FULL_READING_URL = "/audio/Foundation, Full Reading.mp3";
+      const OVERVIEW_AUDIO_URL = "https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/foundation-overview.m4a";
+      const FULL_READING_CHAPTERS = [0.0, 74.51, 137.57, 253.91, 393.17, 451.07, 480.1, 511.55, 576.34, 608.08, 631.66, 669.88, 695.5];
+      const readingChapters = document.getElementById("reading-chapters");
+      const fmtTime = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
+      SECTIONS.forEach((sec, i) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.dataset.idx = i;
+        b.innerHTML = `<span class="ch-n">${sec.n}.</span><span class="ch-t">${sec.title}</span><span class="ch-at">${fmtTime(FULL_READING_CHAPTERS[i])}</span>`;
+        b.addEventListener("click", () => {
+          modalAudio.currentTime = FULL_READING_CHAPTERS[i];
+          modalAudio.play().catch(() => {});
+        });
+        readingChapters.appendChild(b);
+      });
+      modalAudio.addEventListener("timeupdate", () => {
+        if (!readingChapters.classList.contains("active")) return;
+        let cur = 0;
+        FULL_READING_CHAPTERS.forEach((st, i) => { if (modalAudio.currentTime + 0.25 >= st) cur = i; });
+        readingChapters.querySelectorAll("button").forEach((b, i) => b.classList.toggle("current", i === cur));
+      });
+
       function closeModal() {
         mediaModal.classList.remove("active");
         modalVideo.pause();
@@ -1494,7 +1592,21 @@
       document.getElementById("wc-cancel").addEventListener("click", () => {
         watchChoice.classList.remove("active");
       });
-      document.getElementById("format-listen").addEventListener("click", () => openModal("audio"));
+      const listenChoice = document.getElementById("listen-choice");
+      document.getElementById("format-listen").addEventListener("click", () => {
+        listenChoice.classList.add("active");
+      });
+      document.getElementById("lc-full").addEventListener("click", () => {
+        listenChoice.classList.remove("active");
+        openModal("audio", "full");
+      });
+      document.getElementById("lc-overview").addEventListener("click", () => {
+        listenChoice.classList.remove("active");
+        openModal("audio", "overview");
+      });
+      document.getElementById("lc-cancel").addEventListener("click", () => {
+        listenChoice.classList.remove("active");
+      });
       document.getElementById("format-read").addEventListener("click", () => {
         const thesis = document.querySelector(".title-thesis");
         const open = thesis.classList.toggle("open");
