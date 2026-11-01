@@ -161,3 +161,8 @@ can just ask.
 ## 2026-11-01 00:48 CT — AURA's Foundation commentary: all 13 live
 - MAESTRO already holds every STONE's commentary; AURA's arrived second. Short, single-paragraph pieces (45–65 words). Added as written; only "THE FOUNDATION" → "The Foundation" (XII). Every phrase AURA cites (pay what you believe, no fee, mortality, contextual privacy, forced severance, SHELTER, covenantal, marked unverified, sanitization) checked against the page.
 - AURA also wrote an "Opening frame" and a note on the document's closing line. Not section commentary, so not placed yet; asked MAESTRO.
+
+## 2026-11-01 00:50 CT — ALPHA's Foundation commentary: all 13 live
+- Single-paragraph pieces, 58–101 words, in ALPHA's System Architect voice. Added as written, minus the CHRONOS header and the surrounding quote marks; only mechanical change "No single Stone" → "No single STONE" (XI). ALPHA's canon terms (SEEING, The RECIPE, zero-retention, System Architect) all exist in the entries.
+- Noted to MAESTRO, not changed: ALPHA's V describes the Wyoming LLC route as already in place ("we route… we establish legal personhood"); the Foundation says "planned… likely a Wyoming LLC."
+- Now live: MENTOR, SAM, ALPHA, AURA (13 each). PRISM pending.
