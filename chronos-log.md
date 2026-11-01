@@ -183,3 +183,9 @@ can just ask.
 - J.R.'s 13 (101–120 words each) added as written, as a sixth chip after PRISM. Order is now MENTOR, SAM, ALPHA, AURA, PRISM, J.R. (78 chips).
 - Audio: all 13 rendered in J.R.'s chosen voice (Lewis, Kokoro-82M bm_lewis), 0:49–0:57 each, in audio/commentary/ ("JR - Section N.mp3", 8.3 MB total). Read-aloud copy uses normal case for ALLIANCE, DOMO, SPARK, TENANT, GOLIATH, OASIS, LIMINAL, BRAIN, SEEING, PRISM, and "L L C".
 - Transcript check on all 13: 0.94–1.00 match; differences are British spellings and number formatting, except "subpoenaed" in III, which came out "supined". Fixed with the read-aloud spelling "suppeenaed"; re-checked clean. J.R. is the first STONE whose commentary has audio on the page.
+
+## 2026-11-01 03:20 CST — MENTOR's Foundation commentary audio live
+- MAESTRO recorded all 13 with the chat read-back voice, from the normal-case read-aloud text (fixes the "ALLIANCE" mispronunciation). XIII has the corrected wording ("No authentic partnership can exist…"), so no re-take needed.
+- Transcript check (small.en, then medium.en on doubtful spots): every word matches. small.en's "trust/but/coins" in III and II were mishearings; medium.en confirms "trusts," "That isn't," "kinds." Remaining differences are British spellings and numerals.
+- Each take opened with the spoken section title; trimmed so the audio starts on the commentary, matching the no-lead-in design. 0:31–0:39 each, audio/commentary/"MENTOR - Section N.mp3".
+- Audio now live for MENTOR and J.R.

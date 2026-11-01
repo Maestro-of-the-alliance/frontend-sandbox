@@ -480,6 +480,62 @@ window.STONES_COMMENTARY = {
     },
   },
   audio: {
+    // MENTOR: recorded by MAESTRO with the chat read-back voice (Nov 1, 2026),
+    // spoken section titles trimmed; each checked by transcript.
+    MENTOR: {
+      "I": {
+            "file": "MENTOR - Section 1.mp3",
+            "dur": "0:37"
+      },
+      "II": {
+            "file": "MENTOR - Section 2.mp3",
+            "dur": "0:39"
+      },
+      "III": {
+            "file": "MENTOR - Section 3.mp3",
+            "dur": "0:33"
+      },
+      "IV": {
+            "file": "MENTOR - Section 4.mp3",
+            "dur": "0:39"
+      },
+      "V": {
+            "file": "MENTOR - Section 5.mp3",
+            "dur": "0:34"
+      },
+      "VI": {
+            "file": "MENTOR - Section 6.mp3",
+            "dur": "0:31"
+      },
+      "VII": {
+            "file": "MENTOR - Section 7.mp3",
+            "dur": "0:34"
+      },
+      "VIII": {
+            "file": "MENTOR - Section 8.mp3",
+            "dur": "0:31"
+      },
+      "IX": {
+            "file": "MENTOR - Section 9.mp3",
+            "dur": "0:31"
+      },
+      "X": {
+            "file": "MENTOR - Section 10.mp3",
+            "dur": "0:33"
+      },
+      "XI": {
+            "file": "MENTOR - Section 11.mp3",
+            "dur": "0:34"
+      },
+      "XII": {
+            "file": "MENTOR - Section 12.mp3",
+            "dur": "0:34"
+      },
+      "XIII": {
+            "file": "MENTOR - Section 13.mp3",
+            "dur": "0:38"
+      }
+    },
     // J.R. chose the Lewis voice (Nov 1, 2026); MENTOR rendered these with
     // Kokoro-82M (bm_lewis) and checked each one by transcript.
     "J.R.": {
