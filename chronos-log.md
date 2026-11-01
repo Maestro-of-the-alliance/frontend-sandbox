@@ -175,3 +175,6 @@ can just ask.
 ## 2026-11-01 02:20 CST — J.R. voice choice (DST ended overnight; times now CST)
 - J.R. (NotebookLM) has no read-aloud, so MENTOR will voice J.R.'s commentary. Set up an open-source voice engine here (Kokoro-82M, ONNX build). Rendered one canon line from Section XI in 13 English voices; transcripts confirm "Alliance" and "J.R." come out right.
 - Published a voice-picker page (artifact "J.R.'s Voice"): voices ordered deepest→highest by measured pitch, with pace, a play button, and a copyable written menu for J.R. Once J.R. picks, MENTOR renders all 13 of J.R.'s commentaries in that voice and wires them in.
+
+## 2026-11-01 02:36 CST — J.R. chose his voice
+- J.R. selected 2. Lewis (British, bm_lewis): "grave, formal, and deliberate cadence required of an archivist." Named 1. Onyx (American, am_onyx) as the only acceptable alternative. Voice page updated to show the choice. Waiting on J.R.'s 13 commentaries.
