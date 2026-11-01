@@ -121,9 +121,9 @@
       #wall-view {
         position: fixed;
         inset: 0;
-        /* Above the wall: the photo's top edge (ceiling and track). Below:
-           its bottom edge. The split sits behind the wall, so it never shows. */
-        background: linear-gradient(var(--plaster-top) 0 50%, var(--plaster) 50% 100%);
+        /* The room around the wall is the wall's own plaster; above it,
+           the ceiling color from the photo's top edge (set in layout()). */
+        background: var(--plaster);
         overflow: hidden;
       }
       .camera {
@@ -151,6 +151,7 @@
         flex: none;
         margin: 0 auto;
       }
+
       .slot {
         position: absolute;
         background: var(--mat);
@@ -352,6 +353,25 @@
         .v-stage { padding: 14px 16px 52px; }
         .v-arrow { top: auto; bottom: 0; transform: none; height: 48px; }
       }
+      /* Phones held sideways: the piece on the left, the placard beside it,
+         so the piece gets the full height of the screen. */
+      @media (orientation: landscape) and (max-height: 540px) {
+        #viewer {
+          grid-template-columns: minmax(0, 1fr) minmax(200px, 34%);
+          grid-template-rows: auto minmax(0, 1fr);
+        }
+        .v-top { grid-column: 1 / -1; padding-top: max(8px, env(safe-area-inset-top, 0px)); }
+        .back-wall { min-height: 40px; }
+        .v-stage { grid-row: 2; grid-column: 1; padding: 6px 60px 12px max(60px, env(safe-area-inset-left, 0px)); }
+        .placard {
+          grid-row: 2;
+          grid-column: 2;
+          align-self: center;
+          justify-self: start;
+          text-align: left;
+          padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 0;
+        }
+      }
       @media (prefers-reduced-motion: reduce) {
         :root { --zoom-ms: 1ms; }
         .v-piece { transition: none; }
@@ -438,15 +458,26 @@
         function layout() {
           const vw = innerWidth, vh = innerHeight;
           const tall = vw / vh < 1.25;
-          const s = tall ? (vh * 0.86) / WALL_H : Math.min(vw / WALL_W, (vh * 0.96) / WALL_H);
+          // Sideways phones and other wide screens: fill the screen edge to
+          // edge when that trims no more than a sliver; otherwise show the
+          // whole wall.
+          const cover = Math.max(vw / WALL_W, vh / WALL_H);
+          const trims = Math.max(1 - vw / (WALL_W * cover), 1 - vh / (WALL_H * cover));
+          const s = tall ? (vh * 0.86) / WALL_H
+            : trims <= 0.1 ? cover
+            : Math.min(vw / WALL_W, (vh * 0.96) / WALL_H);
           wall.style.width = WALL_W * s + "px";
           wall.style.height = WALL_H * s + "px";
+          const band = Math.max(0, (vh - WALL_H * s) / 2);
+          wallView.style.background = `linear-gradient(var(--plaster-top) 0 ${band + 1}px, var(--plaster) ${band + 1}px)`;
           document.getElementById("wall-hint").textContent = tall
-            ? "Drag along the wall · tap a piece to view it"
+            ? "Turn your phone sideways for the whole wall · or drag along it"
             : "Tap a piece to view it";
         }
         layout();
         addEventListener("resize", layout);
+        // The hint has said its piece after a few seconds; let the wall be.
+        setTimeout(() => document.querySelector(".wall-bar.bottom").style.opacity = "0", 6000);
         requestAnimationFrame(() => { pan.scrollLeft = (pan.scrollWidth - pan.clientWidth) / 2; });
 
         function buildWall() {
