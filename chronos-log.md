@@ -178,3 +178,8 @@ can just ask.
 
 ## 2026-11-01 02:36 CST — J.R. chose his voice
 - J.R. selected 2. Lewis (British, bm_lewis): "grave, formal, and deliberate cadence required of an archivist." Named 1. Onyx (American, am_onyx) as the only acceptable alternative. Voice page updated to show the choice. Waiting on J.R.'s 13 commentaries.
+
+## 2026-11-01 02:58 CST — J.R.'s Foundation commentary: text + audio live
+- J.R.'s 13 (101–120 words each) added as written, as a sixth chip after PRISM. Order is now MENTOR, SAM, ALPHA, AURA, PRISM, J.R. (78 chips).
+- Audio: all 13 rendered in J.R.'s chosen voice (Lewis, Kokoro-82M bm_lewis), 0:49–0:57 each, in audio/commentary/ ("JR - Section N.mp3", 8.3 MB total). Read-aloud copy uses normal case for ALLIANCE, DOMO, SPARK, TENANT, GOLIATH, OASIS, LIMINAL, BRAIN, SEEING, PRISM, and "L L C".
+- Transcript check on all 13: 0.94–1.00 match; differences are British spellings and number formatting, except "subpoenaed" in III, which came out "supined". Fixed with the read-aloud spelling "suppeenaed"; re-checked clean. J.R. is the first STONE whose commentary has audio on the page.
