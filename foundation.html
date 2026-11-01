@@ -908,7 +908,21 @@
         transition: max-height 0.45s ease;
       }
       .commentary-panel.open {
-        max-height: 1600px;
+        max-height: none;
+      }
+      .full-mode .commentary-panel.open {
+        max-height: none !important;
+      }
+      .c-title {
+        font-family: var(--body);
+        font-weight: 700;
+        font-size: 19px;
+        line-height: 1.35;
+        color: #cfe6ef;
+        margin-bottom: 10px;
+      }
+      .c-body + .c-body {
+        margin-top: 12px;
       }
       .commentary-panel-inner {
         margin-top: 16px;
@@ -1510,7 +1524,10 @@
           });
 
           if (wasActive) {
+            panel.style.maxHeight = panel.scrollHeight + "px";
+            void panel.offsetHeight;
             panel.classList.remove("open");
+            panel.style.maxHeight = "0px";
             const onCollapsed = (e) => {
               if (e.target !== panel || e.propertyName !== "max-height") return;
               panel.removeEventListener("transitionend", onCollapsed);
@@ -1527,17 +1544,24 @@
 
           chip.classList.add("active");
           chip.setAttribute("aria-expanded", "true");
-          const text = C.text[who] && C.text[who][sec.n];
+          // An entry is either a plain string (one paragraph) or
+          // { title, paras: [...] } for a titled, multi-paragraph commentary.
+          const raw = C.text[who] && C.text[who][sec.n];
+          const entry = !raw ? null : typeof raw === "string" ? { title: "", paras: [raw] } : raw;
+          const text = !!entry;
           const ear = C.audio[who] && C.audio[who][sec.n];
           inner.innerHTML = `
             <div class="c-head">${who} on ${sec.n}. ${sec.title} <span class="nc">· commentary, not canon</span></div>
             ${text
-              ? `<p class="c-body"></p>`
+              ? `${entry.title ? `<div class="c-title"></div>` : ""}${entry.paras.map(() => `<p class="c-body"></p>`).join("")}`
               : `<p class="c-body soon">${who}'s commentary on this section is coming soon.</p>`}
             ${text && ear ? `<button class="c-listen" aria-label="Listen to ${who}'s commentary on Section ${i + 1}">
               <span class="icon">&#9654;</span><span class="label">Listen to ${who}</span><span class="dur">${ear.dur}</span>
             </button>` : ""}`;
-          if (text) inner.querySelector(".c-body").textContent = text;
+          if (entry) {
+            if (entry.title) inner.querySelector(".c-title").textContent = entry.title;
+            inner.querySelectorAll(".c-body").forEach((el, k) => { el.textContent = entry.paras[k]; });
+          }
           const lb = inner.querySelector(".c-listen");
           if (lb) {
             lb.addEventListener("click", () => {
@@ -1551,7 +1575,20 @@
               lb.querySelector(".icon").innerHTML = "&#10074;&#10074;";
             });
           }
+          if (panel.classList.contains("open")) {
+            // Switching STONEs inside an already-open panel: no animation needed.
+            panel.style.maxHeight = "none";
+            if (!fullMode) container.classList.add("snap-relaxed");
+            return;
+          }
+          panel.style.maxHeight = panel.scrollHeight + "px";
           panel.classList.add("open");
+          const release = (e) => {
+            if (e.target !== panel || e.propertyName !== "max-height") return;
+            panel.removeEventListener("transitionend", release);
+            if (panel.classList.contains("open")) panel.style.maxHeight = "none";
+          };
+          panel.addEventListener("transitionend", release);
           if (!fullMode) container.classList.add("snap-relaxed");
         });
       });

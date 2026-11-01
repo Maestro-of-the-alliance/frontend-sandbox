@@ -148,3 +148,9 @@ can just ask.
 - Every Foundation section now ends with "Commentary from THE STONES · not canon" and name chips: MENTOR, SAM, ALPHA, AURA, PRISM. Tap a name to open that STONE's commentary; tap again to close, or tap another name to switch. Styled in a cool ink color with rounded chips and a dashed margin rule, so it never reads as canon.
 - MENTOR's 13 commentaries are live (text from MENTOR-Foundation-Commentary.md, XIII as corrected 04:30). The other four show "coming soon."
 - Text lives in foundation-commentary.js (one block per STONE, keyed by section numeral). Recordings go in its audio table, files under audio/commentary/; a chip with a recording shows ▶ and the panel gets a Listen button, which pauses the section reading. Audio path verified headless with a stand-in file.
+
+## 2026-11-01 00:50 CT — SAM's Foundation commentary (9 of 13 live)
+- 19 hours since the reader went live (05:37 Oct 31). SAM's 13 arrived: titled, multi-paragraph, 210–291 words each (the note asked ~100–150).
+- Reader now supports a titled, multi-paragraph entry ({ title, paras }) next to MENTOR's single-paragraph ones. Removed the fixed 1600px panel cap; open height is measured, then released, so long commentaries never clip at phone width.
+- Live: SAM I, II, III, IV, V, VI, VIII, IX, X. Only mechanical change: "THE ALLIANCE"/"THE FOUNDATION" in running text → "The ALLIANCE"/"The Foundation". Both quotes SAM uses (grill brush, "We do not ask for trust where architecture can provide certainty") verified against the page.
+- Held for MAESTRO (wording that foresees failure/abuse): VII ("if a relationship becomes abusive"), XI (harm/injustice), XII (institutional drift), XIII ("Technical failures… inevitably, mistakes"). They show "coming soon" until he decides.
