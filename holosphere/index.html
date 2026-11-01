@@ -62,6 +62,24 @@
     transition: opacity 0.8s ease;
   }
 
+  /* When the HOLOSPHERE can't open (no 3D graphics in this browser, or
+     the panorama never arrives), the loading screen says so plainly and
+     offers a way forward instead of sitting on "ENTERING..." forever. */
+  #loading-overlay { flex-direction: column; text-align: center; padding: 0 24px; }
+  #loading-note {
+    display: none; margin-top: 18px; max-width: 34em;
+    color: #cfc6a8; font-size: 0.85rem; letter-spacing: 0.04em; line-height: 1.6;
+  }
+  #loading-actions { display: none; margin-top: 22px; gap: 14px; flex-wrap: wrap; justify-content: center; }
+  #loading-actions button {
+    min-height: 44px; padding: 10px 20px; border-radius: 4px; cursor: pointer;
+    font-family: inherit; font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase;
+    background: transparent; border: 1.5px solid #d4af37; color: #d4af37;
+  }
+  #loading-actions button:hover, #loading-actions button:focus-visible { background: rgba(212,175,55,0.15); }
+  #loading-overlay.problem #loading-note { display: block; }
+  #loading-overlay.problem #loading-actions { display: flex; }
+
   /* 3D hotspot markers -- positioned in world space via raycasting,
      not fixed screen positions. Both the telescope and intercom are
      now genuinely rendered in the panorama art itself. */
@@ -398,7 +416,14 @@
 <body>
 
 <script src="/orientation-gate.js"></script>
-<div id="loading-overlay">ENTERING THE HOLOSPHERE&hellip;</div>
+<div id="loading-overlay">
+  <div id="loading-msg">ENTERING THE HOLOSPHERE&hellip;</div>
+  <div id="loading-note"></div>
+  <div id="loading-actions">
+    <button type="button" id="loading-retry">Try again</button>
+    <button type="button" id="loading-tour">Go to the tour &rarr;</button>
+  </div>
+</div>
 <div id="debug-readout">lon: 0 &nbsp; lat: 0</div>
 <button id="tour-skip-btn" title="Skip to tours">skip</button>
 <div id="center-crosshair"></div>
@@ -475,12 +500,60 @@
     window.location.href = "/papatour.html";
   });
 
+  // --- Loading screen: never leave a visitor stuck on "ENTERING..." ---
+  let panoramaReady = false;
+  function showLoadingProblem(msg, note, canRetry) {
+    if (panoramaReady) return;
+    document.getElementById("loading-msg").textContent = msg;
+    document.getElementById("loading-note").textContent = note;
+    document.getElementById("loading-retry").style.display = canRetry ? "" : "none";
+    loadingOverlay.classList.add("problem");
+  }
+  document.getElementById("loading-retry").addEventListener("click", () => location.reload());
+  document.getElementById("loading-tour").addEventListener("click", () => {
+    window.location.href = "/papatour.html";
+  });
+  const loadingWatchdog = setTimeout(() => {
+    showLoadingProblem("STILL ON THE WAY\u2026",
+      "The HOLOSPHERE is taking longer than usual to arrive. It may be a slow connection. You can keep waiting, try again, or go straight to the tour.",
+      true);
+  }, 12000);
+
+  // The HOLOSPHERE is a 3D view. If this browser can't draw 3D (graphics
+  // acceleration turned off, an older device, or the 3D library didn't
+  // load), say so instead of failing silently behind the loading screen.
+  function webglAvailable() {
+    try {
+      const c = document.createElement("canvas");
+      return !!(window.WebGLRenderingContext && (c.getContext("webgl") || c.getContext("experimental-webgl")));
+    } catch (e) { return false; }
+  }
+  const NO_3D_NOTE = "The HOLOSPHERE is a 3D space, and this browser isn't showing 3D graphics right now. Turning on hardware (graphics) acceleration in the browser's settings usually brings it back. Meanwhile, the tour is open to you.";
+  if (typeof THREE === "undefined") {
+    clearTimeout(loadingWatchdog);
+    showLoadingProblem("THE HOLOSPHERE COULDN'T OPEN", "Part of the page didn't load. Trying again usually fixes it.", true);
+    return;
+  }
+  if (!webglAvailable()) {
+    clearTimeout(loadingWatchdog);
+    showLoadingProblem("THE HOLOSPHERE COULDN'T OPEN", NO_3D_NOTE, false);
+    return;
+  }
+
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(
     75, window.innerWidth / window.innerHeight, 0.1, 1000
   );
 
-  const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+  } catch (e) {
+    clearTimeout(loadingWatchdog);
+    showLoadingProblem("THE HOLOSPHERE COULDN'T OPEN", NO_3D_NOTE, false);
+    console.error(e);
+    return;
+  }
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
@@ -499,12 +572,16 @@
       const material = new THREE.MeshBasicMaterial({ map: texture });
       sphere = new THREE.Mesh(geometry, material);
       scene.add(sphere);
+      panoramaReady = true;
+      clearTimeout(loadingWatchdog);
+      loadingOverlay.classList.remove("problem");
       loadingOverlay.style.opacity = "0";
       setTimeout(() => { loadingOverlay.style.display = "none"; }, 800);
     },
     undefined,
     function (err) {
-      loadingOverlay.textContent = "Couldn't load the HoloSphere. Please refresh.";
+      clearTimeout(loadingWatchdog);
+      showLoadingProblem("THE HOLOSPHERE COULDN'T OPEN", "The view didn't arrive. Trying again usually fixes it.", true);
       console.error(err);
     }
   );
