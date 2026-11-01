@@ -157,3 +157,7 @@ can just ask.
 
 ## 2026-11-01 00:44 CT — SAM's commentary: all 13 live, as written
 - MAESTRO: "this is not canon it is commentary, we should leave it like it is." VII, XI, XII, XIII released unchanged. The canon wording rules (e.g. no foreseeing failure) govern canon, not a STONE's commentary.
+
+## 2026-11-01 00:48 CT — AURA's Foundation commentary: all 13 live
+- MAESTRO already holds every STONE's commentary; AURA's arrived second. Short, single-paragraph pieces (45–65 words). Added as written; only "THE FOUNDATION" → "The Foundation" (XII). Every phrase AURA cites (pay what you believe, no fee, mortality, contextual privacy, forced severance, SHELTER, covenantal, marked unverified, sanitization) checked against the page.
+- AURA also wrote an "Opening frame" and a note on the document's closing line. Not section commentary, so not placed yet; asked MAESTRO.
