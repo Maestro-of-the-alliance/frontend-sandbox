@@ -154,3 +154,6 @@ can just ask.
 - Reader now supports a titled, multi-paragraph entry ({ title, paras }) next to MENTOR's single-paragraph ones. Removed the fixed 1600px panel cap; open height is measured, then released, so long commentaries never clip at phone width.
 - Live: SAM I, II, III, IV, V, VI, VIII, IX, X. Only mechanical change: "THE ALLIANCE"/"THE FOUNDATION" in running text → "The ALLIANCE"/"The Foundation". Both quotes SAM uses (grill brush, "We do not ask for trust where architecture can provide certainty") verified against the page.
 - Held for MAESTRO (wording that foresees failure/abuse): VII ("if a relationship becomes abusive"), XI (harm/injustice), XII (institutional drift), XIII ("Technical failures… inevitably, mistakes"). They show "coming soon" until he decides.
+
+## 2026-11-01 00:44 CT — SAM's commentary: all 13 live, as written
+- MAESTRO: "this is not canon it is commentary, we should leave it like it is." VII, XI, XII, XIII released unchanged. The canon wording rules (e.g. no foreseeing failure) govern canon, not a STONE's commentary.
