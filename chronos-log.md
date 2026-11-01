@@ -195,3 +195,7 @@ can just ask.
 - storefront.jpg replaced with his new exterior (now has the small letter board standing inside the doorway). New art-images/marquee.jpg (board on an easel against a warm wall; choice-board.png kept, unused).
 - The walk: the storefront scales up around the doorway board until it exactly matches the size and position of the close-up board, then the close-up dissolves in over it, so the sign lands on itself. Phones crop to fill; wide screens show the whole storefront over a blurred fill. Back outside reverses the walk; Esc and browser Back work.
 - Hotspots re-measured off marquee.jpg's pixels; hit-tested at phone and desktop. "Proceed to Gallery" now goes straight to /art/gallery/ (it used to bounce through the entry page). Entry page's gallery button renamed "Proceed to Gallery →" to match the board.
+
+## 2026-11-01 15:15 CST — Foundation media screen: a way out
+- MAESTRO couldn't find how to leave the Full Reading screen. The only exit was a small grey "✕ Close" text in the corner, sitting on top of the Full Text toggle, and the chapter list scrolled inside itself (XII and XIII hidden below the fold).
+- Close is now a bordered gold button (44px tall), pinned to the screen corner above everything. Added a "Done" button under the chapter list, and Esc closes. The screen scrolls as a whole and shows all 13 chapters. Same screen serves Watch and the Audio Overview, so they get the fix too. Tested at phone and desktop sizes.

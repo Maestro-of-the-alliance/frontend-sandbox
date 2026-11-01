@@ -369,11 +369,16 @@
         position: fixed;
         inset: 0;
         z-index: 300;
-        background: rgba(5, 4, 3, 0.92);
+        background: rgba(5, 4, 3, 0.97);
         display: none;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        padding: 24px;
+        /* Scrolls when its content (the full reading's 13-chapter list) is
+           taller than a phone screen; margin:auto on the inner box keeps it
+           centered when it fits and lets it scroll from the top when not. */
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 76px max(16px, env(safe-area-inset-right, 0px)) 32px max(16px, env(safe-area-inset-left, 0px));
       }
       #media-modal.active {
         display: flex;
@@ -381,27 +386,55 @@
       #media-modal .modal-inner {
         max-width: 900px;
         width: 100%;
+        margin: auto 0;
       }
       #media-modal video,
       #media-modal audio {
         width: 100%;
         display: block;
       }
+      /* A real button, pinned to the screen (not the scrolling content),
+         sitting above everything else on the page including the Full Text
+         toggle and the site menu. */
       #media-modal .modal-close {
-        position: absolute;
-        top: 22px;
-        right: 26px;
+        position: fixed;
+        top: max(14px, env(safe-area-inset-top, 0px));
+        right: max(14px, env(safe-area-inset-right, 0px));
+        z-index: 2;
         font-family: var(--mono);
         font-size: 12px;
         letter-spacing: 0.15em;
         text-transform: uppercase;
-        color: var(--muted);
-        background: none;
-        border: none;
+        color: var(--gold);
+        background: rgba(10, 9, 8, 0.95);
+        border: 1px solid var(--gold);
+        min-height: 44px;
+        padding: 0 18px;
         cursor: pointer;
       }
-      #media-modal .modal-close:hover {
+      #media-modal .modal-close:hover,
+      #media-modal .modal-close:focus-visible {
         color: var(--glow);
+        border-color: var(--glow);
+      }
+      #media-modal .modal-done {
+        display: block;
+        margin: 22px auto 0;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--muted);
+        background: none;
+        border: 1px solid var(--rule);
+        min-height: 44px;
+        padding: 0 22px;
+        cursor: pointer;
+      }
+      #media-modal .modal-done:hover,
+      #media-modal .modal-done:focus-visible {
+        color: var(--glow);
+        border-color: var(--gold);
       }
       #media-modal .modal-label {
         font-family: var(--mono);
@@ -491,8 +524,6 @@
       #reading-chapters {
         display: none;
         margin-top: 18px;
-        max-height: 46vh;
-        overflow-y: auto;
         border-top: 1px solid var(--rule);
       }
       #reading-chapters.active {
@@ -1212,6 +1243,7 @@
           src="https://pub-bb8a474a69904ed98a408132316f149b.r2.dev/foundation-overview.m4a"
         ></audio>
         <div id="reading-chapters"></div>
+        <button class="modal-done" id="modal-done-btn">Done</button>
       </div>
     </div>
 
@@ -1939,6 +1971,10 @@
       });
       mediaModal.addEventListener("click", (e) => {
         if (e.target === mediaModal) closeModal();
+      });
+      document.getElementById("modal-done-btn").addEventListener("click", closeModal);
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && mediaModal.classList.contains("active")) closeModal();
       });
     </script>
 
