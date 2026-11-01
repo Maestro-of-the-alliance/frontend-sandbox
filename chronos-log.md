@@ -189,3 +189,9 @@ can just ask.
 - Transcript check (small.en, then medium.en on doubtful spots): every word matches. small.en's "trust/but/coins" in III and II were mishearings; medium.en confirms "trusts," "That isn't," "kinds." Remaining differences are British spellings and numerals.
 - Each take opened with the spoken section title; trimmed so the audio starts on the commentary, matching the no-lead-in design. 0:31–0:39 each, audio/commentary/"MENTOR - Section N.mp3".
 - Audio now live for MENTOR and J.R.
+
+## 2026-11-01 10:10 CST — ART entrance: walk-in and dissolve
+- MAESTRO's flow: exterior → tap inside the doors → walk forward and dissolve into the letter-board marquee → "What is ART?" (entry) or "Proceed to Gallery" (gallery). The two-step entrance and both destinations already existed (with a white flash cut); rebuilt the transition and swapped in his new images.
+- storefront.jpg replaced with his new exterior (now has the small letter board standing inside the doorway). New art-images/marquee.jpg (board on an easel against a warm wall; choice-board.png kept, unused).
+- The walk: the storefront scales up around the doorway board until it exactly matches the size and position of the close-up board, then the close-up dissolves in over it, so the sign lands on itself. Phones crop to fill; wide screens show the whole storefront over a blurred fill. Back outside reverses the walk; Esc and browser Back work.
+- Hotspots re-measured off marquee.jpg's pixels; hit-tested at phone and desktop. "Proceed to Gallery" now goes straight to /art/gallery/ (it used to bounce through the entry page). Entry page's gallery button renamed "Proceed to Gallery →" to match the board.
