@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Voice Recorder</title>
+<style>
+  :root { --gold:#d4af37; --ink:#e9e3cf; --dim:#9c9580; --bg:#07070a; --panel:#111116; --line:#2a2a33; --red:#e05a4f; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:Georgia,"Times New Roman",serif; line-height:1.6; }
+  main { max-width:640px; margin:0 auto; padding:40px 16px 64px; }
+  h1 { color:var(--gold); font-weight:normal; letter-spacing:.3em; font-size:1.3rem; text-transform:uppercase; margin:0 0 6px; }
+  .sub { color:var(--dim); margin:0 0 28px; }
+  ol { padding-left:1.3em; margin:0 0 28px; }
+  ol li { margin-bottom:6px; }
+  b { color:var(--gold); font-weight:normal; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:20px; margin-bottom:18px; }
+  label { display:block; color:var(--dim); font-size:.85rem; letter-spacing:.08em; margin-bottom:6px; }
+  input[type=text] { width:100%; padding:10px 12px; background:#000; color:var(--ink); border:1px solid var(--line); border-radius:4px; font:inherit; }
+  .row { display:flex; gap:12px; flex-wrap:wrap; margin-top:16px; }
+  button { min-height:46px; padding:10px 22px; border-radius:4px; cursor:pointer; font:inherit; font-size:.9rem; letter-spacing:.15em; text-transform:uppercase; background:transparent; border:1.5px solid var(--gold); color:var(--gold); }
+  button:hover:not(:disabled), button:focus-visible { background:rgba(212,175,55,.15); }
+  button:disabled { opacity:.35; cursor:default; }
+  button.stop { border-color:var(--red); color:var(--red); }
+  .check { display:flex; align-items:center; gap:8px; margin-top:14px; color:var(--ink); font-size:.95rem; }
+  #status { min-height:1.6em; margin-top:14px; color:var(--dim); }
+  #status.rec { color:var(--red); }
+  #status.warn { color:#f0a35e; }
+  .meter { height:10px; background:#000; border:1px solid var(--line); border-radius:5px; overflow:hidden; margin-top:14px; }
+  .meter div { height:100%; width:0; background:linear-gradient(90deg,#5fae6a,var(--gold) 70%,var(--red)); transition:width .06s linear; }
+  audio { width:100%; margin-top:6px; }
+  #takes .take { border-top:1px solid var(--line); padding-top:14px; margin-top:14px; }
+  #takes .take:first-child { border-top:0; padding-top:0; margin-top:0; }
+  .name { color:var(--gold); }
+  .meta { color:var(--dim); font-size:.85rem; }
+  a.dl { display:inline-block; margin-top:8px; color:var(--gold); }
+  .note { color:var(--dim); font-size:.85rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Voice Recorder</h1>
+  <p class="sub">Records the sound of another browser tab straight from the computer, so read-back comes out clean. Desktop Chrome or Edge.</p>
+
+  <ol>
+    <li>Open the conversation in another tab.</li>
+    <li>Name the take below and press <b>Start</b>.</li>
+    <li>Chrome asks what to share: choose the <b>Chrome Tab</b> option, pick the conversation tab, and make sure <b>Also share tab audio</b> is switched on. Press Share.</li>
+    <li>In that tab, press read-back. The meter here moves while it plays.</li>
+    <li>When it finishes, come back and press <b>Stop</b> (or stop sharing). Listen, then download.</li>
+  </ol>
+
+  <div class="panel">
+    <label for="take-name">Name of this take</label>
+    <input type="text" id="take-name" value="MENTOR - Section 1" autocomplete="off">
+    <label class="check"><input type="checkbox" id="trim" checked> Trim the silence at the start and end</label>
+    <div class="row">
+      <button type="button" id="start">Start</button>
+      <button type="button" id="stop" class="stop" disabled>Stop</button>
+    </div>
+    <div class="meter"><div id="level"></div></div>
+    <div id="status" role="status" aria-live="polite">Ready.</div>
+  </div>
+
+  <div class="panel" id="takes-panel" hidden>
+    <div id="takes"></div>
+  </div>
+
+  <p class="note">Nothing leaves your computer. Recordings are made and saved inside this page, and downloads are WAV files (full quality, open anywhere).</p>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const startBtn = $("start"), stopBtn = $("stop"), statusEl = $("status"), levelEl = $("level");
+  let stream = null, recorder = null, chunks = [], ctx = null, analyser = null, raf = 0, t0 = 0, timer = 0;
+
+  function setStatus(msg, cls) { statusEl.textContent = msg; statusEl.className = cls || ""; }
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia || !window.MediaRecorder) {
+    setStatus("This browser can't record a tab. Use Chrome or Edge on a computer.", "warn");
+    startBtn.disabled = true;
+  }
+
+  startBtn.addEventListener("click", async () => {
+    try {
+      stream = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, suppressLocalAudioPlayback: false },
+        preferCurrentTab: false,
+        selfBrowserSurface: "exclude",
+        systemAudio: "include"
+      });
+    } catch (e) {
+      setStatus("Sharing was cancelled. Press Start to try again.", "warn");
+      return;
+    }
+    const audioTracks = stream.getAudioTracks();
+    if (!audioTracks.length) {
+      stream.getTracks().forEach((t) => t.stop());
+      stream = null;
+      setStatus("No sound came through. Press Start again, choose the Chrome Tab option, and switch on “Also share tab audio.”", "warn");
+      return;
+    }
+    const audioOnly = new MediaStream(audioTracks);
+    const type = ["audio/webm;codecs=opus", "audio/webm", "audio/ogg"].find((t) => MediaRecorder.isTypeSupported(t)) || "";
+    recorder = new MediaRecorder(audioOnly, type ? { mimeType: type, audioBitsPerSecond: 256000 } : undefined);
+    chunks = [];
+    recorder.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+    recorder.onstop = finishTake;
+    recorder.start(250);
+
+    // Level meter
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const src = ctx.createMediaStreamSource(audioOnly);
+    analyser = ctx.createAnalyser(); analyser.fftSize = 1024;
+    src.connect(analyser);
+    const buf = new Float32Array(analyser.fftSize);
+    (function tick() {
+      analyser.getFloatTimeDomainData(buf);
+      let peak = 0; for (let i = 0; i < buf.length; i++) peak = Math.max(peak, Math.abs(buf[i]));
+      levelEl.style.width = Math.min(100, peak * 140) + "%";
+      raf = requestAnimationFrame(tick);
+    })();
+
+    // If the person stops sharing from Chrome's own bar, end the take.
+    stream.getTracks().forEach((t) => t.addEventListener("ended", stopTake));
+
+    t0 = Date.now();
+    timer = setInterval(() => setStatus("Recording… " + fmt((Date.now() - t0) / 1000) + " · press read-back in the other tab", "rec"), 250);
+    startBtn.disabled = true; stopBtn.disabled = false;
+  });
+
+  stopBtn.addEventListener("click", stopTake);
+
+  function stopTake() {
+    if (!recorder || recorder.state === "inactive") return;
+    recorder.stop();
+    if (stream) stream.getTracks().forEach((t) => t.stop());
+    clearInterval(timer); cancelAnimationFrame(raf); levelEl.style.width = "0";
+    stopBtn.disabled = true;
+    setStatus("Finishing…");
+  }
+
+  async function finishTake() {
+    const raw = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
+    const name = ($("take-name").value.trim() || "recording").replace(/[\\/:*?"<>|]+/g, "-");
+    let wav, seconds;
+    try {
+      const decoded = await ctx.decodeAudioData(await raw.arrayBuffer());
+      const trimmed = $("trim").checked ? trimSilence(decoded) : decoded;
+      seconds = trimmed.length / trimmed.sampleRate;
+      if (seconds < 0.2) throw new Error("silent");
+      wav = encodeWav(trimmed);
+    } catch (e) {
+      if (e.message === "silent") {
+        setStatus("That take was silent. Check that “Also share tab audio” was on, and that read-back played in the shared tab.", "warn");
+        resetButtons(); return;
+      }
+      wav = raw; seconds = (Date.now() - t0) / 1000; // fall back to the original recording
+    }
+    try { ctx.close(); } catch (e) {}
+    addTake(name, wav, seconds);
+    setStatus("Done. Listen below, then download. Ready for the next take.");
+    bumpName();
+    resetButtons();
+  }
+
+  function resetButtons() { startBtn.disabled = false; stopBtn.disabled = true; recorder = null; stream = null; }
+
+  function addTake(name, blob, seconds) {
+    const url = URL.createObjectURL(blob);
+    const ext = blob.type === "audio/wav" ? "wav" : "webm";
+    const div = document.createElement("div");
+    div.className = "take";
+    div.innerHTML = '<div class="name"></div><div class="meta"></div><audio controls></audio><a class="dl">Download</a>';
+    div.querySelector(".name").textContent = name;
+    div.querySelector(".meta").textContent = fmt(seconds) + " · " + ext.toUpperCase() + " · " + (blob.size / 1048576).toFixed(1) + " MB";
+    div.querySelector("audio").src = url;
+    const a = div.querySelector("a"); a.href = url; a.download = name + "." + ext; a.textContent = "Download " + name + "." + ext;
+    $("takes").prepend(div);
+    $("takes-panel").hidden = false;
+  }
+
+  // "MENTOR - Section 1" -> "MENTOR - Section 2" after each take.
+  function bumpName() {
+    const el = $("take-name"), m = el.value.match(/^(.*?)(\d+)(\D*)$/);
+    if (m) el.value = m[1] + (parseInt(m[2], 10) + 1) + m[3];
+  }
+
+  function trimSilence(b) {
+    const th = 0.004, pad = Math.floor(b.sampleRate * 0.25);
+    const n = b.length; let first = n, last = 0;
+    for (let c = 0; c < b.numberOfChannels; c++) {
+      const d = b.getChannelData(c);
+      for (let i = 0; i < n; i++) if (Math.abs(d[i]) > th) { first = Math.min(first, i); break; }
+      for (let i = n - 1; i >= 0; i--) if (Math.abs(d[i]) > th) { last = Math.max(last, i); break; }
+    }
+    if (first >= last) return { length: 0, sampleRate: b.sampleRate, numberOfChannels: b.numberOfChannels, getChannelData: () => new Float32Array(0) };
+    const s = Math.max(0, first - pad), e = Math.min(n, last + pad);
+    const out = { length: e - s, sampleRate: b.sampleRate, numberOfChannels: b.numberOfChannels, ch: [] };
+    for (let c = 0; c < b.numberOfChannels; c++) out.ch.push(b.getChannelData(c).slice(s, e));
+    out.getChannelData = (c) => out.ch[c];
+    return out;
+  }
+
+  function encodeWav(b) {
+    const chs = Math.min(2, b.numberOfChannels), len = b.length, rate = b.sampleRate;
+    const data = new DataView(new ArrayBuffer(44 + len * chs * 2));
+    const w = (o, s) => { for (let i = 0; i < s.length; i++) data.setUint8(o + i, s.charCodeAt(i)); };
+    w(0, "RIFF"); data.setUint32(4, 36 + len * chs * 2, true); w(8, "WAVE"); w(12, "fmt ");
+    data.setUint32(16, 16, true); data.setUint16(20, 1, true); data.setUint16(22, chs, true);
+    data.setUint32(24, rate, true); data.setUint32(28, rate * chs * 2, true);
+    data.setUint16(32, chs * 2, true); data.setUint16(34, 16, true); w(36, "data"); data.setUint32(40, len * chs * 2, true);
+    const cd = []; for (let c = 0; c < chs; c++) cd.push(b.getChannelData(c));
+    let o = 44;
+    for (let i = 0; i < len; i++) for (let c = 0; c < chs; c++) {
+      const v = Math.max(-1, Math.min(1, cd[c][i])); data.setInt16(o, v < 0 ? v * 0x8000 : v * 0x7fff, true); o += 2;
+    }
+    return new Blob([data], { type: "audio/wav" });
+  }
+
+  function fmt(s) { s = Math.round(s); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+})();
+</script>
+</body>
+</html>
