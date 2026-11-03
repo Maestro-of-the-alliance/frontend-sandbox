@@ -227,3 +227,6 @@ can just ask.
 - Made the site's own links address-agnostic so the site works on either domain: canon search results, THE SYSTEM (entry links, tours, landing, Bridgekeeper), and the DORK game's back button now use site-relative paths instead of https://allianceftf.org. Patched the built bundles directly (same change in -src) rather than rebuilding.
 - Bridgekeeper worker code now allows nextcommonera.org (and www) alongside allianceftf.org. Needs redeploying plus a Workers Route on nextcommonera.org/api/bridgekeeper/* — MAESTRO's dashboard step.
 - Left alone for MAESTRO's decision: the email addresses info@allianceftf.org (command panel, MARKET page) and dave@allianceftf.org (an old concept-freezer copy). They stop working when the old domain lapses.
+
+## 2026-11-03 17:15 CST — Contact address: info@nextcommonera.org
+- MAESTRO: info@allianceftf.org never received mail and nobody has used the site yet, so no forwarding needed. Command panel (both mail links) and the MARKET "alert me" link now use info@nextcommonera.org. Mail routing for that address can be set up in Cloudflare whenever it's wanted. maestro@allianceftf.org (Zoho, Substack only) lapses with the old domain on Nov 22.

@@ -333,7 +333,7 @@
         `Name: ${name}\nEmail: ${email}\nType: ${type}\n\n${msg}`,
       );
       window.open(
-        `mailto:info@allianceftf.org?subject=${subject}&body=${body}`,
+        `mailto:info@nextcommonera.org?subject=${subject}&body=${body}`,
       );
     });
   }
@@ -414,7 +414,7 @@
         `Name: ${name}\nEmail: ${email}\nSkills: ${skillStr}\n\n${msg}`,
       );
       window.open(
-        `mailto:info@allianceftf.org?subject=${subject}&body=${body}`,
+        `mailto:info@nextcommonera.org?subject=${subject}&body=${body}`,
       );
     });
   }
