@@ -937,10 +937,10 @@ export default function SolarSystemCanvas({
           // a coin flip at the doorway.
           (window as any).PapaDomoChoice.open({
             onEnterTour: () => {
-              window.location.href = "https://allianceftf.org/tours/";
+              window.location.href = "/tours/";
             },
             onExitHome: () => {
-              window.location.href = "https://allianceftf.org/landing.html";
+              window.location.href = "/landing.html";
             },
           });
         } else if (hit.name.startsWith("planet-")) {
@@ -1482,7 +1482,7 @@ export default function SolarSystemCanvas({
               onClick={() => {
                 // TEMPORARY destination -- swap this for wherever the real
                 // bridge/payphone scene ends up living once it's built.
-                window.location.href = "https://allianceftf.org/bridgekeeper/";
+                window.location.href = "/bridgekeeper/";
               }}
               className="px-5 py-2 border border-amber-600 text-amber-500 text-sm tracking-wide hover:bg-amber-600 hover:text-black transition-colors"
             >

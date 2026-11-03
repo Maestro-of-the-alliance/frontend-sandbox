@@ -33,7 +33,7 @@ export default function EntryViewer({ entry, planet, onClose }: EntryViewerProps
     "100-year-mortality-doctrine": "entries/100-year.html",
     "foundation": "foundation.html",
   };
-  const entryUrl = `https://allianceftf.org/${ENTRY_PAGE[entry.slug] ?? `entries/${entry.slug}.html`}`;
+  const entryUrl = `/${ENTRY_PAGE[entry.slug] ?? `entries/${entry.slug}.html`}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(entryUrl);

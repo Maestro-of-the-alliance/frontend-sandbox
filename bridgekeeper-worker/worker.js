@@ -1,16 +1,18 @@
 // BRIDGEKEEPER SCOREBOARD
 // Running list of everyone who crossed the bridge, plus optional emails.
 // KV binding: SCORES -> namespace "bridgekeeper-scores"
-// Served at: https://allianceftf.org/api/bridgekeeper/* (Workers Route)
+// Served at: https://nextcommonera.org/api/bridgekeeper/* (Workers Route; allianceftf.org until it lapses)
 //
 //   GET  /scores  -> { scores: [{tag, at}] }            (latest 100)
 //   POST /score   -> {tag} -> { ok:true, scores }       (1-3 chars, anything)
 //   POST /email   -> {email, tag?} -> { ok:true }
 //
-// CORS: allianceftf.org only. Light per-IP rate limiting; this is a
+// CORS: nextcommonera.org (and allianceftf.org until it lapses). Light per-IP rate limiting; this is a
 // low-traffic page, not Fort Knox.
 
 const ALLOWED_ORIGINS = [
+  "https://nextcommonera.org",
+  "https://www.nextcommonera.org",
   "https://allianceftf.org",
   "https://www.allianceftf.org",
 ];

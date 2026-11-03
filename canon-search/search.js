@@ -334,8 +334,8 @@ function renderResults(results, query = "") {
   
   results.forEach(({ doc, score, snippet, matchedText, type }) => {
     const liveSiteUrl = doc.url.startsWith('/') 
-      ? `https://allianceftf.org${doc.url}` 
-      : `https://allianceftf.org/entries/${doc.slug}.html`;
+      ? `${doc.url}` 
+      : `/entries/${doc.slug}.html`;
 
     // Deep-link straight to the matched passage using a Text Fragment
     // (#:~:text=...). Supported by Chrome, Edge, and most Chromium-based

@@ -221,3 +221,9 @@ can just ask.
 - MAESTRO recorded all 13 of MENTOR's commentary sections as clean tab audio with the new Universal Voice Archive extension (no more two-phone recording). Replaced sections I and III–XIII on the site.
 - Spoken section titles trimmed to match the Nov 1 takes. Section VI's last sentence ("…how well a student can stand without them. A good partner does too.") had landed at the start of the VII file; moved it back onto VI. Trailing silence trimmed; 128 kbps MP3 like the rest. Every file checked by transcript, start and end; "gutted" in XII confirmed with the larger model.
 - Section II's new take cuts off before its last words ("…is the path of least resistance is the work."), so the Nov 1 take of II stays live until a re-take of II arrives.
+
+## 2026-11-03 16:55 CST — Domain move prep: nextcommonera.org
+- MAESTRO bought nextcommonera.org through Cloudflare (allianceftf.org renewal is due Nov 22; he won't renew a domain we won't use). Name of the project itself is still a brainstorm; the domain is decided.
+- Made the site's own links address-agnostic so the site works on either domain: canon search results, THE SYSTEM (entry links, tours, landing, Bridgekeeper), and the DORK game's back button now use site-relative paths instead of https://allianceftf.org. Patched the built bundles directly (same change in -src) rather than rebuilding.
+- Bridgekeeper worker code now allows nextcommonera.org (and www) alongside allianceftf.org. Needs redeploying plus a Workers Route on nextcommonera.org/api/bridgekeeper/* — MAESTRO's dashboard step.
+- Left alone for MAESTRO's decision: the email addresses info@allianceftf.org (command panel, MARKET page) and dave@allianceftf.org (an old concept-freezer copy). They stop working when the old domain lapses.

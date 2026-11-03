@@ -134,7 +134,7 @@ export const WinModal: React.FC<WinModalProps> = ({
 
               <a
                 id="back-to-alliance-btn"
-                href="https://allianceftf.org"
+                href="/"
                 target="_blank"
                 rel="noreferrer"
                 className="w-full sm:w-auto flex-1 py-3 px-6 bg-slate-800 hover:bg-slate-700 active:scale-98 text-slate-200 font-black text-sm uppercase tracking-wider rounded-xl border border-slate-700 shadow cursor-pointer transition-all flex items-center justify-center gap-2"
