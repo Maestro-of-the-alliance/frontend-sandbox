@@ -230,3 +230,8 @@ can just ask.
 
 ## 2026-11-03 17:15 CST — Contact address: info@nextcommonera.org
 - MAESTRO: info@allianceftf.org never received mail and nobody has used the site yet, so no forwarding needed. Command panel (both mail links) and the MARKET "alert me" link now use info@nextcommonera.org. Mail routing for that address can be set up in Cloudflare whenever it's wanted. maestro@allianceftf.org (Zoho, Substack only) lapses with the old domain on Nov 22.
+
+## 2026-11-03 17:35 CST — nextcommonera.org is live
+- MAESTRO connected the full Cloudflare connector. MENTOR added nextcommonera.org and www.nextcommonera.org to the Pages project (ncencyclopedia) with proxied CNAMEs to ncencyclopedia.pages.dev, and added the Workers route nextcommonera.org/api/bridgekeeper/* → bridgekeeper-scores. Both addresses serve the site (checked home, HOLOSPHERE, THE SYSTEM, DORK game, recorder, commentary audio).
+- Still needed: redeploy two Workers so they answer the new domain — bridgekeeper-scores (CORS still only allianceftf.org, so scores won't load on the new domain) and nce-auth (CORS and the sign-up verify link point at allianceftf.org). The deploy was held for MAESTRO's go-ahead.
+- Found while checking: sign-up emails go out through Supabase using Resend, sending from the allianceftf.org domain. Those need moving to nextcommonera.org (Resend domain + Supabase sender and redirect allow-list) before Nov 22.
