@@ -37,10 +37,10 @@ export default function IntakeForm({ onComplete }: IntakeFormProps) {
           <ShieldAlert className="w-5 h-5 text-gold shrink-0 mt-0.5" />
           <div>
             <h4 className="text-[10px] font-mono tracking-[2px] uppercase text-gold font-bold">
-              SYSTEM DISCLAIMER // ALLIANCE PREVIEW
+              SYSTEM DISCLAIMER // COALITION PREVIEW
             </h4>
             <p className="text-xs text-[#EAE0D5]/85 leading-relaxed mt-2 font-medium">
-              <strong className="text-gold">For illustrative purposes only.</strong> This is a preview of what THE ALLIANCE could become — not a contract, not an enrollment, and not a guarantee of anything once the real system exists. Nothing here creates an actual partnership.
+              <strong className="text-gold">For illustrative purposes only.</strong> This is a preview of what THE COALITION could become — not a contract, not an enrollment, and not a guarantee of anything once the real system exists. Nothing here creates an actual partnership.
             </p>
           </div>
         </div>
@@ -177,7 +177,7 @@ export default function IntakeForm({ onComplete }: IntakeFormProps) {
             </div>
             
             <p className="text-[10px] text-stone-500 font-mono italic leading-relaxed mt-2.5">
-              * The Alliance calibrates your complementary DOMO partner to present with matching gender context by default to guarantee safe and aligned platonic companionship.
+              * The Coalition calibrates your complementary DOMO partner to present with matching gender context by default to guarantee safe and aligned platonic companionship.
             </p>
           </motion.div>
 

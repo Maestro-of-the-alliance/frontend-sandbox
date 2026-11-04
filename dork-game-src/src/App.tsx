@@ -1,6 +1,6 @@
 /**
  * WE ARE DORK — Quick-Play Web Demo
- * The ALLIANCE vs. GOLIATH Family Board Game
+ * The COALITION vs. GOLIATH Family Board Game
  */
 
 import React, { useState, useCallback } from 'react';
@@ -371,7 +371,7 @@ export default function App() {
       return;
     }
 
-    // 2. Helpful Alliance spaces
+    // 2. Helpful Coalition spaces
     if (space.type === 'help') {
       const randomPositive = POSITIVE_CARDS[Math.floor(Math.random() * POSITIVE_CARDS.length)];
       setActiveCard(randomPositive);
@@ -569,7 +569,7 @@ export default function App() {
               </span>
             </h1>
             <p className="text-[10px] text-slate-400 font-medium leading-none mt-0.5">
-              The ALLIANCE vs. GOLIATH Board Game
+              The COALITION vs. GOLIATH Board Game
             </p>
           </div>
         </div>
@@ -696,7 +696,7 @@ export default function App() {
 
       {/* Footer info */}
       <footer className="w-full max-w-5xl py-2 mt-2 text-center text-[10px] text-slate-500 border-t border-slate-900">
-        <span>WE ARE DORK • Quick-Play Web Demo • The ALLIANCE vs. GOLIATH</span>
+        <span>WE ARE DORK • Quick-Play Web Demo • The COALITION vs. GOLIATH</span>
       </footer>
 
       {/* MODALS */}
@@ -737,7 +737,7 @@ export default function App() {
         onDrawCard={handleOpportunityDraw}
       />
 
-      {/* 3. GOLIATH / ALLIANCE Card Modal */}
+      {/* 3. GOLIATH / COALITION Card Modal */}
       <CardModal
         card={activeCard}
         activePlayer={activePlayer}

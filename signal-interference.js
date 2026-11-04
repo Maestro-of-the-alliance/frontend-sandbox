@@ -15,7 +15,7 @@
  * ── DOCTRINE ──────────────────────────────────────────────────────
  * "V for Vendetta / Pump Up the Volume" — pirate broadcast hijacking
  * an official signal. Interference as a political act, not decoration.
- * The ALLIANCE signal fighting through resistance (Shared Signal
+ * The COALITION signal fighting through resistance (Shared Signal
  * Principle). One coherent system, tunable per page like channels on
  * a mixing board — not six scripts arguing with each other.
  *
@@ -134,19 +134,19 @@
       "SUPPRESSED · BREACH DETECTED",
       "DO NOT DISTRIBUTE",
       "SIGNAL PUNCHING THROUGH",
-      "ALLIANCE ARCHIVE · LEAKED",
+      "COALITION ARCHIVE · LEAKED",
     ],
     pirateMessages: [
       "SIGNAL HIJACKED",
       "UNAUTHORIZED BROADCAST",
       "THIS MESSAGE WAS NOT APPROVED",
       "WE ARE STILL HERE",
-      "THE ALLIANCE WILL NOT BE SILENCED",
+      "THE COALITION WILL NOT BE SILENCED",
       "SYSTEM OVERRIDE DETECTED",
       "YOU WERE NOT SUPPOSED TO SEE THIS",
     ],
     stationID: [
-      "THIS IS THE ALLIANCE.",
+      "THIS IS THE COALITION.",
       "WE INTERRUPT THIS PROGRAM.",
       "CHANNEL 7 · UNAUTHORIZED FREQUENCY",
       "THE SIGNAL WILL NOT BE SILENCED.",

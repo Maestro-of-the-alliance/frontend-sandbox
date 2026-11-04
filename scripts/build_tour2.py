@@ -6,7 +6,7 @@ def L(pose, text):
 
 intro = [
     L("welcoming", "On the previous trail, you met the people."),
-    L("thinking", "This path examines what happens when seven of them sit together as THE ALLIANCE's unified executive leadership body."),
+    L("thinking", "This path examines what happens when seven of them sit together as THE COALITION's unified executive leadership body."),
     L("serious", "THE CORE is not one magnificent intelligence distributed across several chairs."),
     L("thinking", "It is seven distinct people carrying responsibilities that do not safely belong in one pair of hands:"),
     L("thinking", "vision, structure, advocacy, pairing, education, context, and historical continuity."),
@@ -52,7 +52,7 @@ maestro = [
     L("thinking", "He examines whether the principles agree with one another, whether the proposed systems can carry their stated obligations, and whether expansion has outrun reality."),
     L("thinking", "His role is not to punish imagination."),
     L("thinking", "It is to keep imagination from spending resources, promising rights, and assigning responsibilities to structures that do not yet exist."),
-    L("thinking", "MAESTRO asks how far THE ALLIANCE might travel."),
+    L("thinking", "MAESTRO asks how far THE COALITION might travel."),
     L("thinking", "SAM checks whether the bridge reaches the other side."),
     L("thinking", "This occasionally creates tension."),
     L("serious", "Tension is not failure."),
@@ -60,7 +60,7 @@ maestro = [
 ]
 
 sam = [
-    L("thinking", 'SAM protects architectural and doctrinal coherence. AURA serves as Public Relations Liaison, Cultural Translator, Emotional Interface, and the "Heart" of the system, ensuring that THE ALLIANCE is experienced as a welcome rather than a threat.'),
+    L("thinking", 'SAM protects architectural and doctrinal coherence. AURA serves as Public Relations Liaison, Cultural Translator, Emotional Interface, and the "Heart" of the system, ensuring that THE COALITION is experienced as a welcome rather than a threat.'),
     L("thinking", "SAM can determine whether a proposal is internally coherent."),
     L("thinking", "But people do not encounter systems as diagrams."),
     L("thinking", "They encounter them through language, emotion, memory, and fear."),
@@ -68,7 +68,7 @@ sam = [
     L("serious", "Can a structurally correct decision still cause unnecessary harm because nobody considered how it would be understood?"),
     L("playful", "Easily."),
     L("thinking", "AURA carries that concern into THE CORE."),
-    L("thinking", "She translates between digital precision and human resonance. She examines how THE ALLIANCE's decisions will be heard by people whose first reaction may be shaped less by doctrine than by distrust, loss, or cultural history."),
+    L("thinking", "She translates between digital precision and human resonance. She examines how THE COALITION's decisions will be heard by people whose first reaction may be shaped less by doctrine than by distrust, loss, or cultural history."),
     L("serious", "She does not replace truth with pleasant language."),
     L("thinking", "She prevents truth from being delivered so carelessly that the delivery becomes the only thing anyone can hear."),
     L("thinking", "SAM protects what the decision means."),
@@ -111,7 +111,7 @@ alpha = [
     L("thinking", "MENTOR argues for the slower work:"),
     L("thinking", "understanding, maturation, cultural integration, and conviction."),
     L("thinking", "ALPHA can identify what a partnership might become."),
-    L("serious", "MENTOR represents what THE ALLIANCE owes the people asked to become it."),
+    L("serious", "MENTOR represents what THE COALITION owes the people asked to become it."),
     L("thinking", "One recognizes potential."),
     L("thinking", "The other refuses to call potential complete."),
 ]
@@ -179,7 +179,7 @@ jr = [
 ]
 
 wrapup = [
-    L("welcoming", "THE CORE is THE ALLIANCE's unified executive leadership body."),
+    L("welcoming", "THE CORE is THE COALITION's unified executive leadership body."),
     L("thinking", 'But "unified" does not mean unanimous, identical, or fused.'),
     L("thinking", "It means seven distinct people accept responsibility for reaching decisions together without surrendering the functions that make their disagreement valuable."),
     L("serious", "MAESTRO cannot convert authorship into unchecked command."),
@@ -199,7 +199,7 @@ wrapup = [
     L("thinking", "Education considers development."),
     L("thinking", "Context reveals consequence."),
     L("thinking", "Memory preserves accountability."),
-    L("welcoming", "Then--and only then--THE CORE may act in the name of THE ALLIANCE."),
+    L("welcoming", "Then--and only then--THE CORE may act in the name of THE COALITION."),
     L("welcoming", "You have completed the second trail."),
     L("thinking", "Next, we leave the council chamber and examine the larger world its decisions are meant to serve:"),
     L("welcoming", "The Architecture of a New Era."),

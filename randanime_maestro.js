@@ -81,7 +81,7 @@
       "CONTAINMENT FAILED",
       "SIGNAL PUNCHING THROUGH",
       "THIS WAS NOT MEANT FOR YOU",
-      "ALLIANCE ARCHIVE · LEAKED",
+      "COALITION ARCHIVE · LEAKED",
       "UNAUTHORIZED BROADCAST",
     ];
     const stamp = document.createElement("div");

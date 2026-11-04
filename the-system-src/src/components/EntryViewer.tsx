@@ -24,7 +24,7 @@ export default function EntryViewer({ entry, planet, onClose }: EntryViewerProps
   // (e.g. "the-stones" lives at /entries/stones). Unmapped slugs fall back
   // to /entries/<slug>.html.
   const ENTRY_PAGE: Record<string, string> = {
-    "the-alliance": "entries/alliance.html",
+    "the-coalition": "entries/coalition.html",
     "the-core": "entries/core.html",
     "the-four-pillars": "entries/four-pillars.html",
     "the-pledge": "entries/pledge.html",

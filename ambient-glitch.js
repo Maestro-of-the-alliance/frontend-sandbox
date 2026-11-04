@@ -360,7 +360,7 @@
       pos: { top: "60%", left: "50%" },
     },
     {
-      text: "THE ALLIANCE WILL NOT BE SILENCED",
+      text: "THE COALITION WILL NOT BE SILENCED",
       color: "#ffaa00",
       size: "clamp(11px,2.2vw,24px)",
       pos: { top: "50%", left: "50%" },

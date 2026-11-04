@@ -150,7 +150,7 @@ export default function DimensionSidebar({
             </div>
           </motion.div>
         ) : (
-          /* Default Alliance Briefing Panel with Artistic flair */
+          /* Default Coalition Briefing Panel with Artistic flair */
           <div className="flex-1 flex flex-col justify-between" id="alliance-briefing">
             <div className="space-y-6">
               <div className="space-y-2">

@@ -1,6 +1,6 @@
 /**
  * command-panel.js
- * The Alliance NCE — Command Prompt Panel
+ * The Coalition NCE — Command Prompt Panel
  * Separate from TOC. Triggered by stealth prompt at bottom-left.
  *
  * Modes: CONTACT · GET INVOLVED · SUPPORT · LINKS
@@ -266,7 +266,7 @@
   panel.innerHTML = `
     <div class="cmd-topbar">
       <span class="cmd-prompt-sym">&gt;_</span>
-      <span class="cmd-topbar-label">THE ALLIANCE</span>
+      <span class="cmd-topbar-label">THE COALITION</span>
       <span class="cmd-close" id="cmdClose">×</span>
     </div>
     <div class="cmd-tabs">
@@ -287,7 +287,7 @@
 
   function renderContact() {
     document.getElementById("cmdBody").innerHTML = `
-      <div class="cmd-section-label">REACH THE ALLIANCE</div>
+      <div class="cmd-section-label">REACH THE COALITION</div>
       <div class="cmd-form-group">
         <label class="cmd-form-label">YOUR NAME</label>
         <input class="cmd-form-input" id="cf-name" type="text" placeholder="how should we address you" />
@@ -355,7 +355,7 @@
     document.getElementById("cmdBody").innerHTML = `
       <div class="cmd-section-label">FIND YOUR PLACE IN THE WORK</div>
       <p style="font-size:16px;color:rgba(184,150,40,0.55);letter-spacing:0.1em;line-height:1.7;margin-bottom:18px;">
-        The ALLIANCE is built by people who refused to be made brutal.<br>
+        The COALITION is built by people who refused to be made brutal.<br>
         If that sounds like you — we could use your skills.
       </p>
       <div class="cmd-form-group">
@@ -429,7 +429,7 @@
           If it meant something to you — here's how to say so.
         </div>
         <a class="cmd-support-btn" href="https://buymeacoffee.com/allianceftf" target="_blank" rel="noopener">
-          BUY THE ALLIANCE A COFFEE
+          BUY THE COALITION A COFFEE
         </a>
       </div>
       <div class="cmd-section-label">OTHER WAYS TO HELP</div>
@@ -458,7 +458,7 @@
       <a class="cmd-link-card" href="https://notebooklm.google.com" target="_blank" rel="noopener">
         <span class="cmd-link-icon">◎</span>
         <div class="cmd-link-info">
-          <div class="cmd-link-title">AUDIO OVERVIEW — THE ALLIANCE</div>
+          <div class="cmd-link-title">AUDIO OVERVIEW — THE COALITION</div>
           <div class="cmd-link-desc">Listen to the NCE explained — NotebookLM deep dive</div>
         </div>
         <span class="cmd-link-arrow">↗</span>

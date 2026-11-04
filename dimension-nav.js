@@ -94,7 +94,7 @@
     spark: ["BEINGS"],
     sprezzatura: ["CULTURE", "DOCTRINE"],
     stones: ["BEINGS", "DOCTRINE"],
-    "tech-coalition": ["BEINGS", "PROTOCOLS", "INFRASTRUCTURE"],
+    "tech-collective": ["BEINGS", "PROTOCOLS", "INFRASTRUCTURE"],
     team: ["BEINGS", "DOCTRINE"],
     "temporal-awareness": ["DOCTRINE"],
     tenant: ["BEINGS"],

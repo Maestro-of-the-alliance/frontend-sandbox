@@ -188,7 +188,7 @@ tocEntries.forEach((entry) => {
 const DOS_LINES = [
   "N.C.E.ncyclopedia OS v2026.1",
 
-  "Copyright (C) THE ALLIANCE FOR THE FUTURE",
+  "Copyright (C) THE COALITION FOR THE NEXT COMMON ERA",
 
   "",
 
@@ -204,7 +204,7 @@ const DOS_LINES = [
 
   "",
 
-  "Volume: The ALLIANCE",
+  "Volume: The COALITION",
 
   "Directory: N.C.E.ncyclopedia\\*.*",
 

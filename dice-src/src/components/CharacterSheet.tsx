@@ -411,7 +411,7 @@ export default function CharacterSheet({
     // Disclaimer note bottom
     ctx.fillStyle = "#78716c";
     ctx.font = "bold 13px 'JetBrains Mono', monospace";
-    ctx.fillText("SHELTER CANON PREVIEW // PRIVACY ASSURED // THE ALLIANCE INCUBATOR PROTOCOL", canvas.width / 2, 1410);
+    ctx.fillText("SHELTER CANON PREVIEW // PRIVACY ASSURED // THE COALITION INCUBATOR PROTOCOL", canvas.width / 2, 1410);
 
     // Large high-tech watermark vector layout of a circle (resembling a DOMO shell)
     ctx.strokeStyle = "rgba(245,158,11,0.05)";
@@ -911,7 +911,7 @@ export default function CharacterSheet({
                 <div className="flex items-start gap-2.5">
                   <ShieldAlert className="w-4 h-4 text-amber-500/60 shrink-0 mt-0.5" />
                   <p className="text-[10px] text-amber-500/60 leading-relaxed font-mono">
-                    <strong>For illustrative purposes only.</strong> This is a preview of what THE ALLIANCE could become — not a contract, not an enrollment, and not a guarantee of anything once the real system exists. Nothing here creates an actual partnership.
+                    <strong>For illustrative purposes only.</strong> This is a preview of what THE COALITION could become — not a contract, not an enrollment, and not a guarantee of anything once the real system exists. Nothing here creates an actual partnership.
                   </p>
                 </div>
               </div>
@@ -964,7 +964,7 @@ export default function CharacterSheet({
                         className="w-3.5 h-3.5 accent-gold border border-gold/20 rounded-none bg-[#FFFFFF] shrink-0 mt-0.5 cursor-pointer"
                       />
                       <label htmlFor="newsletter" className="text-[10px] text-stone-600 leading-normal font-sans cursor-pointer select-none">
-                        <strong>Sign up for THE ALLIANCE newsletter</strong>. Receive system diagnostics and recruitment updates. <span className="text-stone-700">We will not sell your information.</span>
+                        <strong>Sign up for THE COALITION newsletter</strong>. Receive system diagnostics and recruitment updates. <span className="text-stone-700">We will not sell your information.</span>
                       </label>
                     </div>
 

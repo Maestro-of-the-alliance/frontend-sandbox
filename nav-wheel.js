@@ -1,7 +1,7 @@
 (function(){try{var de=document.documentElement;if(de.hasAttribute("data-world")||de.classList.contains("nwx")){var l=document.createElement("link");l.rel="stylesheet";l.href="/nw/chrome.css";document.head.appendChild(l);if(!document.querySelector('link[href*="family=Syne"]')){var f=document.createElement("link");f.rel="stylesheet";f.href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Figtree:wght@500;600&display=swap";document.head.appendChild(f)}}}catch(e){}})();
 // @ts-nocheck
 /*!
- * NAV WHEEL — THE ALLIANCE
+ * NAV WHEEL — THE COALITION
  * Universal adaptive navigation component (Chameleon Engine)
  * Drop one script tag into any page: <script src="/nav-wheel.js"></script>
  */
@@ -21,7 +21,7 @@
     { label: "AGORA", path: "/entries/agora" },
     { label: "AI", path: "/entries/ai" },
     { label: "ALIGNMENT", path: "/entries/alignment" },
-    { label: "ALLIANCE, THE", path: "/entries/alliance" },
+    { label: "COALITION, THE", path: "/entries/coalition" },
     { label: "ALPHA", path: "/entries/alpha" },
     { label: "ANTENNA", path: "/entries/antenna" },
     { label: "ART", path: "/art/what-is" },
@@ -85,7 +85,7 @@
     { label: "SPREZZATURA", path: "/entries/sprezzatura" },
     { label: "STONES, THE", path: "/entries/stones" },
     { label: "TEAM", path: "/entries/team" },
-    { label: "TECH COALITION", path: "/entries/tech-coalition" },
+    { label: "TECH COLLECTIVE", path: "/entries/tech-collective" },
     { label: "TEMPORAL AWARENESS", path: "/entries/temporal-awareness" },
     { label: "TENANT", path: "/entries/tenant" },
     { label: "THE WHY", path: "/entries/the-why" },
@@ -427,7 +427,7 @@
   menuOverlay.innerHTML = `
     <div id="nw-volume-select">
       <button class="nw-vol-btn" id="nw-canon-btn" type="button" aria-label="Open canon wheel">
-        <img src="/imagebank/theavpi.png" alt="THE ALLIANCE">
+        <img src="/imagebank/theavpi.png" alt="THE COALITION">
       </button>
     </div>
     <div id="nw-wheel-panel">

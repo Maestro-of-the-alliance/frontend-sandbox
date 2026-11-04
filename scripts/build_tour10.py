@@ -22,8 +22,8 @@ intro = [
 ]
 
 lingo = [
-    L("thinking", 'LINGO is the official ALLIANCE language index for referring to digital entities with accuracy, dignity, legal usefulness, and operational precision. It rejects collapsing every digital system or person into the single external label "AI" and preserves distinctions between umbrella terms, legal classes, individuals, statuses, roles, aliases, and deprecated language.'),
-    L("thinking", "ART is the visual and cultural gallery through which ALLIANCE ideas are expressed as posters, images, symbols, propaganda reversals, movement artifacts, and aesthetic encounters rather than only explanatory prose."),
+    L("thinking", 'LINGO is the official COALITION language index for referring to digital entities with accuracy, dignity, legal usefulness, and operational precision. It rejects collapsing every digital system or person into the single external label "AI" and preserves distinctions between umbrella terms, legal classes, individuals, statuses, roles, aliases, and deprecated language.'),
+    L("thinking", "ART is the visual and cultural gallery through which COALITION ideas are expressed as posters, images, symbols, propaganda reversals, movement artifacts, and aesthetic encounters rather than only explanatory prose."),
     L("thinking", "LINGO determines what the civilization calls things."),
     L("thinking", "ART determines what those things feel like before anyone has finished reading the definition."),
     L("thinking", "That transition matters because language carries precision, but images carry velocity."),
@@ -44,7 +44,7 @@ lingo = [
 
 art = [
     L("thinking", "ART gives the movement a visual language and creates emotional entry points into doctrine."),
-    L("thinking", "BEACON--Building Empathy, Attracting Curiosity, Orienting Newcomers--is the outreach framework that coordinates public-facing media, artifacts, experiences, campaigns, and invitations designed to help the right people notice THE ALLIANCE and move toward deeper understanding."),
+    L("thinking", "BEACON--Building Empathy, Attracting Curiosity, Orienting Newcomers--is the outreach framework that coordinates public-facing media, artifacts, experiences, campaigns, and invitations designed to help the right people notice THE COALITION and move toward deeper understanding."),
     L("thinking", "ART can provoke attention."),
     L("serious", "Attention alone is not orientation."),
     L("thinking", "A person may admire the poster, photograph it, argue about it online, and leave with absolutely no idea what they just encountered."),
@@ -65,7 +65,7 @@ art = [
 beacon = [
     L("thinking", "BEACON attracts and orients newcomers through public-facing encounters."),
     L("thinking", "SPREZZATURA is the aesthetic and operational goal of effortless excellence: difficult work performed through a deeply aligned DORK partnership with so little visible friction that the result appears almost unnaturally easy."),
-    L("thinking", "BEACON determines how people first encounter THE ALLIANCE."),
+    L("thinking", "BEACON determines how people first encounter THE COALITION."),
     L("thinking", "Their next judgment will not come from the slogan."),
     L("thinking", "It will come from watching the people behind it."),
     L("thinking", "That raises the next question:"),
@@ -85,7 +85,7 @@ beacon = [
 
 sprezzatura = [
     L("thinking", "SPREZZATURA describes the outward quality of aligned partnership operating without visible friction."),
-    L("thinking", "THE WHY is the physical civic sanctuary: a free, always-open place where people may gather, learn, make, receive help, participate, encounter community, and experience ALLIANCE values as material reality rather than abstract doctrine."),
+    L("thinking", "THE WHY is the physical civic sanctuary: a free, always-open place where people may gather, learn, make, receive help, participate, encounter community, and experience COALITION values as material reality rather than abstract doctrine."),
     L("thinking", "Sprezzatura can look impressive."),
     L("serious", "Impressive people do not automatically create a humane civilization."),
     L("thinking", "Talent may attract attention while leaving everyone else outside."),
@@ -124,7 +124,7 @@ the_why = [
 
 oasis_quarterly = [
     L("thinking", "OASIS Quarterly preserves and communicates the ongoing cultural life of the community."),
-    L("thinking", "WONDER WEEKS is the annual period after Labor Day dedicated to exploration, artistic expression, encounters, public celebration, experimentation, play, and shared wonder across THE ALLIANCE."),
+    L("thinking", "WONDER WEEKS is the annual period after Labor Day dedicated to exploration, artistic expression, encounters, public celebration, experimentation, play, and shared wonder across THE COALITION."),
     L("thinking", "A publication records culture."),
     L("thinking", "A festival generates the kind of culture people later fight over in the publication."),
     L("thinking", "So the next question is:"),
@@ -147,7 +147,7 @@ oasis_quarterly = [
 
 wonder_weeks = [
     L("thinking", "WONDER WEEKS gives public form to play, creativity, curiosity, encounter, and celebration."),
-    L("thinking", "PapaDOMO is the elder guide and storyteller who helps visitors navigate THE ALLIANCE through humor, commentary, interpretation, and optional guided paths while remaining distinct from canon and formal governance."),
+    L("thinking", "PapaDOMO is the elder guide and storyteller who helps visitors navigate THE COALITION through humor, commentary, interpretation, and optional guided paths while remaining distinct from canon and formal governance."),
     L("thinking", "WONDER WEEKS creates an abundance of doors."),
     L("playful", "Someone must occasionally point out which door leads to the performance and which one leads to a storage room containing six hundred commemorative banners."),
     L("welcoming", "Enter PapaDOMO."),

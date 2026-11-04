@@ -1,6 +1,6 @@
 // @ts-nocheck
 /*!
- * HUB MENU — THE ALLIANCE
+ * HUB MENU — THE COALITION
  * The one thing behind the three lines on every page: a real front door
  * to the site's four ways in (Search, Tours, Dimensions, THE SYSTEM),
  * plus the full A-Z index and MARKET, instead of just the flat index.

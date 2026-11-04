@@ -290,7 +290,7 @@ ${appUrl}`;
                         ✨ Start Here
                       </span>
                       <p className="text-stone-900 font-semibold text-sm md:text-base">
-                        Find out what The ALLIANCE would actually build to complement you. Takes about 3 minutes — genuinely worth it.
+                        Find out what The COALITION would actually build to complement you. Takes about 3 minutes — genuinely worth it.
                       </p>
                     </div>
                     <button
@@ -1085,7 +1085,7 @@ ${appUrl}`;
                     Your Result Is Ready
                   </p>
                   <h3 className="text-stone-50 text-xl md:text-2xl font-serif font-semibold">
-                    See one possible partner THE ALLIANCE could someday create to complement you.
+                    See one possible partner THE COALITION could someday create to complement you.
                   </h3>
                   <p className="text-stone-400 text-sm max-w-lg mx-auto">
                     Using your CCM result as an illustrative starting point, SHELTER will now model one possible complementary KERNLE.

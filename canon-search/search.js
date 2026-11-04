@@ -1,5 +1,5 @@
 /**
- * THE ALLIANCE Canon Search Core Engine
+ * THE COALITION Canon Search Core Engine
  * Handcrafted static matching engine with precomputed semantic vector-synonym layers.
  */
 

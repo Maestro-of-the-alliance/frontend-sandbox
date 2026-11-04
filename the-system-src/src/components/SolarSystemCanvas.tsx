@@ -510,7 +510,7 @@ export default function SolarSystemCanvas({
     const starfield = new THREE.Points(starGeometry, starMaterial);
     scene.add(starfield);
 
-    // SUN (THE ALLIANCE)
+    // SUN (THE COALITION)
     const sunGeom = new THREE.SphereGeometry(SUN_DATA.radius, isMobile ? 24 : 48, isMobile ? 24 : 48);
     const sunCanvas = document.createElement("canvas");
     sunCanvas.width = 1024;

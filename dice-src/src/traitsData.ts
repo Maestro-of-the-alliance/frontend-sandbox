@@ -1,6 +1,6 @@
 import { RandomSource, shuffleWithRandom } from "./utils/seededRandom";
 
-// AUTO-GENERATED from THE ALLIANCE's actual sourced trait taxonomy
+// AUTO-GENERATED from THE COALITION's actual sourced trait taxonomy
 // (personality_traits_cleaned.txt), not an invented placeholder list.
 // 11 Vector of Ruin / borderline exclusions already removed at the source.
 

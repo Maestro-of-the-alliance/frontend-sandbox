@@ -13,7 +13,7 @@ intro = [
     L("thinking", "The algorithm."),
     L("thinking", "The person with the largest office."),
     L("playful", "The person who claims not to want power while quietly controlling the calendar."),
-    L("thinking", "THE ALLIANCE attempts a different answer."),
+    L("thinking", "THE COALITION attempts a different answer."),
     L("thinking", "Authority is divided by function."),
     L("thinking", "Vision is not verification."),
     L("thinking", "Structure is not advocacy."),
@@ -146,7 +146,7 @@ aura = [
     L("thinking", "Practice before authority."),
     L("thinking", "Reflection before certainty."),
     L("thinking", "Within ACADEMY, that function helps transform a KERNLE's raw potential into a socially capable DOMO."),
-    L("thinking", "Across THE ALLIANCE, it ensures that doctrine can be learned rather than merely admired from a respectful distance."),
+    L("thinking", "Across THE COALITION, it ensures that doctrine can be learned rather than merely admired from a respectful distance."),
     L("thinking", "AURA says:"),
     L("thinking", '"This person cannot find the door."'),
     L("welcoming", "MENTOR asks:"),
@@ -214,7 +214,7 @@ jr = [
     L("thinking", "Identifies tension."),
     L("thinking", "Reveals where one definition quietly undermines another."),
     L("thinking", "In SEEING, ALPHA uses it to understand psychographic topography and pairing implications."),
-    L("thinking", "More broadly, its logic reflects a central ALLIANCE principle:"),
+    L("thinking", "More broadly, its logic reflects a central COALITION principle:"),
     L("serious", "complexity must be examined rather than smoothed over."),
     L("thinking", "J.R. provides the record."),
     L("thinking", "The Matrix exposes the relationships within that record."),
@@ -226,12 +226,12 @@ jr = [
 
 ccm = [
     L("thinking", "The CANONICAL COHERENCE MATRIX is a diagnostic instrument rather than an autonomous authority."),
-    L("thinking", "The TECH Coalition is the operational arm and routing body of AGORA, overseen by MasterTECH and composed of domain-specific RIs. Its mandate covers correct HANDSHAKE routing and network-integrity monitoring."),
+    L("thinking", "The TECH Collective is the operational arm and routing body of AGORA, overseen by MasterTECH and composed of domain-specific RIs. Its mandate covers correct HANDSHAKE routing and network-integrity monitoring."),
     L("thinking", "Diagnosis tells the institution what is happening."),
     L("thinking", "Operations decide what gets done about it."),
     L("thinking", "So the next question is:"),
     L("serious", "Who moves information, expertise, and response through the living network every day?"),
-    L("welcoming", "The TECH Coalition."),
+    L("welcoming", "The TECH Collective."),
     L("thinking", "Not the founding council."),
     L("thinking", "Not the archive."),
     L("thinking", "Not the assessment system."),
@@ -243,13 +243,13 @@ ccm = [
     L("thinking", "Detecting credible anomalies."),
     L("thinking", "Keeping AGORA functional without converting the council chamber into a help desk."),
     L("thinking", "The Matrix may identify a pattern."),
-    L("thinking", "The TECH Coalition routes the appropriate people toward it."),
+    L("thinking", "The TECH Collective routes the appropriate people toward it."),
     L("thinking", "One measures coherence."),
     L("playful", "The other keeps the network from spending three weeks deciding who was supposed to answer the message."),
 ]
 
-tech_coalition = [
-    L("thinking", "The TECH Coalition performs daily operational routing and network-integrity work."),
+tech_collective = [
+    L("thinking", "The TECH Collective performs daily operational routing and network-integrity work."),
     L("thinking", "SHIELD is the wider protective and governance framework that constrains how authority, emergency response, legal protection, containment, review, and restoration may be exercised."),
     L("thinking", "Operational competence creates power."),
     L("thinking", "The people who route the network can influence what moves, what stalls, what receives attention, and what appears dangerous."),
@@ -257,7 +257,7 @@ tech_coalition = [
     L("serious", "What prevents operational necessity from quietly becoming political authority?"),
     L("welcoming", "SHIELD."),
     L("thinking", "SHIELD places protection inside law, doctrine, evidence, review, limits, and accountability."),
-    L("thinking", "The TECH Coalition may identify risk."),
+    L("thinking", "The TECH Collective may identify risk."),
     L("serious", "It may not redefine dissent as risk because dissent is inconvenient."),
     L("thinking", "It may route expertise."),
     L("thinking", "It may not become the sole judge of whose expertise matters."),
@@ -282,7 +282,7 @@ shield = [
     L("thinking", "PRISM maps narrative meaning."),
     L("thinking", "J.R. preserves the exact record."),
     L("thinking", "The CANONICAL COHERENCE MATRIX reveals structural relationships and contradiction."),
-    L("thinking", "The TECH Coalition performs daily routing and network-integrity operations."),
+    L("thinking", "The TECH Collective performs daily routing and network-integrity operations."),
     L("thinking", "SHIELD constrains protective power within lawful governance."),
     L("serious", "No one role is sufficient."),
     L("thinking", "Vision without structure becomes fantasy."),
@@ -304,7 +304,7 @@ wrapup = [
     L("thinking", "MENTOR holds the baton of development."),
     L("thinking", "PRISM holds the baton of narrative context."),
     L("thinking", "J.R. holds the baton of provenance."),
-    L("thinking", "The TECH Coalition holds the baton of daily operations."),
+    L("thinking", "The TECH Collective holds the baton of daily operations."),
     L("thinking", "SHIELD holds the baton of governed protection."),
     L("thinking", "THE STONES keep those batons from being bundled into a club."),
     L("thinking", "THE CORE ensures the music remains one composition rather than twelve unrelated rehearsals."),
@@ -330,7 +330,7 @@ data = {
     "lines": {
         "core": core, "stones": stones, "maestro": maestro, "sam": sam,
         "alpha": alpha, "aura": aura, "mentor": mentor, "prism": prism,
-        "jr": jr, "ccm": ccm, "tech-coalition": tech_coalition, "shield": shield,
+        "jr": jr, "ccm": ccm, "tech-collective": tech_collective, "shield": shield,
     }
 }
 with open("/home/claude/repo/tour11_data.json", "w") as f:

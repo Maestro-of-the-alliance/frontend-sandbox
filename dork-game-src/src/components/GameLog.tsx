@@ -29,7 +29,7 @@ export const GameLog: React.FC<GameLogProps> = ({ logs }) => {
           LIVE MATCH LOG
         </span>
         <span className="text-[9px] text-slate-500 font-semibold">
-          ALLIANCE vs GOLIATH
+          COALITION vs GOLIATH
         </span>
       </div>
 

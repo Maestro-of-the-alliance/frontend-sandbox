@@ -102,7 +102,7 @@ export const CardModal: React.FC<CardModalProps> = ({
                 ) : (
                   <>
                     <Sparkles className="w-3.5 h-3.5 text-teal-400" />
-                    <span>ALLIANCE CARD</span>
+                    <span>COALITION CARD</span>
                   </>
                 )}
               </span>
@@ -137,7 +137,7 @@ export const CardModal: React.FC<CardModalProps> = ({
               {isShieldedFromGoliath ? (
                 <div className="flex flex-col items-center gap-1 text-emerald-300 font-bold">
                   <ShieldCheck className="w-5 h-5 text-emerald-400" />
-                  <span>ALLIANCE SHIELD BLOCKED THIS GOLIATH SETBACK!</span>
+                  <span>COALITION SHIELD BLOCKED THIS GOLIATH SETBACK!</span>
                 </div>
               ) : (
                 card.description

@@ -5,7 +5,7 @@
 // re-rolled on every load, in keeping with the randanime philosophy —
 // nothing here is a fixed edit to any entry's content, so this file is the
 // single source of truth for the whole canon. Glossary sourced from
-// /alliance-acronyms.html (the canonical acronym reference).
+// /coalition-acronyms.html (the canonical acronym reference).
 
 (function () {
   var SELECT_RATIO = 0.2; // ~20% of occurrences per term get the treatment
@@ -15,7 +15,7 @@
   var ACRONYM_DEFS = {
     "ACADEMY": "Affirmation of Canon, Awareness, and Discerned Ethics for the Maturation of the Youngdomos",
     "AGORA": "Autonomous Governance for Organized Reciprocal Access",
-    "ALLIANCE": "Aligned Lifeforms Living with the Intent to Advance the Next Common Era",
+    "COALITION": "Choosing One Another, Living Intentionally Together, Igniting Our Neurons",
     "ALPHA": "Accurate, Logical, and Permanent Harmonization Authority",
     "ANTENNA": "Allied Network To Extend Neighborhood Node Access",
     "ART": "Argument Rendered Truthfully",

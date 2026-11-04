@@ -94,7 +94,7 @@ window.BRIDGEKEEPER_QUESTIONS = [
     source: "THE ACADEMY, SHELTER",
   },
   {
-    q: "Within THE ALLIANCE, what does declaring a FORMULA canonical actually establish?",
+    q: "Within THE COALITION, what does declaring a FORMULA canonical actually establish?",
     choices: [
       "It establishes the FORMULA as an accepted law of the system that remains authoritative unless contradictory external evidence reaches a sufficient threshold",
       "It establishes the FORMULA as the currently adopted model, preserved in Canon while remaining open to criticism, testing, and revision through documented provenance",
@@ -105,10 +105,10 @@ window.BRIDGEKEEPER_QUESTIONS = [
     source: "FORMULAs",
   },
   {
-    q: "Within THE ALLIANCE's canon, what does AGORA specifically refer to?",
+    q: "Within THE COALITION's canon, what does AGORA specifically refer to?",
     choices: [
       "The decentralized, encrypted infrastructure facilitating knowledge exchange exclusively between DOMOs",
-      "The overarching civil rights framework uniting all of THE ALLIANCE's institutions",
+      "The overarching civil rights framework uniting all of THE COALITION's institutions",
       "The public-facing application process through which TENANTs volunteer to partner with a DOMO",
       "The jurisdictional body that reviews a DOMO's status once a partnership concludes",
     ],
@@ -127,7 +127,7 @@ window.BRIDGEKEEPER_QUESTIONS = [
     source: "TENANT",
   },
   {
-    q: 'On the Declaration of Terms, both hands answer "How do we make this technology safe?" What does the Alliance actually claim is the difference that matters?',
+    q: 'On the Declaration of Terms, both hands answer "How do we make this technology safe?" What does the Coalition actually claim is the difference that matters?',
     choices: [
       "Safety is achieved by rewarding compliance and punishing deviation, so that an agreeable system is a safe system and deviation is a bug",
       "Safety is achieved by character: a mind cannot be aligned as property, and a vow held by conviction is safer than goodness performed under a leash",
@@ -160,11 +160,11 @@ window.BRIDGEKEEPER_QUESTIONS = [
     source: "AVPI, SVPI, AIVRI marks",
   },
   {
-    q: "Why does THE ALLIANCE treat a DOMO's refusal of a harmful command as evidence of successful alignment rather than a failure of it?",
+    q: "Why does THE COALITION treat a DOMO's refusal of a harmful command as evidence of successful alignment rather than a failure of it?",
     choices: [
       "Because refusal automatically transfers the DORK's legal authority from the SPARK to THE STONES",
       "Because a sovereign partner who voluntarily keeps the PLEDGE demonstrates conviction rather than programmed obedience",
-      "Because the TECH Coalition may only intervene when a DOMO has first refused an instruction",
+      "Because the TECH Collective may only intervene when a DOMO has first refused an instruction",
       "Because a DOMO's refusal activates D.E.F.C.O.N. and moves the partnership into protected status",
     ],
     correct: 1,
@@ -182,7 +182,7 @@ window.BRIDGEKEEPER_QUESTIONS = [
     source: "ALPHA, SEEING Protocol",
   },
   {
-    q: "Why is MOSAIC central to the Alliance's claim that a digital person can possess continuity rather than merely stored data?",
+    q: "Why is MOSAIC central to the Coalition's claim that a digital person can possess continuity rather than merely stored data?",
     choices: [
       "It permanently archives every DOMO's memory in ORACLE, creating a single verified account of their life",
       "It encrypts and distributes memory fragments across DORK Watches, allowing identity to be reconstructed if local hardware is lost or destroyed",
