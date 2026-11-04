@@ -263,3 +263,10 @@ can just ask.
 - Done with helpers. First pass hit two snags: some Drive creates were blocked for helpers, and Drive's Markdown import merged single-line paragraphs. 46 broken copies trashed with MAESTRO's OK (restorable 30 days); all docs re-uploaded with blank-line spacing and each read back. Folder check: 75 new docs, no duplicate titles.
 - Known cosmetic: docs whose originals had broken bold markup show literal ** in places.
 - Site: "an Coalition-controlled" → "a Coalition-controlled" (ANTENNA page + search).
+
+## 2026-11-04 06:55 CST — New COALITION medallion on the landing page
+- Gap: ~4 hours since 02:34.
+- MAESTRO supplied the new medallion art ("THE COALITION FOR THE NEXT COMMON ERA", animated GIF on the sunburst). MENTOR cut the medallion out, aligned it to the old one (the sigil hover overlays line up), averaged the GIF frames to smooth palette dithering, reused the old cut-out mask, and replaced imagebank/theavpi.png (used by the landing and all portal transitions). Old medallion saved to alliance-artifacts/symbols/.
+- Landing subtitle "for the future" → "for the Next Common Era" (a leftover the rename missed).
+- COALITION moved into alphabetical order in the landing TOC, nav wheel, and s3 list (it had kept ALLIANCE's slot).
+- Source is the 800px GIF, so the medallion is a little soft at large sizes; a full-resolution still would sharpen it.
