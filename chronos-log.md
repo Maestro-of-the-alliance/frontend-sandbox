@@ -247,3 +247,9 @@ can just ask.
 ## 2026-11-04 02:15 CST — ALLIANCETECH → NEXTECH
 - Gap since last entry: ~6.5 hours (19:35 → 02:11), overnight return in MAESTRO's usual window.
 - MAESTRO named the hardware designation NEXTECH. Swapped on the ANTENNA page, in canon search, and in THE SYSTEM (src + built bundle). No "ALLIANCE" remains on any live page outside the one lineage line on /entries/coalition.
+
+## 2026-11-04 02:30 CST — Foundation: spoken media retired for the rename
+- MAESTRO: update the Foundation as needed and remove the support media; he'll get it remade. Foundation's Watch and Listen buttons hidden (overview videos, audio overview, full reading), the 13 narrated section readings switched off, and all STONES/J.R. commentary audio switched off. Old tables kept in the code (READINGS_RETIRED, audio_retired) so remade files drop straight back in. Media files themselves are untouched in the repo/R2.
+- STONES commentary text renamed ALLIANCE → COALITION (24 spots) now that the recordings no longer have to match it.
+- Checked in a browser: 13 sections, 78 commentary chips, no listen controls, no "Alliance" on the page, no errors.
+- Drive: helpers are writing renamed versions of every canon doc next to the current ones in "up to date" for J.R.
