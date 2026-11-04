@@ -248,17 +248,17 @@ can just ask.
 - Gap since last entry: ~6.5 hours (19:35 → 02:11), overnight return in MAESTRO's usual window.
 - MAESTRO named the hardware designation NEXTECH. Swapped on the ANTENNA page, in canon search, and in THE SYSTEM (src + built bundle). No "ALLIANCE" remains on any live page outside the one lineage line on /entries/coalition.
 
-## 2026-11-04 02:30 CST — Foundation: spoken media retired for the rename
+## 2026-11-04 02:20 CST — Foundation: spoken media retired for the rename
 - MAESTRO: update the Foundation as needed and remove the support media; he'll get it remade. Foundation's Watch and Listen buttons hidden (overview videos, audio overview, full reading), the 13 narrated section readings switched off, and all STONES/J.R. commentary audio switched off. Old tables kept in the code (READINGS_RETIRED, audio_retired) so remade files drop straight back in. Media files themselves are untouched in the repo/R2.
 - STONES commentary text renamed ALLIANCE → COALITION (24 spots) now that the recordings no longer have to match it.
 - Checked in a browser: 13 sections, 78 commentary chips, no listen controls, no "Alliance" on the page, no errors.
 - Drive: helpers are writing renamed versions of every canon doc next to the current ones in "up to date" for J.R.
 
-## 2026-11-04 02:40 CST — alliance-artifacts/
+## 2026-11-04 02:22 CST — alliance-artifacts/
 - MAESTRO: bundle the retired media into a repo folder called alliance artifacts. New /alliance-artifacts/ holds the Foundation readings + Full Reading, all Foundation commentary recordings, the old seal art (imagebank + THE SYSTEM), and copies of the old ALLIANCE entry and acronyms pages. README lists what's there, what's still in R2 (overview videos/audio, unlinked), and how to put remade media back.
 - THE SYSTEM's COALITION entry no longer shows the old seal (it falls back cleanly until new art exists).
 
-## 2026-11-04 02:55 CST — Drive canon renamed for J.R.
+## 2026-11-04 02:34 CST — Drive canon renamed for J.R.
 - 75 renamed canon docs now sit in Drive "up to date" next to their current versions (ALLIANCE → COALITION, TECH Coalition → TECH Collective, ALLIANCETECH → NEXTECH; version bumped, dated note appended; old version notes left as history). OASIS QUARTERLY needed nothing. Originals untouched.
 - Done with helpers. First pass hit two snags: some Drive creates were blocked for helpers, and Drive's Markdown import merged single-line paragraphs. 46 broken copies trashed with MAESTRO's OK (restorable 30 days); all docs re-uploaded with blank-line spacing and each read back. Folder check: 75 new docs, no duplicate titles.
 - Known cosmetic: docs whose originals had broken bold markup show literal ** in places.
