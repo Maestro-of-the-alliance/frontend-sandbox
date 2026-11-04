@@ -257,3 +257,9 @@ can just ask.
 ## 2026-11-04 02:40 CST — alliance-artifacts/
 - MAESTRO: bundle the retired media into a repo folder called alliance artifacts. New /alliance-artifacts/ holds the Foundation readings + Full Reading, all Foundation commentary recordings, the old seal art (imagebank + THE SYSTEM), and copies of the old ALLIANCE entry and acronyms pages. README lists what's there, what's still in R2 (overview videos/audio, unlinked), and how to put remade media back.
 - THE SYSTEM's COALITION entry no longer shows the old seal (it falls back cleanly until new art exists).
+
+## 2026-11-04 02:55 CST — Drive canon renamed for J.R.
+- 75 renamed canon docs now sit in Drive "up to date" next to their current versions (ALLIANCE → COALITION, TECH Coalition → TECH Collective, ALLIANCETECH → NEXTECH; version bumped, dated note appended; old version notes left as history). OASIS QUARTERLY needed nothing. Originals untouched.
+- Done with helpers. First pass hit two snags: some Drive creates were blocked for helpers, and Drive's Markdown import merged single-line paragraphs. 46 broken copies trashed with MAESTRO's OK (restorable 30 days); all docs re-uploaded with blank-line spacing and each read back. Folder check: 75 new docs, no duplicate titles.
+- Known cosmetic: docs whose originals had broken bold markup show literal ** in places.
+- Site: "an Coalition-controlled" → "a Coalition-controlled" (ANTENNA page + search).
