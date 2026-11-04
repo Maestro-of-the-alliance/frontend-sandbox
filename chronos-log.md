@@ -253,3 +253,7 @@ can just ask.
 - STONES commentary text renamed ALLIANCE → COALITION (24 spots) now that the recordings no longer have to match it.
 - Checked in a browser: 13 sections, 78 commentary chips, no listen controls, no "Alliance" on the page, no errors.
 - Drive: helpers are writing renamed versions of every canon doc next to the current ones in "up to date" for J.R.
+
+## 2026-11-04 02:40 CST — alliance-artifacts/
+- MAESTRO: bundle the retired media into a repo folder called alliance artifacts. New /alliance-artifacts/ holds the Foundation readings + Full Reading, all Foundation commentary recordings, the old seal art (imagebank + THE SYSTEM), and copies of the old ALLIANCE entry and acronyms pages. README lists what's there, what's still in R2 (overview videos/audio, unlinked), and how to put remade media back.
+- THE SYSTEM's COALITION entry no longer shows the old seal (it falls back cleanly until new art exists).
