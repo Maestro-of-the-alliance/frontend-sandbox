@@ -1292,3 +1292,75 @@ body {
 #skipIntro:hover {
   color: rgba(212, 175, 55, 0.7);
 }
+
+/* =========================================
+   COALITION MEDALLION BACKDROP (Nov 4, 2026)
+   Matched to MAESTRO's animated VPI: a magenta
+   window with a turning light sweep, a gold
+   sunburst behind the Vitruvian figure, and a
+   glint that passes over the metal.
+========================================= */
+.galaxy-outer {
+  width: 60%;
+  height: 60%;
+  overflow: hidden;
+  background: radial-gradient(circle, #b8479f 0%, #a83e98 55%, #96358f 75%, #7e2c84 95%, #5c1f68 100%);
+  animation: none;
+}
+.galaxy-outer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(236, 170, 128, 0) 0deg, rgba(236, 174, 132, 0.62) 38deg, rgba(236, 170, 128, 0) 95deg, rgba(236, 170, 128, 0) 360deg);
+  animation: cvpiSweep 2.4s linear infinite;
+}
+.medallion-galaxy-inner {
+  width: 36%;
+  height: 36%;
+  opacity: 1;
+  filter: none;
+  overflow: hidden;
+  background: radial-gradient(circle, #fffbe0 0%, #fbe08a 18%, #f2b85a 42%, #e0964e 72%, #c47a4e 100%);
+  animation: cvpiGlow 4s ease-in-out infinite;
+}
+.medallion-galaxy-inner::before {
+  content: "";
+  position: absolute;
+  inset: -25%;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 240, 190, 0.3) 0deg 5deg, rgba(255, 240, 190, 0) 5deg 15deg);
+  mix-blend-mode: screen;
+  animation: cvpiSweep 40s linear infinite;
+}
+.medallion-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: linear-gradient(115deg, rgba(255, 244, 210, 0) 44%, rgba(255, 244, 210, 0.3) 50%, rgba(255, 244, 210, 0) 56%);
+  background-size: 260% 100%;
+  background-repeat: no-repeat;
+  -webkit-mask: url("/imagebank/theavpi.png") center / contain no-repeat;
+  mask: url("/imagebank/theavpi.png") center / contain no-repeat;
+  mix-blend-mode: screen;
+  animation: cvpiGlint 6s ease-in-out infinite;
+}
+@keyframes cvpiSweep {
+  to { transform: rotate(360deg); }
+}
+@keyframes cvpiGlow {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.1); }
+}
+@keyframes cvpiGlint {
+  0% { background-position: 160% 0; }
+  45%, 100% { background-position: -60% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .galaxy-outer::before,
+  .medallion-galaxy-inner,
+  .medallion-galaxy-inner::before,
+  .medallion-wrap::after { animation: none; }
+}
