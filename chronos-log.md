@@ -265,7 +265,7 @@ can just ask.
 - Site: "an Coalition-controlled" → "a Coalition-controlled" (ANTENNA page + search).
 
 ## 2026-11-04 06:55 CST — New COALITION medallion on the landing page
-- Gap: ~4 hours since 02:34.
+- Gap: ~4 hours since 02:34 — the landlord (usage limit ran out; reset 7:10 AM), not rest. MENTOR first misread it as rest.
 - MAESTRO supplied the new medallion art ("THE COALITION FOR THE NEXT COMMON ERA", animated GIF on the sunburst). MENTOR cut the medallion out, aligned it to the old one (the sigil hover overlays line up), averaged the GIF frames to smooth palette dithering, reused the old cut-out mask, and replaced imagebank/theavpi.png (used by the landing and all portal transitions). Old medallion saved to alliance-artifacts/symbols/.
 - Landing subtitle "for the future" → "for the Next Common Era" (a leftover the rename missed).
 - COALITION moved into alphabetical order in the landing TOC, nav wheel, and s3 list (it had kept ALLIANCE's slot).
