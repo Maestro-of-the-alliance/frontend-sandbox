@@ -243,3 +243,7 @@ can just ask.
 - Sitewide swap ALLIANCE → COALITION (159 files) including canon search (record rebuilt with the new section; ALLIANCE kept as a search synonym) and THE SYSTEM (src + built bundle patched in step; slug the-coalition, symbol copied). TECH Coalition → TECH Collective (MAESTRO, "for now"), page moved to /entries/tech-collective. alliance-acronyms → coalition-acronyms. Old addresses redirect (_redirects + stub pages).
 - Left as written: history (CHRONOS, briefs, archive, concept-freezer, internal .md docs), Workers code, code identifiers, allianceftf.org addresses, the STONES' Foundation commentary text (matches the recorded audio).
 - Open for MAESTRO: ANTENNA's ALLIANCETECH designation name; TECH Collective entry still built on the cheetah-coalition metaphor; GOLIATH is described as "a coalition" / "Adversarial Coalition"; NI entry's "Aligned Lifeforms equation"; symbol art still reads THE ALLIANCE.
+
+## 2026-11-04 02:15 CST — ALLIANCETECH → NEXTECH
+- Gap since last entry: ~6.5 hours (19:35 → 02:11), overnight return in MAESTRO's usual window.
+- MAESTRO named the hardware designation NEXTECH. Swapped on the ANTENNA page, in canon search, and in THE SYSTEM (src + built bundle). No "ALLIANCE" remains on any live page outside the one lineage line on /entries/coalition.

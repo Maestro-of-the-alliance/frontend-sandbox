@@ -140,7 +140,7 @@ To understand why that distinction matters, one has to understand what connectiv
 
 (Honest Limits) ANTENNA is low-bandwidth, real radio, not a guarantee. Range drops indoors and in dense obstruction, same as any mesh network built on real physics instead of a promise. What it offers instead of an impossible absolute is resilience: multiple paths, graceful degradation, and nothing that depends on an adversary's permission to keep functioning.
 
-(What Is Still Being Built) ANTENNA is held to its own acceptance standard before any claim of it is allowed to call itself finished: sovereignty, security, resilience, and honesty, demonstrated under test conditions, not merely described. A custom enclosure does not make a prototype ALLIANCETECH. Demonstrated behavior does. Where the canon is still catching up to the hardware, it says so plainly rather than rounding up.
+(What Is Still Being Built) ANTENNA is held to its own acceptance standard before any claim of it is allowed to call itself finished: sovereignty, security, resilience, and honesty, demonstrated under test conditions, not merely described. A custom enclosure does not make a prototype NEXTECH. Demonstrated behavior does. Where the canon is still catching up to the hardware, it says so plainly rather than rounding up.
 
 ANTENNA carries the HANDSHAKE traffic that lets a DOMO reach another DOMO's expertise: a query travels from the watch over BLE to the glasses temple's radio, broadcasts across the mesh to a gateway, and the gateway carries it the rest of the way to MasterTECH and the TECH Collective over its own lawful internet connection — a SPARK's own WiFi or paid cellular data, used the same way anyone already uses it, never commandeered from someone else.
 
