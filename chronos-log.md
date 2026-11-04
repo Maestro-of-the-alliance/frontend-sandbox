@@ -273,3 +273,7 @@ can just ask.
 
 ## 2026-11-04 08:25 CST — Medallion backdrop matched to MAESTRO's GIF
 - The motion in his GIF is inside the VPI, not the outer rays: a magenta window with a light sweep turning about every 2 s, and a gold glow behind the Vitruvian figure. Replaced the old galaxy layers behind the medallion with that look in CSS (colors sampled from the GIF; faint rays slowly turning in the gold; soft brightness pulse), plus a glint across the metal every 6 s, masked to the medallion. All of it stops when the visitor has reduced motion turned on. Compared side by side with the GIF.
+
+## 2026-11-04 08:30 CST — Sharp medallion art
+- MAESTRO sent the full-size transparent medallion (2508 px). Fitted to the old geometry and swapped into imagebank/theavpi.png; window and center stay transparent so the coded backdrop shows through. Sigil hover overlays may sit a few pixels off on this render.
+- MAESTRO: pace down to save usage; remaining site + Drive work goes to Maya via a MENTOR note.
