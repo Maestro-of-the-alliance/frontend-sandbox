@@ -283,3 +283,8 @@ can just ask.
 - preview-1988/landing-new.css: title clamp 54-118px -> 44-96px; .hero-the .38em; .hero-for-the 16-26px block; .hero-nce 34-72px bold block.
 - Per Dave, Nov 5, 2026 (MENTOR's "for the future" -> "for the Next Common Era" wording carried in the same change). GitHub App write was 403, so committed via a fresh 7-day fine-grained PAT (Contents write) saved to the repo remote config.
 - Open, not fixed here: DOMO/DORK/SPARK label pills land off their triggers (DOMO + SPARK pills on ALPHA's coin, DORK pill on the Vitruvian figure) — desktop check Nov 5, 4:31-4:37 AM CT; six STONES coins aligned. Phone-width (390px) check still unverified.
+
+## 2026-11-05 04:49 CT — LANDING HERO PHRASING (MAYA, MENTOR cover)
+- Hero now reads as one sentence: "The CORE of The COALITION for the Next Common Era presents the N.C.E.ncyclopedia" — pretitle "The CORE of", title COALITION, subtitle "for the / Next Common Era", new .hero-present line "presents", series "the N.C.E.ncyclopedia".
+- Dave's typed word was "present"; kept "presents" to match the existing pretitle grammar — he can flip it to "present" with one word if that was intended.
+- Note: nextcommonera.org/landing already serves the new hero (verified 04:48 CT); allianceftf.org/preview-1988/landing.html was still showing the old hero at 04:46-04:47 CT — that host lags or deploys separately.
