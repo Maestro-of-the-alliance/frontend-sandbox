@@ -300,3 +300,4 @@ can just ask.
 ## 2026-11-06 13:40 CT — Landing layout preview (MENTOR)
 - /landing-preview (unlinked, noindex): MAESTRO's stacked layout — THE / COALITION / for the / Next Common Era (small caps, big N C E) / medallion / PRESENTS the N.C.E.ncyclopedia / AIVRI / ENTER / "A guide to living in the next age" / First Edition · MMXXVI. Medallion fills most of the phone width; desktop puts titles left, medallion right. Live landing untouched. Dropped "The CORE of" to match his mock — confirm.
 - 13:30 CT: AIVRI moved into the hamburger menu (hub-menu.js node 06, "A Declaration of Terms." — sitewide) and hidden from the preview landing (MAESTRO's idea).
+- 13:40 CT: MAESTRO approved ("best I've seen it so far") — preview layout is now the live landing.html; /landing-preview redirects to /landing.
