@@ -288,3 +288,6 @@ can just ask.
 - Hero now reads as one sentence: "The CORE of The COALITION for the Next Common Era presents the N.C.E.ncyclopedia" — pretitle "The CORE of", title COALITION, subtitle "for the / Next Common Era", new .hero-present line "presents", series "the N.C.E.ncyclopedia".
 - Dave's typed word was "present"; kept "presents" to match the existing pretitle grammar — he can flip it to "present" with one word if that was intended.
 - Note: nextcommonera.org/landing already serves the new hero (verified 04:48 CT); allianceftf.org/preview-1988/landing.html was still showing the old hero at 04:46-04:47 CT — that host lags or deploys separately.
+
+## 2026-11-06 10:44 CT — FOUNDATION COMMENTARY LINE (MAYA, MENTOR cover)
+- foundation.html: commentary eyebrow changed from "Commentary from THE STONES" to "Commentary from The CORE" (per Dave, Nov 6, 2026).
