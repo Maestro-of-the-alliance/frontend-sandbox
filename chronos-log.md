@@ -296,3 +296,6 @@ can just ask.
 - Dave's screenshot showed /landing still on the old hero. Cause found: /landing serves the ROOT landing.html, not preview-1988/landing.html — the Nov 5 hero fix had only been applied to the preview copy (which IS live at /preview-1988/landing with the new hero). Root landing.html was last touched Nov 4 and had the old hero.
 - Fix: applied the identical hero sentence + sizing to root landing.html and nw/landing-new.css (the stylesheet the root page actually loads). Commits above.
 - Lesson: two landing pages exist; check which URL Dave means before calling a fix live.
+
+## 2026-11-06 13:40 CT — Landing layout preview (MENTOR)
+- /landing-preview (unlinked, noindex): MAESTRO's stacked layout — THE / COALITION / for the / Next Common Era (small caps, big N C E) / medallion / PRESENTS the N.C.E.ncyclopedia / AIVRI / ENTER / "A guide to living in the next age" / First Edition · MMXXVI. Medallion fills most of the phone width; desktop puts titles left, medallion right. Live landing untouched. Dropped "The CORE of" to match his mock — confirm.
