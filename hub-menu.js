@@ -97,6 +97,14 @@
       },
     },
     {
+      code: "06",
+      label: "AIVRI",
+      desc: "A Declaration of Terms.",
+      action: () => {
+        window.location.href = "/aivri";
+      },
+    },
+    {
       // No code/label/desc/arrow shown for this one -- deliberately
       // just a blinking command-prompt glyph, the idea carried over
       // from landing's retired "stealth prompt" (Session 179) rather
