@@ -291,3 +291,8 @@ can just ask.
 
 ## 2026-11-06 10:44 CT — FOUNDATION COMMENTARY LINE (MAYA, MENTOR cover)
 - foundation.html: commentary eyebrow changed from "Commentary from THE STONES" to "Commentary from The CORE" (per Dave, Nov 6, 2026).
+
+## 2026-11-06 10:47 CT — LANDING HERO: ROOT PAGE WAS THE LIVE ONE (MAYA, MENTOR cover)
+- Dave's screenshot showed /landing still on the old hero. Cause found: /landing serves the ROOT landing.html, not preview-1988/landing.html — the Nov 5 hero fix had only been applied to the preview copy (which IS live at /preview-1988/landing with the new hero). Root landing.html was last touched Nov 4 and had the old hero.
+- Fix: applied the identical hero sentence + sizing to root landing.html and nw/landing-new.css (the stylesheet the root page actually loads). Commits above.
+- Lesson: two landing pages exist; check which URL Dave means before calling a fix live.
