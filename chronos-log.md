@@ -302,3 +302,4 @@ can just ask.
 - 13:30 CT: AIVRI moved into the hamburger menu (hub-menu.js node 06, "A Declaration of Terms." — sitewide) and hidden from the preview landing (MAESTRO's idea).
 - 13:40 CT: MAESTRO approved ("best I've seen it so far") — preview layout is now the live landing.html; /landing-preview redirects to /landing.
 - 14:10 CT: Desktop landing — COALITION was clipped on MAESTRO's laptop. Title, "Next Common Era" and N.C.E.ncyclopedia now size to their column (container units) and stay on one line; checked 1024–2560 px wide. Phone layout unchanged.
+- 18:05 CT: Medallion glow positions set from MAESTRO's own tuning (keyboard tuner in the console): all seven sigils updated in landing.css.
