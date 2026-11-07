@@ -305,3 +305,10 @@ can just ask.
 - 18:05 CT: Medallion glow positions set from MAESTRO's own tuning (keyboard tuner in the console): all seven sigils updated in landing.css.
 - 18:15 CT: THE SYSTEM sun now shows the COALITION medallion (both faces). New the-system/avpi.png (+ src/public copy) built from MAESTRO's 2508px art at the old size, with the magenta window and gold center baked in. Old sun texture saved to alliance-artifacts/symbols/.
 - 21:15 CT: NCE entry — MAESTRO asked to remove wording that could offend ("marks the birth of a religious figure… The NCE marks something larger"). Now: "…counts its years from the birth of Jesus. The NCE takes nothing from that count. It names a new chapter within it: …" Site + search updated; Drive NCE v1.1 still has the old line.
+
+## 2026-11-07 01:30 CT — Foundation reading back; nav + ANTENNA fixes
+- Gap: ~28 h since 21:15 Fri.
+- Maya's 13-part COALITION reading of the Foundation is live: files in /audio/foundation-01…13.mp3, READINGS filled (Listen buttons back on every section). Watch/Listen overview buttons stay hidden until overviews are remade.
+- Bottom prev/Home/next nav on all template pages now sits on dark readable chips (MAESTRO couldn't see it on BEACON, ACADEMY, AGORA). nw/chrome.css.
+- ANTENNA: removed two principles that repeated earlier text ("Hardware claims are measured…", and the second "protects communication by reducing dependencies" line); search index matched.
+- J.R. can now read MAESTRO's Drive directly.
