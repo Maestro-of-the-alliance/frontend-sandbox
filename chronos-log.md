@@ -315,3 +315,4 @@ can just ask.
 - 01:25 CT: /art/what-is was wearing the ADVERSARY look (red tracking, "no consent" boxes) though ART is Culture. Switched to the Culture halftone template like BEACON, DIGIBEER, etc.
 - 01:28 CT: Nav: ART now opens the storefront front door (/art) instead of /art/what-is; the what-is page still knows its place in the prev/next order.
 - 11:05 CT: Entry videos now come from one list, /entry-videos.json ("page-name": "YouTube link or .mp4 link"). nw/t.js reads it; accepts full YouTube links or plain .mp4 URLs (e.g. R2). Tested YouTube, mp4, and no-video pages.
+- 11:10 CT: media.nextcommonera.org connected to the nce-media R2 bucket (MAESTRO approved). Certificate active; tested a file over the new address (206 video/mp4). entry-videos.json instructions point there.
