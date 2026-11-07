@@ -23,7 +23,7 @@
     { label: "ALIGNMENT", path: "/entries/alignment" },
     { label: "ALPHA", path: "/entries/alpha" },
     { label: "ANTENNA", path: "/entries/antenna" },
-    { label: "ART", path: "/art/what-is" },
+    { label: "ART", path: "/art" },
     { label: "AURA", path: "/entries/aura" },
     { label: "BEACON", path: "/entries/beacon" },
     { label: "BRAIN", path: "/entries/brain" },
@@ -106,7 +106,8 @@
   function getCurrentIndex(entries) {
     const current = window.location.pathname;
     const normalize = (p) => p.replace(/\.html$/, "").replace(/\/$/, "");
-    const normalCurrent = normalize(current);
+    // /art/what-is belongs to the ART slot, whose link now opens the storefront (/art)
+    const normalCurrent = normalize(current).replace(/^\/art\/what-is$/, "/art");
     const idx = entries.findIndex((e) => normalize(e.path) === normalCurrent);
     return idx >= 0 ? idx : 0;
   }

@@ -313,3 +313,4 @@ can just ask.
 - ANTENNA: removed two principles that repeated earlier text ("Hardware claims are measured…", and the second "protects communication by reducing dependencies" line); search index matched.
 - J.R. can now read MAESTRO's Drive directly.
 - 01:25 CT: /art/what-is was wearing the ADVERSARY look (red tracking, "no consent" boxes) though ART is Culture. Switched to the Culture halftone template like BEACON, DIGIBEER, etc.
+- 01:28 CT: Nav: ART now opens the storefront front door (/art) instead of /art/what-is; the what-is page still knows its place in the prev/next order.
