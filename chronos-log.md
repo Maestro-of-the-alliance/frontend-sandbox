@@ -317,3 +317,4 @@ can just ask.
 - 11:05 CT: Entry videos now come from one list, /entry-videos.json ("page-name": "YouTube link or .mp4 link"). nw/t.js reads it; accepts full YouTube links or plain .mp4 URLs (e.g. R2). Tested YouTube, mp4, and no-video pages.
 - 11:10 CT: media.nextcommonera.org connected to the nce-media R2 bucket (MAESTRO approved). Certificate active; tested a file over the new address (206 video/mp4). entry-videos.json instructions point there.
 - 11:55 CT: First J.R. entry video live — 100-YEAR (media.nextcommonera.org/videos/100-year.mp4), added by MAESTRO himself through entry-videos.json.
+- 12:05 CT: Bottom nav chips — 72 entry pages force dark text on the nav for their light bands, which made the new dark chips unreadable (MAESTRO caught it on 100-YEAR). Chip text now wins everywhere; checked all 78 entry pages (ANTENNA uses its own custom nav, untouched).
