@@ -56,6 +56,9 @@ if(cv){var x=cv.getContext("2d"),W,H,D=1,S={};
  requestAnimationFrame(loop);
 }
 /* video overview poster: soft moving light in the page's accent */
+/* entry videos: one list for the whole site, /entry-videos.json  { "slug": "YouTube link or .mp4 URL" } */
+(function(){var vids=document.querySelectorAll(".vid");if(!vids.length)return;var slug=location.pathname.replace(/\/index\.html$/,"").replace(/\.html$/,"").replace(/\/$/,"").split("/").pop();
+ fetch("/entry-videos.json",{cache:"no-cache"}).then(function(r){return r.ok?r.json():{}}).then(function(m){var u=m&&m[slug];if(u)vids.forEach(function(v){v.dataset.ytMap=u;v.classList.add("has-video")})}).catch(function(){})})();
 document.querySelectorAll(".vid").forEach(function(v){
  var scr=v.querySelector(".scr"),c=v.querySelector("canvas"),yt=v.dataset.yt,cs=getComputedStyle(document.documentElement);
  if(c){var q=c.getContext("2d"),a1=(cs.getPropertyValue("--acc")||"#fc0").trim(),a2=(cs.getPropertyValue("--accl")||"#fff").trim(),bg=(cs.getPropertyValue("--stage")||"#0b1030").trim();
@@ -63,7 +66,9 @@ document.querySelectorAll(".vid").forEach(function(v){
    [[a1,.0,.9],[a2,2.1,.6]].forEach(function(o,i){var px=w*(.5+.28*Math.sin(t/2400+o[1])),py=h*(.5+.22*Math.cos(t/2900+o[1])),r=h*(.9-i*.2),g=q.createRadialGradient(px,py,0,px,py,r);g.addColorStop(0,o[0]);g.addColorStop(1,"rgba(0,0,0,0)");q.globalAlpha=.42;q.fillStyle=g;q.fillRect(0,0,w,h)});q.globalAlpha=1;
    if(!RM)requestAnimationFrame(pf)}requestAnimationFrame(pf);}
  scr.addEventListener("click",function(){
-  if(yt){scr.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+yt+'?autoplay=1&rel=0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen title="Video overview"></iframe>';}
+  yt=yt||v.dataset.ytMap||"";
+  if(/\.(mp4|webm|mov)(\?|$)/i.test(yt)){scr.innerHTML='<video src="'+yt+'" controls autoplay playsinline style="width:100%;height:100%;display:block;background:#000"></video>';}
+  else if(yt){var m=yt.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{6,})/);if(m)yt=m[1];scr.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+yt+'?autoplay=1&rel=0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen title="Video overview"></iframe>';}
   else v.classList.toggle("say");});
  scr.setAttribute("tabindex","0");scr.setAttribute("role","button");scr.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();scr.click()}});
 });
