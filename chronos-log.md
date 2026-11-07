@@ -312,3 +312,4 @@ can just ask.
 - Bottom prev/Home/next nav on all template pages now sits on dark readable chips (MAESTRO couldn't see it on BEACON, ACADEMY, AGORA). nw/chrome.css.
 - ANTENNA: removed two principles that repeated earlier text ("Hardware claims are measured…", and the second "protects communication by reducing dependencies" line); search index matched.
 - J.R. can now read MAESTRO's Drive directly.
+- 01:25 CT: /art/what-is was wearing the ADVERSARY look (red tracking, "no consent" boxes) though ART is Culture. Switched to the Culture halftone template like BEACON, DIGIBEER, etc.
