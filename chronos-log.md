@@ -303,3 +303,4 @@ can just ask.
 - 13:40 CT: MAESTRO approved ("best I've seen it so far") — preview layout is now the live landing.html; /landing-preview redirects to /landing.
 - 14:10 CT: Desktop landing — COALITION was clipped on MAESTRO's laptop. Title, "Next Common Era" and N.C.E.ncyclopedia now size to their column (container units) and stay on one line; checked 1024–2560 px wide. Phone layout unchanged.
 - 18:05 CT: Medallion glow positions set from MAESTRO's own tuning (keyboard tuner in the console): all seven sigils updated in landing.css.
+- 18:15 CT: THE SYSTEM sun now shows the COALITION medallion (both faces). New the-system/avpi.png (+ src/public copy) built from MAESTRO's 2508px art at the old size, with the magenta window and gold center baked in. Old sun texture saved to alliance-artifacts/symbols/.
